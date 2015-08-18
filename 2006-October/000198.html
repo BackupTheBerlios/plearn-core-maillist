@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Fwd:  Option PLearner::expdir d&#233;clar&#233;e nosave???
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FFwd%3D3A__Option_PLearner%3D3A%3D3Aexpdir_%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fd%3DE9clar%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C1D9DF8BE-49A3-42EA-B4D9-227325A798E1%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000209.html">
+   <LINK REL="Next"  HREF="000211.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Fwd:  Option PLearner::expdir d&#233;clar&#233;e nosave???</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FFwd%3D3A__Option_PLearner%3D3A%3D3Aexpdir_%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fd%3DE9clar%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C1D9DF8BE-49A3-42EA-B4D9-227325A798E1%40apstat.com%3E"
+       TITLE="[Plearn-core] Fwd:  Option PLearner::expdir d&#233;clar&#233;e nosave???">pascal at apstat.com
+       </A><BR>
+    <I>Thu Oct 12 18:51:17 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000209.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+        <LI>Next message: <A HREF="000211.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#198">[ date ]</a>
+              <a href="thread.html#198">[ thread ]</a>
+              <a href="subject.html#198">[ subject ]</a>
+              <a href="author.html#198">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+
+D&#233;but du message r&#233;exp&#233;di&#233; :
+
+&gt;<i> De : Pascal Vincent &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">pascal at apstat.com</A>&gt;
+</I>&gt;<i> Date : 12 octobre 2006 12:48:16 HAE
+</I>&gt;<i> &#192; : Nicolas Chapados &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A>&gt;
+</I>&gt;<i> Objet : R&#233;p : [Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</I>&gt;<i>
+</I>&gt;&gt;<i> Olivier Delalleau wrote:
+</I>&gt;&gt;&gt;<i> Je n'ai pas en t&#234;te d'utilisation du expdir apr&#232;s entra&#238;nement,
+</I>&gt;<i>
+</I>&gt;<i> Moi non plus.
+</I>&gt;<i>
+</I>&gt;&gt;&gt;<i> m&#234;me si
+</I>&gt;&gt;&gt;<i> j'imagine qu'on pourrait en trouver des cas tordus.
+</I>&gt;<i>
+</I>&gt;<i> Oui, si un learner veut (comme le mentionnait Pascal L) sauver des  
+</I>&gt;<i> choses (genre grs fichier de donn&#233;e) en dehors du .psave
+</I>&gt;<i> Mais je n'ai pas connaissance de tels learners, et si c'est le cas,  
+</I>&gt;<i> ils peuvent toujours introduire une autre option pour sauvegarder &#231;a.
+</I>&gt;<i>
+</I>&gt;&gt;&gt;<i> Ca me semble quand m&#234;me potentiellement utile de savoir o&#249; se  
+</I>&gt;&gt;&gt;<i> trouvent
+</I>&gt;&gt;&gt;<i> les donn&#233;es du PTester.
+</I>&gt;<i>
+</I>&gt;<i> Ne serait-ce que pour le log, &#231;a peut &#234;tre int&#233;ressant de savoir o&#249;  
+</I>&gt;<i> une exp&#233;rience a &#233;t&#233; roul&#233;e, mais ce n'est pas n&#233;cessaire en effet  
+</I>&gt;<i> que ce soit dans une saved option (&#231;a pourrait par ex. &#234;tre dans un  
+</I>&gt;<i> fichier cr&#233;&#233; &#224; l'int&#233;rieur du expdir).
+</I>&gt;<i>
+</I>&gt;&gt;&gt;<i> Il pourrait y avoir deux autres solutions &#224; ce
+</I>&gt;&gt;&gt;<i> probl&#232;me :
+</I>&gt;&gt;&gt;<i> - utiliser les PPath pour s'assurer que le chemin est toujours  
+</I>&gt;&gt;&gt;<i> valide
+</I>&gt;&gt;&gt;<i>   (ce que je fais r&#233;guli&#232;rement)
+</I>&gt;&gt;&gt;<i> - mieux, &#224; mon avis, changer le code qui essaie de cr&#233;er le  
+</I>&gt;&gt;&gt;<i> expdir dans
+</I>&gt;&gt;&gt;<i>   le build_ du PTester : je ne vois pas pourquoi c'est n&#233;cessaire  
+</I>&gt;&gt;&gt;<i> tant
+</I>&gt;&gt;&gt;<i>   qu'il n'y a rien &#224; &#233;crire (c'est-&#224;-dire dans perform).
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;<i> Olivier
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Le 06-10-12 &#224; 12:12, Nicolas Chapados a &#233;crit :
+</I>&gt;<i>
+</I>&gt;&gt;<i> Le probl&#232;me est qu'il s'agit d'un changement de s&#233;mantique assez  
+</I>&gt;&gt;<i> profond
+</I>&gt;&gt;<i> que d'&#233;liminer la cr&#233;ation du expdir au build_().  En th&#233;orie je suis
+</I>&gt;&gt;<i> d'accord avec toi qu'il ne devrait pas y avoir ce mkdir dans le  
+</I>&gt;&gt;<i> build_()
+</I>&gt;&gt;<i> de PLearner.
+</I>&gt;<i>
+</I>&gt;<i> Sur le fond je suis d'accord aussi. Mais &#231;a me semble un changement  
+</I>&gt;<i> risqu&#233; en effet, surtout que les setExperimentDirectory servent de  
+</I>&gt;<i> message de finalization de construction &quot;top-down&quot; apr&#232;s les build  
+</I>&gt;<i> qui sont appel&#233;s bottom-up. Il faudrait prendre le temps de bien  
+</I>&gt;<i> r&#233;fl&#233;chir aux changements qu'on veut apporter et &#224; leurs cons&#233;quences.
+</I>&gt;<i>
+</I>&gt;&gt;<i> En pratique, je n'ai pas envie de passer au peigne fin
+</I>&gt;&gt;<i> chaque PLearner pour r&#233;parer ceux qui d&#233;pendent de la supposition que
+</I>&gt;&gt;<i> leur expdir est d&#233;j&#224; cr&#233;&#233;...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Qu'est-ce que tu veux dire par &quot;potentiellement utile de savoir o&#249; se
+</I>&gt;&gt;<i> trouvent les donn&#233;es du PTester&quot;?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Et autres question sur ta premi&#232;re solution: comment crois-tu que les
+</I>&gt;&gt;<i> PPath peuvent nous aider ici?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>     + Nicolas
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i> -- 
+</I>&gt;&gt;<i> Nicolas Chapados, M.Sc.
+</I>&gt;&gt;<i> ApSTAT Technologies Inc.
+</I>&gt;&gt;<i> www.apstat.com
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Plearn-core mailing list
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000209.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+	<LI>Next message: <A HREF="000211.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#198">[ date ]</a>
+              <a href="thread.html#198">[ thread ]</a>
+              <a href="subject.html#198">[ subject ]</a>
+              <a href="author.html#198">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

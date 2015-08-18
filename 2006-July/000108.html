@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utiliser Plearn en tant que library
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C20060710165057.GC16470%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000106.html">
+   <LINK REL="Next"  HREF="000109.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utiliser Plearn en tant que library</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C20060710165057.GC16470%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Utiliser Plearn en tant que library">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Jul 10 18:50:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000106.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+        <LI>Next message: <A HREF="000109.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#108">[ date ]</a>
+              <a href="thread.html#108">[ thread ]</a>
+              <a href="subject.html#108">[ subject ]</a>
+              <a href="author.html#108">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour,
+
+On 10 Jul 2006, Jaonary Rabarisoa wrote:
+&gt;<i> 1 - Il y a tellement de fichier dans ces repertoirs et les compiler tous prend
+</I>&gt;<i> beaucoup de temps. Je voudrais donc savoir s'il y a de fichiers essentiels que
+</I>&gt;<i> l'on doit absolument compiler et des fichiers optionnels. J'ai d&#233;j&#224; essay&#233; de
+</I>&gt;<i> faire le tri moi meme mais c'est pas evident de deviner ce que l'on doit garder
+</I>&gt;<i> sans parcourir les sources.
+</I>
+Il y a en effet beaucoup de fichiers qu'il n'est pas necessaire de
+compiler, meme si compiler le 'coeur' de PLearn fait quand meme appel a
+beaucoup de fichiers (si tu as acces a des machines en reseau, pymake
+peut compiler en parallele, ce qui fait gagner beaucoup de temps).
+Pour se restreindre au minimum, le mieux est de commencer par editer
+plearn/commands/plearn_inc.h et de tout commenter (ou presque). Il
+suffira ensuite de de-commenter ce dont on a finalement besoin.
+
+&gt;<i> 2 -  PLearn depend  d'autre biblioth&#232;que comme boost et nspr. Si boost est d&#233;j&#224;
+</I>&gt;<i> plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour cette
+</I>&gt;<i> biblioth&#232;que (nspr) je sugg&#232;re que l'on n'&#233;crive pas le chemin absolu des
+</I>&gt;<i> includes (firefox/nspr/*.h) mais tout de suite &lt;*.h&gt; et specifier le -I pendant
+</I>&gt;<i> la compilation.
+</I>
+Je *pense* que si le chemin actuel precise firefox/nspr/, c'est que ce
+chemin est standard, et se retrouve dans la version officielle de la
+librairie (NB: apparemment, firefox est recent, c'etait mozilla
+auparavant). Cela permet aussi a pymake de se rendre compte qu'on
+utilise NSPR grace au 'trigger' nspr.
+
+&gt;<i> 3 - Est ce que quelqu'un a d&#233;j&#224; r&#233;ussit &#224; compiler PLearn et lancer
+</I>&gt;<i> correctement des test avec visual studio (windows) et xcode (mac os x).
+</I>
+Pas recemment. J'utilise regulierement PLearn sous Windows, mais en
+utilisant Cygwin. Note que la doc d'installation Windows n'est pas
+vraiment a jour (je compte m'en occuper prochainement), si tu desires
+des infos, je peux te dire exactement quoi faire pour compiler sous
+Windows. Quant a compiler sous Visual Studio, cela necessitera sans
+doute quelques modifications non triviales (mais je compte aussi m'y
+atteler un de ces jours). Ca a deja ete fait donc ca devrait pouvoir se
+faire.
+
+&gt;<i> Pour le
+</I>&gt;<i> premier j'ai des probl&#232;me de compilation purement c++. Par example :
+</I>&gt;<i> la class TVec (TVec_decl.h) a un operateur surcharg&#233;
+</I>&gt;<i>         
+</I>&gt;<i>          inline T&amp; operator[](unsigned int i) const
+</I>&gt;<i>         
+</I>&gt;<i>          inline T&amp; operator[](int i) const
+</I>&gt;<i> 
+</I>&gt;<i> Quand le type que l'on passe en parametre n'est pas un &quot;int&quot; ou un &quot;unsigned
+</I>&gt;<i> int&quot; le compilateur ne sait plus quoi prendre et on obtient une erreur. En plus
+</I>&gt;<i> il trouve 3 surcharges possible de cette fonction et moi j'en vois que deux. La
+</I>&gt;<i> solution que j'ai trouv&#233; c'est de faire un cast static. Mais alors, pourquoi
+</I>&gt;<i> avoir surcharger cet operateur ?
+</I>
+Personnellement, je ne sais pas trop. Apparemment, ca a ete rajoute par
+Norman, qui avait justement travaille pour faire compiler sous Visual
+Studio a l'epoque. Peut-etre pour eliminer certains warnings ? En tout
+cas on devrait pouvoir s'en sortir avec un seul operateur (celui qui
+prend un int).
+
+&gt;<i> 4 - Est ce que le developpent de PLearn est ouvert &#224; tout ceux qui veulent
+</I>&gt;<i> participer et si oui comment faire ?
+</I>
+Il me semble que oui (a confirmer aupres des autres admins du projet).
+Il faut commencer par creer un compte sur : <A HREF="http://developer.berlios.de">http://developer.berlios.de</A>
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000106.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+	<LI>Next message: <A HREF="000109.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#108">[ date ]</a>
+              <a href="thread.html#108">[ thread ]</a>
+              <a href="subject.html#108">[ subject ]</a>
+              <a href="author.html#108">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

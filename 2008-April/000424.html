@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3CB6015814-95FC-497F-AAAC-2527A5638460%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000423.html">
+   <LINK REL="Next"  HREF="000425.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3CB6015814-95FC-497F-AAAC-2527A5638460%40apstat.com%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">pascal at apstat.com
+       </A><BR>
+    <I>Tue Apr  8 23:02:35 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000423.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+        <LI>Next message: <A HREF="000425.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#424">[ date ]</a>
+              <a href="thread.html#424">[ thread ]</a>
+              <a href="subject.html#424">[ subject ]</a>
+              <a href="author.html#424">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Le 08-04-07 &#224; 20:20, Nicolas Chapados a &#233;crit :
+&gt;<i> Hello PLearn gurus,
+</I>&gt;<i>
+</I>&gt;<i> (That should include Olivier, Pascal and Hugo, if not many  
+</I>&gt;<i> others!).  I have an intriguing question about VarArrays which has  
+</I>&gt;<i> just lost me, oh, a few wasted hours.
+</I>&gt;<i>
+</I>&gt;<i> In Func.cc, we have the following piece of code for computing the  
+</I>&gt;<i> fprop-path:
+</I>&gt;<i> void Function::build_() { // ... fproppath = propagationPath 
+</I>&gt;<i> (inputs, outputs); if (fproppath.length()==0) // to handle the  
+</I>&gt;<i> weird case in which there is no path from inputs to outputs // but  
+</I>&gt;<i> outputs still depends on parameters and we want to represent that  
+</I>&gt;<i> dependency { fproppath = propagationPath(inputs &amp; parameters,  
+</I>&gt;<i> outputs); bproppath = propagationPath(inputs &amp; parameters,  
+</I>&gt;<i> outputs); } else bproppath = propagationPath(inputs,  
+</I>&gt;<i> outputs); // ... } My question is as follows: WHY is it that the  
+</I>&gt;<i> propagation path is first found from inputs to outputs only,  
+</I>&gt;<i> without regard for the parameters, and ONLY if such a path does not  
+</I>&gt;<i> exist does it try to include parameters as well?
+</I>
+I believe that a Func was meant to compute the output from the input  
+only, not to recompute intermediate transformation of parameters when  
+the parameters they depend on do change.
+There are probably 2 reasons:
+a) efficiency reason. Ex. when computing a function and gradient on a  
+batch (as a SumOf can do), you certainly do not want to unnecessarily  
+recompute possibly very costly transformations of your parameters for  
+each example you see.
+b) correct computation of gradients when using SumOf or similar  
+operations, and in particular when doing a SumOf inside a SumOf or  
+similar (ProductOf?). In this case, you want to accumulate gradients  
+to the immediate parents (transformed parameters) while doing the  
+SumOf and only *then* backpropagate *once* the resulting total  
+gradient to the parents of these  parents (the untransformed  
+parameters).
+
+The special case was probably added as a necessary hack for a special  
+situation (possibly also to do with SumOf or the like).
+
+This explanation is certainly as foggy as that stuff is in my old  
+memory, but this is all I can offer in terms of &quot;explanation&quot;.
+I however fear that If you change this as you are suggesting, things  
+are likely to go horribly wrong elsewhere (as might or might not be  
+caught by testsuite). A particularly tricky test case would be SumOf  
+within SumOf or similar that I remember you using somewhere...
+I would also suggest a less dangerous fix: add an option and  
+constructor parameter such as always_propagate_parameters which would  
+be false by default, but you can set to true if this is the behaviour  
+you want here.
+
+&gt;<i> In other words, why does the code not look like this instead (which  
+</I>&gt;<i> I would think to be preferable in ALL circumstances, but that's why  
+</I>&gt;<i> I'm asking) ::
+</I>&gt;<i> void Function::build_() { // ... fproppath = propagationPath(inputs  
+</I>&gt;<i> &amp; parameters, outputs); bproppath = propagationPath(inputs &amp;  
+</I>&gt;<i> parameters, outputs); // ... } The original formulation causes very  
+</I>&gt;<i> hard-to-track-down problems.  I have a code snippet of the  
+</I>&gt;<i> following form:
+</I>&gt;<i> Var output1 = product(processed_input, m_woutput1); Var output2 =  
+</I>&gt;<i> product(processed_input, -m_woutput1); where &quot;processed_input&quot; is  
+</I>&gt;<i> some Var resulting from a prior processing (the hidden layer of a  
+</I>&gt;<i> neural network), and m_woutput1 is a SourceVariable representing a  
+</I>&gt;<i> model parameter.
+</I>
+I suppose you are declaring a Func with inputs = processed_input and  
+outputs = output2 (you didn't specify in your message what function  
+you are declaring, but I guess this is it).
+
+&gt;<i> What happens is as follows:
+</I>&gt;<i> All the computations for output1 proceed correctly, because the  
+</I>&gt;<i> path-marking code in BinaryVariable wants to first mark  
+</I>&gt;<i> processed_input (which succeeds), then mark m_woutput1 (which  
+</I>&gt;<i> fails, since it's a parameter, thence a SourceVariable, but it NOT  
+</I>&gt;<i> pre-marked at the start of proppath construction within  
+</I>&gt;<i> VarArray::propagationPath). BUT the whole product succeeds in being  
+</I>&gt;<i> marked since either branch must succeed.
+</I>&gt;<i> The computation for output2 produces the following major bug: the  
+</I>&gt;<i> NegateElementsVariable (corresponding to the unary minus) is never  
+</I>&gt;<i> made part of the proppath, since first it's trying to mark  
+</I>&gt;<i> m_woutput1 (which fails, for the reason given above), yet the whole  
+</I>&gt;<i> product succeeds since processed_input succeeds.
+</I>&gt;<i> So what happens is that output1 is computed correctly, whereas  
+</I>&gt;<i> output2 always gives a value of zero, since the &quot;value&quot; of the  
+</I>&gt;<i> NegateElementsVariable is never updated, it not being part of the  
+</I>&gt;<i> proppath.
+</I>&gt;<i>
+</I>&gt;<i> So I would gladly like to hear the rationale for the form of the  
+</I>&gt;<i> current code.  If nobody can answer me within 24 hours, I will  
+</I>&gt;<i> commit the suggested fix (which, incidentally, corrects my problem).
+</I>
+Hope the above helps.
+
+-- Pascal
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000423.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+	<LI>Next message: <A HREF="000425.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#424">[ date ]</a>
+              <a href="thread.html#424">[ thread ]</a>
+              <a href="subject.html#424">[ subject ]</a>
+              <a href="author.html#424">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

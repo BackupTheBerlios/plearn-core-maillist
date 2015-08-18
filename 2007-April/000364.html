@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Changements a PTester
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Changements%20a%20PTester&In-Reply-To=%3C20070413185813.GA19935%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000363.html">
+   <LINK REL="Next"  HREF="000365.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Changements a PTester</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Changements%20a%20PTester&In-Reply-To=%3C20070413185813.GA19935%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Changements a PTester">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Apr 13 20:58:14 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000363.html">[Plearn-core] Question BaggingLearner
+</A></li>
+        <LI>Next message: <A HREF="000365.html">[Plearn-core] Plearn: fichier qui ne compile pas
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#364">[ date ]</a>
+              <a href="thread.html#364">[ thread ]</a>
+              <a href="subject.html#364">[ subject ]</a>
+              <a href="author.html#364">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Merci pour le changement. Mais j'ai peur qu'il pose un autre probl&#232;me.
+Avoir une option 'dataset' dans un Splitter sugg&#232;re de l'utiliser
+lorsqu'on &#233;crit un script, mais :
+1. Elle est 'nosave', donc sera perdue si on sauve / charge notre objet.
+Quelle est la motivation derri&#232;re &#231;a ?
+2. Plus probl&#233;matique, elle permet de &quot;bypasser&quot; la m&#233;thode setDataset,
+qui peut &#234;tre importante pour certains splitters. Je ne sais pas
+vraiment comment r&#233;gler ce probl&#232;me, que j'ai d&#233;j&#224; rencontr&#233; &#224; d'autres
+occasions pour d'autres classes. On pourrait appeler setDataset(..) dans
+le build de Splitter, mais dans ce cas on risque de l'appeler avant que
+le build de la sous-classe soit compl&#233;t&#233;, ce qui peut aussi &#234;tre un
+probl&#232;me.
+
+Je pense qu'on en avait discut&#233; il y a un certain temps avec Pascal (de
+ce genre de probl&#232;me)... J'ai retrouv&#233; des vieux mails de mars 2006
+('R&#233;flexions plus ou moins vagues sur setOption')... et aussi une
+discussion reli&#233;e qui pourrait p-&#234; &#234;tre remise au go&#251;t du jour (d'o&#249; le
+cc &#224; plearn-core) :
+<A HREF="https://lists.berlios.de/pipermail/plearn-core/2006-June/000055.html">https://lists.berlios.de/pipermail/plearn-core/2006-June/000055.html</A>
+Si je trouve le temps je vais essayer de me replonger dans ces probl&#232;mes
+puisque c'est un des trucs qui me pose pb avec PLearn...
+
+En attendant, je me demandais : je ne suis pas familier avec les
+fonctions appel&#233;es &#224; distance, mais serait-il possible que tu appelles
+setDataSet &#224; distance plut&#244;t que de le passer par une option ?
+
+--
+Olivier
+
+On 11 Apr 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">saintmlx at apstat.com</A> wrote:
+&gt;<i> Salut,
+</I>&gt;<i> 
+</I>&gt;<i> La motivation &#233;tait que Splitter n'avait pas de declareOption, et donc
+</I>&gt;<i> aucun moyen de transmettre le dataset aux serveurs distants.  Je viens de
+</I>&gt;<i> l'ajouter pour le dataset, avec flags nosave et remotetransmit (qui
+</I>&gt;<i> n'existait pas encore quand j'ai fait cette modif.)
+</I>&gt;<i> 
+</I>&gt;<i> Merci pour l'info, &#231;a devrait aller mieux maintenant.
+</I>&gt;<i> 
+</I>&gt;<i> Xavier
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Salut,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Est-ce qu'il y a une motivation dans PTester pour faire
+</I>&gt;<i> &gt;     splitter-&gt;setDataSet(dataset);
+</I>&gt;<i> &gt; dans perform1Split plutot que dans perform ?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Outre que ca pourrait faire des calculs inutiles, il y a au moins un
+</I>&gt;<i> &gt; Splitter (le KFoldSplitter avec K=-1 pour faire de la leave-one-out
+</I>&gt;<i> &gt; cross validation) dont le nombre de splits n'est connu que lorsque le
+</I>&gt;<i> &gt; dataset est fourni =&gt; ca plante avec le code actuel.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; Olivier
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000363.html">[Plearn-core] Question BaggingLearner
+</A></li>
+	<LI>Next message: <A HREF="000365.html">[Plearn-core] Plearn: fichier qui ne compile pas
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#364">[ date ]</a>
+              <a href="thread.html#364">[ thread ]</a>
+              <a href="subject.html#364">[ subject ]</a>
+              <a href="author.html#364">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Question BaggingLearner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Question%20BaggingLearner&In-Reply-To=%3C20070402192835.GA20873%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000358.html">
+   <LINK REL="Next"  HREF="000360.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Question BaggingLearner</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Question%20BaggingLearner&In-Reply-To=%3C20070402192835.GA20873%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Question BaggingLearner">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Apr  2 21:28:37 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000358.html">[Plearn-core] PLearner::makeDeepCopyFromShallowCopy and	train_set
+</A></li>
+        <LI>Next message: <A HREF="000360.html">[Plearn-core] Question BaggingLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#359">[ date ]</a>
+              <a href="thread.html#359">[ thread ]</a>
+              <a href="subject.html#359">[ subject ]</a>
+              <a href="author.html#359">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Je mets plearn-core en cc puisque c'est un probl&#232;me assez g&#233;n&#233;rique, et
+que l'avis d'autres personnes pourrait &#234;tre utile.
+
+Le probl&#232;me avec cette approche c'est que pour moi &#231;a contredit un
+principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+quoi que ce soit, on doit d'abord appeler son build(). Si on commence &#224;
+faire des exceptions dans certaines parties du code, &#231;a devient
+compliqu&#233; &#224; suivre.
+
+Il me semble que la question s'&#233;tait d&#233;j&#224; pos&#233;e ailleurs... (je fouille
+un peu...). Ah, j'ai trouv&#233; : cf. StackedLearner::build_, le commentaire
+par Nicolas :
+  *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call build
+  *  inside build for no reason, since the inner objects HAVE ALREADY
+  *  been built.  You should uncomment the following code only FOR GOOD
+  *  REASON.
+
+Disons qu'en g&#233;n&#233;ral, &#231;a ne devrait pas &#234;tre un gros probl&#232;me que de
+faire un peu trop de builds (il pourrait arriver que &#231;a ralentisse
+significativement du code, mais &#231;a devrait &#234;tre rare). Mais
+personnellement je pense qu'il vaut mieux &#233;viter des cas particuliers o&#249;
+parfois appeler un seul build suffit, alors que dans d'autres situations
+similaires il faut appeler soi-m&#234;me le build de tous les objets.
+
+Si on voulait modifier le m&#233;canisme de build() pour appeler un seul
+build() et laisser la hi&#233;rarchie tout faire, j'imagine que &#231;a marcherait
+aussi, mais il faudrait r&#233;&#233;crire toutes les classes actuelles de PLearn.
+
+--
+Olivier
+
+On 02 Apr 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">saintmlx at apstat.com</A> wrote:
+&gt;<i> Salut Olivier,
+</I>&gt;<i> 
+</I>&gt;<i> Mon id&#233;e d'un build est que &#231;a devrait garantir que l'objet est
+</I>&gt;<i> compl&#232;tement construit.  C'est certain que si cet objet vient d'un
+</I>&gt;<i> Object::newread, le travail va &#234;tre fait en double pour le splitter et le
+</I>&gt;<i> template_learner.  Par contre, si tout est instanci&#233; au niveau C++ (ce qui
+</I>&gt;<i> n'est pas fr&#233;quent, j'en conviens), je voudrais qu'un simple build de
+</I>&gt;<i> l'objet &quot;parent&quot; qui contient tous les autres suffise.
+</I>&gt;<i> 
+</I>&gt;<i> Une solution &quot;propre&quot; serait de ne pas faire build dans newread quand on
+</I>&gt;<i> sait qu'on est en train de lire une option d'un objet qui sera &quot;build&#233;&quot;
+</I>&gt;<i> plus tard; comme &#231;a, &#231;a fait un seul build &#224; la fin de tout pour toute la
+</I>&gt;<i> hi&#233;rarchie.
+</I>&gt;<i> 
+</I>&gt;<i> Qu'en penses-tu?  Sinon, est-ce un gros probl&#232;me que de faire un peu trop
+</I>&gt;<i> de builds?
+</I>&gt;<i> 
+</I>&gt;<i> Xavier
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Salut,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+</I>&gt;<i> &gt; Question : pourquoi appeler le build() du splitter et du
+</I>&gt;<i> &gt; template_learner dans le build_() de BaggingLearner ? Normalement ces
+</I>&gt;<i> &gt; objets seraient cens&#233;s &#234;tre correctement construits, et le build ne
+</I>&gt;<i> &gt; devrait pas &#234;tre n&#233;cessaire il me semble.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; Olivier
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000358.html">[Plearn-core] PLearner::makeDeepCopyFromShallowCopy and	train_set
+</A></li>
+	<LI>Next message: <A HREF="000360.html">[Plearn-core] Question BaggingLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#359">[ date ]</a>
+              <a href="thread.html#359">[ thread ]</a>
+              <a href="subject.html#359">[ subject ]</a>
+              <a href="author.html#359">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

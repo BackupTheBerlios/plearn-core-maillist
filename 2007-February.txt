@@ -1,0 +1,1034 @@
+From lamblinp at iro.umontreal.ca  Wed Feb  7 00:06:46 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 7 Feb 2007 00:06:46 +0100
+Subject: [Plearn-core] boundchecks
+Message-ID: <20070206230646.GC1305@pig.zood.org>
+
+Salut les amis !
+
+Je trouve le m?canisme de PLASSERT_MSG( condition, message ) vachement
+pratique, principalement parce que ?a fait des messages d'erreur clairs,
+formatt?s pareils, et faciles ? mettre en place.
+
+J'aurais voulu mettre en place le m?me m?canisme pour les BOUNDCHECK,
+pour que les v?rifications soient faites ssi #defined BOUNDCHECK
+(PLASSERT regarde NDEBUG).
+
+Je pense que je ne serais pas le seul ? utiliser ?a, mais m?me si c'est
+le cas je compte l'utiliser dans la refonte de TMat_math ? venir, et
+dans pas mal d'OnlineLearningModules.
+
+Est-ce qu'il y a des choses dans plerror.{h,cc} que je devrais
+r?utiliser, modifier, copier-coller ? Des pi?ges particuliers ?
+Nicolas, je crois que c'est toi qui est ? l'origine de ?a, peux-tu
+m'?clairer ?
+
+Merci,
+-- 
+Pascal
+
+
+From pascal at apstat.com  Wed Feb  7 01:50:46 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 6 Feb 2007 19:50:46 -0500
+Subject: [Plearn-core] boundchecks
+In-Reply-To: <20070206230646.GC1305@pig.zood.org>
+References: <20070206230646.GC1305@pig.zood.org>
+Message-ID: <E6008DE7-711E-46C5-B278-CCD3C12DF631@apstat.com>
+
+
+
+> Salut les amis !
+>
+> Je trouve le m?canisme de PLASSERT_MSG( condition, message ) vachement
+> pratique, principalement parce que ?a fait des messages d'erreur  
+> clairs,
+> formatt?s pareils, et faciles ? mettre en place.
+>
+> J'aurais voulu mettre en place le m?me m?canisme pour les BOUNDCHECK,
+> pour que les v?rifications soient faites ssi #defined BOUNDCHECK
+> (PLASSERT regarde NDEBUG).
+
+Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+qu'on veut que le prg fasse des v?rifications exhaustives ou non.
+
+Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+qu'une des 2 variables.
+
+Et ? ce moment l?, Pascal, pourquoi ne pas utiliser simplement les  
+PLASSERT_MSG dans ta refonte?
+
+Note: le terme "boundcheck" est un peu trop restrictif. Les  
+"bouncchecks" au sens large sont certainement les checks les plus  
+courants, mais BOUNDCHECK a ?t? utilis? pour toutes sortes de checks  
+qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+
+
+>
+> Je pense que je ne serais pas le seul ? utiliser ?a, mais m?me si  
+> c'est
+> le cas je compte l'utiliser dans la refonte de TMat_math ? venir, et
+> dans pas mal d'OnlineLearningModules.
+>
+> Est-ce qu'il y a des choses dans plerror.{h,cc} que je devrais
+> r?utiliser, modifier, copier-coller ? Des pi?ges particuliers ?
+> Nicolas, je crois que c'est toi qui est ? l'origine de ?a, peux-tu
+> m'?clairer ?
+>
+> Merci,
+> -- 
+> Pascal
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Feb  7 05:28:50 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 7 Feb 2007 05:28:50 +0100
+Subject: [Plearn-core] boundchecks
+In-Reply-To: <E6008DE7-711E-46C5-B278-CCD3C12DF631@apstat.com>
+References: <20070206230646.GC1305@pig.zood.org>
+	<E6008DE7-711E-46C5-B278-CCD3C12DF631@apstat.com>
+Message-ID: <20070207042850.GA2397@pig.zood.org>
+
+On Tue, Feb 06, 2007, Pascal Vincent wrote:
+> > J'aurais voulu mettre en place le m?me m?canisme pour les BOUNDCHECK,
+> > pour que les v?rifications soient faites ssi #defined BOUNDCHECK
+> > (PLASSERT regarde NDEBUG).
+> 
+> Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+> on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+> qu'on veut que le prg fasse des v?rifications exhaustives ou non.
+
+Il me semble que NDEBUG est une variable qui est sett?e par le
+compilateur lui-m?me, je ne sais plus si c'est quand on compile en mode
+optimis? ou quand on compile sans symboles de d?bug, ou encore autre
+chose. Je ne pense pas qu'on puisse la red?finir facilement.
+
+> Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+> BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+> qu'une des 2 variables.
+> 
+> Et ? ce moment l?, Pascal, pourquoi ne pas utiliser simplement les  
+> PLASSERT_MSG dans ta refonte?
+> 
+> Note: le terme "boundcheck" est un peu trop restrictif. Les  
+> "bouncchecks" au sens large sont certainement les checks les plus  
+> courants, mais BOUNDCHECK a ?t? utilis? pour toutes sortes de checks  
+> qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+
+Justement, je pense qu'on ne peut pas avoir de mode "safeopt" si on
+utilise NDEBUG. Et comme le comportement du assert() de base d?pend de
+NDEBUG, si on veut reproduire ce comportement (ce dont je ne suis pas
+certains), il nous faut bien deux m?canismes diff?rents.
+
+Finalement, veut-on des tests qui sont faits si on compile en -dgb, mais
+pas en -safeopt (c'est ce que font les assert() traditionnels) ?
+C'est ce que je vous demande :)
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Wed Feb  7 06:21:16 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 7 Feb 2007 06:21:16 +0100
+Subject: [Plearn-core] boundchecks
+In-Reply-To: <20070207042850.GA2397@pig.zood.org>
+References: <20070206230646.GC1305@pig.zood.org>
+	<E6008DE7-711E-46C5-B278-CCD3C12DF631@apstat.com>
+	<20070207042850.GA2397@pig.zood.org>
+Message-ID: <20070207052116.GA2585@pig.zood.org>
+
+On Wed, Feb 07, 2007, Pascal Lamblin wrote:
+> > Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+> > on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+> > qu'on veut que le prg fasse des v?rifications exhaustives ou non.
+> 
+> Il me semble que NDEBUG est une variable qui est sett?e par le
+> compilateur lui-m?me, je ne sais plus si c'est quand on compile en mode
+> optimis? ou quand on compile sans symboles de d?bug, ou encore autre
+> chose. Je ne pense pas qu'on puisse la red?finir facilement.
+
+En fait, au temps pour moi, NDEBUG est la variable qui est utilis?e pour
+contr?ler le fonctionnement du assert() standard (peut-?tre d'autres
+choses aussi). Elle n'est jamais d?finie par d?faut, mais certaines
+options de pymake (-opt par exemple) la d?finissent.
+
+En fait, elles ont pas mal le r?le exactement oppos?, d'ailleurs il n'y
+a que deux options de pymake qui n'ont aucune des deux (checkopt, dont
+je me demande bien ? quoi elle sert, et genericvc++ qui doit ?tre assez
+particulier).
+
+> > Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+> > BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+> > qu'une des 2 variables.
+
+Oui.
+
+> > Et ? ce moment l?, Pascal, pourquoi ne pas utiliser simplement les  
+> > PLASSERT_MSG dans ta refonte?
+
+Oui, aussi.
+
+> > Note: le terme "boundcheck" est un peu trop restrictif. Les  
+> > "bouncchecks" au sens large sont certainement les checks les plus  
+> > courants, mais BOUNDCHECK a ?t? utilis? pour toutes sortes de checks  
+> > qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+> 
+> Finalement, veut-on des tests qui sont faits si on compile en -dgb, mais
+> pas en -safeopt (c'est ce que font les assert() traditionnels) ?
+> C'est ce que je vous demande :)
+
+Visiblement, dans les options utilis?es, c'est soit boundchecks et
+assert, soit ni l'un ni l'autre, donc je pense qu'on peut r?pondre
+??non?? :)
+
+La question (moins importante) qui subsiste, c'est : laquelle des deux
+variables garde-t-on ? Je pencherais pour garder BOUNDCHECK, puisqu'on
+est habitu?s ? l'utiliser dans plearn, et qu'on voit rarement un NDEBUG
+explicite. En plus, on n'utilise plus le assert() de base, qui est le
+seul ? ?tre vraiment li? ? NDEBUG.
+
+Mais on peut aussi vouloir r?utiliser NDEBUG qui a peut-?tre une
+s?mantique plus claire pour un ext?rieur au projet.
+
+Bonne nuit,
+-- 
+Pascal
+
+
+From jaonary at gmail.com  Wed Feb  7 14:50:06 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 7 Feb 2007 14:50:06 +0100
+Subject: [Plearn-core] Decission Trees pour la classification
+Message-ID: <c81af8c30702070550s28735ce0n61b4f8dadb566d73@mail.gmail.com>
+
+Salut a tous,
+J'aimerais connaitre les solutions deja implemente dans PLearn pour faire de
+la classification en utilisant les Decisions Trees et le Boosting. Merci a
+ceux qui pourront m'eclairsir un peu la dessus.
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070207/11f1bdde/attachment.html>
+
+From delallea at iro.umontreal.ca  Wed Feb  7 17:03:14 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Feb 2007 11:03:14 -0500
+Subject: [Plearn-core] Decission Trees pour la classification
+In-Reply-To: <c81af8c30702070550s28735ce0n61b4f8dadb566d73@mail.gmail.com>
+References: <c81af8c30702070550s28735ce0n61b4f8dadb566d73@mail.gmail.com>
+Message-ID: <20070207160313.GA10303@opale.iro.umontreal.ca>
+
+Salut,
+
+Je ne crois pas que ce soit actuellement implemente. Il me semble qu'il
+y a des boosted regression trees (cf. LocalMedBoost dans
+plearn_learners/regressors), mais :
+(1) c'est un peu experimental
+(2) c'est de la regression
+
+--
+Olivier
+
+On 07 Feb 2007, Jaonary Rabarisoa wrote:
+> Salut a tous,
+> J'aimerais connaitre les solutions deja implemente dans PLearn pour faire de la
+> classification en utilisant les Decisions Trees et le Boosting. Merci a ceux
+> qui pourront m'eclairsir un peu la dessus.
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From chapados at apstat.com  Wed Feb  7 20:48:00 2007
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Wed, 07 Feb 2007 14:48:00 -0500
+Subject: [Plearn-core] boundchecks
+In-Reply-To: <20070207042850.GA2397@pig.zood.org>
+References: <20070206230646.GC1305@pig.zood.org>	<E6008DE7-711E-46C5-B278-CCD3C12DF631@apstat.com>
+	<20070207042850.GA2397@pig.zood.org>
+Message-ID: <45CA2CF0.1030008@apstat.com>
+
+Salut,
+
+NDEBUG est d?fini dans le standard C comme "d?sactivant" la v?rification 
+des asserts, mais il n'est pas sett? par le compilateur, loin de l?. Il 
+faut le setter nous-m?me, en compilant avec -DNDEBUG.
+
+Donc on peut r?-utiliser NDEBUG sans probl?me pour faire les 
+boundchecks.  On a tout le contr?le qu'on veut dessus.  Ce n'est qu'un 
+define normal du pr?processeur.
+
+Je pense comme Pascal (Vincent) que c'est plus propre que d'avoir deux 
+symboles distincts.
+
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+> On Tue, Feb 06, 2007, Pascal Vincent wrote:
+>   
+>>> J'aurais voulu mettre en place le m?me m?canisme pour les BOUNDCHECK,
+>>> pour que les v?rifications soient faites ssi #defined BOUNDCHECK
+>>> (PLASSERT regarde NDEBUG).
+>>>       
+>> Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+>> on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+>> qu'on veut que le prg fasse des v?rifications exhaustives ou non.
+>>     
+>
+> Il me semble que NDEBUG est une variable qui est sett?e par le
+> compilateur lui-m?me, je ne sais plus si c'est quand on compile en mode
+> optimis? ou quand on compile sans symboles de d?bug, ou encore autre
+> chose. Je ne pense pas qu'on puisse la red?finir facilement.
+>
+>   
+>> Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+>> BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+>> qu'une des 2 variables.
+>>
+>> Et ? ce moment l?, Pascal, pourquoi ne pas utiliser simplement les  
+>> PLASSERT_MSG dans ta refonte?
+>>
+>> Note: le terme "boundcheck" est un peu trop restrictif. Les  
+>> "bouncchecks" au sens large sont certainement les checks les plus  
+>> courants, mais BOUNDCHECK a ?t? utilis? pour toutes sortes de checks  
+>> qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+>>     
+>
+> Justement, je pense qu'on ne peut pas avoir de mode "safeopt" si on
+> utilise NDEBUG. Et comme le comportement du assert() de base d?pend de
+> NDEBUG, si on veut reproduire ce comportement (ce dont je ne suis pas
+> certains), il nous faut bien deux m?canismes diff?rents.
+>
+> Finalement, veut-on des tests qui sont faits si on compile en -dgb, mais
+> pas en -safeopt (c'est ce que font les assert() traditionnels) ?
+> C'est ce que je vous demande :)
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From jaonary at gmail.com  Mon Feb 26 22:00:12 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Feb 2007 22:00:12 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+Message-ID: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+
+Bonjour ? tous,
+
+Je voudrai savoir s'il quelqu'un a une petitie id?e sur l'utilisation
+d'une VMatrix dont les inputs ont des tailles diff?rents. Je voudrai
+en effet construire un PLearner dont les inputs seront des listes de
+vecteur de differente taille, et du coup les VMatrix de base ne sont
+pas adapt? ? mes besoin car les inputs doivent avoir la m?me taille.
+La premier approche que j'ai utilis? c'est d'avoir mes vrai donn?e
+dans un TVec, du style
+
+TVec<Vec> real_inputs
+
+et dans la VMatrix comme input l'indice du real_input. Et ? chaque
+fois je vais r?cuper le real_input correspondant ? mon indice.
+Probl?me c'est que cette approche ne me permet pas de d'utiliser mon
+PLerner avec un PTester par exemple sans que je modifie aussi le code
+du PTester pour qu'il switch en les differents type de base (train,
+test). De mani?re g?n?ral, ? chaquee fois que je fais appelle ? la
+fonction computeOutput(...) il faudrait que je prenne soins de
+modifier le TVec<Vec> real_inputs. Ce qui devient un peu lourd.
+
+L'id?al se serait peut ?tre de templ?tiser les VMatrix avec le type
+d'input et le type de Target, ce qui donne un truc du genre
+VMatrix<INPUT,TARGET>. Ce serait alors tous chambouler dans PLearn et
+je ne sais m?me pas si c'est faisable. Et c'est pour ?a que je pense
+aux VMatrices dont les input sont de taille variable. Qu'en pensez
+vous ?
+
+
+Jaonary
+
+From lamblinp at iro.umontreal.ca  Tue Feb 27 05:25:22 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 27 Feb 2007 05:25:22 +0100
+Subject: [Plearn-core] =?iso-8859-1?q?build_cass=E9_sur_x86=5F64?=
+Message-ID: <20070227042522.GA21803@pig.zood.org>
+
+Salut ? tous,
+
+Je viens de me rendre compte que PLearn ne compile plus sous x86_64,
+plus pr?cis?ment les fichiers suivants :
+
+   /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc
+   /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc
+   /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc
+
+Il me semble que c'est li? ? la derni?re s?rie de commits de Xavier.
+
+Les messages d'erreur sont les suivants :
+
+ProgressBar.cc : /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::update(PLearn::ProgressBar*, long unsigned int)':
+/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:202: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'void PLearn::RemoteProgressBarPlugin::printTitle(PLearn::ProgressBar*)':
+/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:211: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::killProgressBar(PLearn::ProgressBar*)':
+/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:217: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+
+
+PLearnService.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::log_callback(PLearn::PP<PLearn::RemotePLearnServer>, const std::string&, int, const std::string&)':
+/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:393: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::progress_callback(PLearn::PP<PLearn::RemotePLearnServer>, unsigned int, char, unsigned int, const std::string&)':
+/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:402: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+
+
+PLearnServer.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc: In member function 'virtual int PLearn::PLearnServer::findFreeObjID(const PLearn::Object*) const':
+/u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc:390: error: cast from 'const PLearn::Object*' to 'unsigned int' loses precision
+
+
+Sachant qu'on peut toujours compiler et rouler plearn en 32 bits m?me
+sur les machines ? 64 bits, ce n'est pas critique, mais c'est quand m?me
+emb?tant.
+
+Je ne sais pas quel est le moyen propre de r?soudre ?a, donc je vous
+laisse vous d?brouiller :)
+
+? bient?t,
+-- 
+Pascal
+
+
+From saintmlx at iro.umontreal.ca  Tue Feb 27 05:47:16 2007
+From: saintmlx at iro.umontreal.ca (Xavier Saint-Mleux)
+Date: Mon, 26 Feb 2007 23:47:16 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?build_cass=E9_sur_x86=5F64?=
+In-Reply-To: <20070227042522.GA21803@pig.zood.org>
+References: <20070227042522.GA21803@pig.zood.org>
+Message-ID: <45E3B7D4.5030302@iro.umontreal.ca>
+
+Oops! mea culpa, je vais arranger ?a.  C'est ce qui arrive quand on se 
+laisse aller ? des petits hacks pas catholiques (ou pas cacher, ou pas 
+halal, ou ... ;)
+
+X
+
+Pascal Lamblin wrote:
+
+>Salut ? tous,
+>
+>Je viens de me rendre compte que PLearn ne compile plus sous x86_64,
+>plus pr?cis?ment les fichiers suivants :
+>
+>   /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc
+>   /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc
+>   /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc
+>
+>Il me semble que c'est li? ? la derni?re s?rie de commits de Xavier.
+>
+>Les messages d'erreur sont les suivants :
+>
+>ProgressBar.cc : /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::update(PLearn::ProgressBar*, long unsigned int)':
+>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:202: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'void PLearn::RemoteProgressBarPlugin::printTitle(PLearn::ProgressBar*)':
+>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:211: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::killProgressBar(PLearn::ProgressBar*)':
+>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:217: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+>
+>
+>PLearnService.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::log_callback(PLearn::PP<PLearn::RemotePLearnServer>, const std::string&, int, const std::string&)':
+>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:393: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::progress_callback(PLearn::PP<PLearn::RemotePLearnServer>, unsigned int, char, unsigned int, const std::string&)':
+>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:402: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+>
+>
+>PLearnServer.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc: In member function 'virtual int PLearn::PLearnServer::findFreeObjID(const PLearn::Object*) const':
+>/u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc:390: error: cast from 'const PLearn::Object*' to 'unsigned int' loses precision
+>
+>
+>Sachant qu'on peut toujours compiler et rouler plearn en 32 bits m?me
+>sur les machines ? 64 bits, ce n'est pas critique, mais c'est quand m?me
+>emb?tant.
+>
+>Je ne sais pas quel est le moyen propre de r?soudre ?a, donc je vous
+>laisse vous d?brouiller :)
+>
+>? bient?t,
+>  
+>
+
+
+
+From jaonary at gmail.com  Tue Feb 27 11:00:13 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 27 Feb 2007 11:00:13 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+Message-ID: <c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+
+En regardant un peu dans les source de PLearn, je suis tombe sur une class
+MultiInstanceVMatrix. J'ai pas bien compris comment l'utiliser mais il me
+semble bien pour ce que je fais. Mes input sont en effet des "bags of
+keywords" et chaque bag a un target associer.  Donc, je voudrai savoir si
+cette classe permet de resoudre le probleme que j'ai evoque ci-dessus ?
+
+Merci,
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/09f94aa5/attachment.html>
+
+From jaonary at gmail.com  Tue Feb 27 12:38:23 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 27 Feb 2007 12:38:23 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+Message-ID: <c81af8c30702270338m423081das504b317dac921b7@mail.gmail.com>
+
+C'est encore moi :-) . Toujours en fouinant un peu dans PLearn, j'ai vu
+qu'il y a un classifier qui, si je comprends bien utilise les bags of
+features pour en tant que input. C'est la classe MultiInstanceNNet.
+J'aimerai m'en inspirer pour creer mon PLearner mais je n'ai pas reussi a
+trouver un exemple d'utilisation de cette classe et aussi de donnee que avec
+laquelle je peux lancer une seance d'apprentissage
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/455e94af/attachment.html>
+
+From delallea at iro.umontreal.ca  Tue Feb 27 15:27:40 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 27 Feb 2007 09:27:40 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+Message-ID: <20070227142738.GA12852@opale.iro.umontreal.ca>
+
+> Je voudrai savoir s'il quelqu'un a une petitie id?e sur l'utilisation
+> d'une VMatrix dont les inputs ont des tailles diff?rents. Je voudrai
+> en effet construire un PLearner dont les inputs seront des listes de
+> vecteur de differente taille, et du coup les VMatrix de base ne sont
+> pas adapt? ? mes besoin car les inputs doivent avoir la m?me taille.
+
+En effet, a la base PLearn n'a pas ete concu pour ca, et ce n'est donc
+pas pratique.
+
+> La premier approche que j'ai utilis? c'est d'avoir mes vrai donn?e
+> dans un TVec, du style
+> 
+> TVec<Vec> real_inputs
+> 
+> et dans la VMatrix comme input l'indice du real_input. Et ? chaque
+> fois je vais r?cuper le real_input correspondant ? mon indice.
+> Probl?me c'est que cette approche ne me permet pas de d'utiliser mon
+> PLerner avec un PTester par exemple sans que je modifie aussi le code
+> du PTester pour qu'il switch en les differents type de base (train,
+> test). De mani?re g?n?ral, ? chaquee fois que je fais appelle ? la
+> fonction computeOutput(...) il faudrait que je prenne soins de
+> modifier le TVec<Vec> real_inputs. Ce qui devient un peu lourd.
+
+Je ne connais pas les details de ce que tu essaies de faire, mais si ton
+real_inputs contient TOUT (train + test), ce n'est pas un probleme : il
+suffit que tes VMats de train et test fassent reference a des
+sous-ensembles disjoints.
+Ca me semble la maniere la plus simple de proceder.
+
+
+> L'id?al se serait peut ?tre de templ?tiser les VMatrix avec le type
+> d'input et le type de Target, ce qui donne un truc du genre
+> VMatrix<INPUT,TARGET>. Ce serait alors tous chambouler dans PLearn et
+> je ne sais m?me pas si c'est faisable.
+
+Ce n'est sans doute pas quelque chose envisageable actuellement, ca
+impliquerait beaucoup trop de code a reecrire.
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Tue Feb 27 15:28:51 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 27 Feb 2007 09:28:51 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+Message-ID: <20070227142851.GB12852@opale.iro.umontreal.ca>
+
+On 27 Feb 2007, Jaonary Rabarisoa wrote:
+> En regardant un peu dans les source de PLearn, je suis tombe sur une class
+> MultiInstanceVMatrix. J'ai pas bien compris comment l'utiliser mais il me
+> semble bien pour ce que je fais. Mes input sont en effet des "bags of keywords"
+> et chaque bag a un target associer.  Donc, je voudrai savoir si cette classe
+> permet de resoudre le probleme que j'ai evoque ci-dessus ?
+
+Ca depend si c'est vraiment ce que tu veux faire. Il faut quand meme que
+tous les elements de ton 'bag' aient la meme taille. Si c'est le cas,
+alors oui, tu pourrais l'utiliser.
+
+--
+Olivier
+
+
+
+From delallea at iro.umontreal.ca  Tue Feb 27 15:35:04 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 27 Feb 2007 09:35:04 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270338m423081das504b317dac921b7@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<c81af8c30702270200h1554d79an16682ff496341624@mail.gmail.com>
+	<c81af8c30702270338m423081das504b317dac921b7@mail.gmail.com>
+Message-ID: <20070227143504.GC12852@opale.iro.umontreal.ca>
+
+On 27 Feb 2007, Jaonary Rabarisoa wrote:
+> C'est encore moi :-) . Toujours en fouinant un peu dans PLearn, j'ai vu qu'il y
+> a un classifier qui, si je comprends bien utilise les bags of features pour en
+> tant que input. C'est la classe MultiInstanceNNet. J'aimerai m'en inspirer pour
+> creer mon PLearner mais je n'ai pas reussi a trouver un exemple d'utilisation
+> de cette classe et aussi de donnee que avec laquelle je peux lancer une seance
+> d'apprentissage
+
+Il n'y a pas d'exemple ni de donnees dispos, mais ca ne devrait pas etre
+complique, l'aide est assez complete il me semble.
+Note quand meme que cet algo d'optimisation est fait avec l'idee que UN
+des elements du bag est actif (classe 1) lorsque le bag est actif, ce
+qui ne correspond sans doute pas a ce que tu veux faire (en particulier
+cet algo est capable de calculer une prediction pour chaque element
+individuel du bag, alors que j'imagine que pour toi un 'input' est
+toujours un bag complet).
+
+--
+Olivier
+
+
+
+From pascal at apstat.com  Tue Feb 27 15:47:20 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 27 Feb 2007 09:47:20 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+Message-ID: <59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+
+
+> Bonjour ? tous,
+>
+> Je voudrai savoir s'il quelqu'un a une petitie id?e sur l'utilisation
+> d'une VMatrix dont les inputs ont des tailles diff?rents. Je voudrai
+> en effet construire un PLearner dont les inputs seront des listes de
+> vecteur de differente taille, et du coup les VMatrix de base ne sont
+> pas adapt? ? mes besoin car les inputs doivent avoir la m?me taille.
+
+Pas n?cessairement.
+
+La m?thode getExample de VMatrix prend en argument des Vec&, donc  
+rien n'emp?che que l'appel change leur taille (appel ? resize), ou  
+m?me fasse un input=.
+Donc si tu d?finis ta propre classe de VMatrix qui red?finit cette  
+m?thode getExample qui resize et remplit le vecteur d'input  
+correctement, tu peux avoir des vecteurs d'input de taille variable.
+
+Un probl?me possible, d?pendamment de quel PLearner sous-jacent tu  
+vas utiliser, c'est que les PLearner n'ont pas encore tous ?t?  
+modifi?s pour utiliser getExample. Il y en a sans doute plusieurs qui  
+font encore des getRow en allant chercher eux-m?me les parties de la  
+rang?e implicites dans inputsize, targetsize, weightsize.
+
+Mais si tu as des inputs de taille variable, j'imagine que de tote  
+fa?on tu dois les passer ? ton propre PLearner pour en faire  
+quelquechose d'intelligent.
+
+Dis-moi si cette suggestion r?glerait ton probl?me...
+
+
+-- Pascal Vincent
+
+
+
+
+
+> La premier approche que j'ai utilis? c'est d'avoir mes vrai donn?e
+> dans un TVec, du style
+>
+> TVec<Vec> real_inputs
+>
+> et dans la VMatrix comme input l'indice du real_input. Et ? chaque
+> fois je vais r?cuper le real_input correspondant ? mon indice.
+> Probl?me c'est que cette approche ne me permet pas de d'utiliser mon
+> PLerner avec un PTester par exemple sans que je modifie aussi le code
+> du PTester pour qu'il switch en les differents type de base (train,
+> test). De mani?re g?n?ral, ? chaquee fois que je fais appelle ? la
+> fonction computeOutput(...) il faudrait que je prenne soins de
+> modifier le TVec<Vec> real_inputs. Ce qui devient un peu lourd.
+>
+> L'id?al se serait peut ?tre de templ?tiser les VMatrix avec le type
+> d'input et le type de Target, ce qui donne un truc du genre
+> VMatrix<INPUT,TARGET>. Ce serait alors tous chambouler dans PLearn et
+> je ne sais m?me pas si c'est faisable. Et c'est pour ?a que je pense
+> aux VMatrices dont les input sont de taille variable. Qu'en pensez
+> vous ?
+>
+>
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From delallea at iro.umontreal.ca  Tue Feb 27 15:54:05 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 27 Feb 2007 09:54:05 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+Message-ID: <20070227145405.GB13779@opale.iro.umontreal.ca>
+
+On 27 Feb 2007, Pascal Vincent wrote:
+> 
+> > Bonjour ? tous,
+> >
+> > Je voudrai savoir s'il quelqu'un a une petitie id?e sur l'utilisation
+> > d'une VMatrix dont les inputs ont des tailles diff?rents. Je voudrai
+> > en effet construire un PLearner dont les inputs seront des listes de
+> > vecteur de differente taille, et du coup les VMatrix de base ne sont
+> > pas adapt? ? mes besoin car les inputs doivent avoir la m?me taille.
+> 
+> Pas n?cessairement.
+> 
+> La m?thode getExample de VMatrix prend en argument des Vec&, donc  
+> rien n'emp?che que l'appel change leur taille (appel ? resize), ou  
+> m?me fasse un input=.
+> Donc si tu d?finis ta propre classe de VMatrix qui red?finit cette  
+> m?thode getExample qui resize et remplit le vecteur d'input  
+> correctement, tu peux avoir des vecteurs d'input de taille variable.
+
+Par contre, il faut faire attention que getRow() prend un Vec (sans
+reference), ce qui veut dire qu'il ne faudrait jamais appeler getRow sur
+une telle VMat (donc mettre une erreur dans cette methode).
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Tue Feb 27 16:00:11 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 27 Feb 2007 16:00:11 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <20070227145405.GB13779@opale.iro.umontreal.ca>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30702270700pb5b70b2r405a79d3b8b1852f@mail.gmail.com>
+
+> >
+> > Pas n?cessairement.
+> >
+> > La m?thode getExample de VMatrix prend en argument des Vec&, donc
+> > rien n'emp?che que l'appel change leur taille (appel ? resize), ou
+> > m?me fasse un input=.
+> > Donc si tu d?finis ta propre classe de VMatrix qui red?finit cette
+> > m?thode getExample qui resize et remplit le vecteur d'input
+> > correctement, tu peux avoir des vecteurs d'input de taille variable.
+
+
+
+Cette solution me parrait d?j? plus abordable mais souleve encore d'autre
+probl?mes :
+- que deviennent les membres inputsize et targetsize ?
+- La fonction toMat() doit elles etre modifier ?
+- En effet tout ce qui est getRow et subRow seront ? banir
+- Devrai-je aussi reimpl?menter les fonction lecture et ecriture dans un
+fichier ?
+
+Jaonary
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/c34da3b8/attachment.html>
+
+From pascal at apstat.com  Tue Feb 27 16:10:13 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 27 Feb 2007 10:10:13 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <20070227145405.GB13779@opale.iro.umontreal.ca>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+Message-ID: <F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+
+
+> On 27 Feb 2007, Pascal Vincent wrote:
+>>
+>>> Bonjour ? tous,
+>>>
+>>> Je voudrai savoir s'il quelqu'un a une petitie id?e sur  
+>>> l'utilisation
+>>> d'une VMatrix dont les inputs ont des tailles diff?rents. Je voudrai
+>>> en effet construire un PLearner dont les inputs seront des listes de
+>>> vecteur de differente taille, et du coup les VMatrix de base ne sont
+>>> pas adapt? ? mes besoin car les inputs doivent avoir la m?me taille.
+>>
+>> Pas n?cessairement.
+>>
+>> La m?thode getExample de VMatrix prend en argument des Vec&, donc
+>> rien n'emp?che que l'appel change leur taille (appel ? resize), ou
+>> m?me fasse un input=.
+>> Donc si tu d?finis ta propre classe de VMatrix qui red?finit cette
+>> m?thode getExample qui resize et remplit le vecteur d'input
+>> correctement, tu peux avoir des vecteurs d'input de taille variable.
+>
+> Par contre, il faut faire attention que getRow() prend un Vec (sans
+> reference), ce qui veut dire qu'il ne faudrait jamais appeler  
+> getRow sur
+> une telle VMat (donc mettre une erreur dans cette methode).
+
+Oui, aussi pour que ?a fonctionne bien avec les PTester et les  
+splitters, il faut que les splitters utilis?s retournent des VMatrix  
+qui ont correctement red?fini getExample (et il se peut que ce soit  
+actuellement rarement le cas, m?me si ce n'est que deux lignes ?  
+rajouter).
+
+J'ai un plan pr?cis et m?rement r?fl?chi pour se d?barasser de toutes  
+ces limites fatigantes des VMatrix (pour des bases de donn?es dont  
+les exemples peuvent ?tre de n'importe quel type), mais pas de temps  
+pour l'instant pour le mener ? bien... Un volontaire pour contribuer  
+? rendre ce grand service ? la communaut? PLearn?
+
+-- Pascal
+
+
+
+From delallea at iro.umontreal.ca  Tue Feb 27 16:17:08 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 27 Feb 2007 10:17:08 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270700pb5b70b2r405a79d3b8b1852f@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<c81af8c30702270700pb5b70b2r405a79d3b8b1852f@mail.gmail.com>
+Message-ID: <20070227151702.GA14237@opale.iro.umontreal.ca>
+
+On 27 Feb 2007, Jaonary Rabarisoa wrote:
+> 
+> 
+> 
+>     >
+>     > Pas n?cessairement.
+>     >
+>     > La m?thode getExample de VMatrix prend en argument des Vec&, donc
+>     > rien n'emp?che que l'appel change leur taille (appel ? resize), ou
+>     > m?me fasse un input=.
+>     > Donc si tu d?finis ta propre classe de VMatrix qui red?finit cette
+>     > m?thode getExample qui resize et remplit le vecteur d'input
+>     > correctement, tu peux avoir des vecteurs d'input de taille variable.
+> 
+> 
+> 
+> Cette solution me parrait d?j? plus abordable mais souleve encore d'autre
+> probl?mes :
+> - que deviennent les membres inputsize et targetsize ?
+
+S'ils varient, je les mettrais a -1. Avec tout ce que ca implique de
+code qui risque de planter.
+
+> - La fonction toMat() doit elles etre modifier ?
+
+J'imagine qu'elle devrait planter, ce qui est tout ce qu'elle peut faire
+vraiment.
+
+> - Devrai-je aussi reimpl?menter les fonction lecture et ecriture dans un
+> fichier ?
+
+Ca depend ce que tu entends par la. Tu ne pourras pas sauvegarder ta
+VMat dans un .pmat ou .amat, puisque ces formats ne supportent que des
+largeurs fixes. Par contre tu peux toujours sauvegarder / lire ton objet
+dans un script (.vmat).
+
+--
+Olivier
+
+
+
+From pascal at apstat.com  Tue Feb 27 16:17:25 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 27 Feb 2007 10:17:25 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270700pb5b70b2r405a79d3b8b1852f@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<c81af8c30702270700pb5b70b2r405a79d3b8b1852f@mail.gmail.com>
+Message-ID: <68C9C6E3-67B5-48A7-A397-A6C15CBFDAA4@apstat.com>
+
+> Cette solution me parrait d?j? plus abordable mais souleve encore  
+> d'autre probl?mes :
+> - que deviennent les membres inputsize et targetsize ?
+
+La convention serait de mettre -1 pour une taille d'input variable.
+
+> - La fonction toMat() doit elles etre modifier ?
+> - En effet tout ce qui est getRow et subRow seront ? banir
+
+de m?me toMat serait ? bannir (? moins que tu vois un sens ? cela,  
+mais il me semble que tes donn?es ne sont plus vraiment une "matrice").
+
+> - Devrai-je aussi reimpl?menter les fonction lecture et ecriture  
+> dans un fichier ?
+
+Je ne crois pas, non. Il s'agirait de d?finir une sous-classe de  
+VMatrix, capable d'aller chercher les donn?es l? o? elles se trouvent  
+(avec une option indiquant des chemins de fichiers par ex.)  au  
+format qui te convient, et qui se contente de red?finit getExample et  
+length_.
+
+-- Pascal
+
+
+
+
+From jaonary at gmail.com  Tue Feb 27 16:26:01 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 27 Feb 2007 16:26:01 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+Message-ID: <c81af8c30702270726p4a8b46a2q1fba16e92f31f93@mail.gmail.com>
+
+On 2/27/07, Pascal Vincent <pascal at apstat.com> wrote:
+>
+>
+>
+> J'ai un plan pr?cis et m?rement r?fl?chi pour se d?barasser de toutes
+> ces limites fatigantes des VMatrix (pour des bases de donn?es dont
+> les exemples peuvent ?tre de n'importe quel type), mais pas de temps
+> pour l'instant pour le mener ? bien... Un volontaire pour contribuer
+> ? rendre ce grand service ? la communaut? PLearn?
+
+
+
+Je suis partant pour contribuer et aider ? am?liorer PLearn dans ce sens. Ce
+serait peut ?tre un bon point de d?part pour moi avant d'impl?menter mon
+PLearner qui prend des Bags comme input et que l'on pourrat plugger comme on
+veux dans un PTester, ...
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/25229edf/attachment.html>
+
+From pascal at apstat.com  Tue Feb 27 16:44:27 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 27 Feb 2007 10:44:27 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30702270726p4a8b46a2q1fba16e92f31f93@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+	<c81af8c30702270726p4a8b46a2q1fba16e92f31f93@mail.gmail.com>
+Message-ID: <3E1C3708-FBBD-418D-8C29-6C4075BEF22F@apstat.com>
+
+>
+>
+> On 2/27/07, Pascal Vincent <pascal at apstat.com> wrote:
+>
+> J'ai un plan pr?cis et m?rement r?fl?chi pour se d?barasser de toutes
+> ces limites fatigantes des VMatrix (pour des bases de donn?es dont
+> les exemples peuvent ?tre de n'importe quel type), mais pas de temps
+> pour l'instant pour le mener ? bien... Un volontaire pour contribuer
+> ? rendre ce grand service ? la communaut? PLearn?
+>
+>
+> Je suis partant pour contribuer et aider ? am?liorer PLearn dans ce  
+> sens. Ce serait peut ?tre un bon point de d?part pour moi avant  
+> d'impl?menter mon PLearner qui prend des Bags comme input et que  
+> l'on pourrat plugger comme on veux dans un PTester, ...
+>
+> Jaonary
+
+Merci Jaonary, de te proposer si spontan?ment! ;-)
+
+Mais il nous faut d'abord ?claircir une petite question d'ordre  
+l?gal: tes contributions pourront-elles ?tre sous la license BSD de  
+PLearn (je ne sais pas d'o? tu travailles, mais ton employeur  
+pourrait avoir son mot ? dire sur la question.)
+
+Pour ce qui est du plan d'extension de notre type de base de donn?es,  
+c'est un plan en plusieurs ?tapes. Je vais essayer de d?marer un peu  
+dessus la semaine prochaine.
+
+En attendant, une premi?re chose que tu pourras faire, serait  
+d'examiner les splitters que tu comptes utiliser (quels sont-ils?) et  
+de voir si les VMatrix qu'ils retournent se comportent bien vis ? vis  
+du getExample (et sinon corriger / adapter ou troquer pour d'autres  
+les classes impliqu?es)
+
+-- Pascal
+
+
+
+
+
+From saintmlx at apstat.com  Wed Feb 28 20:45:01 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Wed, 28 Feb 2007 14:45:01 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?PTester_en_parall=E8le_avec_cluster_?=
+ =?iso-8859-1?q?ou_ssh?=
+Message-ID: <45E5DBBD.2090905@apstat.com>
+
+Salut ? tous les PLearners,
+
+PTester a maintenant la possibilit? de travailler sur plusieurs splits 
+en parall?le en se connectant sur des serveurs plearn distants.  Il y a 
+aussi un petit script qui permet de lancer des serveurs et d'avoir un 
+ma?tre qui s'y connecte automatiquement; ?a fonctionne avec ssh chez 
+ApSTAT et avec la commande cluster au DIRO.
+
+Le script est <PLEARN>/scripts/xdispatch.  Pour l'utiliser, il suffit de 
+faire:
+xdispatch -s<nb_serveurs> -- <commande_plearn_avec_args>
+
+Par exemple, pour rouler "plearn_full grosse_exp.pyplearn arg1=val 
+arg2=autre_val" en parall?le sur trois serveurs, il suffit de faire:
+xdispatch -s3 -- plearn_full grosse_exp.pyplearn arg1=val arg2=autre_val
+
+Il faut ?videmment au moins deux serveurs. PTester s'occupe d'assigner 
+des splits ? ses esclaves jusqu'? ce que tout soit fini.  Aussi, puisque 
+le fait de lancer un serveur distant prend un certain temps, il est 
+parfois plus rapide de lancer moins de serveurs et de leur faire faire 
+plusieurs splits chacun (e.g.: j'ai des exp?riences avec cinq petits 
+splits qui roulent plus vite sur deux ou trois serveurs que sur cinq).
+
+Amusez-vous bien, vous m'en donnerez des nouvelles.
+
+Xavier
+
+
+

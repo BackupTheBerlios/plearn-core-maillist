@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710015140.GA9427%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000389.html">
+   <LINK REL="Next"  HREF="000391.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710015140.GA9427%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 10 03:51:40 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000389.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000391.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#390">[ date ]</a>
+              <a href="thread.html#390">[ thread ]</a>
+              <a href="subject.html#390">[ subject ]</a>
+              <a href="author.html#390">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Jul 10, 2007, Pascal Lamblin wrote:
+&gt;<i> Quelques fichiers avec des &quot;long&quot; qui posent probl&#232;me pour le moment :
+</I>
+Quelques autres (pour les tests) :
+   plearn/python/test/BasicIdentityCallsTest.cc
+   plearn/python/test/InterfunctionXchgTest.cc
+   plearn/python/test/MemoryStressTest.cc
+   plearn/vmat/test/FileVMatrixTest.cc
+   plearn/vmat/test/RowBufferedVMatrixTest.cc
+
+Pour les tests qui impliquent python, peut-&#234;tre qu'il vaudrait mieux des
+int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000389.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000391.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#390">[ date ]</a>
+              <a href="thread.html#390">[ thread ]</a>
+              <a href="subject.html#390">[ subject ]</a>
+              <a href="author.html#390">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

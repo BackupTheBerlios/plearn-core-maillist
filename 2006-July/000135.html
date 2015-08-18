@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] location distributed launcher
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20location%20distributed%20launcher&In-Reply-To=%3C44B7D634.1060609%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000133.html">
+   <LINK REL="Next"  HREF="000136.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] location distributed launcher</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20location%20distributed%20launcher&In-Reply-To=%3C44B7D634.1060609%40apstat.com%3E"
+       TITLE="[Plearn-core] location distributed launcher">pascal at apstat.com
+       </A><BR>
+    <I>Fri Jul 14 19:36:52 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000133.html">[Plearn-core] location distributed launcher
+</A></li>
+        <LI>Next message: <A HREF="000136.html">[Plearn-core] location distributed launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#135">[ date ]</a>
+              <a href="thread.html#135">[ thread ]</a>
+              <a href="subject.html#135">[ subject ]</a>
+              <a href="author.html#135">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dan Popovici wrote:
+&gt;<i> I will soon have a working version of the distributed launcher using 
+</I>&gt;<i> the cluster --execute  command. Where would be the best place to 
+</I>&gt;<i> commit it ?
+</I>&gt;<i> PLearn/python_modules and PLearn/scripts are possible locations
+</I>Pascal Lamblin wrote:
+&gt;<i> &#192; votre avis, est-ce que j'ai int&#233;r&#234;t &#224; rajouter la grammaire et le
+</I>&gt;<i> parseur dans PLearn/scripts avec pymake, o&#249; ailleurs (python_modules) ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Dans le m&#234;me genre d'id&#233;e : o&#249; mettre le module charg&#233; de lancer des
+</I>&gt;<i> t&#226;ches sur le cluster/le mammouth/une liste de machines/autre chose ?
+</I>&gt;<i>   
+</I>Well, reusable modules should go for ex. in 
+PLearn/python_modules/.../... while executable scripts that may or may 
+not import some of these modules should go in PLearn/scripts.
+A script might be something quite minimalistic such as parsing command 
+line options and then just calling the appropriate functions from an 
+imported module (or outputting some help message).
+
+Christian Dorion wrote:
+&gt;<i> Je sais que certain se font avocats de la 
+</I>&gt;<i> &quot;pymake-devrait-&#234;tre-full-self-contained&quot; mentalit&#233;, mais comme:
+</I>&gt;<i>  1) PyMake d&#233;pend d&#233;j&#224; un peu des python_modules (toolkit) et
+</I>&gt;<i>  2) Le code de PyMake est d&#233;j&#224; suffisamment indigeste
+</I>Je me fais plut&#244;t avocat de la mentalit&#233; &quot;limiter les d&#233;pendances non 
+indispensables&quot; pour &#233;viter que pymake (ou tout autre script/prg) ne 
+finisse pas par d&#233;pendre de la terre enti&#232;re! Ceci afin qu'on puisse, si 
+on le souhaite, facilement &quot;l'extraire&quot; de PLearn, et en faire un outil 
++-g&#233;n&#233;rique ind&#233;pendant (ce pour quoi il avait &#233;t&#233; pens&#233; au d&#233;part). 
+C'est ainsi que j'entends &quot;relatively self contained&quot;. Quand tout est 
+dans un script, c'est facle: il n'y a qu'&#224; d&#233;placer le script. Mais 
+quand le code se met &#224; d&#233;pendre de 3 modules maison sp&#233;cifiques, chacun 
+d&#233;pendant de 4 autres, eux m&#234;me d&#233;pendant d'autres affaires qui 
+finissent par &#234;tre plearn-sp&#233;cifiques, et de librairies externes 
+exotiques, le tout se mordant la queue, &#231;a devient pas mal plus 
+compliqu&#233; &#224; &quot;extraire&quot;... Je ne dis pas que c'est le cas avec pymake 
+actuellement, je dis que c'est ce qu'on veut &#233;viter. Notez aussi que 
+c'est essentiellement ce qui s'est pass&#233; avec les diff&#233;rentes parties de 
+plearn :-(. Cela dit je suis tout &#224; fait *pour* modulariser les choses, 
+tant que &#231;a reste bien compartiment&#233;, et ne se m&#233;tamorphose pas en une 
+pieuvre tentaculaire sans fin.
+\begin{rant}
+Se casser la t&#234;te &#224; faire des modules vraiment g&#233;n&#233;riques n'est 
+profitable que si l'on *va r&#233;ellement* s'en servir dans *plus d'un* 
+programme. Le plus souvent la bonne fa&#231;on de &quot;g&#233;n&#233;riciser&quot; n'appara&#238;t 
+clairement que quand on a plusieurs instances de cas concr&#234;ts &#224; 
+r&#233;aliser, alors que les designs g&#233;n&#233;riques faits sur la base d'une 
+unique instance concr&#232;te et de r&#233;flexions abstraites sur des cas 
+hypoth&#233;tiques finissent souvent par &#234;tre trop g&#233;n&#233;riques et compliqu&#233;es 
+l&#224; o&#249; ce n'&#233;tait pas n&#233;cessaire, et trop limit&#233;es et inflexibles l&#224; o&#249; 
+elles auraient d&#251; &#234;tre plus g&#233;n&#233;rique, et ceci parce qu'on n'y avait pas 
+song&#233; &#224; la lumi&#232;re d'autres cas concr&#234;ts pouss&#233;s jusqu'au bout dans les 
+moindres d&#233;tails).
+\end{rant}
+&gt;<i> je suis pour la cr&#233;ation de PLearn/python_module/plearn/pymake dans 
+</I>&gt;<i> lequel tu pourrais mettre de module de parsing. &#201;ventuellement, on 
+</I>&gt;<i> pourrait y modulariser PyMake...
+</I>J'appuie &#224; 100% cette organisation des choses!
+
+Christian, dans le m&#234;me ordre d'id&#233;e de ce qui pr&#233;c&#232;de, pourrais-tu s'il 
+te plait &quot;extraire&quot; cldispatch et les modules correspondants de 
+apstatsoft/... et les d&#233;placer dans PLearn/... (et possiblement au 
+passage r&#233;parer l'option &quot;cldispatch -n&quot; qui semble  s'&#234;tre bris&#233;e au 
+cours de la modularisation/proprification). Ce code pourrait en effet 
+&#234;tre utile aux personnes du LISA qui travaillent au lancement de t&#226;ches 
+concurrentes et &#224; l'am&#233;lioration et modularisation de pymake.
+
+-- Pascal
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000133.html">[Plearn-core] location distributed launcher
+</A></li>
+	<LI>Next message: <A HREF="000136.html">[Plearn-core] location distributed launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#135">[ date ]</a>
+              <a href="thread.html#135">[ thread ]</a>
+              <a href="subject.html#135">[ subject ]</a>
+              <a href="author.html#135">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

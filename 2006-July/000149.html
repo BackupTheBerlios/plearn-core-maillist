@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060719163710.GA11353%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000148.html">
+   <LINK REL="Next"  HREF="000150.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060719163710.GA11353%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jul 19 18:37:10 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000148.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000150.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, Jul 19, 2006, Pascal Vincent wrote:
+&gt;<i> &gt;&gt; Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+</I>&gt;<i> &gt;&gt; parce que le nouveau parseur parse le fichier au complet. As-tu essay&#233;, 
+</I>&gt;<i> &gt;&gt; pour voir, d'utiliser l'ancien &quot;parseur&quot; (rudimentaire mais efficace) 
+</I>&gt;<i> &gt;&gt; pour extraire rapidement les directives pr&#233;processeur non comment&#233;es, et 
+</I>&gt;<i> &gt;&gt; utiliser le nouveau parseur pour &quot;interpr&#233;ter&quot; juste le petit bout de 
+</I>&gt;<i> &gt;&gt; code r&#233;sultant?
+</I>
+Juste pour clarifier : je supprime les commentaires avant de parser. Je
+vais voir ce que &#231;a donne si je supprime aussi les lignes de C++.
+
+&gt;<i> &gt; C'est effectivement quelque chose qu'il faudrait que je fasse. Le
+</I>&gt;<i> &gt; probl&#232;me que je vois venir, c'est les directives pr&#233;processeur qui ne
+</I>&gt;<i> &gt; tiennent pas sur une ligne:
+</I>&gt;<i> &gt; # if 1 \
+</I>&gt;<i> &gt;   &amp;&amp; 0
+</I>&gt;<i> &gt; #   include &lt;truc.h&gt; // oui mais justement on veut pas l'inclure
+</I>&gt;<i> &gt; # endif
+</I>&gt;<i>
+</I>&gt;<i> Du point de vue du C c'est une ligne! ;-)   un newline pr&#233;c&#233;d&#233; du'un \ 
+</I>&gt;<i> ne devrait jamais &#234;tre consid&#233;r&#233; comme le commencement d'une nouvelle 
+</I>&gt;<i> ligne...
+</I>&gt;<i> Il faut consid&#233;rer que DEFINITION: fin-de-ligne === s&#233;quence de \n et/ou 
+</I>&gt;<i> \r non pr&#233;c&#233;d&#233;e d'un \
+</I>
+Oui OK, il faut juste que je voie comment faire comprendre &#231;a &#224; re.
+
+&gt;<i> Bien s&#251;r le parseur rudimentaire qui &quot;extrait les directives 
+</I>&gt;<i> pr&#233;processeurs non comment&#233;es&quot; se doit d'&#234;tre un minimum intelligent, et 
+</I>&gt;<i> &#234;tre capable de distinguer les contextes diff&#233;rents &#224; savoir si il se 
+</I>&gt;<i> dtrouve
+</I>&gt;<i> a ) dans une string (ex terrible:
+</I>&gt;<i> &quot; salut /* blah \&quot; foo bar\
+</I>&gt;<i> // bouh&quot; )
+</I>
+&#199;a, c'est certain qu'on ne supporte pas pour le moment;
+
+&gt;<i> b) dans un char ex: '&quot;'
+</I>&gt;<i> 
+</I>&gt;<i> c) dans un commentaire /* ... */   ( ex terrible: inclure la string 
+</I>&gt;<i> pr&#233;c&#233;dente dans un tel commentaire )
+</I>
+Je pense que la string pr&#233;c&#233;dente marcherait tr&#232;s bien dans ce
+commentaire, mais &quot;*/&quot; ferait des ravages :)
+
+&gt;<i> d) dans un commentaire // ... fin-de-ligne
+</I>
+&#199;a marche
+
+&gt;<i> e) dans une directive pr&#233;processeur  # .... fin-de-ligne
+</I>
+&#199;a marche avec mon parseur, et approximativement avec le code existant.
+
+&gt;<i> Et le parseur rudimentaire que j'avais &#233;crit &#224; la va-vite n'est sans 
+</I>&gt;<i> aucun doute pas correct &#224; 100%.
+</I>
+Pour r&#233;capituler, le parseur tel qu'il est dans le code committ&#233; pour le
+moment fait les choses suivantes, dans cet ordre :
+  - remplacer // ... \n par \n
+  - remplacer /* ... */ par rien
+  - chercher #include (&lt;|&quot;)quelquechose(&quot;|&gt;) et retourner la liste des
+    &quot;quelquechose&quot; &#224; l'aide d'une regexp.
+
+&#192; mon avis, si on veut un parseur &#171; rudimentaire &#187; qui soit capable de
+g&#233;rer tous les cas ci-dessus correctement (m&#234;me sans le support des
+strings), le temps de parsing va &#234;tre encore multipli&#233; par 3 ou 4, et on
+approchera du point o&#249; il vaudrait mieux utiliser cpp lui-m&#234;me, surtout
+si on cache le r&#233;sultat (je n'exclus pas cette solution, d'ailleurs).
+
+&gt;<i> Pour partager le maximum d'information je ferais un seul fichier (par 
+</I>&gt;<i> option) associ&#233; au .pymake/config utilis&#233;, contenant l'arbre de 
+</I>&gt;<i> d&#233;pendance s&#233;rialis&#233; (avec le module cpickle).
+</I>
+OK, donc &#231;a voudrait dire cr&#233;er un vrai arbre ?
+J'imaginais juste un dictionnaire contenant les paires
+&quot;nom_de_fichier&quot;:[&quot;liste&quot;, &quot;des&quot;, &quot;fichiers&quot;, &quot;directement&quot;, &quot;inclus&quot;]
+
+En fait, il faudrait aussi stocker la date de la mise &#224; jour pour chaque
+fichier, ce qui &#233;tait &#233;vit&#233; dans le cas d'un cache par fichier...
+
+&gt;<i> L'arbre n'a pas besoin d'&#234;tre syst&#233;matiquement complet (contenir tout 
+</I>&gt;<i> plearn), mais peut simplement fonctionner comme une cache qu'on peut 
+</I>&gt;<i> compl&#233;ter avec les d&#233;pendances manquantes ou out-of-date de la 
+</I>&gt;<i> compilation en cours (plearn, plearn_full, ...).
+</I>
+C'est comme &#231;a que je le vois : s'il y a une liste dans le cache et que
+le fichier n'a pas &#233;t&#233; modifi&#233; depuis que la liste y a &#233;t&#233; mise, alors
+on utilise l'info, sinon on parse le fichier et on update la liste.
+
+Je vais faire des tests de performance et je vous reviens.
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000148.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000150.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

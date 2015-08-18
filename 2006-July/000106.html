@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utiliser Plearn en tant que library
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3Cc81af8c30607100250v75b20bf6x68faefdb6af2cee2%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000153.html">
+   <LINK REL="Next"  HREF="000108.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utiliser Plearn en tant que library</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3Cc81af8c30607100250v75b20bf6x68faefdb6af2cee2%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Utiliser Plearn en tant que library">jaonary at gmail.com
+       </A><BR>
+    <I>Mon Jul 10 11:50:34 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000153.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000108.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour,
+Apr&#232;s avoir fait le tour de la documentation actuellement disponible, j'ai
+compris que PLearn est avant tout une
+biblioth&#232;que destiner aux chercheurs en apprentissage statistique (ce qui
+est mon cas). En plus, il y a des outils qui permettent l'utilisation haut
+niveau de PLearn via les script. Une sorte de mini compilateur ou de langage
+utilisateur.
+Je suis surtout int&#233;ress&#233; par l'aspect biblioth&#232;que C++ de PLearn car nous
+utilisons ce langage pour tous nos developpements et expr&#233;riences. Donc, &#224;
+priori je n'aurai pas besoin de toutes les fonctions qui se trouve dans de
+dossier &quot;commands&quot; et seulement faire le lien avec les fonctions et classes
+qui sont dans &quot;plearn&quot;, &quot;plearn_learners&quot; et eventuellement
+&quot;plearn_learners_experimental&quot;. Pour cela, j'ai donc quelques question et
+suggestion :
+
+1 - Il y a tellement de fichier dans ces repertoirs et les compiler tous
+prend beaucoup de temps. Je voudrais donc savoir s'il y a de fichiers
+essentiels que l'on doit absolument compiler et des fichiers optionnels.
+J'ai d&#233;j&#224; essay&#233; de faire le tri moi meme mais c'est pas evident de deviner
+ce que l'on doit garder sans parcourir les sources.
+
+2 -  PLearn depend  d'autre biblioth&#232;que comme boost et nspr. Si boost est
+d&#233;j&#224; plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour
+cette biblioth&#232;que (nspr) je sugg&#232;re que l'on n'&#233;crive pas le chemin absolu
+des includes (firefox/nspr/*.h) mais tout de suite &lt;*.h&gt; et specifier le -I
+pendant la compilation.
+
+3 - Est ce que quelqu'un a d&#233;j&#224; r&#233;ussit &#224; compiler PLearn et lancer
+correctement des test avec visual studio (windows) et xcode (mac os x). Pour
+le premier j'ai des probl&#232;me de compilation purement c++. Par example :
+la class TVec (TVec_decl.h) a un operateur surcharg&#233;
+
+         inline T&amp; operator[](unsigned int i) const
+
+         inline T&amp; operator[](int i) const
+
+Quand le type que l'on passe en parametre n'est pas un &quot;int&quot; ou un &quot;unsigned
+int&quot; le compilateur ne sait plus quoi prendre et on obtient une erreur. En
+plus il trouve 3 surcharges possible de cette fonction et moi j'en vois que
+deux. La solution que j'ai trouv&#233; c'est de faire un cast static. Mais alors,
+pourquoi avoir surcharger cet operateur ?
+
+
+4 - Est ce que le developpent de PLearn est ouvert &#224; tout ceux qui veulent
+participer et si oui comment faire ?
+
+J'esp&#232;re que mes questions ne sont pas trop ennuieuse :-) Merci,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060710/89983468/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060710/89983468/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000153.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000108.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

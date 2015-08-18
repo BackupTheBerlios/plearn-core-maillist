@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060719214859.GA12616%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000150.html">
+   <LINK REL="Next"  HREF="000152.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060719214859.GA12616%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jul 19 23:48:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000150.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000152.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#151">[ date ]</a>
+              <a href="thread.html#151">[ thread ]</a>
+              <a href="subject.html#151">[ subject ]</a>
+              <a href="author.html#151">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, Jul 19, 2006, Pascal Lamblin wrote:
+&gt;<i> On Wed, Jul 19, 2006, Pascal Vincent wrote:
+</I>&gt;<i> &gt; &gt;&gt; Je suis surpris que ce soit tellement plus long. Je suspecte
+</I>&gt;<i> &gt; &gt;&gt; que c'est parce que le nouveau parseur parse le fichier au
+</I>&gt;<i> &gt; &gt;&gt; complet. As-tu essay&#233;, pour voir, d'utiliser l'ancien &quot;parseur&quot;
+</I>&gt;<i> &gt; &gt;&gt; (rudimentaire mais efficace) pour extraire rapidement les
+</I>&gt;<i> &gt; &gt;&gt; directives pr&#233;processeur non comment&#233;es, et utiliser le nouveau
+</I>&gt;<i> &gt; &gt;&gt; parseur pour &quot;interpr&#233;ter&quot; juste le petit bout de code r&#233;sultant?
+</I>&gt;<i>
+</I>&gt;<i> Juste pour clarifier : je supprime les commentaires avant de parser.
+</I>&gt;<i> Je vais voir ce que &#231;a donne si je supprime aussi les lignes de C++.
+</I>
+J'ai fait &#231;a : j'ai rajout&#233; une regexp qui ne garde que les directives
+pr&#233;processeur que je sais parser facilement, et je parse seulement &#231;a.
+Les r&#233;sultats sont impressionnants : le temps d'ex&#233;cution est seulement
+15 % de plus que le pymake de base.
+
+&gt;<i> &gt; Du point de vue du C c'est une ligne! ;-)   un newline pr&#233;c&#233;d&#233; du'un \ 
+</I>&gt;<i> &gt; ne devrait jamais &#234;tre consid&#233;r&#233; comme le commencement d'une nouvelle 
+</I>&gt;<i> &gt; ligne...
+</I>&gt;<i> &gt; Il faut consid&#233;rer que DEFINITION: fin-de-ligne === s&#233;quence de \n et/ou 
+</I>&gt;<i> &gt; \r non pr&#233;c&#233;d&#233;e d'un \
+</I>&gt;<i> 
+</I>&gt;<i> Oui OK, il faut juste que je voie comment faire comprendre &#231;a &#224; re.
+</I>
+J'ai c&#233;d&#233; &#224; la facilit&#233; : je remplace d'abord tous les '\\\n' par ' '.
+
+&gt;<i> &#192; mon avis, si on veut un parseur &#171; rudimentaire &#187; qui soit capable de
+</I>&gt;<i> g&#233;rer tous les cas ci-dessus correctement (m&#234;me sans le support des
+</I>&gt;<i> strings), le temps de parsing va &#234;tre encore multipli&#233; par 3 ou 4, et on
+</I>&gt;<i> approchera du point o&#249; il vaudrait mieux utiliser cpp lui-m&#234;me, surtout
+</I>&gt;<i> si on cache le r&#233;sultat (je n'exclus pas cette solution, d'ailleurs).
+</I>
+Je pense que la solution avec parseur est acceptable telle quelle (sauf
+si 15 % de pertes de performances vous g&#234;nent), donc je vais laisser
+tomber le caching, m&#234;me si &#224; mon avis la seule solution vraiment clean
+serait d'utiliser cpp et de cacher le r&#233;sultat. Je le ferai peut-&#234;tre un
+jour si j'ai vraiment rien &#224; foutre.
+
+Merci de votre attention, et n'h&#233;sitez pas si vous avez d'autres
+commentaires.
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000150.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000152.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#151">[ date ]</a>
+              <a href="thread.html#151">[ thread ]</a>
+              <a href="subject.html#151">[ subject ]</a>
+              <a href="author.html#151">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

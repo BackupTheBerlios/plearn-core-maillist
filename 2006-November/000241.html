@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Probleme etrange
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3C20061103161637.GA13228%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000240.html">
+   <LINK REL="Next"  HREF="000242.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Probleme etrange</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3C20061103161637.GA13228%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Probleme etrange">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Nov  3 17:16:38 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000240.html">[Plearn-core] Probleme etrange
+</A></li>
+        <LI>Next message: <A HREF="000242.html">[Plearn-core] Trigger pour BLAS et LAPACK
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#241">[ date ]</a>
+              <a href="thread.html#241">[ thread ]</a>
+              <a href="subject.html#241">[ subject ]</a>
+              <a href="author.html#241">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>A vrai dire, je ne connaissais pas cette option de MemoryVMatrix. Mais
+j'aurais pens&#233; que &#231;a ne marcherait pas mieux : en regardant le code de
+AutoVMatrix, la FileVMatrix devrait toujours exister... En tout cas
+c'est ce qu'il me semble. Donc tu devrais avoir le m&#234;me probl&#232;me. Mais
+bon, si &#231;a marche, tant mieux, il y a p-&#234; juste quelque chose que j'ai
+rat&#233; dans le code :)
+
+--
+Olivier
+
+On 03 Nov 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Efffectivement, c'est peut etre une limitation au niveau du system. En
+</I>&gt;<i> chargeant les donnees en memoir ca marche. J'ai 16G alors autant en profiter.
+</I>&gt;<i> Par contre pour les charger j'ai seulement fait
+</I>&gt;<i> 
+</I>&gt;<i> VMat m1 = new AutoVMatrix(&quot;mon_fichier_&quot; + tostring(i) + &quot;.pmat&quot;,true);
+</I>&gt;<i> 
+</I>&gt;<i> i.e en rajoutant true comme deuxieme argument de AutoVMatrix. Dans, ce cas
+</I>&gt;<i> quelle est la difference avec le code que tu as propose ? i.e en utilisant une
+</I>&gt;<i> VMat temporaire. Est ce que dans ce cas le fichier ne sera pas ferme ?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On 11/3/06, Olivier Delalleau &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">delallea at iro.umontreal.ca</A>&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i>     Ca ne devrait pas &#234;tre un probl&#232;me de m&#233;moire, les FileVMatrix (qui
+</I>&gt;<i>     chargent les .pmat) ne prennent pas beaucoup de m&#233;moire.
+</I>&gt;<i>     Vu que &#231;a plante quand tu essaie d'ouvrir un fichier, je soup&#231;onne que
+</I>&gt;<i>     tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+</I>&gt;<i>     donn&#233;es entrent en m&#233;moire, tu pourrais faire une fonction de chargement
+</I>&gt;<i>     du genre :
+</I>&gt;<i> 
+</I>&gt;<i>     TVec&lt;VMat&gt; my_vec_of_vmat;
+</I>&gt;<i>     for (int i = 0; i &lt; n; i++) {
+</I>&gt;<i>         VMat m1 = new AutoVMatrix(&quot;mon_fichier_&quot; + tostring(i) + &quot;.pmat&quot;);
+</I>&gt;<i>         VMat m2(m1.toMat());
+</I>&gt;<i>         m2-&gt;getMetaInfoFrom(m1);
+</I>&gt;<i>         my_vec_of_vmat.append(m2);
+</I>&gt;<i>     }
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000240.html">[Plearn-core] Probleme etrange
+</A></li>
+	<LI>Next message: <A HREF="000242.html">[Plearn-core] Trigger pour BLAS et LAPACK
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#241">[ date ]</a>
+              <a href="thread.html#241">[ thread ]</a>
+              <a href="subject.html#241">[ subject ]</a>
+              <a href="author.html#241">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

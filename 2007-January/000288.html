@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Acc&#232;s &#224; la matrice
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20Acc%E8s%20%E0%20la%20matrice&In-Reply-To=%3C20070110143016.GA19952%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000287.html">
+   <LINK REL="Next"  HREF="000290.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Acc&#232;s &#224; la matrice</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20Acc%E8s%20%E0%20la%20matrice&In-Reply-To=%3C20070110143016.GA19952%40opale.iro.umontreal.ca%3E"
+       TITLE="Acc&#232;s &#224; la matrice">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jan 10 15:30:17 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000287.html">[Plearn-core]  Acc&#232;s &#224; la matrice de covariance jointe des pr&#233;visio  ns
+</A></li>
+        <LI>Next message: <A HREF="000290.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#288">[ date ]</a>
+              <a href="thread.html#288">[ thread ]</a>
+              <a href="subject.html#288">[ subject ]</a>
+              <a href="author.html#288">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 10 Jan 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A> wrote:
+&gt;<i> Bonjour Messieurs,
+</I>&gt;<i> 
+</I>&gt;<i> En continuant mon travail sur les processus gaussiens, il appert que ces
+</I>&gt;<i> derniers peuvent fournir assez facilement une information qui n'est pas
+</I>&gt;<i> support&#233;e par l'interface de PLearner: au-del&#224; des simples intervalles de
+</I>&gt;<i> confiance, un GP peut nous donner la pleine matrice de covariance entre un
+</I>&gt;<i> ensemble de pr&#233;visions effectu&#233;es par le mod&#232;le.  J'aurais besoin de cette
+</I>&gt;<i> information.
+</I>&gt;<i> 
+</I>&gt;<i> Pascal a ajout&#233; r&#233;cemment une fonction (non-virtuelle)
+</I>&gt;<i> computeInputOutputMat.  Je proposerais d'ajouter une fonction (virtuelle,
+</I>&gt;<i> cette fois) computeInputOutputCovMat, laquelle retournerait la matrice de
+</I>&gt;<i> covariance entre tous les points de test, en plus de l'esp&#233;rance des
+</I>&gt;<i> sorties.
+</I>
+Pourquoi le Input dans le nom de la fonction ?
+
+&gt;<i> J'aimerais avoir votre avis sur la meilleure fa&#231;on de retourner cette
+</I>&gt;<i> matrice de covariance. Consid&#233;rons les utilisations:
+</I>&gt;<i> 
+</I>&gt;<i> 1) calcul d'intervalles de confiance &quot;classiques&quot;, lesquels ne demandent
+</I>&gt;<i> que la diagonale de la matrice de covariance
+</I>&gt;<i> 
+</I>&gt;<i> 2) calcul du (log) likelihood conjoint des observations de test par
+</I>&gt;<i> rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi que son
+</I>&gt;<i> d&#233;terminant.
+</I>&gt;<i> 
+</I>&gt;<i> Je penche pour retourner la matrice sous la forme de sa d&#233;composition de
+</I>&gt;<i> Cholesky.  Avec la cholesky, nous pouvons:
+</I>&gt;<i> 
+</I>&gt;<i> 1) Calculer rapidement la matrice de covariance originale comme le produit
+</I>&gt;<i> matriciel L*L'.
+</I>&gt;<i> 
+</I>&gt;<i> 2) Calculer la diagonale de la matrice de covariance originale (l'&#233;l&#233;ment
+</I>&gt;<i> \sigma^2_{i,i} de la diagonale est la somme des carr&#233;s de la rang&#233;e i de
+</I>&gt;<i> la Cholesky).
+</I>&gt;<i> 
+</I>&gt;<i> 3) R&#233;soudre facilement un syst&#232;me lin&#233;aire (deux back-substitutions) ainsi
+</I>&gt;<i> que calculer le (log) d&#233;terminant (somme de la log-diagonale de la
+</I>&gt;<i> Cholesky).
+</I>&gt;<i> 
+</I>&gt;<i> Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+</I>
+La forme demandee pourrait toujours etre un parametre de la methode
+(qui retournerait par ex. un TVec&lt;Mat&gt;, si on souhaite par ex. pouvoir
+demander une SVD, en plus de Cholesky ou matrice pleine).
+La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+avoir une fonction generique qui transforme une forme en une autre.
+Cela dit, je ne sais pas si ca vaut le coup de se casser la tete dessus,
+Cholesky me parait etre une bonne idee.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000287.html">[Plearn-core]  Acc&#232;s &#224; la matrice de covariance jointe des pr&#233;visio  ns
+</A></li>
+	<LI>Next message: <A HREF="000290.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#288">[ date ]</a>
+              <a href="thread.html#288">[ thread ]</a>
+              <a href="subject.html#288">[ subject ]</a>
+              <a href="author.html#288">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

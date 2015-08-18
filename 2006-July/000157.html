@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PPath et PStream
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PPath%20et%20PStream&In-Reply-To=%3C44C2ACA1.8000901%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000156.html">
+   <LINK REL="Next"  HREF="000158.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PPath et PStream</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PPath%20et%20PStream&In-Reply-To=%3C44C2ACA1.8000901%40apstat.com%3E"
+       TITLE="[Plearn-core] PPath et PStream">chapados at apstat.com
+       </A><BR>
+    <I>Sun Jul 23 00:54:25 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000156.html">[Plearn-core] PPath et PStream
+</A></li>
+        <LI>Next message: <A HREF="000158.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Quelques remarques suppl&#233;mentaires suppl&#233;mentaires p/r &#224; NSPR.
+&gt;<i> Pour les acc&#232;s bas niveau de fichiers, n&#233;cessitant des seek et/ou des 
+</I>&gt;<i> lectures de formats binaires sp&#233;cifiques, je pr&#233;conise l'utilisation des 
+</I>&gt;<i> fonctions NSPR permettant des acc&#232;s 64 bits &#224; des gros fichiers (&gt;2 
+</I>&gt;<i> Gig). NSPR &#233;tant notre principale couche d'abstraction d'OS, je 
+</I>&gt;<i> conseille aussi l'utilisation de NSPR pour toutes les autres op&#233;rations 
+</I>&gt;<i> d'OS (metainfo sur les fichiers, parcours du file system, etc...). NSPR 
+</I>&gt;<i> devrait &#234;tre utilis&#233; de pr&#233;f&#233;rence plut&#244;t que les FILE* de stdio.h 
+</I>&gt;<i> (notamment &#224; cause des acc&#232;s 64 bits), mais si il y a des implantations 
+</I>&gt;<i> historiques qui utilisent encore FILE* et qui fonctionnent, ce n'est 
+</I>&gt;<i> vraiment pas une urgence de les r&#233;&#233;crire (&quot;If it ain't broken, don't fix 
+</I>&gt;<i> it...&quot;), car stdio.h est tr&#232;s standard, stable et lightweight (on ne 
+</I>&gt;<i> peut pas en dire autant de std::stream).
+</I>&gt;<i>   
+</I>J'ai personnellement suivi les conseils de Docteur Vincent il y a 
+quelques semaines, et NSPR est hyper-facile &#224; apprendre (pour l'API de 
+fichiers).  Il est &#233;galement tr&#232;s bien document&#233;.  Donc ce n'est pas du 
+tout un obstacle que de l'utiliser pour faire de la gestion de fichiers.
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000156.html">[Plearn-core] PPath et PStream
+</A></li>
+	<LI>Next message: <A HREF="000158.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#157">[ date ]</a>
+              <a href="thread.html#157">[ thread ]</a>
+              <a href="subject.html#157">[ subject ]</a>
+              <a href="author.html#157">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

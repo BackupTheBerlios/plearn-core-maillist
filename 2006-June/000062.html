@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C44918F87.4000205%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000069.html">
+   <LINK REL="Next"  HREF="000064.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C44918F87.4000205%40apstat.com%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">pascal at apstat.com
+       </A><BR>
+    <I>Thu Jun 15 18:49:11 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000069.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000064.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#62">[ date ]</a>
+              <a href="thread.html#62">[ thread ]</a>
+              <a href="subject.html#62">[ subject ]</a>
+              <a href="author.html#62">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>C'est s&#251;r que dans la cat&#233;gorie &quot;je peux repr&#233;senter n'importe quel 
+type&quot; on peut mettre void* en concurrence avec string...
+Ils ont tous deux leurs avantages et inconv&#233;nients.
+
+Je trouve qu'un m&#233;canisme de setOption acceptant void* est une bonne 
+id&#233;e &#224; explorer. Examinons la question de plus pr&#232;s:
+
+Une difficult&#233; de void* est li&#233; aux questions de gestion m&#233;moire:
+
+Puisque, dans les cas simples, le pointeur en question pourrait &#234;tre, 
+par ex. l'adresse d'un int allou&#233; sur la stack dans le scope de 
+l'appelant, il semble qu'on doive convenir que l'objet point&#233; peut 
+n'avoir qu'une dur&#233;e de vie temporaire, et que le setOption doive donc 
+en faire une copie.
+Faire une copie d'un int, pas de probl&#232;me.
+Faire une copie d'un PP&lt;PLearner&gt;, il y a plusieurs possibilit&#233;s:
+  a) on copie le PP&lt;PLearner&gt;
+  b) on deep-copie le PLearner
+L'option b) est plus risqu&#233;e, car les deepCopy ne sont pas 
+syst&#233;matiquement bien implant&#233;. Par ailleurs avec l'option b) il serait 
+plus difficile d'assurer le partage de param&#234;tres. Donc l'option a) 
+s'impose.
+
+Je pense donc que c'est viable si on adopte la politique que le 
+setOption fait toujours une shallow-copy de l'&#233;l&#233;ment point&#233;.
+
+Quant &#224; changeOptions, on pourrait imaginer une version telle que celle-ci:
+
+typedef map&lt;string, const void*&gt; OptionMap;
+
+virtual void newChangeOptions(const OptionMap&amp; name_value)
+{
+   // ex:
+   OptionMap::const_iterator found = name_value.find(&quot;weight_decay&quot;);
+  if(found!=name_value.end())
+    {
+       real wd = *found-&gt;second;
+      // do something with the new wd
+    }
+}
+
+La version par d&#233;faut pourrait se contenter de faire appel au nouveau 
+setOption et d'appeler build (pour l'instant, pour la backward 
+compatibilit&#233;).
+
+Mais cela soul&#232;ve une autre question: il est utile, voire n&#233;cessaire, 
+pour des algos tels que HyperLearner, de conserver un 
+changeOptions(const map&lt;string,string&gt;&amp;), ou les valeurs sont sp&#233;cifi&#233;es 
+sous forme s&#233;rialis&#233;e en string. Comment proposez-vous d'&#233;crire ce 
+changeOptions pour qu'il fasse appel &#224; newChangeOptions (ou tout autre 
+mani&#232;re &#233;vitant de dupliquer le code qui fait la job)???
+
+Il faut aussi r&#233;fl&#233;chir &#224; comment g&#233;rer des changements d'options du 
+type &quot;aaa-&gt;bbb[3]-&gt;cccc-&gt;x&quot; ... !!!!???!!!!
+
+En fait pour les deux raisons ci-dessus, je crois que ce n'est pas une 
+mauvaise id&#233;e que la m&#233;thode qui fasse vraiment le travail soit une 
+m&#233;thode du genre rebuild(const set&lt;string&gt;&amp; optionnames) comme on avait 
+parl&#233; avec Pascal hier. Les changeOptions depuis string et void* 
+pourrait &#234;tre &#233;crit en faisant des appels &#224; un tel rebuild.
+
+Par ailleurs, je veux r&#233;p&#233;ter ici ce que j'ai dit &#224; Pascal hier:
+Il y a un bout de temps que je crois souhaitable de s&#233;parer l'op&#233;ration 
+de construction initiale (pour des options sp&#233;cifi&#233;es par l'utilisateur, 
+ou relues d'un objet sauv&#233;) de l'op&#233;ration de &quot;remise en &#233;tat de l'objet 
+apr&#232;s qu'on ait *chang&#233;* des options&quot; (qui est quelquechose de bien plus 
+mal d&#233;fini), et c'est pourquoi j'avais ajout&#233; la m&#233;thode changeOptions.
+Mais &#224; y regarder de plus pr&#232;s, c'est peut-&#234;tre un faux probl&#232;me. Le 
+vrai probl&#232;me est que impl&#233;menter du code qui assure la &quot;remise en &#233;tat 
+apr&#232;s changement d'options&quot; pour un objet complexe est en g&#233;n&#233;ral prise 
+de t&#234;te et compliqu&#233;, et que quand on &#233;crit une classe au d&#233;part, c'est 
+souvent le dernier de nos soucis. Le fait de soustraire cette difficult&#233; 
+de l'&#233;criture de build ne fera pas n&#233;cessairement qu'il sera plus ais&#233; 
+d'impl&#233;menter cette fonctionalit&#233; dans une autre m&#233;thode comme 
+changeOptions. De tels changeOptions risquent par ailleurs d'&#234;tre une 
+duplication, en plus compliqu&#233;, du code de build, et la duplication de 
+code dans ce contexte est &#224; mon avis dangereuse. Donc peut-&#234;tre que 
+centraliser cette logique dans build n'est pas si mal que &#231;a. Et 
+peut-&#234;tre que si. A m&#233;diter...
+
+
+Olivier Delalleau wrote:
+&gt;<i> On 15 Jun 2006, Nicolas Chapados wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Olivier Delalleau wrote:
+</I>&gt;&gt;<i>     
+</I>&gt;&gt;&gt;&gt;<i> Le probl&#232;me de cette approche, c'est qu'il n&#233;cessite une conversion des
+</I>&gt;&gt;&gt;&gt;<i> donn&#233;es en cha&#238;ne de caract&#232;res, ce qui n'est pas forc&#233;ment l'id&#233;al 
+</I>&gt;&gt;&gt;&gt;<i> pour
+</I>&gt;&gt;&gt;&gt;<i> une matrice de 2000 par 3500. En plus, si on veut partager des storages
+</I>&gt;&gt;&gt;&gt;<i> entre plusieurs matrices, &#231;a peut devenir tr&#232;s p&#233;nible.
+</I>&gt;&gt;&gt;&gt;<i>    
+</I>&gt;&gt;&gt;&gt;<i>         
+</I>&gt;&gt;&gt;<i> Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+</I>&gt;&gt;&gt;<i> d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+</I>&gt;&gt;&gt;<i> templates pour que ca soit correctement caste selon le type d'option ?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> Peux-tu &#233;laborer?
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Actuellement on a :
+</I>&gt;<i> virtual void changeOptions(const map&lt;string,string&gt;&amp; name_value);
+</I>&gt;<i>
+</I>&gt;<i> Ma proposition consisterait a avoir plutot :
+</I>&gt;<i> virtual void changeOptions(const map&lt;string, const void* &gt;&amp; name_value);
+</I>&gt;<i>
+</I>&gt;<i> Et il faudrait un setOption associe :
+</I>&gt;<i> void setOption(const string&amp; optionname, const void* value);
+</I>&gt;<i>
+</I>&gt;<i> Et tout le probleme (il me semble) devrait etre d'etre capable de caster
+</I>&gt;<i> ce void* dans le bon type pour le mettre dans l'option. Ma reflexion
+</I>&gt;<i> s'etait arretee la, mais essayons d'elaborer.
+</I>&gt;<i>
+</I>&gt;<i> (... un p'tit coup d'oeil dans PLearn ...)
+</I>&gt;<i>
+</I>&gt;<i> Actuellement, Object::setOption appelle Object::readOptionVal qui appelle
+</I>&gt;<i> OptionBase::read(this, pstream_with_serialized_option).
+</I>&gt;<i> Il me semble que l'output de doxygen n'est plus dispo, mais la seule
+</I>&gt;<i> sous-classe de OptionBase parait etre Option&lt;ObjectType, OptionType&gt;. Le
+</I>&gt;<i> code de read(object, pstream_with_serialized_option) est simplement :
+</I>&gt;<i>     pstream_with_serialized_option &gt;&gt; dynamic_cast&lt;ObjectType*&gt;(object)-&gt;*ptr;
+</I>&gt;<i> Le membre de droite devrait etre du type OptionType&amp; si je comprends
+</I>&gt;<i> bien le code (ce dont je ne suis pas du tout sur), et la magie du PStream
+</I>&gt;<i> est invoquee pour lire l'option.
+</I>&gt;<i>
+</I>&gt;<i> Si on avait une nouvelle methode du genre
+</I>&gt;<i>     OptionBase::read(Object* object, void* pointer_to_option)
+</I>&gt;<i> elle pourrait peut-etre faire un truc du genre
+</I>&gt;<i>     dynamic_cast&lt;ObjectType*&gt;(object)-&gt;*ptr = *(dynamic_cast&lt;OptionType*&gt; pointer_to_option)
+</I>&gt;<i> et voila. Oui, moi aussi ca me parait trop simple ;)
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Olivier
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="http://lists.berlios.de/mailman/listinfo/plearn-core">http://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>   
+</I>
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000069.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000064.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#62">[ date ]</a>
+              <a href="thread.html#62">[ thread ]</a>
+              <a href="subject.html#62">[ subject ]</a>
+              <a href="author.html#62">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

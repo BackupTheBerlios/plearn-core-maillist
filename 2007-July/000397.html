@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Types d'entiers dans PLearn, suite
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Types%20d%27entiers%20dans%20PLearn%2C%20suite&In-Reply-To=%3C20070716225832.GA3742%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000396.html">
+   <LINK REL="Next"  HREF="000398.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Types d'entiers dans PLearn, suite</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Types%20d%27entiers%20dans%20PLearn%2C%20suite&In-Reply-To=%3C20070716225832.GA3742%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Types d'entiers dans PLearn, suite">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 17 00:58:32 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000396.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+        <LI>Next message: <A HREF="000398.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#397">[ date ]</a>
+              <a href="thread.html#397">[ thread ]</a>
+              <a href="subject.html#397">[ subject ]</a>
+              <a href="author.html#397">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Jul 17, 2007, Pascal Lamblin wrote:
+&gt;<i> Si j'ai bien compris ce que Pascal (l'autre, le gentil) m'a racont&#233;, le
+</I>&gt;<i> plan pour la suite du bordel d'entiers serait :
+</I>&gt;<i>   - utiliser boost::[u]int[n]_t, en les injectant dans le namespace
+</I>&gt;<i>     PLearn si n&#233;cessaire
+</I>&gt;<i>   - d&#233;finir operator&lt;&lt;(long int) sur les plateformes n&#233;cessaires (au
+</I>&gt;<i>     moins i386) &#224; coups de #if
+</I>
+L'autre possibilit&#233; que je vois, &#231;a serait de d&#233;finir les diff&#233;rentes
+surcharges de l'op&#233;rateur &lt;&lt; (et d'autres) pour tous les types C (short
+int, int, long int, etc.), et faire un check dynamique &#224; l'ex&#233;cution
+&#224; chaque fois (if (sizeof(long int) == 4) {...}), quitte &#224; appeler
+d'autres fonctions selon la taille.
+
+Je ne sais pas ce qu'il vaut mieux.
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000396.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+	<LI>Next message: <A HREF="000398.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#397">[ date ]</a>
+              <a href="thread.html#397">[ thread ]</a>
+              <a href="subject.html#397">[ subject ]</a>
+              <a href="author.html#397">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

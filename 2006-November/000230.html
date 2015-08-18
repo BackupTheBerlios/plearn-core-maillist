@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PLearn et Mac os x
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3Cc81af8c30610312356l3b5c87ffn574d9b4ca67c7f46%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000231.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PLearn et Mac os x</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3Cc81af8c30610312356l3b5c87ffn574d9b4ca67c7f46%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] PLearn et Mac os x">jaonary at gmail.com
+       </A><BR>
+    <I>Wed Nov  1 08:56:16 CET 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000231.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#230">[ date ]</a>
+              <a href="thread.html#230">[ thread ]</a>
+              <a href="subject.html#230">[ subject ]</a>
+              <a href="author.html#230">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour &#224; tous,
+
+Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+un Mac. J'ai tent&#233; la compilation sur un mac os 10.4.8. Tous les
+autres librairies dont PLearn a besoin a &#233;t&#233; installer avec Fink
+(nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+Apr&#232;s avoir modifier le fichier config de pymake, la compilation de
+plearn_ligth c'est bien d&#233;roul&#233;. Modulo quelques modification dans les
+sources de PLearn. Notament j'ai du faire une modification dans
+pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+isinf garde ce meme nom. Donc, &#224; supprimer les lignes :
+
+#ifdef darwin
+#define isnan __isnan
+#define isinf __isinf
+
+Pourriez vous le mettre &#224; jour.
+
+Le probl&#232;me vient au moment du link. En effet, il n'arrive pas &#224; faire
+le link avec numarray. Je pense qu'ici c'est une histoire de library
+dynamic qui ne sont pas nomm&#233; de la m&#234;me mani&#232;re sur un mac et sur un
+unix classique. Sur les mac ils ont une extension .dylib et sur un
+unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+libnumarray.so. J'ai essay&#233; de faire le malin en faisant un lien
+symbolique  libnumarray.dylib mais toujours un probl&#232;me de link. J'ai
+vu dans le fichier config que la compilation sur un mac est pr&#233;vu,
+alors est ce que quelqu'un a r&#233;ussi et comment avez vous fait ?
+
+De ma part, j'ai supprimer tout ce qui fait r&#233;f&#233;rence &#224; python dans le
+plearn_inc.h et recomplier le tout. Et la &#231;a marche mais je ne sais
+pas encore la r&#233;percution de cela.
+
+Merci &#224; vous,
+
+Jaonary
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000231.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#230">[ date ]</a>
+              <a href="thread.html#230">[ thread ]</a>
+              <a href="subject.html#230">[ subject ]</a>
+              <a href="author.html#230">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

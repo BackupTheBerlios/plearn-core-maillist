@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et optimisation
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20optimisation&In-Reply-To=%3C20060628213908.GA22984%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000065.html">
+   <LINK REL="Next"  HREF="000087.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et optimisation</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20optimisation&In-Reply-To=%3C20060628213908.GA22984%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et optimisation">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jun 28 23:39:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000065.html">[Plearn-core] learntoption et buildoption
+</A></li>
+        <LI>Next message: <A HREF="000087.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut les gens,
+
+en essayant de mesurer la vitesse d'ex&#233;cution de diff&#233;rents morceaux de
+code, je me suis rendu compte que la vitesse d'ex&#233;cution du m&#234;me script
+sur la m&#234;me machine pouvait varier beaucoup (mais pas toujours) selon
+s'il avait &#233;t&#233; compil&#233; en 32 bits ou 64 bits.
+
+De fait, les ex&#233;cutables 32 bits sont compil&#233;s par g++ pour le
+processeur i386 de base, sans aucune optimisation particuli&#232;re &#224;
+certaines classes de processeur (ce que la compilation en 64 bits fait
+puisqu'on sait qu'il va &#234;tre ex&#233;cut&#233; par un amd64).
+
+J'ai fait quelques tests qui montrent que si on ajoute les options
+&quot; -mmmx -msse -mfpmath=sse -march=i686&quot; &#224; la compilation, la vitesse est
+augment&#233;e sur toutes les machines sur lesquelles j'ai test&#233; (athlon, p4,
+athlon64).
+
+Est-ce qu'il y a des machines &#224; apstat qui ne supporteraient pas ces
+options ?
+Est-ce qu'&#224; votre avis il vaut mieux que dans le pymake.config.model :
+  - je modifie l'option 'g++' pour rajouter ces options au compilo ?
+  - je rajoute une option 'g++i686' (ou un autre nom) avec ces option ?
+  - je rajoute une option 'g++i386' sans ces options en modifiant 'g++' ?
+  - Obi-Wan Kenobi ?
+Si je rajoute une option, laquelle vaudrait-il mieux mettre par d&#233;faut ?
+
+Et vous m'avez toujours pas dit quand vous auriez du temps pour qu'on se
+voie &#224; propos de build, rebuild, changeOptions et leur amis...
+
+&#192; bient&#244;t !
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000065.html">[Plearn-core] learntoption et buildoption
+</A></li>
+	<LI>Next message: <A HREF="000087.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

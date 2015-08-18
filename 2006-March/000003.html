@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: Les tailles d'une VMatrix
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Les%20tailles%20d%27une%20VMatrix&In-Reply-To=%3C20060315222244.GA29077%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000002.html">
+   <LINK REL="Next"  HREF="000004.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: Les tailles d'une VMatrix</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Les%20tailles%20d%27une%20VMatrix&In-Reply-To=%3C20060315222244.GA29077%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Re: Les tailles d'une VMatrix">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Mar 15 23:22:44 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000002.html">[Plearn-core] Re: [Plearn-core] Re: Updates des VMat :: &#201;tat de la situation
+</A></li>
+        <LI>Next message: <A HREF="000004.html">[Plearn-core] un PRandom dans PLearner ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, Mar 09, 2006, Nicolas Chapados wrote:
+&gt;<i> &gt;&#231;a me fait penser qu'on pourrait peut-&#234;tre mettre en place une
+</I>&gt;<i> &gt;mailing-list des d&#233;veloppeurs qui touchent le coeur de PLearn
+</I>&gt;<i>
+</I>&gt;<i> Eh, bonne id&#233;e! Et on pourrait m&#234;me s'autoriser &#224; parler en fran&#231;ais
+</I>&gt;<i> sur celle-l&#224;! :-)
+</I>
+Voil&#224;, la conversation est amen&#233;e dessus !
+
+&gt;<i> &gt;Pour revenir dans le sujet, j'ai une interrogation profonde sur ce que
+</I>&gt;<i> &gt;l'on doit faire avec les inputsize_, targetsize_ et weightsize_ d'une
+</I>&gt;<i> &gt;SourceVMatrix, en fonction de celles de sa source.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Pour le moment, il semble y avoir deux possibilit&#233;s :
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  - les red&#233;finir en fonction de la source, tout le temps, mais &#231;a
+</I>&gt;<i> &gt;emp&#234;che l'utilisateur de les sp&#233;cifier dans un script, ce que je trouve
+</I>&gt;<i> &gt;vraiment dommage, en plus d'&#234;tre d&#233;routant ;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  - les red&#233;finir si elles manquent (sont -1), ou sont incoh&#233;rentes,
+</I>&gt;<i> &gt;le probl&#232;me se pose alors si la source change pendant l'ex&#233;cution : en
+</I>&gt;<i> &gt;effet, les tailles calcul&#233;es &#224; partir de la premi&#232;re source passent
+</I>&gt;<i> &gt;alors pour des valeurs explicitement sp&#233;cifi&#233;es par l'utilisateur
+</I>&gt;<i> &gt;(sous r&#233;serve qu'elles soient coh&#233;rentes), m&#234;me si celui-ci avait
+</I>&gt;<i> &gt;initialis&#233; les tailles &#224; -1, et s'attendait &#224; ce que les tailles soient
+</I>&gt;<i> &gt;recalcul&#233;es.
+</I>&gt;<i>
+</I>&gt;<i> Ne pourrait-on pas appliquer un peu de la magie de changeOptions() sur 
+</I>&gt;<i> ce point, pour s'assurer que si la source change alors les *size_ sont 
+</I>&gt;<i> recalcul&#233;s automatiquement si la nouvelle source en poss&#232;de?
+</I>
+Utiliser uniquement changeOptions() ne r&#233;sout pas le probl&#232;me : si l'on
+change la source et que les *size_ sont coh&#233;rentes, on ne sait pas si
+l'utilisateur les avait sp&#233;cifi&#233;es initialement, en supposant qu'elles
+allaient &#234;tre correctes pour toutes les 'source' suivantes, ou si elles
+avaient &#233;t&#233; calcul&#233;es &#224; partir des dimensions de la source pr&#233;c&#233;dente,
+ce qui n'est peut-&#234;tre plus d'actualit&#233;.
+
+&gt;<i> Si je t'ai bien compris, inputsize_ (et ses copains) demeurent les 
+</I>&gt;<i> &quot;overrides&quot; de l'utilisateur, alors que ce que tu appelles 
+</I>&gt;<i> default_inputsize (faudrait changer le nom)
+</I>
+Je suis ouvert &#224; toute suggestion de nom...
+
+&gt;<i> sont calcul&#233;s automatiquement depuis la source si elle existe. Cela me
+</I>&gt;<i> semble une bonne solution. Pour ce qui est du temps de calcul, il n'y
+</I>&gt;<i> a qu'&#224; copier au build inputsize_ vers default_inputsize si le premier
+</I>&gt;<i> est &gt; 0, et toujours retourner default_inputsize dans les accesseurs.
+</I>
+En effet.
+
+&gt;<i> Oui, nous avions parl&#233; depuis bien longtemps d'avoir une plage 
+</I>&gt;<i> &quot;extrasize&quot; de sorte que l'invariant 
+</I>&gt;<i> (inputsize+targetsize+weightsize+extrasize == width()) soit pr&#233;serv&#233;.  
+</I>&gt;<i> Je crois que c'est une excellente id&#233;e, mais il y a beaucoup de code qui 
+</I>&gt;<i> d&#233;pend de l'invariant pr&#233;c&#233;dent (inputsize+targetsize+weights==width()), 
+</I>&gt;<i> donc comme tu dis il faudra repasser au peigne fin sur bien des lignes 
+</I>&gt;<i> de code...
+</I>
+Le nombre de VMatrix (du moins dans PLearn) n'est pas si &#233;norme, surtout
+si on fait un peu de tri et de factorisation avant. A-t-on du code qui
+d&#233;pend de cet invariant ailleurs que dans un fichier *VMatrix.{h,cc} ?
+Autre question li&#233;e : vous avez beaucoup de VMat &#224; Apstat qui ne sont
+pas dans PLearn (ni LisaPLearn) ?
+
+&gt;<i> Avant une telle t&#226;che, je sugg&#232;re de mettre dans pytest (oui oui!) des 
+</I>&gt;<i> r&#233;sultats de r&#233;f&#233;rence pour tous les PLearners qui sont utilis&#233;s au DIRO 
+</I>&gt;<i> (et ailleurs, par exemple Double V3, Yoshua???) afin de s'assurer de 
+</I>&gt;<i> capturer les plus gros plantages...
+</I>
+&#199;a, &#231;a reste une bonne id&#233;e...
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000002.html">[Plearn-core] Re: [Plearn-core] Re: Updates des VMat :: &#201;tat de la situation
+</A></li>
+	<LI>Next message: <A HREF="000004.html">[Plearn-core] un PRandom dans PLearner ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#3">[ date ]</a>
+              <a href="thread.html#3">[ thread ]</a>
+              <a href="subject.html#3">[ subject ]</a>
+              <a href="author.html#3">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

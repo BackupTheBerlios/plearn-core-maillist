@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C68C9C6E3-67B5-48A7-A397-A6C15CBFDAA4%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000325.html">
+   <LINK REL="Next"  HREF="000324.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C68C9C6E3-67B5-48A7-A397-A6C15CBFDAA4%40apstat.com%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">pascal at apstat.com
+       </A><BR>
+    <I>Tue Feb 27 16:17:25 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000325.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+        <LI>Next message: <A HREF="000324.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#326">[ date ]</a>
+              <a href="thread.html#326">[ thread ]</a>
+              <a href="subject.html#326">[ subject ]</a>
+              <a href="author.html#326">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Cette solution me parrait d&#233;j&#224; plus abordable mais souleve encore  
+</I>&gt;<i> d'autre probl&#232;mes :
+</I>&gt;<i> - que deviennent les membres inputsize et targetsize ?
+</I>
+La convention serait de mettre -1 pour une taille d'input variable.
+
+&gt;<i> - La fonction toMat() doit elles etre modifier ?
+</I>&gt;<i> - En effet tout ce qui est getRow et subRow seront &#224; banir
+</I>
+de m&#234;me toMat serait &#224; bannir (&#224; moins que tu vois un sens &#224; cela,  
+mais il me semble que tes donn&#233;es ne sont plus vraiment une &quot;matrice&quot;).
+
+&gt;<i> - Devrai-je aussi reimpl&#233;menter les fonction lecture et ecriture  
+</I>&gt;<i> dans un fichier ?
+</I>
+Je ne crois pas, non. Il s'agirait de d&#233;finir une sous-classe de  
+VMatrix, capable d'aller chercher les donn&#233;es l&#224; o&#249; elles se trouvent  
+(avec une option indiquant des chemins de fichiers par ex.)  au  
+format qui te convient, et qui se contente de red&#233;finit getExample et  
+length_.
+
+-- Pascal
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000325.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+	<LI>Next message: <A HREF="000324.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#326">[ date ]</a>
+              <a href="thread.html#326">[ thread ]</a>
+              <a href="subject.html#326">[ subject ]</a>
+              <a href="author.html#326">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

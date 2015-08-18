@@ -1,0 +1,1889 @@
+From jaonary at gmail.com  Wed Nov  1 08:56:16 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 1 Nov 2006 08:56:16 +0100
+Subject: [Plearn-core] PLearn et Mac os x
+Message-ID: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+
+Bonjour ? tous,
+
+Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+un Mac. J'ai tent? la compilation sur un mac os 10.4.8. Tous les
+autres librairies dont PLearn a besoin a ?t? installer avec Fink
+(nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+Apr?s avoir modifier le fichier config de pymake, la compilation de
+plearn_ligth c'est bien d?roul?. Modulo quelques modification dans les
+sources de PLearn. Notament j'ai du faire une modification dans
+pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+isinf garde ce meme nom. Donc, ? supprimer les lignes :
+
+#ifdef darwin
+#define isnan __isnan
+#define isinf __isinf
+
+Pourriez vous le mettre ? jour.
+
+Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+le link avec numarray. Je pense qu'ici c'est une histoire de library
+dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+unix classique. Sur les mac ils ont une extension .dylib et sur un
+unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+vu dans le fichier config que la compilation sur un mac est pr?vu,
+alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+
+De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+pas encore la r?percution de cela.
+
+Merci ? vous,
+
+Jaonary
+
+From jaonary at gmail.com  Wed Nov  1 12:41:25 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 1 Nov 2006 12:41:25 +0100
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+Message-ID: <c81af8c30611010341p1aa44298yd8919936443fa966@mail.gmail.com>
+
+Voici le r?sultat de pytest run --all. Pas mal de choses ne passe pas
+mais je ne comprends pas trop ce que ?a veut dire.
+
+/67  Test Name                                             Status     P-D-F-S
+--------------------------------------------------------------------------------
+1     PL_assert                                          ** FAILED **  0-0-1-0
+2     PL_base_object_graph_iterator                      *C FAILED C*  0-0-2-0
+3     PL_smart_pointer                                   *C FAILED C*  0-0-3-0
+4     test_pl_log                                        *C FAILED C*  0-0-4-0
+5     test_pstreambuf                                    *C FAILED C*  0-0-5-0
+--------------------------------------------------------------------------------
+6     test_ppath                                         *C FAILED C*  0-0-6-0
+7     PL_test_tuple                                      *C FAILED C*  0-0-7-0
+8     PL_pentadiagonal_solve_inplace                     *C FAILED C*  0-0-8-0
+9     pl_math                                            *C FAILED C*  0-0-9-0
+10    TMat_maths                                         *C FAILED C*  0-0-10-0
+--------------------------------------------------------------------------------
+11    PL_statscol_remove_observation                     *C FAILED C*  0-0-11-0
+12    PL_constant_regressor_script                       *C FAILED C*  0-0-12-0
+13    PL_update_heap                                     *C FAILED C*  0-0-13-0
+14    PL_ConjGradientOptimizer                           *C FAILED C*  0-0-14-0
+15    PL_ConjGradientRosenbrock2                         *C FAILED C*  0-0-15-0
+--------------------------------------------------------------------------------
+16    PL_ConjGradientRosenbrock100                       *C FAILED C*  0-0-16-0
+17    EmbeddedPython_BasicIdentityCalls                  *C FAILED C*  0-0-17-0
+18    EmbeddedPython_InterfunctionXchg                   *C FAILED C*  0-0-18-0
+19    EmbeddedPython_MemoryStressTest                    *C FAILED C*  0-0-19-0
+20    EmbeddedPython_TrampolineTest                        DISABLED    0-1-19-0
+--------------------------------------------------------------------------------
+21    EmbeddedPython_InjectionTest                       *C FAILED C*  0-1-20-0
+22    EmbeddedPython_PythonProcessedVMatrix              *C FAILED C*  0-1-21-0
+23    PL_Var_util                                        *C FAILED C*  0-1-22-0
+24    PL_ProcessingVMatrixSizes                          *C FAILED C*  0-1-23-0
+25    PL_processing_and_plearneroutput_vmatrix           *C FAILED C*  0-1-24-0
+--------------------------------------------------------------------------------
+26    test_RowBufferedVMatrix                            *C FAILED C*  0-1-25-0
+27    PL_AutoVMatrix                                     *C FAILED C*  0-1-26-0
+28    test_FileVMatrix                                   *C FAILED C*  0-1-27-0
+29    PL_IndexedVMatrix                                  *C FAILED C*  0-1-28-0
+30    PL_diff_VMat                                       *C FAILED C*  0-1-29-0
+--------------------------------------------------------------------------------
+31    PL_knn_classifier_tester_gaussian_sigma1             DISABLED    0-2-29-0
+32    PL_knn_classifier_tester_gaussian_sigma3             DISABLED    0-3-29-0
+33    PL_knn_classifier_grapher_rectangular                DISABLED    0-4-29-0
+34    PL_GaussianDistribution                            *C FAILED C*  0-4-30-0
+35    PL_GaussMix                                          DISABLED    0-5-30-0
+--------------------------------------------------------------------------------
+36    PL_GaussMix_Spherical                              *C FAILED C*  0-5-31-0
+37    PL_GaussMix_Spherical_Missing                      *C FAILED C*  0-5-32-0
+38    PL_GaussMix_Diagonal                               *C FAILED C*  0-5-33-0
+39    PL_GaussMix_Diagonal_Missing                       *C FAILED C*  0-5-34-0
+40    PL_GaussMix_General                                *C FAILED C*  0-5-35-0
+--------------------------------------------------------------------------------
+41    PL_GaussMix_General_Missing                          DISABLED    0-6-35-0
+42    PL_GaussMix_Generate                               *C FAILED C*  0-6-36-0
+43    PL_ManifoldParzen2                                   DISABLED    0-7-36-0
+44    PL_ParzenWindow                                    *C FAILED C*  0-7-37-0
+45    PL_RandomGaussMix                                  *C FAILED C*  0-7-38-0
+--------------------------------------------------------------------------------
+46    PL_UniformDistribution                             *C FAILED C*  0-7-39-0
+47    PL_BestAveragingPLearner_NNet                        DISABLED    0-8-39-0
+48    PL_simplenet                                       ** FAILED **  0-8-40-0
+49    PL_kernel_ridge_regressor                          *C FAILED C*  0-8-41-0
+50    PL_kernel_ridge_hyper_regressor                    *C FAILED C*  0-8-42-0
+--------------------------------------------------------------------------------
+51    PL_linear_regressor_script                         *C FAILED C*  0-8-43-0
+52    PL_PLS_Regression                                  *C FAILED C*  0-8-44-0
+53    PL_stacked_pca_regression_script                   *C FAILED C*  0-8-45-0
+54    PL_badly_conditioned_linreg_script                 *C FAILED C*  0-8-46-0
+55    PL_incremental_pca_cc                                 PASSED     1-8-46-0
+--------------------------------------------------------------------------------
+56    PL_python_math_StatsCollector                      ** FAILED **  1-8-47-0
+57    PL_plargs                                             PASSED     2-8-47-0
+58    PL_plargs_parsing                                     PASSED     3-8-47-0
+59    PL_mandatory_plargs_provided                          PASSED     4-8-47-0
+60    PL_mandatory_plargs_omitted                           PASSED     5-8-47-0
+--------------------------------------------------------------------------------
+61    PL_misspelled_plargs                                  PASSED     6-8-47-0
+62    PyPLearnObject_module                                 PASSED     7-8-47-0
+63    plearn_repr_module                                    PASSED     8-8-47-0
+64    PyPLearn-Tutorial                                    DISABLED    8-9-47-0
+65    PL_PyTestCore                                         PASSED     9-9-47-0
+--------------------------------------------------------------------------------
+66    PL_Bindings                                           PASSED    10-9-47-0
+67    toolkit_module                                        PASSED    11-9-47-0
+
+From dan.popovici at gmail.com  Wed Nov  1 13:45:13 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Wed, 1 Nov 2006 07:45:13 -0500
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+Message-ID: <22777a450611010445t6ef9ea91x2c811c0755311b3f@mail.gmail.com>
+
+salut,
+
+est-ce que tu as essay?e sur une intel mac? Je n'ai pas r?ussi de
+installer plearn sur mon macbook, parce que je n'ai pas trouv?e nspr,
+m?m? avec fink.
+
+Dan
+
+On 11/1/06, Jaonary Rabarisoa <jaonary at gmail.com> wrote:
+> Bonjour ? tous,
+>
+> Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+> un Mac. J'ai tent? la compilation sur un mac os 10.4.8. Tous les
+> autres librairies dont PLearn a besoin a ?t? installer avec Fink
+> (nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+> Apr?s avoir modifier le fichier config de pymake, la compilation de
+> plearn_ligth c'est bien d?roul?. Modulo quelques modification dans les
+> sources de PLearn. Notament j'ai du faire une modification dans
+> pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+> isinf garde ce meme nom. Donc, ? supprimer les lignes :
+>
+> #ifdef darwin
+> #define isnan __isnan
+> #define isinf __isinf
+>
+> Pourriez vous le mettre ? jour.
+>
+> Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+> le link avec numarray. Je pense qu'ici c'est une histoire de library
+> dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+> unix classique. Sur les mac ils ont une extension .dylib et sur un
+> unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+> libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+> symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+> vu dans le fichier config que la compilation sur un mac est pr?vu,
+> alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+>
+> De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+> plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+> pas encore la r?percution de cela.
+>
+> Merci ? vous,
+>
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+From jaonary at gmail.com  Wed Nov  1 13:54:53 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 1 Nov 2006 13:54:53 +0100
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <22777a450611010445t6ef9ea91x2c811c0755311b3f@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+	<22777a450611010445t6ef9ea91x2c811c0755311b3f@mail.gmail.com>
+Message-ID: <c81af8c30611010454id17f3fdv467f0bc791de2a93@mail.gmail.com>
+
+Non je suis encore sur un powerbook g4. Dans fink, nspr4 se trouve
+dans le package mozilla-dev. J'ai mis du temps a le trouver moi aussi.
+
+On 11/1/06, Dan Popovici <dan.popovici at gmail.com> wrote:
+> salut,
+>
+> est-ce que tu as essay?e sur une intel mac? Je n'ai pas r?ussi de
+> installer plearn sur mon macbook, parce que je n'ai pas trouv?e nspr,
+> m?m? avec fink.
+>
+> Dan
+>
+> On 11/1/06, Jaonary Rabarisoa <jaonary at gmail.com> wrote:
+> > Bonjour ? tous,
+> >
+> > Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+> > un Mac. J'ai tent? la compilation sur un mac os 10.4.8. Tous les
+> > autres librairies dont PLearn a besoin a ?t? installer avec Fink
+> > (nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+> > Apr?s avoir modifier le fichier config de pymake, la compilation de
+> > plearn_ligth c'est bien d?roul?. Modulo quelques modification dans les
+> > sources de PLearn. Notament j'ai du faire une modification dans
+> > pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+> > isinf garde ce meme nom. Donc, ? supprimer les lignes :
+> >
+> > #ifdef darwin
+> > #define isnan __isnan
+> > #define isinf __isinf
+> >
+> > Pourriez vous le mettre ? jour.
+> >
+> > Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+> > le link avec numarray. Je pense qu'ici c'est une histoire de library
+> > dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+> > unix classique. Sur les mac ils ont une extension .dylib et sur un
+> > unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+> > libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+> > symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+> > vu dans le fichier config que la compilation sur un mac est pr?vu,
+> > alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+> >
+> > De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+> > plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+> > pas encore la r?percution de cela.
+> >
+> > Merci ? vous,
+> >
+> > Jaonary
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+> >
+>
+
+From jaonary at gmail.com  Wed Nov  1 14:00:30 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 1 Nov 2006 14:00:30 +0100
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <c81af8c30611010454id17f3fdv467f0bc791de2a93@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+	<22777a450611010445t6ef9ea91x2c811c0755311b3f@mail.gmail.com>
+	<c81af8c30611010454id17f3fdv467f0bc791de2a93@mail.gmail.com>
+Message-ID: <c81af8c30611010500s2fd72c5eof8e8017a3442b60c@mail.gmail.com>
+
+On 11/1/06, Jaonary Rabarisoa <jaonary at gmail.com> wrote:
+> Non je suis encore sur un powerbook g4. Dans fink, nspr4 se trouve
+> dans le package mozilla-dev. J'ai mis du temps a le trouver moi aussi.
+>
+> On 11/1/06, Dan Popovici <dan.popovici at gmail.com> wrote:
+> > salut,
+> >
+> > est-ce que tu as essay?e sur une intel mac? Je n'ai pas r?ussi de
+> > installer plearn sur mon macbook, parce que je n'ai pas trouv?e nspr,
+> > m?m? avec fink.
+> >
+
+essaye avec fink install mozilla-dev
+
+Jaonary
+
+From dan.popovici at gmail.com  Wed Nov  1 16:20:40 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Wed, 1 Nov 2006 10:20:40 -0500
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+Message-ID: <22777a450611010720v527edc15i8238f5a1ffaa439a@mail.gmail.com>
+
+Maintenant je suis dans la m?me stage, numarray ne veux pas link?e.
+Bonne chance Pascal en faisant PLearn marcher sur une intel mac.
+
+Dan
+
+On 11/1/06, Jaonary Rabarisoa <jaonary at gmail.com> wrote:
+> Bonjour ? tous,
+>
+> Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+> un Mac. J'ai tent? la compilation sur un mac os 10.4.8. Tous les
+> autres librairies dont PLearn a besoin a ?t? installer avec Fink
+> (nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+> Apr?s avoir modifier le fichier config de pymake, la compilation de
+> plearn_ligth c'est bien d?roul?. Modulo quelques modification dans les
+> sources de PLearn. Notament j'ai du faire une modification dans
+> pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+> isinf garde ce meme nom. Donc, ? supprimer les lignes :
+>
+> #ifdef darwin
+> #define isnan __isnan
+> #define isinf __isinf
+>
+> Pourriez vous le mettre ? jour.
+>
+> Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+> le link avec numarray. Je pense qu'ici c'est une histoire de library
+> dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+> unix classique. Sur les mac ils ont une extension .dylib et sur un
+> unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+> libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+> symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+> vu dans le fichier config que la compilation sur un mac est pr?vu,
+> alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+>
+> De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+> plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+> pas encore la r?percution de cela.
+>
+> Merci ? vous,
+>
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+From jaonary at gmail.com  Thu Nov  2 09:03:34 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 2 Nov 2006 09:03:34 +0100
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <22777a450611010720v527edc15i8238f5a1ffaa439a@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+	<22777a450611010720v527edc15i8238f5a1ffaa439a@mail.gmail.com>
+Message-ID: <c81af8c30611020003t5cfdbaeax692bc831692c0011@mail.gmail.com>
+
+J'ai fait une decouverte. En enlenvant le commande de link avec
+numarray i.e-lnumarray. J'ai reussi ? tout compiler et en plus la
+plupart des tests
+fonctionnent. Je pense que dans ce cas tant qu'on utilise pas python tout
+devrait marcher.
+
+On 11/1/06, Dan Popovici <dan.popovici at gmail.com> wrote:
+>
+> Maintenant je suis dans la m?me stage, numarray ne veux pas link?e.
+> Bonne chance Pascal en faisant PLearn marcher sur une intel mac.
+>
+> Dan
+>
+> On 11/1/06, Jaonary Rabarisoa <jaonary at gmail.com> wrote:
+> > Bonjour ? tous,
+> >
+> > Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+> > un Mac. J'ai tent? la compilation sur un mac os 10.4.8. Tous les
+> > autres librairies dont PLearn a besoin a ?t? installer avec Fink
+> > (nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+> > Apr?s avoir modifier le fichier config de pymake, la compilation de
+> > plearn_ligth c'est bien d?roul?. Modulo quelques modification dans les
+> > sources de PLearn. Notament j'ai du faire une modification dans
+> > pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+> > isinf garde ce meme nom. Donc, ? supprimer les lignes :
+> >
+> > #ifdef darwin
+> > #define isnan __isnan
+> > #define isinf __isinf
+> >
+> > Pourriez vous le mettre ? jour.
+> >
+> > Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+> > le link avec numarray. Je pense qu'ici c'est une histoire de library
+> > dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+> > unix classique. Sur les mac ils ont une extension .dylib et sur un
+> > unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+> > libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+> > symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+> > vu dans le fichier config que la compilation sur un mac est pr?vu,
+> > alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+> >
+> > De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+> > plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+> > pas encore la r?percution de cela.
+> >
+> > Merci ? vous,
+> >
+> > Jaonary
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+> >
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061102/f2140ca3/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Nov  2 17:44:32 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 2 Nov 2006 11:44:32 -0500
+Subject: [Plearn-core] PLearn et Mac os x
+In-Reply-To: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+References: <c81af8c30610312356l3b5c87ffn574d9b4ca67c7f46@mail.gmail.com>
+Message-ID: <20061102164430.GA25883@opale.iro.umontreal.ca>
+
+On 01 Nov 2006, Jaonary Rabarisoa wrote:
+> isinf garde ce meme nom. Donc, ? supprimer les lignes :
+> 
+> #ifdef darwin
+> #define isnan __isnan
+> #define isinf __isinf
+> 
+> Pourriez vous le mettre ? jour.
+
+Fait (dans la revision #6379), merci !
+
+> Le probl?me vient au moment du link. En effet, il n'arrive pas ? faire
+> le link avec numarray. Je pense qu'ici c'est une histoire de library
+> dynamic qui ne sont pas nomm? de la m?me mani?re sur un mac et sur un
+> unix classique. Sur les mac ils ont une extension .dylib et sur un
+> unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+> libnumarray.so. J'ai essay? de faire le malin en faisant un lien
+> symbolique  libnumarray.dylib mais toujours un probl?me de link. J'ai
+> vu dans le fichier config que la compilation sur un mac est pr?vu,
+> alors est ce que quelqu'un a r?ussi et comment avez vous fait ?
+
+Je n'ai jamais essay? sur Mac, et je ne pense pas que quelqu'un l'ait
+d?j? fait depuis l'introduction de Python dans PLearn. Je ne sais pas
+trop comment fonctionnent les librairies dynamiques sous Mac, donc je
+n'ai pas trop d'id?es.
+
+> De ma part, j'ai supprimer tout ce qui fait r?f?rence ? python dans le
+> plearn_inc.h et recomplier le tout. Et la ?a marche mais je ne sais
+> pas encore la r?percution de cela.
+
+Essentiellement, tu ne pourras pas utiliser le code qui fait de
+l'interfa?age avec Python. Ce n'est pas trop grave si tu veux juste
+cr?er tes propres algos en C++.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Fri Nov  3 14:33:13 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 3 Nov 2006 14:33:13 +0100
+Subject: [Plearn-core] Probleme etrange
+Message-ID: <c81af8c30611030533u75b29bb7x1af6af55b48d7e4d@mail.gmail.com>
+
+Salut a tous,
+J'ai constate un probleme bizard avec les VMat et AutoVMatrix. En gros, j'ai
+une liste de VMat (TVec<VMat>).
+J'initialise cette liste en chargenat un a un les VMat qui m'interesse a
+l'aide de la classe AutoVMatrix. Les matrices sont
+stockees en binaire (.pmat). Mon probleme c'est que quand la taille de
+TVec<VMat> depasse 1020 j'obtients l'erreur suivante :
+
+ERROR:
+openFile("/certis/3/rabariso/experiences/pascal_2006/poi/005303_lowe_sift.pmat.metadata/sizes","r")
+failed.
+
+et cette erreur apparait toujours au 1021 ieme VMat que je veux charger,
+independament du VMat. Vous pouvez voir mon code ci-dessus. Quand n_data >
+1020 j'obtients cette erreur dans le cas contraire ca marche. J'ai pense a
+un probleme de memoire mais sur ma machine y en a 16GB et quand je lance le
+programme il utilise a peine 1GB
+
+Une petite idee ?
+
+
+     53         TVec<VMat> inputs(n_data);
+     54         vector<int> targets(n_data);
+     55
+     56         ProgressBar* pb1 = new ProgressBar("Loading data into
+memory",n_data);
+     57         map<string,int>::iterator data_it = input_target.begin();
+     58         map<string,int>::iterator data_end = input_target.end();
+     59         string dsuff = string(ptype)+"_"+string(dtype);
+     60         int idx = 0;
+     61         for(;data_it!=data_end;++data_it,++idx)
+     62         {
+     63                 //cout << data_it->first << endl;
+     64                 PPath dpath = getPath((data_it->first).c_str(),
+dsuff.c_str(),matrix_type,pdir);
+     65                 inputs[idx] = new AutoVMatrix(dpath);
+     66                 targets[idx] = data_it->second;
+     67                 pb1->update(idx);
+     68         }
+     69         delete pb1;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/6591c1fd/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Nov  3 17:02:39 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 3 Nov 2006 11:02:39 -0500
+Subject: [Plearn-core] Probleme etrange
+In-Reply-To: <c81af8c30611030533u75b29bb7x1af6af55b48d7e4d@mail.gmail.com>
+References: <c81af8c30611030533u75b29bb7x1af6af55b48d7e4d@mail.gmail.com>
+Message-ID: <20061103160239.GB12935@opale.iro.umontreal.ca>
+
+Ca ne devrait pas ?tre un probl?me de m?moire, les FileVMatrix (qui
+chargent les .pmat) ne prennent pas beaucoup de m?moire.
+Vu que ?a plante quand tu essaie d'ouvrir un fichier, je soup?onne que
+tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+donn?es entrent en m?moire, tu pourrais faire une fonction de chargement
+du genre :
+
+TVec<VMat> my_vec_of_vmat;
+for (int i = 0; i < n; i++) {
+    VMat m1 = new AutoVMatrix("mon_fichier_" + tostring(i) + ".pmat");
+    VMat m2(m1.toMat());
+    m2->getMetaInfoFrom(m1);
+    my_vec_of_vmat.append(m2);
+}
+
+ce qui t'assure que le fichier .pmat va ?tre ferm?.
+
+--
+Olivier
+
+On 03 Nov 2006, Jaonary Rabarisoa wrote:
+> Salut a tous,
+> J'ai constate un probleme bizard avec les VMat et AutoVMatrix. En gros, j'ai
+> une liste de VMat (TVec<VMat>).
+> J'initialise cette liste en chargenat un a un les VMat qui m'interesse a l'aide
+> de la classe AutoVMatrix. Les matrices sont
+> stockees en binaire (.pmat). Mon probleme c'est que quand la taille de TVec
+> <VMat> depasse 1020 j'obtients l'erreur suivante :
+> 
+> ERROR: openFile("/certis/3/rabariso/experiences/pascal_2006/poi/
+> 005303_lowe_sift.pmat.metadata/sizes","r") failed.
+> 
+> et cette erreur apparait toujours au 1021 ieme VMat que je veux charger,
+> independament du VMat. Vous pouvez voir mon code ci-dessus. Quand n_data > 1020
+> j'obtients cette erreur dans le cas contraire ca marche. J'ai pense a un
+> probleme de memoire mais sur ma machine y en a 16GB et quand je lance le
+> programme il utilise a peine 1GB
+> 
+> Une petite idee ?
+> 
+> 
+>      53         TVec<VMat> inputs(n_data);
+>      54         vector<int> targets(n_data);
+>      55
+>      56         ProgressBar* pb1 = new ProgressBar("Loading data into
+> memory",n_data);
+>      57         map<string,int>::iterator data_it = input_target.begin();
+>      58         map<string,int>::iterator data_end = input_target.end();
+>      59         string dsuff = string(ptype)+"_"+string(dtype);
+>      60         int idx = 0;
+>      61         for(;data_it!=data_end;++data_it,++idx)
+>      62         {
+>      63                 //cout << data_it->first << endl;
+>      64                 PPath dpath = getPath((data_it->first).c_str
+> (),dsuff.c_str(),matrix_type,pdir);
+>      65                 inputs[idx] = new AutoVMatrix(dpath);
+>      66                 targets[idx] = data_it->second;
+>      67                 pb1->update(idx);
+>      68         }
+>      69         delete pb1;
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From jaonary at gmail.com  Fri Nov  3 17:11:18 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 3 Nov 2006 17:11:18 +0100
+Subject: [Plearn-core] Probleme etrange
+In-Reply-To: <20061103160239.GB12935@opale.iro.umontreal.ca>
+References: <c81af8c30611030533u75b29bb7x1af6af55b48d7e4d@mail.gmail.com>
+	<20061103160239.GB12935@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30611030811u7bb6a734pd3bcdf007bed44ad@mail.gmail.com>
+
+Efffectivement, c'est peut etre une limitation au niveau du system. En
+chargeant les donnees en memoir ca marche. J'ai 16G alors autant en
+profiter. Par contre pour les charger j'ai seulement fait
+
+VMat m1 = new AutoVMatrix("mon_fichier_" + tostring(i) + ".pmat",true);
+
+i.e en rajoutant true comme deuxieme argument de AutoVMatrix. Dans, ce cas
+quelle est la difference avec le code que tu as propose ? i.e en utilisant
+une VMat temporaire. Est ce que dans ce cas le fichier ne sera pas ferme ?
+
+
+On 11/3/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> Ca ne devrait pas ?tre un probl?me de m?moire, les FileVMatrix (qui
+> chargent les .pmat) ne prennent pas beaucoup de m?moire.
+> Vu que ?a plante quand tu essaie d'ouvrir un fichier, je soup?onne que
+> tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+> donn?es entrent en m?moire, tu pourrais faire une fonction de chargement
+> du genre :
+>
+> TVec<VMat> my_vec_of_vmat;
+> for (int i = 0; i < n; i++) {
+>     VMat m1 = new AutoVMatrix("mon_fichier_" + tostring(i) + ".pmat");
+>     VMat m2(m1.toMat());
+>     m2->getMetaInfoFrom(m1);
+>     my_vec_of_vmat.append(m2);
+> }
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/db69f6f9/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Nov  3 17:16:38 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 3 Nov 2006 11:16:38 -0500
+Subject: [Plearn-core] Probleme etrange
+In-Reply-To: <c81af8c30611030811u7bb6a734pd3bcdf007bed44ad@mail.gmail.com>
+References: <c81af8c30611030533u75b29bb7x1af6af55b48d7e4d@mail.gmail.com>
+	<20061103160239.GB12935@opale.iro.umontreal.ca>
+	<c81af8c30611030811u7bb6a734pd3bcdf007bed44ad@mail.gmail.com>
+Message-ID: <20061103161637.GA13228@opale.iro.umontreal.ca>
+
+A vrai dire, je ne connaissais pas cette option de MemoryVMatrix. Mais
+j'aurais pens? que ?a ne marcherait pas mieux : en regardant le code de
+AutoVMatrix, la FileVMatrix devrait toujours exister... En tout cas
+c'est ce qu'il me semble. Donc tu devrais avoir le m?me probl?me. Mais
+bon, si ?a marche, tant mieux, il y a p-? juste quelque chose que j'ai
+rat? dans le code :)
+
+--
+Olivier
+
+On 03 Nov 2006, Jaonary Rabarisoa wrote:
+> Efffectivement, c'est peut etre une limitation au niveau du system. En
+> chargeant les donnees en memoir ca marche. J'ai 16G alors autant en profiter.
+> Par contre pour les charger j'ai seulement fait
+> 
+> VMat m1 = new AutoVMatrix("mon_fichier_" + tostring(i) + ".pmat",true);
+> 
+> i.e en rajoutant true comme deuxieme argument de AutoVMatrix. Dans, ce cas
+> quelle est la difference avec le code que tu as propose ? i.e en utilisant une
+> VMat temporaire. Est ce que dans ce cas le fichier ne sera pas ferme ?
+> 
+> 
+> On 11/3/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> 
+>     Ca ne devrait pas ?tre un probl?me de m?moire, les FileVMatrix (qui
+>     chargent les .pmat) ne prennent pas beaucoup de m?moire.
+>     Vu que ?a plante quand tu essaie d'ouvrir un fichier, je soup?onne que
+>     tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+>     donn?es entrent en m?moire, tu pourrais faire une fonction de chargement
+>     du genre :
+> 
+>     TVec<VMat> my_vec_of_vmat;
+>     for (int i = 0; i < n; i++) {
+>         VMat m1 = new AutoVMatrix("mon_fichier_" + tostring(i) + ".pmat");
+>         VMat m2(m1.toMat());
+>         m2->getMetaInfoFrom(m1);
+>         my_vec_of_vmat.append(m2);
+>     }
+> 
+> 
+
+
+From chapados at apstat.com  Mon Nov  6 23:07:56 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Mon, 06 Nov 2006 17:07:56 -0500
+Subject: [Plearn-core] Trigger pour BLAS et LAPACK
+In-Reply-To: <7AA5991A-762E-4886-BF34-281255B6226A@apstat.com>
+References: <45339FF5.8070806@apstat.com>
+	<7AA5991A-762E-4886-BF34-281255B6226A@apstat.com>
+Message-ID: <454FB23C.8060200@apstat.com>
+
+En effet ?a ?claircit beaucoup.  Merci de cette r?ponse d?taill?e, que 
+je fais suivre sur plearn-core pour le b?n?fice de tous.
+
+Pascal Vincent wrote:
+>
+>> Messieurs,
+>>
+>> Pr?sentement dans pymake, toutes les librairies externes sont ? 
+>> l'int?rieur d'un trigger qui fait qu'elles ne sont pas incluses si on 
+>> n'en a pas besoin.  TOUTES, pas exactement, car BLAS et LAPACK ne 
+>> font pas partie d'un tel trigger.  Bien s?r il y a option noblas, 
+>> mais pourquoi ne pas mettre un trigger sur, disons, blas_proto.h et 
+>> lapack_proto.h pour ?viter de les linker si non-n?cessaire?
+>
+> blas est un cas particulier: Premi?rement, ? moins de mettre l'option 
+> noblas, blas est utilis? pour la sp?cialisation (pour float et double) 
+> d'op?rations de vecteurs et matrices de bas niveau d?finies dans  
+> TMat_maths_specialisation.h, qui est inclus par  TMat_maths_impl.h qui 
+> est inclus indirectement par ? peu pr?t tout dans PLearn.
+> Ce comportement est contr?l? par un define USE_BLAS_SPECIALISATIONS, 
+> d'o? sa pr?sence dans les options de compilation.
+>
+> Secondo c'est une option au niveau de l'invocation de pymake, car il y 
+> a souvent plusieurs implantation de blas sur une m?me machine qu'on 
+> peut vouloir essayer depuis la ligne de commande de pymake
+>
+> Tertio lapack+blas est utilis? dans pas mal d'algos (l'alg?bre 
+> lin?aire c'est utile...) et j'ai donc tendance ? les voir comme une 
+> des trois d?pendances "core" de PLearn (avec NSPR et une partie de 
+> boost), donc on ne gagnerait pas grand chose ? en faire une 
+> OptionalLibrary (rarement optionnelle).
+>
+> Je sais que c'est un peu laid, mais ? moins d'introduire un nouveau 
+> m?canisme externe de s?lection de "quelle impl?mentation de 
+> blas+lapack je veux utiliser pour ce prg" et laisser de toute fa?on 
+> une option de compilation pour choisir de d?finir ou non le define 
+> USE_BLAS_SPECIALISATIONS, c'est ce qu'on a pour l'instant de mieux 
+> pour permettre de g?rer le bordel de linkage avec blas et lapack.
+>
+> J'esp?re que j'ai pu ?claircir quelque peu la question.
+>
+> -- Pascal
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From jaonary at gmail.com  Tue Nov  7 16:04:20 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 7 Nov 2006 16:04:20 +0100
+Subject: [Plearn-core] =?utf-8?q?Meilleurs_moyens_de_r=C3=A9cuperer_et_de_?=
+	=?utf-8?q?modifier_les_membre_private_et_protected_=3F?=
+Message-ID: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+
+Bonjour,
+Cette question a d?j? ?t? soulev? ici, mais n'ayant pas encore trouv? une
+solution satisfaisante
+je vais ? nouveau vous soumettre le probl?me.
+Avant toutes choses je tiens encore ? pr?ciser que je travaille en C++ ;-).
+Donc, j'ai un objet qui est une sous classe de Object (au sens de PLearn).
+Pour ?tre pr?cis disons que cet objet est en fait un BinaryStump (c'est
+l'exemple sur lequel j'exp?rimente actuellement).  BinaryStump ? deux
+membres protected qui m'int?ressent plus particuli?rement :
+
+int feature;
+real threshold;
+
+J'aimerais bien les r?cuperer apr?s l'apprentissage, mais l? gros probl?me.
+Etant donner, qu'ils sont innaccessible en dehors de la classe, PLearn
+m'oblige pour l'instant ? utiliser la fonction getOption(...) de la classe
+Object. Cette derni?re renvoi malheuresement que la serialisation de mon
+objet, et je trouve que c'est un peu b?te de transformer un entier en string
+et string en entier avant de pouvoir utiliser l'entier en question. Imaginez
+quand je dois r?cuperer un membre beaucoup plus compliqu? que des entiers.
+Par exemple le membre
+TVec< PP<PLearner> > weak_learners;
+de la classe Adaboost, qui lui m'interesse aussi mais a le mauvais gout
+d'etre private.
+
+Les solutions que je vois actuellement sont  :
+- je rends publics tous les membre qui sont succeptible de m'interess?s.
+C'est peut ?tre une mauvaise id?e dans la mesure o? s'ils sont d?clar?s
+ainsi c'est qu'il y a une raison qui m'?chappe.
+
+- j'utilise la s?rialisation mais comme j'ai dis, c'est un peu lourd le
+faite de creer un objet le transformer en string et ensuite transformer le
+string en objet avant d'utiliser l'objet. En plus au niveau des types
+standard je ne sais pas trop si c'est g?r? de mani?re transparente
+
+- Enfin, la derni?re solution c'est peut ?tre impl?menter une autre fonction
+membre d'Objet ayant pour signature Object*
+
+Option* getOption(option_name)
+
+et apres un truc du type
+
+TVec< PP<PLearner> > weak_learners = dynamic_cast<TVec< PP<PLearner> > >
+adaboost.getOption("weak_learners)
+
+mais l? il faudrait que tous les types soient de Object (y compris les types
+standard)
+
+Qu'en pensez vous ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061107/48b058c8/attachment.html>
+
+From delallea at iro.umontreal.ca  Tue Nov  7 16:14:20 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 7 Nov 2006 10:14:20 -0500
+Subject: [Plearn-core] Meilleurs moyens de r?cuperer et de
+In-Reply-To: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+References: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+Message-ID: <20061107151419.GA23977@opale.iro.umontreal.ca>
+
+Selon les cas, tu peux mettre un champ public ou juste rajouter une
+m?thode 'accesseur'. G?n?ralement, je pr?f?re une m?thode accesseur si
+le champ ne devrait pas ?tre modifi? en dehors de la classe (mais ce
+n'est pas vraiment une convention PLearn).
+
+Ensuite, dans du code C++, la m?thode la plus efficace actuellement est
+de faire un cast de ton objet, comme :
+    PP<BinaryStump> my_object_cast = (BinaryStump*) get_pointer(my_object)
+ou bien tu peux p-? utiliser un dynamic_cast<BinaryStump*>, mais j'avoue
+que je ne sais pas vraiment quelle est la diff?rence.
+L'id?e d'avoir des getOptions qui retournent des trucs plus int?ressants
+que des string a d?j? ?t? discut?e, mais pas encore impl?ment?e.
+
+--
+Olivier
+
+On 07 Nov 2006, Jaonary Rabarisoa wrote:
+> Bonjour,
+> Cette question a d?j? ?t? soulev? ici, mais n'ayant pas encore trouv? une
+> solution satisfaisante
+> je vais ? nouveau vous soumettre le probl?me.
+> Avant toutes choses je tiens encore ? pr?ciser que je travaille en C++ ;-).
+> Donc, j'ai un objet qui est une sous classe de Object (au sens de PLearn). Pour
+> ?tre pr?cis disons que cet objet est en fait un BinaryStump (c'est l'exemple
+> sur lequel j'exp?rimente actuellement).  BinaryStump ? deux membres protected
+> qui m'int?ressent plus particuli?rement :
+> 
+> int feature;
+> real threshold;
+> 
+> J'aimerais bien les r?cuperer apr?s l'apprentissage, mais l? gros probl?me.
+> Etant donner, qu'ils sont innaccessible en dehors de la classe, PLearn m'oblige
+> pour l'instant ? utiliser la fonction getOption(...) de la classe Object. Cette
+> derni?re renvoi malheuresement que la serialisation de mon objet, et je trouve
+> que c'est un peu b?te de transformer un entier en string et string en entier
+> avant de pouvoir utiliser l'entier en question. Imaginez quand je dois
+> r?cuperer un membre beaucoup plus compliqu? que des entiers. Par exemple le
+> membre
+> TVec< PP<PLearner> > weak_learners;
+> de la classe Adaboost, qui lui m'interesse aussi mais a le mauvais gout d'etre
+> private.
+> 
+> Les solutions que je vois actuellement sont  :
+> - je rends publics tous les membre qui sont succeptible de m'interess?s. C'est
+> peut ?tre une mauvaise id?e dans la mesure o? s'ils sont d?clar?s ainsi c'est
+> qu'il y a une raison qui m'?chappe.
+> 
+> - j'utilise la s?rialisation mais comme j'ai dis, c'est un peu lourd le faite
+> de creer un objet le transformer en string et ensuite transformer le string en
+> objet avant d'utiliser l'objet. En plus au niveau des types standard je ne sais
+> pas trop si c'est g?r? de mani?re transparente
+> 
+> - Enfin, la derni?re solution c'est peut ?tre impl?menter une autre fonction
+> membre d'Objet ayant pour signature Object*
+> 
+> Option* getOption(option_name)
+> 
+> et apres un truc du type
+> 
+> TVec< PP<PLearner> > weak_learners = dynamic_cast<TVec< PP<PLearner> > >
+> adaboost.getOption("weak_learners)
+> 
+> mais l? il faudrait que tous les types soient de Object (y compris les types
+> standard)
+> 
+> Qu'en pensez vous ?
+> 
+> Jaonary
+> 
+> 
+> 
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From jaonary at gmail.com  Tue Nov  7 16:22:27 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 7 Nov 2006 16:22:27 +0100
+Subject: [Plearn-core] Meilleurs moyens de r?cuperer et de
+In-Reply-To: <20061107151419.GA23977@opale.iro.umontreal.ca>
+References: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+	<20061107151419.GA23977@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30611070722p130d742clf38197e233bf64cf@mail.gmail.com>
+
+On 11/7/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> Selon les cas, tu peux mettre un champ public ou juste rajouter une
+> m?thode 'accesseur'. G?n?ralement, je pr?f?re une m?thode accesseur si
+> le champ ne devrait pas ?tre modifi? en dehors de la classe (mais ce
+> n'est pas vraiment une convention PLearn).
+>
+> Ensuite, dans du code C++, la m?thode la plus efficace actuellement est
+> de faire un cast de ton objet, comme :
+>     PP<BinaryStump> my_object_cast = (BinaryStump*) get_pointer(my_object)
+> ou bien tu peux p-? utiliser un dynamic_cast<BinaryStump*>, mais j'avoue
+> que je ne sais pas vraiment quelle est la diff?rence.
+> L'id?e d'avoir des getOptions qui retournent des trucs plus int?ressants
+> que des string a d?j? ?t? discut?e, mais pas encore impl?ment?e.
+
+
+ Je ne comprends pas tr?s bien ce que
+
+PP<BinaryStump> my_object_cast = (BinaryStump*) get_pointer(my_object)
+
+pourrait m'apporter de plus sachant que ce qui m'interesse ici c'est un
+membre protected de BinaryStump : my_object_cast->feature.  A moins que j'ai
+mal compris ce que tu entendais
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061107/d8745c59/attachment.html>
+
+From delallea at iro.umontreal.ca  Tue Nov  7 16:24:16 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 7 Nov 2006 10:24:16 -0500
+Subject: [Plearn-core] Meilleurs moyens de r?cuperer et de
+In-Reply-To: <c81af8c30611070722p130d742clf38197e233bf64cf@mail.gmail.com>
+References: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+	<20061107151419.GA23977@opale.iro.umontreal.ca>
+	<c81af8c30611070722p130d742clf38197e233bf64cf@mail.gmail.com>
+Message-ID: <20061107152415.GA24225@opale.iro.umontreal.ca>
+
+On 07 Nov 2006, Jaonary Rabarisoa wrote:
+> 
+> 
+> On 11/7/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> 
+>     Selon les cas, tu peux mettre un champ public ou juste rajouter une
+>     m?thode 'accesseur'. G?n?ralement, je pr?f?re une m?thode accesseur si
+>     le champ ne devrait pas ?tre modifi? en dehors de la classe (mais ce
+>     n'est pas vraiment une convention PLearn).
+> 
+>     Ensuite, dans du code C++, la m?thode la plus efficace actuellement est
+>     de faire un cast de ton objet, comme :
+>         PP<BinaryStump> my_object_cast = (BinaryStump*) get_pointer(my_object)
+>     ou bien tu peux p-? utiliser un dynamic_cast<BinaryStump*>, mais j'avoue
+>     que je ne sais pas vraiment quelle est la diff?rence.
+>     L'id?e d'avoir des getOptions qui retournent des trucs plus int?ressants
+>     que des string a d?j? ?t? discut?e, mais pas encore impl?ment?e.
+> 
+> 
+>  Je ne comprends pas tr?s bien ce que
+> 
+> PP<BinaryStump> my_object_cast = (BinaryStump*) get_pointer(my_object)
+> 
+> pourrait m'apporter de plus sachant que ce qui m'interesse ici c'est un membre
+> protected de BinaryStump : my_object_cast->feature.  A moins que j'ai mal
+> compris ce que tu entendais
+
+C'est pour ?a que j'ai d'abord dit de rendre le champ public ou de
+rajouter une m?thode 'accesseur'.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Tue Nov  7 16:28:15 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 7 Nov 2006 16:28:15 +0100
+Subject: [Plearn-core] Meilleurs moyens de r?cuperer et de
+In-Reply-To: <20061107152415.GA24225@opale.iro.umontreal.ca>
+References: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+	<20061107151419.GA23977@opale.iro.umontreal.ca>
+	<c81af8c30611070722p130d742clf38197e233bf64cf@mail.gmail.com>
+	<20061107152415.GA24225@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30611070728j40baca3dr2d38df1e2cd6fcae@mail.gmail.com>
+
+> C'est pour ?a que j'ai d'abord dit de rendre le champ public ou de
+> rajouter une m?thode 'accesseur'.
+
+
+
+Bien sure. Suis-je b?te. Bon, c'est parti pour l'accesseur alors.
+Merci
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061107/6b38326b/attachment.html>
+
+From pascal at apstat.com  Tue Nov  7 19:28:29 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 7 Nov 2006 13:28:29 -0500
+Subject: [Plearn-core] Meilleurs moyens de recuperer et de
+In-Reply-To: <20061107151419.GA23977@opale.iro.umontreal.ca>
+References: <c81af8c30611070704hc9667e8x2b67fbe86d9b6c6a@mail.gmail.com>
+	<20061107151419.GA23977@opale.iro.umontreal.ca>
+Message-ID: <8863D6A1-8962-44AE-ADEF-F2DBC15D232E@apstat.com>
+
+> Selon les cas, tu peux mettre un champ public ou juste rajouter une
+> m?thode 'accesseur'.
+
+C'est bien ce qu'il faut faire.
+
+> L'id?e d'avoir des getOptions qui retournent des trucs plus  
+> int?ressants
+> que des string a d?j? ?t? discut?e, mais pas encore impl?ment?e.
+
+Les getOption/setOption ne sont pas destin?s ? ?tre utilis?s  
+habituellement quand on programme en C++, sauf dans le cas  
+particulier ou on a *vraiment besoin* d'un m?canisme *g?n?rique* pour  
+jouer avec les options (Par ex. un HyperLearner qui doit essayer pour  
+un objet sous-jacent quelconque des valeurs d'option parmi une liste  
+sp?cifi?e par l'utilsateur). Sinon c'est en effet un peu idiot de  
+passer par la s?rialisation/d?s?rialisation en string quand en C++ on  
+peut de fa?on plus simple et efficace manipuler l'option directement  
+ou via des accesseurs. J'avais d'ailleurs l'habitude de mettre la  
+plupart des options public (tout du moins pour ce qui est des options  
+de build).
+
+Au fait, Jaonary, comme tu as fait plein de petites modifs  
+potentiellement utiles ? PLearn, si tu veux, on pourrait en int?grer  
+une bonne partie dans la version sous svn. Il suffirait que tu nous  
+envoie le r?sultat d'un 'svn diff' ? la racine de PLearn.
+
+-- Pascal
+
+
+
+From pascal at apstat.com  Tue Nov  7 19:49:36 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 7 Nov 2006 13:49:36 -0500
+Subject: [Plearn-core] plearn vmat view AND plearn vmat dictionary have been
+	renamed
+Message-ID: <92395BA3-F47C-45FE-B070-DDEAD0085B10@apstat.com>
+
+As part of an over-due rationalization effort in the external- 
+dependency hell of PLearn (and to see what I can get working on OS  
+X), I have tried to isolate parts of PLearn that require non-core  
+external dependencies.
+
+This is in particular the case of two subcommands of the plearn vmat  
+command:
+"vmat view" which depends on ncurses and has been moved to its own  
+command: vmat_view (with an underscore)
+"vmat dictionary" which requires linking with the python runtime and  
+has been moved to its own command: vmat_dictionary
+
+Note: On OS X, I have not yet been able to get plearn to link with  
+the python runtime (numarray linking problems), so be aware that  
+until this is resolved (and I'm moving to other more pressing  
+issues), PythonCodeSnippet, and whatever depends on them are deemed  
+not currently portable to Mac OS X. But I was able to get the other  
+99% of PLearn to compile and link quite easily.
+
+Pascal Vincent
+
+
+
+From jaonary at gmail.com  Wed Nov  8 18:43:36 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 8 Nov 2006 18:43:36 +0100
+Subject: [Plearn-core] Moi pas comprendres :-)
+Message-ID: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+
+Je suis entrain de faire quelque chose de relativement facile mais qui
+me bloque pourtant.
+Je voudrai tout simplement initialiser un Vec ? partir d'un string,
+exactement comme dans l'exemple du programer's guide:
+
+Vec v(4)
+v << "1 2 3 4"
+
+et la quand j'execute j'obtients:
+
+ ERROR: In TVec::input error encountered while reading vector
+
+donc je change un peu en faisant
+
+Vec v(3)
+v << "1,2,3,4"
+
+et la j'obtients en faisant cout << v :
+
+1 2 3
+
+En gros, quand je lui donne le bon nombre d'?l?ment j'ai une erreur
+
+Une petite id?e ?
+
+
+Jaonary
+
+From pascal at apstat.com  Wed Nov  8 18:51:43 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 8 Nov 2006 12:51:43 -0500
+Subject: [Plearn-core] Moi pas comprendres :-)
+In-Reply-To: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+References: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+Message-ID: <56AAE119-F07F-447D-9CA3-EFBBF1890CAA@apstat.com>
+
+
+> Je suis entrain de faire quelque chose de relativement facile mais qui
+> me bloque pourtant.
+> Je voudrai tout simplement initialiser un Vec ? partir d'un string,
+> exactement comme dans l'exemple du programer's guide:
+>
+> Vec v(4)
+> v << "1 2 3 4"
+>
+> et la quand j'execute j'obtients:
+>
+>  ERROR: In TVec::input error encountered while reading vector
+
+Je ne suis pas certain, mais je suspecte que ce soit li? ? la qestion  
+du look-ahead d'1 caract?re.
+Si tu rajoutes un espace apr?s ton 4, est-ce que ?a fonctionne?
+
+-- Pascal
+
+
+
+
+From jaonary at gmail.com  Wed Nov  8 19:05:59 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 8 Nov 2006 19:05:59 +0100
+Subject: [Plearn-core] Moi pas comprendres :-)
+In-Reply-To: <56AAE119-F07F-447D-9CA3-EFBBF1890CAA@apstat.com>
+References: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+	<56AAE119-F07F-447D-9CA3-EFBBF1890CAA@apstat.com>
+Message-ID: <c81af8c30611081005s125115c9m7e3654dd22788d43@mail.gmail.com>
+
+On 11/8/06, Pascal Vincent <pascal at apstat.com> wrote:
+>
+> > Je suis entrain de faire quelque chose de relativement facile mais qui
+> > me bloque pourtant.
+> > Je voudrai tout simplement initialiser un Vec ? partir d'un string,
+> > exactement comme dans l'exemple du programer's guide:
+> >
+> > Vec v(4)
+> > v << "1 2 3 4"
+> >
+> > et la quand j'execute j'obtients:
+> >
+> >  ERROR: In TVec::input error encountered while reading vector
+>
+> Je ne suis pas certain, mais je suspecte que ce soit li? ? la qestion
+> du look-ahead d'1 caract?re.
+> Si tu rajoutes un espace apr?s ton 4, est-ce que ?a fonctionne?
+
+Oui en effet, quand je rajoute un espace ?a fonctionne. Sinon, je
+voudrais aussi savoir comment on fait si on veut un autre s?parateur
+different de l'espace. Par exemple un ;
+
+Jaonary
+
+From chapados at apstat.com  Thu Nov  9 00:08:28 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Wed, 08 Nov 2006 18:08:28 -0500
+Subject: [Plearn-core] Moi pas comprendres :-)
+In-Reply-To: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+References: <c81af8c30611080943h6adb1df8y96b05beeafad46d5@mail.gmail.com>
+Message-ID: <4552636C.50409@apstat.com>
+
+Tu n'as qu'? utiliser lexical cast:
+
+#include <plearn/base/lexical_cast.h>
+
+...
+
+Vec v = lexical_cast<Vec>("[1 2 3 4]");
+
+C'est un m?canisme enti?rement g?n?rique qui passe par les PStream pour 
+te permettre d'initialiser n'importe quel type support? par PStream 
+depuis une string.  Bien s?r, Vec, Mat, etc. sont support?s.
+
+    + Nicolas
+
+
+Jaonary Rabarisoa wrote:
+> Je suis entrain de faire quelque chose de relativement facile mais qui
+> me bloque pourtant.
+> Je voudrai tout simplement initialiser un Vec ? partir d'un string,
+> exactement comme dans l'exemple du programer's guide:
+>
+> Vec v(4)
+> v << "1 2 3 4"
+>
+> et la quand j'execute j'obtients:
+>
+>  ERROR: In TVec::input error encountered while reading vector
+>
+> donc je change un peu en faisant
+>
+> Vec v(3)
+> v << "1,2,3,4"
+>
+> et la j'obtients en faisant cout << v :
+>
+> 1 2 3
+>
+> En gros, quand je lui donne le bon nombre d'?l?ment j'ai une erreur
+>
+> Une petite id?e ?
+>
+>
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From jaonary at gmail.com  Wed Nov 15 12:56:03 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 15 Nov 2006 12:56:03 +0100
+Subject: [Plearn-core] ERROR: TypeFactory: requested type "BinaryStump" is
+	not registered in type map.
+Message-ID: <c81af8c30611150356m5d21fbf8scbf65f87689db37c@mail.gmail.com>
+
+Salut tout le monde,
+J'obtients cette erreur en faisant
+
+AdaBoost* learner = new AdaBoost;
+load("learner.psave",learner);
+pout << *learner << endl;
+
+dans learner.psave j'ai :
+
+AdaBoost(
+weak_learners = 10 [ *1 ->BinaryStump(
+feature = 789 ;
+threshold = 0.00401132288457126986 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 211 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*2 ->BinaryStump(
+feature = 199 ;
+threshold = 0.0017162368057300828 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 233 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*3 ->BinaryStump(
+feature = 359 ;
+threshold = 0.000907475747666112434 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 215 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*4 ->BinaryStump(
+feature = 679 ;
+threshold = 0.0106611457396855562 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 212 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*5 ->BinaryStump(
+feature = 59 ;
+threshold = 0.00135633071846136396 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 231 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*6 ->BinaryStump(
+feature = 198 ;
+threshold = 0.000126454223571067278 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 210 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*7 ->BinaryStump(
+feature = 869 ;
+threshold = 0.000515652572074498357 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 199 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*8 ->BinaryStump(
+feature = 389 ;
+threshold = 0.0619387075283144573 ;
+tag = 1 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 221 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*9 ->BinaryStump(
+feature = 639 ;
+threshold = 0.0207634960866365861 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 241 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+*10 ->BinaryStump(
+feature = 959 ;
+threshold = 0.00762950707439525363 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 234 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+] ;
+voting_weights = 10 [ 0.996215082345102809 0.947274395746035669
+0.910265965951113198 0.838258320218858599 0.861092531624579882
+0.946466021245645939 0.809529764488484238 0.801483217457905628
+0.95767680781976372 0.870285401723582042 ] ;
+sum_voting_weights = 8.93854750862107217 ;
+initial_sum_weights = 1 ;
+weak_learner_template = *11 ->BinaryStump(
+feature = 0 ;
+threshold = 0 ;
+tag = 0 ;
+expdir = "" ;
+seed = -1 ;
+stage = 0 ;
+n_examples = -1 ;
+inputsize = -1 ;
+targetsize = -1 ;
+weightsize = -1 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+;
+target_error = 0.5 ;
+pseudo_loss_adaboost = 1 ;
+conf_rated_adaboost = 0 ;
+weight_by_resampling = 1 ;
+output_threshold = 0.5 ;
+provide_learner_expdir = 1 ;
+early_stopping = 1 ;
+save_often = 1 ;
+compute_training_error = 1 ;
+expdir = "HOME:experiences/iccv2005tut/learning/Split0/LearnerExpdir/" ;
+seed = -1 ;
+stage = 10 ;
+n_examples = 200 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 10 ;
+report_progress = 1 ;
+verbosity = 3 ;
+nservers = 0 ;
+save_trainingset_prefix = ""  )
+
+Je crois comprendre un peu le probleme mais je ne sais pas trop o?
+faire mes modification;
+
+Merci d'avance,
+
+Jaonary
+
+From delallea at iro.umontreal.ca  Wed Nov 15 15:00:31 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 15 Nov 2006 09:00:31 -0500
+Subject: [Plearn-core] ERROR: TypeFactory: requested type "BinaryStump"
+	is not registered in type map.
+In-Reply-To: <c81af8c30611150356m5d21fbf8scbf65f87689db37c@mail.gmail.com>
+References: <c81af8c30611150356m5d21fbf8scbf65f87689db37c@mail.gmail.com>
+Message-ID: <20061115140030.GA7584@opale.iro.umontreal.ca>
+
+Est-ce que ton executable inclut bien BinaryStump.h ? Sinon tu ne
+pourras pas creer d'objet BinaryStump.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Wed Nov 15 16:29:26 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 15 Nov 2006 16:29:26 +0100
+Subject: [Plearn-core] ERROR: TypeFactory: requested type "BinaryStump"
+	is not registered in type map.
+In-Reply-To: <20061115140030.GA7584@opale.iro.umontreal.ca>
+References: <c81af8c30611150356m5d21fbf8scbf65f87689db37c@mail.gmail.com>
+	<20061115140030.GA7584@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30611150729idc5df1n125ae68006228030@mail.gmail.com>
+
+On 11/15/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> Est-ce que ton executable inclut bien BinaryStump.h ? Sinon tu ne
+> pourras pas creer d'objet BinaryStump.
+>
+
+Oui, c'?tait bien ?a. Le fichier BinaryStump.h n'?tait pas dans le include.
+Merci :-)
+
+Jaonary
+
+From jaonary at gmail.com  Fri Nov 17 15:25:15 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 17 Nov 2006 15:25:15 +0100
+Subject: [Plearn-core] Les fichiers .pmat et espace disque
+Message-ID: <c81af8c30611170625v7a8aed16ucb357b3168f29019@mail.gmail.com>
+
+Salut tout le monde,
+
+J'ai de nouvelles questions ? vous soumettre. Ces derniers temps j'ai fais
+tourner beacoup de calculs qui prend ?norm?ment de temps mais aussi de
+l'espace disque car je sauvegardais beaucoup de choses. Quand on a fail les
+comptes, ce qui est le plus p?nalisant c'est le fait que le format binaire
+de PLearn i.e .pmat  g?nere plein de petits fichiers ? cot?s de la vraie
+matrice. Pour vous dire, j'arriviais ? occuper pr?s de 70 G pour stocker des
+petites matrice de taille environ 1000, mais il y en avait quand meme
+beaucoup de matrice (environ 2500000).
+
+Ma question est alors, pourquoi les metadonn?es des vmatrix sont dans des
+fichier auxilliaire non pas dans le fichier lui meme ? Est-ce PLearn a
+d'autre format de fichier binaire ? part les .pmat pour rem?dier ? ce
+probl?me.
+
+Bien ? vous,
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061117/7a392d6d/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Nov 17 15:34:46 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 17 Nov 2006 09:34:46 -0500
+Subject: [Plearn-core] Les fichiers .pmat et espace disque
+In-Reply-To: <c81af8c30611170625v7a8aed16ucb357b3168f29019@mail.gmail.com>
+References: <c81af8c30611170625v7a8aed16ucb357b3168f29019@mail.gmail.com>
+Message-ID: <20061117143444.GA16159@opale.iro.umontreal.ca>
+
+Les m?tadonn?es sont dans des fichiers auxiliaires car certaines sont
+universelles et ind?pendantes du format de fichier, et doivent pouvoir
+?tre lues par du code qui ne comprend pas n?cessairement le format pmat.
+
+Tu pourrais essayer de rajouter une option dans FileVMatrix qui permet
+de ne *pas* avoir de metadatadir, et voir si ?a peut fonctionner quand
+m?me sans celui-ci (je pense que oui).
+Une autre approche serait, si possible, de "regrouper" tes matrices dans
+une seule grosse matrice, dont tu acc?derais ensuite ? des sous-matrices
+(pour r?cup?rer tes petites matrices originales).
+Note aussi que le format .dmat (DiskVMatrix) compresse un peu les
+donn?es (mais cr?e aussi des fichiers auxiliaires, donc ce n'est pas
+forc?ment ce que tu veux).
+
+--
+Olivier
+
+On 17 Nov 2006, Jaonary Rabarisoa wrote:
+> Salut tout le monde,
+> 
+> J'ai de nouvelles questions ? vous soumettre. Ces derniers temps j'ai fais
+> tourner beacoup de calculs qui prend ?norm?ment de temps mais aussi de l'espace
+> disque car je sauvegardais beaucoup de choses. Quand on a fail les comptes, ce
+> qui est le plus p?nalisant c'est le fait que le format binaire de PLearn i.e
+> .pmat  g?nere plein de petits fichiers ? cot?s de la vraie matrice. Pour vous
+> dire, j'arriviais ? occuper pr?s de 70 G pour stocker des petites matrice de
+> taille environ 1000, mais il y en avait quand meme beaucoup de matrice (environ
+> 2500000).
+> 
+> Ma question est alors, pourquoi les metadonn?es des vmatrix sont dans des
+> fichier auxilliaire non pas dans le fichier lui meme ? Est-ce PLearn a d'autre
+> format de fichier binaire ? part les .pmat pour rem?dier ? ce probl?me.
+> 
+> Bien ? vous,
+> 
+> 
+> Jaonary
+
+
+
+From chapados at apstat.com  Wed Nov 29 02:13:05 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Tue, 28 Nov 2006 20:13:05 -0500
+Subject: [Plearn-core] Early stopping et NNet
+In-Reply-To: <A9183402-BFA4-454E-ACBA-E355690D796E@apstat.com>
+References: <456C76D3.7060509@apstat.com>
+	<A9183402-BFA4-454E-ACBA-E355690D796E@apstat.com>
+Message-ID: <456CDEA1.4010202@apstat.com>
+
+[cc ? plearn-core d'une discussion entre Pascal/Olivier/Nicolas pour le 
+b?n?fice de tous.]
+
+Pascal Vincent wrote:
+>> Salut Pascal et Olivier,
+>>
+>> La boucle d'entra?nement de NNet ressemble pr?sentement ? ceci:
+>>
+>>    bool early_stop=false;
+>>    while(stage<nstages && !early_stop)
+>>    {
+>>        // ...
+>>        optimizer->early_stop = false;
+>>        optimizer->optimizeN(*train_stats);
+>>        // ...
+>>    }
+> Je ne sais plus bien ce que fait cet "early stop" de l'optimiseur. 
+> J'imagine que ?a correspond ? l'utilisation d'un crit?re pour d?tecter 
+> la convergence des param?tres.
+> Dans ce cas il faut faire attention ? ne pas le confondre avec un 
+> "early stopping" bas? sur l'?volution de l'erreur de validation (ce 
+> qui est impl?ment? dans le cadre d'un hyper-learner qui fait varier 
+> nstages).
+En effet, il ne faut pas confondre les deux.  La notion de "early 
+stopping" est employ?e par l'optimiseur (du moins ConjGradientOptimizer 
+fait quelque chose de raisonnable) lorsqu'il a atteint un minimum local. 
+Dans un tel cas, il n'y a aucun gain ? poursuivre la descente.
+>> Comme vous le voyez, la variable "early_stop" n'est jamais modifi?e.  
+>> Malheureusement, il arrive parfois qu'on rencontre un plat vaste et 
+>> malencontreux de la fonction de co?t, lequel ralentit ?norm?ment 
+>> l'entra?nement; il faudrait que NNet puisse utiliser l'information de 
+>> early-stopping retourn?e par l'Optimizer!
+>
+> De quelle mani?re? Qu'as tu en t?te de faire par rapport aux "plat 
+> vaste et malencontreux", mis ? part t'arr?ter et consid?rer qu'on a 
+> atteint un minimum?
+C'est cela. On s'arr?te. En particulier, NNet doit sortir de sa boucle 
+d'entra?nement!  Nous avons des cas ici o? l'entra?nement prend 2 
+semaines plut?t que 2 jours parce que NNet perd tout son temps ? essayer 
+de descendre d'un minimum local avec un ConjGradientOptimizer, qui ? 
+r?p?tition, tente d'annoncer son impuissance sans qu'on ne l'?coute.
+
+>>   Y a-t-il une raison pourquoi le code est comme ci-haut, plut?t 
+>> qu'une version plus logique qui serait:
+>>
+>>    bool early_stop=false;
+>>    while(stage<nstages && !early_stop)
+>>    {
+>>        // ...
+>>        early_stop = optimizer->optimizeN(*train_stats);
+>>        // ...
+>>    }
+>>
+>
+> Oui, cela me para?trait logique. Je ne vois pas d'objection. A 
+> condition que l'optimiseur retourne true quand ?a a vraiment du bon sens.
+Ce qui est le cas pour ConjGradientOptimizer.
+
+>> En passant, j'utilise une telle forme dans un d?rivatif tr?s partiel 
+>> de NNet (qui s'appelle FinancialNNet, et qui n'h?rite point de NNet), 
+>> et ?a fonctionne sans probl?me.  Le seul hic est qu'il faut effectuer
+>>
+>>    stage = nstages;
+>>
+>> apr?s le while(), au cas o? il y aurait eu du early-stopping.
+>
+> ?a, ce n'est pas clair. ?a d?pend de la s?mantique qu'on veut donner ? 
+> stage. Si on veut que ce soit le nombre de tours d'optimiseur 
+> effectivement effectu?s (ce qui est l'id?e ? l'origine), il n'y a pas 
+> de raison de le setter ? nstages. Mais il faudrait alors que NNet (ou 
+> bien l'optimiseur) soit assez intelligent pour retourner imm?diatement 
+> si il est appel? ? nouveau avec un nstages sup?rieur (dans le cadre 
+> d'un hyperlearner  qui ferait du v?ritable "early stopping", sur la 
+> base d'une performance de validation, en faisant varier nstages).
+C'est l? le probl?me: si on n'effectue pas cette affectation, le learner 
+ne s'ins?re pas bien dans un learner englobant.  La notion de "nstages" 
+donne au learner un BUGDET de stages.  S'il a r?ussi ? s'entra?ner en ne 
+d?pensant pas tout son budget, on n'a pas ? forcer le learner ? tout le 
+d?penser.  Mais c'est ce qui arrive si on ne met pas ? jour nstages: un 
+HyperLearner englobant risque d'?tre pas mal confus, car ?a forcerait -- 
+contre nature -- l'optimiseur ? essayer de sortir d'un minimum local, ce 
+qui pourrait ?tre impossible (p.e. avec un ConjGradientOptimizer).
+
+Consid?re un autre point.  Suppose qu'on veuille d?river de NNet pour 
+faire un entra?nement en deux ?tapes: une premi?re passe de "prefitting" 
+selon un premier crit?re, suivie d'une deuxi?me passe selon un autre 
+crit?re (qu'on pr?sume plus difficile ? optimiser que le premier, mais 
+qui devrait tirer b?n?fice d'un bon point de d?part r?sultant du 
+prefitting).  Dans ce cas, on veut clairement attribuer deux budgets: un 
+pour le prefitting, et un pour le "fine-tuned fitting".  S'il y a eu 
+early-stopping apr?s le prefitting, je ne veux pas que augmenter (par un 
+hasard qui r?sulte des al?as du early-stopping) le budget du fine-tuned 
+fitting.  Je veux que ce budget reste constant.
+
+L'id?e d'amener "stage" ? "nstages" apr?s l'entra?nement est de dire: 
+"Moi, PLearner, j'ai fini avec succ?s la t?che d'entra?nement ? 
+l'int?rieur du budget prescrit".  On pourrait bien s?r ajouter un 
+train-cost qui produirait des statistiques sur le nombre effectif de 
+stages requis avant le early-stopping, mais "stage" devrait ?tre amen? ? 
+"nstages" apr?s train (dont c'est la d?finition, faut-il le rappeler).
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From pascal at apstat.com  Wed Nov 29 15:37:56 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 29 Nov 2006 09:37:56 -0500
+Subject: [Plearn-core] Early stopping et NNet
+In-Reply-To: <456CDEA1.4010202@apstat.com>
+References: <456C76D3.7060509@apstat.com>
+	<A9183402-BFA4-454E-ACBA-E355690D796E@apstat.com>
+	<456CDEA1.4010202@apstat.com>
+Message-ID: <A523E387-E39D-47A5-A94D-ABCCF37B82FF@apstat.com>
+
+>> ?a, ce n'est pas clair. ?a d?pend de la s?mantique qu'on veut  
+>> donner ? stage. Si on veut que ce soit le nombre de tours  
+>> d'optimiseur effectivement effectu?s (ce qui est l'id?e ?  
+>> l'origine), il n'y a pas de raison de le setter ? nstages. Mais il  
+>> faudrait alors que NNet (ou bien l'optimiseur) soit assez  
+>> intelligent pour retourner imm?diatement si il est appel? ?  
+>> nouveau avec un nstages sup?rieur (dans le cadre d'un  
+>> hyperlearner  qui ferait du v?ritable "early stopping", sur la  
+>> base d'une performance de validation, en faisant varier nstages).
+> C'est l? le probl?me: si on n'effectue pas cette affectation, le  
+> learner ne s'ins?re pas bien dans un learner englobant.  La notion  
+> de "nstages" donne au learner un BUGDET de stages.  S'il a r?ussi ?  
+> s'entra?ner en ne d?pensant pas tout son budget, on n'a pas ?  
+> forcer le learner ? tout le d?penser.  Mais c'est ce qui arrive si  
+> on ne met pas ? jour nstages: un HyperLearner englobant risque  
+> d'?tre pas mal confus, car ?a forcerait -- contre nature --  
+> l'optimiseur ? essayer de sortir d'un minimum local, ce qui  
+> pourrait ?tre impossible (p.e. avec un ConjGradientOptimizer).
+>
+> Consid?re un autre point.  Suppose qu'on veuille d?river de NNet  
+> pour faire un entra?nement en deux ?tapes: une premi?re passe de  
+> "prefitting" selon un premier crit?re, suivie d'une deuxi?me passe  
+> selon un autre crit?re (qu'on pr?sume plus difficile ? optimiser  
+> que le premier, mais qui devrait tirer b?n?fice d'un bon point de  
+> d?part r?sultant du prefitting).  Dans ce cas, on veut clairement  
+> attribuer deux budgets: un pour le prefitting, et un pour le "fine- 
+> tuned fitting".  S'il y a eu early-stopping apr?s le prefitting, je  
+> ne veux pas que augmenter (par un hasard qui r?sulte des al?as du  
+> early-stopping) le budget du fine-tuned fitting.  Je veux que ce  
+> budget reste constant.
+>
+> L'id?e d'amener "stage" ? "nstages" apr?s l'entra?nement est de  
+> dire: "Moi, PLearner, j'ai fini avec succ?s la t?che d'entra?nement  
+> ? l'int?rieur du budget prescrit".  On pourrait bien s?r ajouter un  
+> train-cost qui produirait des statistiques sur le nombre effectif  
+> de stages requis avant le early-stopping, mais "stage" devrait ?tre  
+> amen? ? "nstages" apr?s train (dont c'est la d?finition, faut-il le  
+> rappeler).
+
+Je ne suis toujours pas convaincu. Pour moi mettre "stage=nstages"  
+sent le "work-around" pour contourner le fait que NNet et/ou  
+l'optimiseur sont trop idiot pour se souvenir qu'ils n'ont rien a  
+faire si on rappelle ? nouveau leur m?thode train/optimize. Et ce  
+work-around ne r?gle pas tout: Ex: on utilise un HyperLearner qui  
+essaye des valeurs croissantes de nstages pour faire de l'early- 
+stopping bas? sur une performance sur un validation set. Mettons  
+qu'il essaye des valeurs de nstages de 1 ? 1000 par incr?ment de 10.  
+Alors ? chaque fois qu'il va rappeler le train du NNet, on aura  
+stage<nstages et l'optimiseur va ?tre rappel?!
+
+Une solution propre que je vois est que NNet ait un champ booleen  
+genre 'optimization_converged' qui soit mis a true lorsque  
+l'optimiseur retourne qu'il y a convergence. Ainsi lorsque train est  
+rappel? ? nouveau et que optimization_converged est true, m?me si  
+stage<nstages, le train ne fait rien.
+Bien entendu, il faut que les m?thodes qui changent le setting (forget 
+() setTrainingSet() changeOptions() et buildI()) remettent  
+optimization_converged a false.
+
+En fait plut?t que de le faire au niveau de NNet, on pourrait mettre  
+en place un tel m?canisme (c.a.d. "je me souviens que j'ai converg?  
+et donc que je n'ai rien a faire quand on appelle mes m?thodes  
+optimize") au niveau des optimiseurs. L? aussi il suffit de remettre  
+le flag ? false lorsqu'une m?thode est appel?e qui change le setting  
+(reset() setToOptimize() ). MAIS D'AILLEURS N'ETAIT-CE PAS LA LE ROLE  
+ENVISAGE DE LA VARIABLE early_stop d'Optimizer!?!??!!!!
+
+Ou bien y a-t-il qqch qui m'?chappe?
+
+-- Pascal
+
+
+
+From jaonary at gmail.com  Wed Nov 29 17:18:02 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 29 Nov 2006 17:18:02 +0100
+Subject: [Plearn-core] Manier correcte pour charger un PLearner
+Message-ID: <c81af8c30611290818n5698c6f4y1fa158e633ec689d@mail.gmail.com>
+
+Bonjour ? tous,
+Je cherche ? charger un PLearner ? partir d'un fichier .psave que j'ai
+obtenue des mes precedents calculs
+et enregistrer ? l'aide la fonction save(...) de pl_load_and_save.h.
+J'ai commenc? par faire quelque chose comme ceci
+PP<PLearner> learner;
+if(type=="adaboost")
+learner = new AdaBoost;
+else if(type=="svm")
+learner = new SVMClassificationTorch();
+load(filename,*learner);
+
+Ceci marche mais m'oblige ? faire le if else if qui est un peu lourd.
+J'aimerai qu'il me charge n'importe quel learner sans
+que je precise dans mon code le type d'algorithme. J'imagine que les outils
+fournis par PLearn d?j? fait ce genre de chose mais je ne sais pas encore
+comment.
+
+Une petite id?e ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061129/086183b8/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Wed Nov 29 18:01:15 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 29 Nov 2006 18:01:15 +0100
+Subject: [Plearn-core] Manier correcte pour charger un PLearner
+In-Reply-To: <c81af8c30611290818n5698c6f4y1fa158e633ec689d@mail.gmail.com>
+References: <c81af8c30611290818n5698c6f4y1fa158e633ec689d@mail.gmail.com>
+Message-ID: <20061129170115.GA13823@pig.zood.org>
+
+On Wed, Nov 29, 2006, Jaonary Rabarisoa wrote:
+> Une petite id?e ?
+
+Tu peux faire :
+
+Object* o = loadObject(filename);
+PP<PLearner> learner = dynamic_cast<PLearner*>(o);
+
+Bien s?r, la deuxi?me ligne ne marchera que si ton fichier contient
+effectivement un PLearner...
+
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed Nov 29 18:24:25 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 29 Nov 2006 12:24:25 -0500
+Subject: [Plearn-core] Manier correcte pour charger un PLearner
+In-Reply-To: <20061129170115.GA13823@pig.zood.org>
+References: <c81af8c30611290818n5698c6f4y1fa158e633ec689d@mail.gmail.com>
+	<20061129170115.GA13823@pig.zood.org>
+Message-ID: <20061129172423.GA5167@opale.iro.umontreal.ca>
+
+On 29 Nov 2006, Pascal Lamblin wrote:
+> On Wed, Nov 29, 2006, Jaonary Rabarisoa wrote:
+> > Une petite id?e ?
+> 
+> Tu peux faire :
+> 
+> Object* o = loadObject(filename);
+> PP<PLearner> learner = dynamic_cast<PLearner*>(o);
+> 
+> Bien s?r, la deuxi?me ligne ne marchera que si ton fichier contient
+> effectivement un PLearner...
+> 
+
+Il me semble que les 2 lignes suivantes devraient aussi marcher :
+PP<PLearner> learner;
+load(filename, learner); // From load_and_save.h
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Wed Nov 29 21:27:49 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 29 Nov 2006 21:27:49 +0100
+Subject: [Plearn-core] Manier correcte pour charger un PLearner
+In-Reply-To: <20061129172423.GA5167@opale.iro.umontreal.ca>
+References: <c81af8c30611290818n5698c6f4y1fa158e633ec689d@mail.gmail.com>
+	<20061129170115.GA13823@pig.zood.org>
+	<20061129172423.GA5167@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30611291227q35549b8eo7c10f191a164d9ed@mail.gmail.com>
+
+> Il me semble que les 2 lignes suivantes devraient aussi marcher :
+> PP<PLearner> learner;
+> load(filename, learner); // From load_and_save.h
+>
+
+J'ai d?j? test? cette mani?re mais on obtient un segmentation fault. A
+mon avis la fonction load ne fait pas d'allocation.
+Passer par loadObject semble marcher.
+
+Merci
+
+Jaonary
+

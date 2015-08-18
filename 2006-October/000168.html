@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Dataset et VMatrix
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Dataset%20et%20VMatrix&In-Reply-To=%3C20061002143104.GA9397%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000167.html">
+   <LINK REL="Next"  HREF="000169.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Dataset et VMatrix</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Dataset%20et%20VMatrix&In-Reply-To=%3C20061002143104.GA9397%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Dataset et VMatrix">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Oct  2 16:31:05 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000167.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+        <LI>Next message: <A HREF="000169.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#168">[ date ]</a>
+              <a href="thread.html#168">[ thread ]</a>
+              <a href="subject.html#168">[ subject ]</a>
+              <a href="author.html#168">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Ca d&#233;pend de ce que tu veux dire par &quot;en m&#233;moire&quot;. Si tu es en train
+d'&#233;crire un programme C++ et que tes donn&#233;es sont stock&#233;es dans une Mat
+PLearn (i.e. un TMat&lt;real&gt;, c'est la m&#234;me chose), c'est facile :
+
+    Mat X, Y;
+    (... Fill X and Y here ...)
+    VMat train = new ConcatColumnsVMatrix(VMat(X), VMat(Y));
+    train-&gt;defineSizes(X.width(), Y.width()); // Set inputsize and
+                                              // targetsize.
+    learner-&gt;setTrainingSet(train);
+    learner-&gt;train();
+
+Si c'est dans un script et que tu as deux VMat X et Y qui chargent des
+donn&#233;es en m&#233;moire, ca donnerait quelque chose du genre
+
+    PTester(
+        ...
+        dataset =
+            ConcatColumnsVMatrix(
+                sources = [
+                    X
+                    Y
+                ]
+                inputsize = ... # (X's width)
+                targetsize = ... # (Y's width)
+                weightsize = 0
+            )
+        ...
+    )
+
+Et si c'est un script Python tu peux faire le meme genre de construction
+de VMats.
+
+--
+Olivier
+
+On 02 Oct 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Boujour tout le monde,
+</I>&gt;<i> J'ai un petit probl&#232;me concernant l'utilisation des VMatrix avec un PLearner.
+</I>&gt;<i> Avant de faire un 'train()' on doit g&#233;n&#233;ralement donner un ensemble
+</I>&gt;<i> d'apprentissage au PLearner. Si j'ai bien
+</I>&gt;<i> compris cet ensemble d'apprentissage est stock&#233; dans une VMatrix et ce dernier
+</I>&gt;<i> ressemble &#224; un gigantesque tableau
+</I>&gt;<i> de la forme (X,Y,W,O) o&#249;
+</I>&gt;<i> X = input
+</I>&gt;<i> Y = target
+</I>&gt;<i> W = poids
+</I>&gt;<i> O = autres donn&#233;
+</I>&gt;<i> Ma question b&#234;te est la suivante :
+</I>&gt;<i> Si j'ai d&#233;j&#224; les matrices X et Y (&#233;ventuellement W et O) en m&#233;moir, obtenues
+</I>&gt;<i> d'une fa&#231;on ou d'une autre, comment dois-je
+</I>&gt;<i> faire pour cr&#233;er ma VMatrix d'ensemble d'apprentissage sans cr&#233;er une nouvelle
+</I>&gt;<i> VMatrix et recopier X et Y (W,O) ?
+</I>&gt;<i> J'ai d&#233;j&#224; vu qu'il y peut &#234;tres des sous classe de VMatrix qui peuvent m'aider,
+</I>&gt;<i> comme ConcatColsVMatrix, mais je ne sais pas trop comment
+</I>&gt;<i> les utiliser :-(
+</I>&gt;<i> 
+</I>&gt;<i> Cordialement,
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000167.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+	<LI>Next message: <A HREF="000169.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#168">[ date ]</a>
+              <a href="thread.html#168">[ thread ]</a>
+              <a href="subject.html#168">[ subject ]</a>
+              <a href="author.html#168">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

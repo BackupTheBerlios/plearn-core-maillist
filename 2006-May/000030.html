@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] apdispatch
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20apdispatch&In-Reply-To=%3C20060509133408.GA19742%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000029.html">
+   <LINK REL="Next"  HREF="000031.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] apdispatch</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20apdispatch&In-Reply-To=%3C20060509133408.GA19742%40pig.zood.org%3E"
+       TITLE="[Plearn-core] apdispatch">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue May  9 15:34:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000029.html">[Plearn-core] Added extrasize field to VMatrix
+</A></li>
+        <LI>Next message: <A HREF="000031.html">[Plearn-core] apdispatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#30">[ date ]</a>
+              <a href="thread.html#30">[ thread ]</a>
+              <a href="subject.html#30">[ subject ]</a>
+              <a href="author.html#30">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut les gens,
+
+Est-ce que vous savez s'il y a une raison particuli&#232;re (et le cas
+&#233;ch&#233;ant, laquelle) pour que dans le fichier .TMP_APDISPATCH... la ligne
+de commande principale soit entre parenth&#232;ses et suivie d'un &#171; &amp; &#187; ?
+
+Je comprends bien qu'il s'agit de lancer la commande en arri&#232;re-plan
+dans un sous-shell, mais est-ce que vous vous rappelez dans quel but &#231;a
+a &#233;t&#233; fait, et si c'est important ?
+
+En fait, &#231;a pose un probl&#232;me au Lisa, &#224; cause du syst&#232;me de montage NFS
+par Kerberos. Sans entrer dans les d&#233;tails, le syst&#232;me mis en place pour
+prolonger automatiquement les tickets (pour pouvoir lancer des
+exp&#233;riences durant plus de dix heures) semble d&#233;tecter que le programme
+lanc&#233; sur le cluster (le script, donc) est inactif (ou n'existe plus, ou
+a termin&#233;), m&#234;me si la commande &#171; plearn ... &#187; n'a pas fini. Du coup il
+ne prolonge plus les tickets, et l'exp&#233;rience plante au bout d'un peu
+moins de dix heures.
+
+Est-ce qu'il serait emb&#234;tant que le .TMP_... se pr&#233;sente comme &#231;a :
+#!/bin/sh
+echo Executing command pioupiou  [HOST=`printenv HOST`  PID=$$]&gt; LOGS/pioupiou__20060509_09:30:34 ; pioupiou  &gt;&gt; LOGS/pioupiou__20060509_09:30:34 2&gt;&gt; LOGS/pioupiou__20060509_09:30:34 ; echo Job finished at `date` &gt;&gt; LOGS/pioupiou__20060509_09:30:34
+?
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000029.html">[Plearn-core] Added extrasize field to VMatrix
+</A></li>
+	<LI>Next message: <A HREF="000031.html">[Plearn-core] apdispatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#30">[ date ]</a>
+              <a href="thread.html#30">[ thread ]</a>
+              <a href="subject.html#30">[ subject ]</a>
+              <a href="author.html#30">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

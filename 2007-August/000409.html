@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Passage &#224; numpy: al&#233;as
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_numpy%3D3A_al%3DE9as%3F%3D&In-Reply-To=%3C29648D26-F083-47D7-8F88-B9B62ED29780%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000408.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Passage &#224; numpy: al&#233;as</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_numpy%3D3A_al%3DE9as%3F%3D&In-Reply-To=%3C29648D26-F083-47D7-8F88-B9B62ED29780%40apstat.com%3E"
+       TITLE="[Plearn-core] Passage &#224; numpy: al&#233;as">chapados at apstat.com
+       </A><BR>
+    <I>Mon Aug 13 16:07:43 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000408.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#409">[ date ]</a>
+              <a href="thread.html#409">[ thread ]</a>
+              <a href="subject.html#409">[ subject ]</a>
+              <a href="author.html#409">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour &#224; tous,
+
+Une petite remarque d'int&#233;r&#234;t public concernant l'interaction entre  
+numpy et matplotlib/pylab:: comme vous le savez s&#251;rement, matplotlib  
+contient sa propre couche d'abstraction num&#233;rique qui est suppos&#233;ment  
+compatible Numeric/numarray/numpy.  Matplotlib appelle cela numerix.
+
+CEPENDANT, il y a certaines diff&#233;rences comportementales entre une  
+array numerix qui wrappe numarray versus numpy (certaines m&#233;thodes  
+qui &#233;taient pr&#233;sentes avec numarray qui ne le sont plus sous numpy,  
+lorsque vus &#224; travers la lentille de matplotlib::numerix).  En  
+particulier, pour &#233;viter tout ennui, l'ordre des imports devient  
+important.  Vous devez inclure matplotlib AVANT numpy, pour que les  
+m&#233;thodes de ce dernier aient pr&#233;s&#233;ance.
+
+Par exemple:
+
+	from numpy.numarray import *
+	from pylab import *
+	a = arange(100.)
+	b = reshape(a, (10,10))
+	print b.min()         # La m&#233;thode min n'existe pas!
+
+alors que
+
+	from pylab import *
+	from numpy.numarray import *
+	a = arange(100.)
+	b = reshape(a, (10,10))
+	print b.min()         # La m&#233;thode existe!
+
+Vaut mieux &#234;tre avertis que de rencontrer un plantage bizarre...
+
+	+ Nicolas
+
+---
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20070813/22af7bcb/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20070813/22af7bcb/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000408.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#409">[ date ]</a>
+              <a href="thread.html#409">[ thread ]</a>
+              <a href="subject.html#409">[ subject ]</a>
+              <a href="author.html#409">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

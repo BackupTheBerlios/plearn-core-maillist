@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Meilleurs moyens de recuperer et de
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20recuperer%20et%20de&In-Reply-To=%3C8863D6A1-8962-44AE-ADEF-F2DBC15D232E%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000247.html">
+   <LINK REL="Next"  HREF="000249.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Meilleurs moyens de recuperer et de</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20recuperer%20et%20de&In-Reply-To=%3C8863D6A1-8962-44AE-ADEF-F2DBC15D232E%40apstat.com%3E"
+       TITLE="[Plearn-core] Meilleurs moyens de recuperer et de">pascal at apstat.com
+       </A><BR>
+    <I>Tue Nov  7 19:28:29 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000247.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+        <LI>Next message: <A HREF="000249.html">[Plearn-core] plearn vmat view AND plearn vmat dictionary have been	renamed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#248">[ date ]</a>
+              <a href="thread.html#248">[ thread ]</a>
+              <a href="subject.html#248">[ subject ]</a>
+              <a href="author.html#248">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Selon les cas, tu peux mettre un champ public ou juste rajouter une
+</I>&gt;<i> m&#233;thode 'accesseur'.
+</I>
+C'est bien ce qu'il faut faire.
+
+&gt;<i> L'id&#233;e d'avoir des getOptions qui retournent des trucs plus  
+</I>&gt;<i> int&#233;ressants
+</I>&gt;<i> que des string a d&#233;j&#224; &#233;t&#233; discut&#233;e, mais pas encore impl&#233;ment&#233;e.
+</I>
+Les getOption/setOption ne sont pas destin&#233;s &#224; &#234;tre utilis&#233;s  
+habituellement quand on programme en C++, sauf dans le cas  
+particulier ou on a *vraiment besoin* d'un m&#233;canisme *g&#233;n&#233;rique* pour  
+jouer avec les options (Par ex. un HyperLearner qui doit essayer pour  
+un objet sous-jacent quelconque des valeurs d'option parmi une liste  
+sp&#233;cifi&#233;e par l'utilsateur). Sinon c'est en effet un peu idiot de  
+passer par la s&#233;rialisation/d&#233;s&#233;rialisation en string quand en C++ on  
+peut de fa&#231;on plus simple et efficace manipuler l'option directement  
+ou via des accesseurs. J'avais d'ailleurs l'habitude de mettre la  
+plupart des options public (tout du moins pour ce qui est des options  
+de build).
+
+Au fait, Jaonary, comme tu as fait plein de petites modifs  
+potentiellement utiles &#224; PLearn, si tu veux, on pourrait en int&#233;grer  
+une bonne partie dans la version sous svn. Il suffirait que tu nous  
+envoie le r&#233;sultat d'un 'svn diff' &#224; la racine de PLearn.
+
+-- Pascal
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000247.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+	<LI>Next message: <A HREF="000249.html">[Plearn-core] plearn vmat view AND plearn vmat dictionary have been	renamed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#248">[ date ]</a>
+              <a href="thread.html#248">[ thread ]</a>
+              <a href="subject.html#248">[ subject ]</a>
+              <a href="author.html#248">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

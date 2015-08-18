@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44BE3A10.3010700%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000147.html">
+   <LINK REL="Next"  HREF="000146.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44BE3A10.3010700%40apstat.com%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">pascal at apstat.com
+       </A><BR>
+    <I>Wed Jul 19 15:56:32 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000147.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000146.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#145">[ date ]</a>
+              <a href="thread.html#145">[ thread ]</a>
+              <a href="subject.html#145">[ subject ]</a>
+              <a href="author.html#145">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pascal Lamblin wrote:
+&gt;<i> Je viens de finir (j'esp&#232;re) de le d&#233;p&#233;ter. Soyons francs, il met 4
+</I>&gt;<i> (quatre) fois plus de temps &#224; parser que la version de base (22 s au lieu
+</I>&gt;<i> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+</I>&gt;<i>
+</I>&gt;<i> Honn&#234;tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+</I>&gt;<i>   
+</I>Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+parce que le nouveau parseur parse le fichier au complet. As-tu essay&#233;, 
+pour voir, d'utiliser l'ancien &quot;parseur&quot; (rudimentaire mais efficace) 
+pour extraire rapidement les directives pr&#233;processeur non comment&#233;es, et 
+utiliser le nouveau parseur pour &quot;interpr&#233;ter&quot; juste le petit bout de 
+code r&#233;sultant?
+&gt;<i> Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+</I>&gt;<i> liste des includes par fichier (si un fichier ne change pas, sa liste
+</I>&gt;<i> d'include ne changera pas non plus) ?
+</I>&gt;<i>   
+</I>C'est une possibilit&#233; int&#233;ressante, qui a le potentiel de ramener le 
+temps &#224; presque 0 en moyenne, mais il faut faire attention &#224; deux choses:
+a) les fichiers de cache devront &#233;videmment &#234;tre s&#233;par&#233;s par option de 
+compilation (ou par &quot;define&quot;) pouvant influencer le pr&#233;processing et les 
+d&#233;pendances
+b) il y a essentiellement 2 fa&#231;ons d'envisager le caching: ou bien 
+associer un fichier de cache &#224; chaque .cc et .h, ou bien maintenir un 
+fichier de cache global contenant tout l'arbre de d&#233;pendance. Il est 
+probable qu'une part non n&#233;gligeable du temps pris par pymake consiste 
+en l'ouverture de nombreux fichiers, et il est fort possible que 
+d'ouvrir un seul fichier pour d&#233;s&#233;rialiser un gros arbre de d&#233;pendance, 
+en ne faisant par la suite que v&#233;rifier les dates des .h et .cc 
+concern&#233;s par la compilation pour voir si l'information d'un noeud a 
+besoin d'&#234;tre mise &#224; jour, soit pas mal plus efficace.
+&gt;<i> Ou alors il vaudrait mieux que je consacre mon temps &#224; autre chose ?
+</I>&gt;<i>   
+</I>Ah ben oui, &#231;a aussi. Ah. la difficile gestion des priorit&#233;s... ;-)
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000147.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000146.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#145">[ date ]</a>
+              <a href="thread.html#145">[ thread ]</a>
+              <a href="subject.html#145">[ subject ]</a>
+              <a href="author.html#145">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

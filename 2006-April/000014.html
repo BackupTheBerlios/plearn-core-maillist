@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Aide de PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C20060426224301.GA5470%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000013.html">
+   <LINK REL="Next"  HREF="000015.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Aide de PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C20060426224301.GA5470%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Aide de PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Apr 27 00:43:01 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000013.html">[Plearn-core] Aide de PLearn
+</A></li>
+        <LI>Next message: <A HREF="000015.html">[Plearn-core] pymake et #ifdef
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#14">[ date ]</a>
+              <a href="thread.html#14">[ thread ]</a>
+              <a href="subject.html#14">[ subject ]</a>
+              <a href="author.html#14">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, Apr 26, 2006, Pascal Lamblin wrote:
+&gt;<i> [...]
+</I>
+En essayant de compiler la doc des modules python sur une machine 64
+bits, je suis tomb&#233; sur un autre probl&#232;me, que j'ai &#233;galement reproduit
+sur 32 bits au lisa, pour le module plearn.maths.StatsCollector :
+
+auparavant, &#231;a faisait :
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at lsom</A> ~/code/PLearn/doc% epydoc --debug --html --output ./python_modules_html /u/lamblinp/code/PLearn/python_modules/plearn
+Importing 61 modules.
+  [ 1/61] Importing plearn
+  [ 2/61] Importing plearn.math
+  [ 3/61] Importing plearn.math.Statistics
+  [ 4/61] Importing plearn.math.StatsCollector
+Error importing 'plearn.math.StatsCollector': No module named fpconst
+  [ 5/61] Importing plearn.math.random
+
+et &#231;a continuait, ensuite il laissait tomber le module
+plearn.maths.StatsCollector.
+
+J'ai constat&#233; que fpconst existait sur les machines 64 bits, je l'ai
+rajout&#233; dans le chemin des 32 bits, et maintenant &#231;a donne :
+
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at lsom</A> ~/code/PLearn/doc% epydoc --debug --html --output ./python_modules_html /u/lamblinp/code/PLearn/python_modules/plearn
+
+Importing 61 modules.
+  [ 1/61] Importing plearn
+  [ 2/61] Importing plearn.math
+  [ 3/61] Importing plearn.math.Statistics
+  [ 4/61] Importing plearn.math.StatsCollector
+  [ 5/61] Importing plearn.math.random
+
+et &#231;a continue
+[...]
+
+  [ 4/55] Building docs for plearn.math.StatsCollector
+    Building docs for plearn.math.StatsCollector
+Traceback (most recent call last):
+  File &quot;/u/lisa/local/linux-i686/bin/epydoc&quot;, line 8, in ?
+    cli()
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/cli.py&quot;,
+line 110, in cli
+    docmap = _make_docmap(modules, options)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/cli.py&quot;,
+line 483, in _make_docmap
+    try: d.add(module)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/objdoc.py&quot;,
+line 2954, in add
+    self._add(objID)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/objdoc.py&quot;,
+line 2961, in _add
+    self.add_one(objID)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/objdoc.py&quot;,
+line 2884, in add_one
+    self.data[objID] = ModuleDoc(objID, self._verbosity)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/objdoc.py&quot;,
+line 1168, in __init__
+    vuid = make_uid(val, self._uid, field)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/uid.py&quot;,
+line 781, in make_uid
+    uid = ObjectUID(object)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/uid.py&quot;,
+line 418, in __init__
+    name = self._findname()
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/uid.py&quot;,
+line 509, in _findname
+    return '%s.%s' % (self.module(), objname)
+  File &quot;/u/lisa/local/linux-i686/lib/python2.2/site-packages/epydoc/uid.py&quot;,
+line 585, in module
+    if (self._module is not None and
+  File &quot;/u/lisa/local/linux-i386/lib/python2.4/site-packages/numarray/ma/MA.py&quot;,
+line 1196, in __eq__
+    return equal(self,other)
+  File &quot;/u/lisa/local/linux-i386/lib/python2.4/site-packages/numarray/ma/MA.py&quot;,
+line 418, in __call__
+    d2 = filled(b, self.filly)
+  File &quot;/u/lisa/local/linux-i386/lib/python2.4/site-packages/numarray/ma/MA.py&quot;,
+line 230, in filled
+    return Numeric.array(a)
+  File &quot;/u/lisa/local/linux-i386/lib/python2.4/site-packages/numarray/numarraycore.py&quot;,
+line 366, in array
+    a=sequence.__array__(type)
+TypeError: unbound method __array__() must be called with MaskedScalar
+instance as first argument (got NoneType instance instead)
+zsh: exit 1     epydoc --debug --html --output ./python_modules_html
+
+Si jamais il y a des python-gurus &#224; l'&#233;coute et qu'ils comprennent ce
+qu'il se passe, j'aimerais bien essayer de corriger le probl&#232;me. S'il
+faut changer l'installation locale de modules python, c'est faisable,
+mais je n'ai pas envie de perdre du temps &#224; essayer plein d'affaires.
+
+Merci de votre aide,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000013.html">[Plearn-core] Aide de PLearn
+</A></li>
+	<LI>Next message: <A HREF="000015.html">[Plearn-core] pymake et #ifdef
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#14">[ date ]</a>
+              <a href="thread.html#14">[ thread ]</a>
+              <a href="subject.html#14">[ subject ]</a>
+              <a href="author.html#14">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

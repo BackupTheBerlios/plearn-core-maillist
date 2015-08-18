@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] build cass&#233; sur x86_64
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3Fbuild_cass%3DE9_sur_x86%3D5F64%3F%3D&In-Reply-To=%3C45E3B7D4.5030302%40iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000314.html">
+   <LINK REL="Next"  HREF="000329.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] build cass&#233; sur x86_64</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3Fbuild_cass%3DE9_sur_x86%3D5F64%3F%3D&In-Reply-To=%3C45E3B7D4.5030302%40iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] build cass&#233; sur x86_64">saintmlx at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Feb 27 05:47:16 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000314.html">[Plearn-core] build cass&#233; sur x86_64
+</A></li>
+        <LI>Next message: <A HREF="000329.html">[Plearn-core] PTester en parall&#232;le avec cluster ou ssh
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#315">[ date ]</a>
+              <a href="thread.html#315">[ thread ]</a>
+              <a href="subject.html#315">[ subject ]</a>
+              <a href="author.html#315">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Oops! mea culpa, je vais arranger &#231;a.  C'est ce qui arrive quand on se 
+laisse aller &#224; des petits hacks pas catholiques (ou pas cacher, ou pas 
+halal, ou ... ;)
+
+X
+
+Pascal Lamblin wrote:
+
+&gt;<i>Salut &#224; tous,
+</I>&gt;<i>
+</I>&gt;<i>Je viens de me rendre compte que PLearn ne compile plus sous x86_64,
+</I>&gt;<i>plus pr&#233;cis&#233;ment les fichiers suivants :
+</I>&gt;<i>
+</I>&gt;<i>   /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc
+</I>&gt;<i>   /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc
+</I>&gt;<i>   /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc
+</I>&gt;<i>
+</I>&gt;<i>Il me semble que c'est li&#233; &#224; la derni&#232;re s&#233;rie de commits de Xavier.
+</I>&gt;<i>
+</I>&gt;<i>Les messages d'erreur sont les suivants :
+</I>&gt;<i>
+</I>&gt;<i>ProgressBar.cc : /u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::update(PLearn::ProgressBar*, long unsigned int)':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:202: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'void PLearn::RemoteProgressBarPlugin::printTitle(PLearn::ProgressBar*)':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:211: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc: In member function 'virtual void PLearn::RemoteProgressBarPlugin::killProgressBar(PLearn::ProgressBar*)':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/base/ProgressBar.cc:217: error: cast from 'PLearn::ProgressBar*' to 'unsigned int' loses precision
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>PLearnService.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::log_callback(PLearn::PP&lt;PLearn::RemotePLearnServer&gt;, const std::string&amp;, int, const std::string&amp;)':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:393: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc: In static member function 'static void PLearn::PLearnService::progress_callback(PLearn::PP&lt;PLearn::RemotePLearnServer&gt;, unsigned int, char, unsigned int, const std::string&amp;)':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/misc/PLearnService.cc:402: error: cast from 'PLearn::RemotePLearnServer*' to 'unsigned int' loses precision
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>PLearnServer.cc : /u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc: In member function 'virtual int PLearn::PLearnServer::findFreeObjID(const PLearn::Object*) const':
+</I>&gt;<i>/u/lamblinp/code/PLearn/plearn/misc/PLearnServer.cc:390: error: cast from 'const PLearn::Object*' to 'unsigned int' loses precision
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>Sachant qu'on peut toujours compiler et rouler plearn en 32 bits m&#234;me
+</I>&gt;<i>sur les machines &#224; 64 bits, ce n'est pas critique, mais c'est quand m&#234;me
+</I>&gt;<i>emb&#234;tant.
+</I>&gt;<i>
+</I>&gt;<i>Je ne sais pas quel est le moyen propre de r&#233;soudre &#231;a, donc je vous
+</I>&gt;<i>laisse vous d&#233;brouiller :)
+</I>&gt;<i>
+</I>&gt;<i>&#192; bient&#244;t,
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000314.html">[Plearn-core] build cass&#233; sur x86_64
+</A></li>
+	<LI>Next message: <A HREF="000329.html">[Plearn-core] PTester en parall&#232;le avec cluster ou ssh
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#315">[ date ]</a>
+              <a href="thread.html#315">[ thread ]</a>
+              <a href="subject.html#315">[ subject ]</a>
+              <a href="author.html#315">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

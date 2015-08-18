@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C20061013193646.GA18825%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000218.html">
+   <LINK REL="Next"  HREF="000220.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C20061013193646.GA18825%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Oct 13 21:36:48 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000218.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+        <LI>Next message: <A HREF="000220.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#219">[ date ]</a>
+              <a href="thread.html#219">[ thread ]</a>
+              <a href="subject.html#219">[ subject ]</a>
+              <a href="author.html#219">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 13 Oct 2006, Nicolas Chapados wrote:
+&gt;<i> 
+</I>&gt;<i>         Qu'est-ce que tu veux dire par &quot;potentiellement utile de savoir o&#249; se
+</I>&gt;<i>         trouvent les donn&#233;es du PTester&quot;?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     Par ex. si on a sauv&#233; un HyperLearner, qui contient un PTester, il
+</I>&gt;<i>     pourrait &#234;tre utile de conna&#238;tre son expdir pour retourner jeter un coup
+</I>&gt;<i>     d'oeil aux &#233;tapes de l'optimisation.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Par &quot;jeter un coup d'oeil&quot;, tu veux dire par un programme ou plut&#244;t par
+</I>&gt;<i> inspection humaine?  Car si c'est par inspection humaine, je le fais &#224; chaque
+</I>&gt;<i> jour sans jamais avoir &#233;t&#233; aller voir dans le .psave. :-)  Et si c'est par
+</I>&gt;<i> programme, tu es probablement mieux d'introspecter directement les
+</I>&gt;<i> HyperOptimiser depuis ton code (ce que je fais aussi -- pratique pour tracer
+</I>&gt;<i> des courbes de performance en fonction des valeurs d'hyperparam&#232;tres).
+</I>
+Bon, ok, je t'avais pr&#233;venu que c'&#233;tait tordu.
+D'ailleurs, je viens de penser &#224; autre chose. Dans un PTester il y a une
+option du genre 'save_initial_tester', qui (th&#233;oriquement) doit
+permettre de relancer une exp&#233;rience m&#234;me si on n'a plus le script qui
+l'a lanc&#233;e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+pas sauv&#233;e (en tout cas, ne plus fonctionner exactement pareil).
+
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>         Et autres question sur ta premi&#232;re solution: comment crois-tu que les
+</I>&gt;<i>         PPath peuvent nous aider ici?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     Si par exemple tu lances tes exp&#233;riences localement dans /u/exp/plearn,
+</I>&gt;<i>     r&#233;pertoire qui n'existe que sur ta machine de calcul, tu peux d&#233;finir
+</I>&gt;<i>     dans ton ppath.config un r&#233;pertoire EXP_ROOT &#233;gal &#224; &quot;/u/exp/plearn&quot;, et
+</I>&gt;<i>     sur ta nouvelle machine (sur laquelle tu charges ton PLearner), tu
+</I>&gt;<i>     d&#233;finis EXP_ROOT comme par ex. /tmp/exp_root. Comme le PPath est sauv&#233;
+</I>&gt;<i>     de mani&#232;re canonique (EXP_ROOT:blabla/bloblo/expdir), il ne devrait pas
+</I>&gt;<i>     planter.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Mon probl&#232;me est qu'il s'agit d'une utilisation &quot;embedded&quot; de PLearn, i.e. &#231;a
+</I>&gt;<i> fait partie d'une grosse application dont PLearn n'est qu'une petite pi&#232;ce, et
+</I>&gt;<i> les mod&#232;les .psave sont livr&#233;s off-site et doivent &#234;tre le plus self-contained
+</I>&gt;<i> possible.  Donc pr&#233;f&#233;rablement ne contenir aucune r&#233;f&#233;rence au r&#233;seau ayant
+</I>&gt;<i> servi &#224; faire l'entra&#238;nement, et ne pas d&#233;pendre de bidules secondaires comme
+</I>&gt;<i> les configurations de ppath (si on peut l'&#233;viter) ...
+</I>
+D'accord... cela dit j'aurais tendance &#224; dire que tu risques d'avoir
+d'autres probl&#232;mes de PPath si tu n'as pas de configuration PPath locale
+(enfin, je ne sais pas, p-&#234; que tout est d&#233;j&#224; pr&#233;vu pour &#231;a...).
+
+&gt;<i> Bon, apr&#232;s 24 heures de d&#233;lai, puisque personne n'a soulev&#233; d'objection forte
+</I>&gt;<i> (autre que des &#233;ventualit&#233;s th&#233;oriques et conditionnelles), je vais aller de
+</I>&gt;<i> l'avant et mettre &quot;expdir&quot; comme nosave.  Jusqu'&#224; la prochaine lev&#233;e de
+</I>&gt;<i> boucliers. :-)
+</I>
+Je ne manquerai pas de te faire savoir quand &#231;a va poser probl&#232;me :P
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000218.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+	<LI>Next message: <A HREF="000220.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#219">[ date ]</a>
+              <a href="thread.html#219">[ thread ]</a>
+              <a href="subject.html#219">[ subject ]</a>
+              <a href="author.html#219">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

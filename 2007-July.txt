@@ -1,0 +1,980 @@
+From lamblinp at iro.umontreal.ca  Tue Jul 10 02:31:15 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 10 Jul 2007 02:31:15 +0200
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+Message-ID: <20070710003115.GA8876@pig.zood.org>
+
+Salut,
+
+L'utilisation des types "long int" et "unsigned long int" pose des
+probl?mes de compatibilit? entre les plateformes 32 et 64 bits.
+
+En effet, dans le premier cas, ils sont l'?quivalent des "int" (32
+bits ou 4 octets), dans le second, des "long long int" (64 bits ou 8
+octets). Du coup, ?a posait des probl?mes d'?criture et de lecture en
+mode binaire, qui devraient ?tre r?par?s maintenant.
+
+Le probl?me qui subsiste, c'est le risque d'overflow quand on reloade
+sur une machine 32 bits un fichier qui a ?t? sauv? sur une machine ? 64
+bits.
+
+Pour ?viter ces probl?mes, je vous propose de ne plus utiliser le type
+"long" (en tout cas dans les option), mais ? la place :
+  - int64_t (sign?) ou uint64_t (non sign?) si vous avez besoin de la
+    pr?cision,
+  - int, unsigned int, ou encore int32_t ou uint32_t sinon.
+
+Ces types sont d?finis dans le header <stdint.h>, que j'ai trouv?
+dans /usr/include sous linux. S'il n'est pas fourni avec certains
+compilateurs, on devrait pouvoir utiliser <plearn/base/pstdint.h> (mais
+je ne sais pas si je vais le laisser l?).
+
+Quelques fichiers avec des "long" qui posent probl?me pour le moment :
+
+   plearn/base/ProgressBar.cc
+   plearn/misc/vmatmain.cc
+   plearn_learners/generic/BestAveragingPLearner.cc
+   plearn_learners/online/ModuleTester.cc
+   plearn/vmat/BootstrapVMatrix.cc
+   plearn/vmat/ClassSeparationSplitter.cc
+   plearn/vmat/AddMissingVMatrix.cc
+   plearn/vmat/RepeatSplitter.cc
+   plearn/vmat/TrainTestSplitter.cc
+   plearn/vmat/MultiToUniInstanceSelectRandomVMatrix.cc
+   plearn/vmat/RandomSamplesVMatrix.cc
+   plearn/vmat/RandomSamplesFromVMatrix.cc
+   plearn/vmat/SelectRowsMultiInstanceVMatrix.cc
+   plearn/vmat/ShuffleColumnsVMatrix.cc
+   plearn/vmat/VMatrixFromDistribution.cc
+   plearn_learners_experimental/SurfaceTemplate/ScoreLayerVariable.cc
+
+A priori, je suppose que le comportement sur 32 bits ?tait satisfaisant,
+je vais donc transformer ces options en (u)int32_t, le comportement ne
+devrait pas changer.
+
+S'il y a une des classes ci-dessus qui a besoin de plus de pr?cision,
+faites le moi savoir.
+
+Merci,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 10 03:51:40 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 10 Jul 2007 03:51:40 +0200
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <20070710003115.GA8876@pig.zood.org>
+References: <20070710003115.GA8876@pig.zood.org>
+Message-ID: <20070710015140.GA9427@pig.zood.org>
+
+On Tue, Jul 10, 2007, Pascal Lamblin wrote:
+> Quelques fichiers avec des "long" qui posent probl?me pour le moment :
+
+Quelques autres (pour les tests) :
+   plearn/python/test/BasicIdentityCallsTest.cc
+   plearn/python/test/InterfunctionXchgTest.cc
+   plearn/python/test/MemoryStressTest.cc
+   plearn/vmat/test/FileVMatrixTest.cc
+   plearn/vmat/test/RowBufferedVMatrixTest.cc
+
+Pour les tests qui impliquent python, peut-?tre qu'il vaudrait mieux des
+int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+
+-- 
+Pascal
+
+
+From saintmlx at apstat.com  Tue Jul 10 05:30:40 2007
+From: saintmlx at apstat.com (saintmlx)
+Date: Mon, 09 Jul 2007 23:30:40 -0400
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <20070710015140.GA9427@pig.zood.org>
+References: <20070710003115.GA8876@pig.zood.org>
+	<20070710015140.GA9427@pig.zood.org>
+Message-ID: <4692FD60.4090004@apstat.com>
+
+
+>Pour les tests qui impliquent python, peut-?tre qu'il vaudrait mieux des
+>int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+>
+>  
+>
+Python utilise les types entiers C suivants pour la conversion vers des 
+'long' python: long, unsigned long, long long, unsigned long long et 
+void*; pour les 'int' python, on n'a que long et Py_ssize_t.
+
+Si PLearn doit _vraiment_ utiliser des int32_t, uint64_t, etc., alors il 
+faut remplacer ConvertFromPyObject<long>, ConvertFromPyObject<unsigned 
+long>, ConvertToPyObject<long> et ConvertToPyObject<unsigned long> 
+chacune par une version 32 bits et une version 64 bits (et p-? 16 ou 8 
+aussi, si on les utilise o? que ce soit dans PLearn).  Ensuite, il faut 
+s'arranger pour que la conversion marche dans tous les cas, c'est-?-dire 
+que chacune des nouvelles fonctions de conversion doit savoir le lien 
+qu'il y a entre les types standard C/C++ et les nouveaux entiers 
+PLearn...  une grosse poutine de #ifdef en perspective.
+
+Est-ce vraiment n?cessaire pour PLearn de ne pas utiliser de long?  Il 
+me semble qu'il peut ?tre souhaitable dans certains cas de ne justement 
+pas sp?cifier la taille exacte des types entiers qu'on utilise.  
+*Suggestion* (un peu tardive, je sais): pourquoi ne pas limiter l'usage 
+de ces nouveaux types ? la s?rialisation seulement?  e.g. short et int 
+s?rialis?s en tant que int32, long <-> int64, long long <-> int128; on 
+peut ensuite faire un PLERROR si une valeur lue est trop grande pour la 
+taille du type entier effectivement utilis?, par exemple si on lit un 
+long > 2^32 sur une architecture 32 bits.
+
+Personnellement, il y a d'autres choses que j'aimerais mieux faire que 
+de modifier la conversion PLearn <-> Python (et qu'ApSTAT aimerait mieux 
+que je fasse aussi...) 
+
+Que penses-tu de ma suggestion pour la s?rialisation?  sinon, peux-tu 
+modifier PythonObjectWrapper? (je peux t'aider au besoin, si c'est 
+l'option choisie)
+
+Xavier
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 10 06:14:48 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 10 Jul 2007 06:14:48 +0200
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <4692FD60.4090004@apstat.com>
+References: <20070710003115.GA8876@pig.zood.org>
+	<20070710015140.GA9427@pig.zood.org> <4692FD60.4090004@apstat.com>
+Message-ID: <20070710041447.GA9896@pig.zood.org>
+
+On Mon, Jul 09, 2007, saintmlx wrote:
+> >Pour les tests qui impliquent python, peut-?tre qu'il vaudrait mieux des
+> >int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+>
+> Python utilise les types entiers C suivants pour la conversion vers des 
+> 'long' python: long, unsigned long, long long, unsigned long long et 
+> void*; pour les 'int' python, on n'a que long et Py_ssize_t.
+
+OK.
+
+> Si PLearn doit _vraiment_ utiliser des int32_t, uint64_t, etc., alors il 
+> faut remplacer ConvertFromPyObject<long>, ConvertFromPyObject<unsigned 
+> long>, ConvertToPyObject<long> et ConvertToPyObject<unsigned long> 
+> chacune par une version 32 bits et une version 64 bits (et p-? 16 ou 8 
+> aussi, si on les utilise o? que ce soit dans PLearn).  Ensuite, il faut 
+> s'arranger pour que la conversion marche dans tous les cas, c'est-?-dire 
+> que chacune des nouvelles fonctions de conversion doit savoir le lien 
+> qu'il y a entre les types standard C/C++ et les nouveaux entiers 
+> PLearn...  une grosse poutine de #ifdef en perspective.
+
+J'ai commenc? ? regarder ?a pour r?parer les tests, justement. On peut
+toujours s'arranger pour passer par un type interm?diaire qui soit au
+moins assez grand, non ?
+
+> Est-ce vraiment n?cessaire pour PLearn de ne pas utiliser de long?  Il 
+> me semble qu'il peut ?tre souhaitable dans certains cas de ne justement 
+> pas sp?cifier la taille exacte des types entiers qu'on utilise.  
+
+? part l'interface avec python, qui utilise des long (whatever that
+means) comme son type d'entier, tu as des exemples ?
+
+> *Suggestion* (un peu tardive, je sais): pourquoi ne pas limiter l'usage 
+> de ces nouveaux types ? la s?rialisation seulement?
+
+C'est ce que je comptais faire, mais le probl?me c'est que pour les
+utiliser dans la s?rialisation, il faut d?finir les bons operator<<, et
+c'est ?a qui pose probl?me.
+
+En fait, de deux choses l'une : soit on d?cide qu'on ne d?passera jamais
+jamais 2**32, dans ce cas-l? on n'a m?me pas besoin de long, des int
+suffisent ; soit on d?cide qu'on se laisse la possibilit? de manipuler
+des entiers plus grands, et alors ?a me para?t aberrant de ne pouvoir le
+faire que sur une machine ? 64 bits.
+
+? partir du moment o? on a d?cid? de d?passer 2**32, il nous faut un
+type pour stocker ?a. ?a ne peut pas ?tre long parce que sur 32 bits
+c'est comme un int, ?a pourrait ?tre long long qui a la bonne taille sur
+les deux plateformes, sauf que c'est pas garanti si une nouvelle
+plateforme arrive et que c'est p?nible ? taper. Pour moi, le choix
+logique, c'est (u)int64_t.
+
+Or, les headers qui d?finissent ce type font :
+# if __WORDSIZE == 64
+typedef long int int64_t;
+# else
+__extension__
+typedef long long int int64_t;
+# endif
+et pareil pour la version unsigned.
+
+Il est donc impossible de d?finir ? la fois PStream::operator<<(long x)
+et PStream::operator<<(int64_t x) sur une machine ? 64 bits.
+
+Comme l'op?rateur << est utilis?, en particulier dans les tests de
+Python, je pense qu'il faut qu'on se d?barrasse de la plupart des long
+(ou alors les caster avant de les imprimer...).
+
+> e.g. short et int s?rialis?s en tant que int32,
+
+Pour le moment, short est s?rialis? en short, qui correspond ? int16 sur
+toutes les plateformes raisonnables.
+
+> long <-> int64, long long <-> int128;
+
+long long correspond ? int64 sur linux i386 et x86_64 au moins.
+
+> on peut ensuite faire un PLERROR si une valeur lue est trop grande
+> pour la taille du type entier effectivement utilis?, par exemple si on
+> lit un long > 2^32 sur une architecture 32 bits.
+
+Oui, on pourrait... mais pourquoi ne pas utilier simplement un int64_t ?
+la place ?
+
+> Que penses-tu de ma suggestion pour la s?rialisation?
+
+Si tu as une r?ponse au probl?me de <<, je peux faire ?a.
+
+> sinon, peux-tu modifier PythonObjectWrapper? (je peux t'aider au
+> besoin, si c'est l'option choisie)
+
+J'avais d?j? commenc? ? le faire, c'est presque fini. Je devrais
+committer une version ce soir (enfin cette nuit), tu me diras demain ce
+que tu en penses. Si ce n'est pas acceptable, on verra...
+
+-- 
+Pascal
+
+
+From saintmlx at apstat.com  Tue Jul 10 07:11:37 2007
+From: saintmlx at apstat.com (saintmlx)
+Date: Tue, 10 Jul 2007 01:11:37 -0400
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <20070710041447.GA9896@pig.zood.org>
+References: <20070710003115.GA8876@pig.zood.org>	<20070710015140.GA9427@pig.zood.org>
+	<4692FD60.4090004@apstat.com> <20070710041447.GA9896@pig.zood.org>
+Message-ID: <46931509.3070804@apstat.com>
+
+Tout ?a a l'air d'?tre un peu pressant pour toi, et, pour une solution 
+rapide et potable, je crois que ton truc va marcher (? r7736 ou 7, 
+"Trial++!+?#@*!!") ;o)
+
+Je vais quand-m?me essayer de penser ? qqch. pour limiter ?a ? la 
+s?rialisation, m?me si ce n'est vraiment pas trivial.  Pour ce qui est 
+du fait que "long long" est long ? taper (sic.), on peut toujours se 
+faire des typedefs ? notre go?t, mais (svp!) dont le type C/C++ ne 
+change pas d'une machine ? l'autre; personnellement, je crois que c'est 
+bon de forcer les gens ? taper "long long" quand ils savent vraiment ce 
+qu'ils veulent, tout comme ma philosophie me dit qu'il est bon 
+d'utiliser les "whatever_cast<type>(val)" de C++ plut?t que les casts ? 
+la C "(type)val", question de rendre les choses explicites et, encore 
+une fois, de forcer les gens ? savoir ce qu'ils font.
+
+Si tu penses ? qqch. de mieux, fais-moi signe,
+
+Xavier
+
+
+Pascal Lamblin wrote:
+
+>On Mon, Jul 09, 2007, saintmlx wrote:
+>  
+>
+>>>Pour les tests qui impliquent python, peut-?tre qu'il vaudrait mieux des
+>>>int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+>>>      
+>>>
+>>Python utilise les types entiers C suivants pour la conversion vers des 
+>>'long' python: long, unsigned long, long long, unsigned long long et 
+>>void*; pour les 'int' python, on n'a que long et Py_ssize_t.
+>>    
+>>
+>
+>OK.
+>
+>  
+>
+>>Si PLearn doit _vraiment_ utiliser des int32_t, uint64_t, etc., alors il 
+>>faut remplacer ConvertFromPyObject<long>, ConvertFromPyObject<unsigned 
+>>long>, ConvertToPyObject<long> et ConvertToPyObject<unsigned long> 
+>>chacune par une version 32 bits et une version 64 bits (et p-? 16 ou 8 
+>>aussi, si on les utilise o? que ce soit dans PLearn).  Ensuite, il faut 
+>>s'arranger pour que la conversion marche dans tous les cas, c'est-?-dire 
+>>que chacune des nouvelles fonctions de conversion doit savoir le lien 
+>>qu'il y a entre les types standard C/C++ et les nouveaux entiers 
+>>PLearn...  une grosse poutine de #ifdef en perspective.
+>>    
+>>
+>
+>J'ai commenc? ? regarder ?a pour r?parer les tests, justement. On peut
+>toujours s'arranger pour passer par un type interm?diaire qui soit au
+>moins assez grand, non ?
+>
+>  
+>
+>>Est-ce vraiment n?cessaire pour PLearn de ne pas utiliser de long?  Il 
+>>me semble qu'il peut ?tre souhaitable dans certains cas de ne justement 
+>>pas sp?cifier la taille exacte des types entiers qu'on utilise.  
+>>    
+>>
+>
+>? part l'interface avec python, qui utilise des long (whatever that
+>means) comme son type d'entier, tu as des exemples ?
+>
+>  
+>
+>>*Suggestion* (un peu tardive, je sais): pourquoi ne pas limiter l'usage 
+>>de ces nouveaux types ? la s?rialisation seulement?
+>>    
+>>
+>
+>C'est ce que je comptais faire, mais le probl?me c'est que pour les
+>utiliser dans la s?rialisation, il faut d?finir les bons operator<<, et
+>c'est ?a qui pose probl?me.
+>
+>En fait, de deux choses l'une : soit on d?cide qu'on ne d?passera jamais
+>jamais 2**32, dans ce cas-l? on n'a m?me pas besoin de long, des int
+>suffisent ; soit on d?cide qu'on se laisse la possibilit? de manipuler
+>des entiers plus grands, et alors ?a me para?t aberrant de ne pouvoir le
+>faire que sur une machine ? 64 bits.
+>
+>? partir du moment o? on a d?cid? de d?passer 2**32, il nous faut un
+>type pour stocker ?a. ?a ne peut pas ?tre long parce que sur 32 bits
+>c'est comme un int, ?a pourrait ?tre long long qui a la bonne taille sur
+>les deux plateformes, sauf que c'est pas garanti si une nouvelle
+>plateforme arrive et que c'est p?nible ? taper. Pour moi, le choix
+>logique, c'est (u)int64_t.
+>
+>Or, les headers qui d?finissent ce type font :
+># if __WORDSIZE == 64
+>typedef long int int64_t;
+># else
+>__extension__
+>typedef long long int int64_t;
+># endif
+>et pareil pour la version unsigned.
+>
+>Il est donc impossible de d?finir ? la fois PStream::operator<<(long x)
+>et PStream::operator<<(int64_t x) sur une machine ? 64 bits.
+>
+>Comme l'op?rateur << est utilis?, en particulier dans les tests de
+>Python, je pense qu'il faut qu'on se d?barrasse de la plupart des long
+>(ou alors les caster avant de les imprimer...).
+>
+>  
+>
+>>e.g. short et int s?rialis?s en tant que int32,
+>>    
+>>
+>
+>Pour le moment, short est s?rialis? en short, qui correspond ? int16 sur
+>toutes les plateformes raisonnables.
+>
+>  
+>
+>>long <-> int64, long long <-> int128;
+>>    
+>>
+>
+>long long correspond ? int64 sur linux i386 et x86_64 au moins.
+>
+>  
+>
+>>on peut ensuite faire un PLERROR si une valeur lue est trop grande
+>>pour la taille du type entier effectivement utilis?, par exemple si on
+>>lit un long > 2^32 sur une architecture 32 bits.
+>>    
+>>
+>
+>Oui, on pourrait... mais pourquoi ne pas utilier simplement un int64_t ?
+>la place ?
+>
+>  
+>
+>>Que penses-tu de ma suggestion pour la s?rialisation?
+>>    
+>>
+>
+>Si tu as une r?ponse au probl?me de <<, je peux faire ?a.
+>
+>  
+>
+>>sinon, peux-tu modifier PythonObjectWrapper? (je peux t'aider au
+>>besoin, si c'est l'option choisie)
+>>    
+>>
+>
+>J'avais d?j? commenc? ? le faire, c'est presque fini. Je devrais
+>committer une version ce soir (enfin cette nuit), tu me diras demain ce
+>que tu en penses. Si ce n'est pas acceptable, on verra...
+>
+>  
+>
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 10 07:35:14 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 10 Jul 2007 07:35:14 +0200
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <46931509.3070804@apstat.com>
+References: <20070710003115.GA8876@pig.zood.org>
+	<20070710015140.GA9427@pig.zood.org> <4692FD60.4090004@apstat.com>
+	<20070710041447.GA9896@pig.zood.org> <46931509.3070804@apstat.com>
+Message-ID: <20070710053514.GA10621@pig.zood.org>
+
+On Tue, Jul 10, 2007, saintmlx wrote:
+> Tout ?a a l'air d'?tre un peu pressant pour toi, et, pour une solution 
+> rapide et potable, je crois que ton truc va marcher (? r7736 ou 7, 
+> "Trial++!+?#@*!!") ;o)
+
+En effet, ?a a l'air de marcher, et ?a passe aussi sur 64 bits. C'est
+pas tant que c'est pressant, c'est que moi non plus je n'ai pas envie
+d'y passer trop de temps et de laisser ?a s'?taler sur trois jours avec
+des tests p?t?s entre temps.
+
+> Je vais quand-m?me essayer de penser ? qqch. pour limiter ?a ? la 
+> s?rialisation, m?me si ce n'est vraiment pas trivial.  Pour ce qui est 
+> du fait que "long long" est long ? taper (sic.), on peut toujours se 
+> faire des typedefs ? notre go?t, mais (svp!) dont le type C/C++ ne 
+> change pas d'une machine ? l'autre;
+
+Ben moi ce que je voudrais, c'est des types dont la taille en m?moire ne
+change pas d'une machine ? l'autre... pour pouvoir sauvegarder des
+mod?les en plearn_binary et les lire sans probl?me sur une autre
+architecture, par exemple.
+
+> Si tu penses ? qqch. de mieux, fais-moi signe,
+
+On peut toujours rajouter de rajouter entre #ifdef certaines m?thodes
+(operator<<, par exemple) surcharg?es avec un argument long, mais ?a
+suppose de savoir exactement ce qui est typedeff? en quoi, ce qui n'est
+pas forc?ment la m?me chose sous tous les OS, etc., et je ne sais pas si
+c'est possible de checker ?a ? la compilation.
+
+Bonne nuit,
+-- 
+Pascal
+
+
+From saintmlx at apstat.com  Tue Jul 10 07:53:47 2007
+From: saintmlx at apstat.com (saintmlx)
+Date: Tue, 10 Jul 2007 01:53:47 -0400
+Subject: [Plearn-core] Utilisation des "long int" dans PLearn
+In-Reply-To: <20070710053514.GA10621@pig.zood.org>
+References: <20070710003115.GA8876@pig.zood.org>	<20070710015140.GA9427@pig.zood.org>
+	<4692FD60.4090004@apstat.com>	<20070710041447.GA9896@pig.zood.org>
+	<46931509.3070804@apstat.com> <20070710053514.GA10621@pig.zood.org>
+Message-ID: <46931EEB.2070209@apstat.com>
+
+C'est cool, il va seulement [me] rester quelques trucs ApSTAT ? 
+"r?parer" (notre buildbot ne passe toujours pas, mais ?a n'a pas l'air 
+trop pire ? arranger).
+
+Sinon, la solution id?ale serait peut-?tre qu'on puisse utiliser ? la 
+fois les long et les int64_t (et compagnie) dans PLearn, avec une 
+s?rialisation et une conversion python po[r]table pour chaque type...  
+les id?es sont toujours bienvenues.
+
+Je vais continuer d'y penser (ou d'y r?ver).  Bonne nuit,
+
+Xavier
+
+
+Pascal Lamblin wrote:
+
+>On Tue, Jul 10, 2007, saintmlx wrote:
+>  
+>
+>>Tout ?a a l'air d'?tre un peu pressant pour toi, et, pour une solution 
+>>rapide et potable, je crois que ton truc va marcher (? r7736 ou 7, 
+>>"Trial++!+?#@*!!") ;o)
+>>    
+>>
+>
+>En effet, ?a a l'air de marcher, et ?a passe aussi sur 64 bits. C'est
+>pas tant que c'est pressant, c'est que moi non plus je n'ai pas envie
+>d'y passer trop de temps et de laisser ?a s'?taler sur trois jours avec
+>des tests p?t?s entre temps.
+>
+>  
+>
+>>Je vais quand-m?me essayer de penser ? qqch. pour limiter ?a ? la 
+>>s?rialisation, m?me si ce n'est vraiment pas trivial.  Pour ce qui est 
+>>du fait que "long long" est long ? taper (sic.), on peut toujours se 
+>>faire des typedefs ? notre go?t, mais (svp!) dont le type C/C++ ne 
+>>change pas d'une machine ? l'autre;
+>>    
+>>
+>
+>Ben moi ce que je voudrais, c'est des types dont la taille en m?moire ne
+>change pas d'une machine ? l'autre... pour pouvoir sauvegarder des
+>mod?les en plearn_binary et les lire sans probl?me sur une autre
+>architecture, par exemple.
+>
+>  
+>
+>>Si tu penses ? qqch. de mieux, fais-moi signe,
+>>    
+>>
+>
+>On peut toujours rajouter de rajouter entre #ifdef certaines m?thodes
+>(operator<<, par exemple) surcharg?es avec un argument long, mais ?a
+>suppose de savoir exactement ce qui est typedeff? en quoi, ce qui n'est
+>pas forc?ment la m?me chose sous tous les OS, etc., et je ne sais pas si
+>c'est possible de checker ?a ? la compilation.
+>
+>Bonne nuit,
+>  
+>
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 17 00:30:59 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 17 Jul 2007 00:30:59 +0200
+Subject: [Plearn-core] Types d'entiers dans PLearn, suite
+Message-ID: <20070716223059.GA3587@pig.zood.org>
+
+Salut,
+
+Si j'ai bien compris ce que Pascal (l'autre, le gentil) m'a racont?, le
+plan pour la suite du bordel d'entiers serait :
+  - utiliser boost::[u]int[n]_t, en les injectant dans le namespace
+    PLearn si n?cessaire
+  - d?finir operator<<(long int) sur les plateformes n?cessaires (au
+    moins i386) ? coups de #if
+
+L? o? je ne suis pas s?r, c'est :
+  - est-ce qu'on d?finit operator>>(long int), pour laisser la
+    possibilit? de d?clarer une option long int et de la d?s?rialiser
+    (ou s'il y a d'autres usages de cet op?rateur) ?
+  - est-ce qu'on fait la m?me chose pour les long long int ?
+  - quelle est la couleur du cheval blanc d'Henri XIV (attention, il y a
+    un pi?ge)
+  - est-ce qu'il y a des changements que j'avais faits qu'il faudra
+    annuler ?
+  - qu'en est-il de l'interface avec python ? (Xavier, c'est ? toi que je
+    parle... je suis au poste 1868 si tu pr?f?res le t?l?phone)
+  - d'une mani?re g?n?rale, qu'est-ce que j'ai cass? ? Apstat, ? part
+    l'op?rateur << ?
+
+Je ne vais pas committer cette nuit (rassurez-vous), mais j'aimerais
+bien avoir vos commentaires.
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 17 00:58:32 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 17 Jul 2007 00:58:32 +0200
+Subject: [Plearn-core] Types d'entiers dans PLearn, suite
+In-Reply-To: <20070716223059.GA3587@pig.zood.org>
+References: <20070716223059.GA3587@pig.zood.org>
+Message-ID: <20070716225832.GA3742@pig.zood.org>
+
+On Tue, Jul 17, 2007, Pascal Lamblin wrote:
+> Si j'ai bien compris ce que Pascal (l'autre, le gentil) m'a racont?, le
+> plan pour la suite du bordel d'entiers serait :
+>   - utiliser boost::[u]int[n]_t, en les injectant dans le namespace
+>     PLearn si n?cessaire
+>   - d?finir operator<<(long int) sur les plateformes n?cessaires (au
+>     moins i386) ? coups de #if
+
+L'autre possibilit? que je vois, ?a serait de d?finir les diff?rentes
+surcharges de l'op?rateur << (et d'autres) pour tous les types C (short
+int, int, long int, etc.), et faire un check dynamique ? l'ex?cution
+? chaque fois (if (sizeof(long int) == 4) {...}), quitte ? appeler
+d'autres fonctions selon la taille.
+
+Je ne sais pas ce qu'il vaut mieux.
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 17 20:17:11 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 17 Jul 2007 20:17:11 +0200
+Subject: [Plearn-core] Types d'entiers dans PLearn, suite
+In-Reply-To: <20070716225832.GA3742@pig.zood.org>
+References: <20070716223059.GA3587@pig.zood.org>
+	<20070716225832.GA3742@pig.zood.org>
+Message-ID: <20070717181711.GA10843@pig.zood.org>
+
+On Tue, Jul 17, 2007, Pascal Lamblin wrote:
+> L'autre possibilit? que je vois, ?a serait de d?finir les diff?rentes
+> surcharges de l'op?rateur << (et d'autres) pour tous les types C (short
+> int, int, long int, etc.), et faire un check dynamique ? l'ex?cution
+> ? chaque fois (if (sizeof(long int) == 4) {...}), quitte ? appeler
+> d'autres fonctions selon la taille.
+
+Plus j'y pense, plus je me dis que c'est la solution la moins
+contraignante pour l'avenir et pour le reste du code.
+
+Il faudrait alors red?finir les operator<<, operator>>, peut-?tre
+binread_ et binwrite_ (je ne sais pas o? ils sont utilis?s), qui seront
+s?rement moins efficaces que maintenant (est-ce un probl?me ?).
+
+J'attends vos suggestions, sinon je ferai ?a tout seul dans mon coin...
+-- 
+Pascal,
+coin !
+
+
+From delallea at iro.umontreal.ca  Thu Jul 19 20:40:58 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 19 Jul 2007 14:40:58 -0400
+Subject: [Plearn-core] PLearn compilation issues at lisa
+Message-ID: <20070719184054.GA29414@opale.iro.umontreal.ca>
+
+Sending it to the mailing list so that current devs at lisa are aware of
+it:
+
+/u/delallea/.PLearn.NOBACKUP/plearn/python/PythonObjectWrapper.h:320:
+error: incomplete type PLearn::PythonObjectWrapper used in nested name
+specifier
+/u/delallea/PLearn/plearn/vmat/VMat.h: At global scope:
+/u/delallea/PLearn/plearn/vmat/VMat.h:139: error: an explicit
+specialization must be preceded by ?template <>
+
+I'm not sure if the second error is a consequence of the first one, but
+the first one seems to be due to the PythonObjectWrapper class only
+being a forward declare at this point in the file, which gcc 4.0.2 does
+not like.
+Xavier, any idea how to fix this without breaking some other stuff?
+
+Thanks,
+
+--
+Olivier
+
+
+
+From delallea at iro.umontreal.ca  Thu Jul 19 20:50:58 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 19 Jul 2007 14:50:58 -0400
+Subject: [Plearn-core] PLearn compilation issues at lisa
+In-Reply-To: <20070719184054.GA29414@opale.iro.umontreal.ca>
+References: <20070719184054.GA29414@opale.iro.umontreal.ca>
+Message-ID: <20070719185058.GA29578@opale.iro.umontreal.ca>
+
+
+> /u/delallea/.PLearn.NOBACKUP/plearn/python/PythonObjectWrapper.h:320:
+> error: incomplete type PLearn::PythonObjectWrapper used in nested name
+> specifier
+> /u/delallea/PLearn/plearn/vmat/VMat.h: At global scope:
+> /u/delallea/PLearn/plearn/vmat/VMat.h:139: error: an explicit
+> specialization must be preceded by ?template <>
+
+I fixed the first error by moving the function where it occurs after the
+definition of the class PythonObjectWrapper. However, I won't commit
+this change until I get the approval from Xavier.
+
+I fixed the second error by adding a 'template<>' in the
+DECLARE_OBJECT_PP macro. I believe it's correct, so I will commit it in
+a few minutes (after my PLearn is done compiling).
+
+--
+Olivier
+
+
+From saintmlx at apstat.com  Thu Jul 19 22:04:32 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Thu, 19 Jul 2007 16:04:32 -0400
+Subject: [Plearn-core] PLearn compilation issues at lisa
+In-Reply-To: <20070719185058.GA29578@opale.iro.umontreal.ca>
+References: <20070719184054.GA29414@opale.iro.umontreal.ca>
+	<20070719185058.GA29578@opale.iro.umontreal.ca>
+Message-ID: <469FC3D0.3080601@apstat.com>
+
+Olivier Delalleau wrote:
+>> /u/delallea/.PLearn.NOBACKUP/plearn/python/PythonObjectWrapper.h:320:
+>> error: incomplete type PLearn::PythonObjectWrapper used in nested name
+>> specifier
+>> /u/delallea/PLearn/plearn/vmat/VMat.h: At global scope:
+>> /u/delallea/PLearn/plearn/vmat/VMat.h:139: error: an explicit
+>> specialization must be preceded by ?template <>
+>>     
+>
+> I fixed the first error by moving the function where it occurs after the
+> definition of the class PythonObjectWrapper. However, I won't commit
+> this change until I get the approval from Xavier.
+>
+> I fixed the second error by adding a 'template<>' in the
+> DECLARE_OBJECT_PP macro. I believe it's correct, so I will commit it in
+> a few minutes (after my PLearn is done compiling).
+>
+>   
+
+I think both of your fixes should work fine.  In fact, I don't 
+understand why I did not get those errors when compiling with gcc 3.3 ...
+
+Xavier
+
+
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+
+From delallea at iro.umontreal.ca  Thu Jul 19 22:07:57 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 19 Jul 2007 16:07:57 -0400
+Subject: [Plearn-core] PLearn compilation issues at lisa
+In-Reply-To: <469FC3D0.3080601@apstat.com>
+References: <20070719184054.GA29414@opale.iro.umontreal.ca>
+	<20070719185058.GA29578@opale.iro.umontreal.ca>
+	<469FC3D0.3080601@apstat.com>
+Message-ID: <20070719200755.GA31983@opale.iro.umontreal.ca>
+
+On 19 Jul 2007, Xavier Saint-Mleux wrote:
+> Olivier Delalleau wrote:
+> >> /u/delallea/.PLearn.NOBACKUP/plearn/python/PythonObjectWrapper.h:320:
+> >> error: incomplete type PLearn::PythonObjectWrapper used in nested name
+> >> specifier
+> >> /u/delallea/PLearn/plearn/vmat/VMat.h: At global scope:
+> >> /u/delallea/PLearn/plearn/vmat/VMat.h:139: error: an explicit
+> >> specialization must be preceded by ?template <>
+> >>     
+> >
+> > I fixed the first error by moving the function where it occurs after the
+> > definition of the class PythonObjectWrapper. However, I won't commit
+> > this change until I get the approval from Xavier.
+> >
+> > I fixed the second error by adding a 'template<>' in the
+> > DECLARE_OBJECT_PP macro. I believe it's correct, so I will commit it in
+> > a few minutes (after my PLearn is done compiling).
+> >
+> >   
+> 
+> I think both of your fixes should work fine.  In fact, I don't 
+> understand why I did not get those errors when compiling with gcc 3.3 ...
+
+Ok, I'll commit the first one too then :)
+Thanks!
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Fri Jul 27 05:48:35 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 27 Jul 2007 05:48:35 +0200
+Subject: [Plearn-core] Types d'entiers dans PLearn, suite
+In-Reply-To: <20070717181711.GA10843@pig.zood.org>
+References: <20070716223059.GA3587@pig.zood.org>
+	<20070716225832.GA3742@pig.zood.org>
+	<20070717181711.GA10843@pig.zood.org>
+Message-ID: <20070727034835.GA6014@pig.zood.org>
+
+?a y est, j'ai committ? les changements concernant la
+s?rialisation/d?s?rialisation.
+
+J'esp?re que je n'ai rien cass? (les tests de PLearn ont l'air de
+tourner).
+
+Si vous avez des remarques ? faire sur le code que j'ai commit?,
+n'h?sitez pas, je ne savait pas trop comment m'y prendre.
+
+Maintenant, il reste ? arranger l'interface avec Python.
+
+? plus,
+-- 
+Pascal
+
+
+From marig1 at wp.pl  Sun Jul 29 12:37:58 2007
+From: marig1 at wp.pl (mariusz mariusz)
+Date: Sun, 29 Jul 2007 12:37:58 +0200
+Subject: [Plearn-core] PLearn::VMField
+Message-ID: <46ac6e0622415@wp.pl>
+
+Hello,
+
+i'm trying to write new plearner, but i'm a beginner and have some 
+problems with it. The main problem i have is, that the learner should 
+behave differnently depending on column type. Normally i used such 
+types: nominal, continuous and discrete, but in VMField i found 
+DiscrGeneral, DiscrMonotonic and DiscrFloat types. What does this types 
+mean? Maybe i could figure it out by myself, but i thought i'd better 
+ask.
+The second question is: how the db should tell plearner that the column 
+is that type?
+In especially how to write an .amat file, which would include 
+information about columns type? is it possible?
+
+thanks in advance
+
+marig
+
+----------------------------------------------------
+Tylko od nich zale?y czy prze?yj? t? noc. Jak uciec, gdy 
+oni widz? wszystko? Kate Beckinsale w mrocznym thrillerze
+MOTEL - kinach od 3 sierpnia!
+http://klik.wp.pl/?adr=http%3A%2F%2Fadv.reklama.wp.pl%2Fas%2Fmotel.html&sid=1236
+
+
+
+
+From delallea at iro.umontreal.ca  Mon Jul 30 17:20:59 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 30 Jul 2007 11:20:59 -0400
+Subject: [Plearn-core] PLearn::VMField
+In-Reply-To: <46ac6e0622415@wp.pl>
+References: <46ac6e0622415@wp.pl>
+Message-ID: <20070730152057.GA8250@opale.iro.umontreal.ca>
+
+Hi,
+
+First of all, although the VMFields are supposed to give information
+about features, be aware that there may be some code that does not
+process them properly (i.e. in particular if you process some fields
+through other VMatrices, it is possible that you may lose this
+information).
+
+I have little experience using these VMFields myself, but as far as I
+can tell DiscrMonotonic is for discrete values that have a notion of
+order (like 1, 2, 3), while DiscrFloat would be for discrete values that
+take floating point values. In the end it does not matter much, as long
+as your learner has the information it needs.
+
+I don't believe you can give this information directly in a .amat file.
+One way to do it is to create a "file.amat.metadata" directory, then
+edit an ascii file named "fieldnames" in it, and put one line for each
+field in the format:
+name_of_the_field type_of_the_field
+where 'type_of_the_field' is an integer corresponding to the index of
+the type in the 'FieldType' enum defined in VMField.h (starting at 0).
+
+If you want to create this file automatically, you can write a C++
+program that saves the fields by:
+    VMat vm = getDataSet("file.amat");
+    Array<VMField>& fields = vm->getFieldInfos();
+    // Set field types.
+    fields[0].fieldtype = VMField::DiscrFloat; // For instance.
+    // (...)
+    vm->setFieldInfos(fields);
+    vm->saveFieldInfos();
+
+--
+Olivier
+
+On 29 Jul 2007, mariusz mariusz wrote:
+> Hello,
+> 
+> i'm trying to write new plearner, but i'm a beginner and have some 
+> problems with it. The main problem i have is, that the learner should 
+> behave differnently depending on column type. Normally i used such 
+> types: nominal, continuous and discrete, but in VMField i found 
+> DiscrGeneral, DiscrMonotonic and DiscrFloat types. What does this types 
+> mean? Maybe i could figure it out by myself, but i thought i'd better 
+> ask.
+> The second question is: how the db should tell plearner that the column 
+> is that type?
+> In especially how to write an .amat file, which would include 
+> information about columns type? is it possible?
+> 
+> thanks in advance
+> 
+> marig
+> 
+> ----------------------------------------------------
+> Tylko od nich zale?y czy prze?yj? t? noc. Jak uciec, gdy 
+> oni widz? wszystko? Kate Beckinsale w mrocznym thrillerze
+> MOTEL - kinach od 3 sierpnia!
+> http://klik.wp.pl/?adr=http%3A%2F%2Fadv.reklama.wp.pl%2Fas%2Fmotel.html&sid=1236
+> 
+> 
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From lamblinp at iro.umontreal.ca  Mon Jul 30 21:50:33 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 30 Jul 2007 21:50:33 +0200
+Subject: [Plearn-core] Types d'entiers dans PLearn, suite
+In-Reply-To: <20070727034835.GA6014@pig.zood.org>
+References: <20070716223059.GA3587@pig.zood.org>
+	<20070716225832.GA3742@pig.zood.org>
+	<20070717181711.GA10843@pig.zood.org>
+	<20070727034835.GA6014@pig.zood.org>
+Message-ID: <20070730195032.GA13819@pig.zood.org>
+
+On Fri, Jul 27, 2007, Pascal Lamblin wrote:
+> ?a y est, j'ai committ? les changements concernant la
+> s?rialisation/d?s?rialisation.
+
+J'ai rajout? des tests d'overflow. Si quelqu'un a une id?e de comment
+faire pour se d?barrasser de ce warning...
+PLearn/plearn/io/PStream.h:335: warning: comparison is always true due
+to limited range of data type
+
+> Maintenant, il reste ? arranger l'interface avec Python.
+
+C'est fait aussi.
+
+-- 
+Pascal
+
+
+From saintmlx at apstat.com  Tue Jul 31 01:22:33 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Mon, 30 Jul 2007 19:22:33 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_NumPy?=
+In-Reply-To: <466D9EF2.3070109@apstat.com>
+References: <466D9EF2.3070109@apstat.com>
+Message-ID: <46AE72B9.2050508@apstat.com>
+
+Salut,
+
+Je vais faire un commit pour le passage ? numpy d'ici 24~48 heures.  Il 
+ne sera plus possible d'utiliser numarray avec PLearn apr?s ce 
+changement.  Le commit inclut les modifications n?cessaires pour faire 
+passer tous les pytests (buildbot) avec numpy.  Ce qui n'est pas test? 
+par le buildbot risque de ne plus marcher.
+
+Dans la plupart des cas, pour passer de numarray ? numpy, il suffit de 
+remplacer
+from numarray import *
+par
+from numpy.numarray import *
+
+N'h?sitez pas ? me contacter si vous avez des questions,
+
+Xavier
+
+Xavier Saint-Mleux wrote:
+> Salut,
+>
+> Je suis en train de faire la transition de numarray ? numpy.  Puisque 
+> numarray est officiellement "deprecated", ?a ne sera plus support? par 
+> PLearn apr?s le passage ? numpy (i.e. d'ici quelques semaines).  En 
+> particulier, tout code python qui importe numarray va ?tre modifi? pour 
+> importer numpy.numarray ? la place (interface "numarray" de numpy, pour 
+> simplifier la transition; ? ne pas utiliser dans du nouveau code).
+>
+> Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+> install? partout o? vous utilisez numarray en ce moment?  Il serait 
+> pr?f?rable d'avoir la derni?re version (1.0.3); la version 1.0.1 a des 
+> bugs qui nous affectent et je n'ai pas essay? 1.0.2.
+>
+> N.B. numpy.numarray donne essentiellement la m?me interface (syntaxe) 
+> que numarray, mais il y a quelques diff?rences et la s?mantique peut 
+> ?tre diff?rente aussi.  Si vous avez des choses qui d?pendent de 
+> numarray, il serait bon d'en faire des pytest:  je ne ferai pas de 
+> commit tant les tests ne passeront pas tous.
+>
+> Xavier
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+

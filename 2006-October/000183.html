@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Comment%20initialiser%20option_values%20de%20la%20classe%0A%09CartesianProductOracle&In-Reply-To=%3Cc81af8c30610110707q139f8582g749b6bbefee619b0%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000182.html">
+   <LINK REL="Next"  HREF="000184.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Comment%20initialiser%20option_values%20de%20la%20classe%0A%09CartesianProductOracle&In-Reply-To=%3Cc81af8c30610110707q139f8582g749b6bbefee619b0%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle">jaonary at gmail.com
+       </A><BR>
+    <I>Wed Oct 11 16:07:05 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000182.html">[Plearn-core] AddCostToLearner
+</A></li>
+        <LI>Next message: <A HREF="000184.html">[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#183">[ date ]</a>
+              <a href="thread.html#183">[ thread ]</a>
+              <a href="subject.html#183">[ subject ]</a>
+              <a href="author.html#183">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Cette membre de la classe CartesianProductOracle est un TVec&lt; TVec&lt;string&gt;
+&gt;<i>. Donc un vecteur de vecteur de string. Est ce qu'il y a une mani&#232;re simple
+</I>de l'initialiser (en c++) &#224; part tout faire &#224; la main comme ci dessous :
+
+TVec&lt;TVec&lt;string&gt;&gt; opt_value(2);
+TVec&lt;string&gt; kmin(10);
+kmin[0] = &quot;1&quot;
+.....
+TVec&lt;string&gt;  sigma(3);
+sigma[0] = &quot;0.5&quot;;
+.......
+opt_value[0] = kmin;
+opt_value[1] = sigma;
+
+Ici j'aimarai pouvoir faire passer un real ou un TVec&lt;real&gt; directement.
+
+Pour le option_name (de la class CartesianProductOracle toujours) est-ce
+qu'il y a une signification particuli&#232;re le fait d'&#233;crire
+&quot;learner.knn&quot; et &quot;learner.knn.distance_kernel.sigma&quot; ou je peux mettre
+n'importe quel string ?
+
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061011/c2a2d321/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061011/c2a2d321/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000182.html">[Plearn-core] AddCostToLearner
+</A></li>
+	<LI>Next message: <A HREF="000184.html">[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#183">[ date ]</a>
+              <a href="thread.html#183">[ thread ]</a>
+              <a href="subject.html#183">[ subject ]</a>
+              <a href="author.html#183">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

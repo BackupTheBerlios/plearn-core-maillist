@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Changement a HyperLearner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Changement%20a%20HyperLearner&In-Reply-To=%3C20060713181703.GA14519%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000142.html">
+   <LINK REL="Next"  HREF="000130.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Changement a HyperLearner</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Changement%20a%20HyperLearner&In-Reply-To=%3C20060713181703.GA14519%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Changement a HyperLearner">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jul 13 20:17:04 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000142.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+        <LI>Next message: <A HREF="000130.html">[Plearn-core] location distributed launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Le changement suivant a HyperLearner me semble poser probleme :
+    <A HREF="http://svn.berlios.de/wsvn/plearn/trunk/plearn_learners/hyper/HyperLearner.cc?op=diff&amp;rev=5960&amp;sc=1">http://svn.berlios.de/wsvn/plearn/trunk/plearn_learners/hyper/HyperLearner.cc?op=diff&amp;rev=5960&amp;sc=1</A>
+
+J'ai deja ecrit des scripts ou j'avais besoin d'avoir en sortie les
+resultats de l'optimisation (et je sais que je ne suis pas le seul),
+pour avoir en train cost du HyperLearner les couts de la derniere
+strategy est tres utile.
+Ce changement semble compeletement modifier la semantique des train
+costs du HyperLearner, et je me demande meme si ca ne devrait pas
+planter puisque dans HyperLearner::train il update toujours les
+train_stats avec les resultats de la derniere strategie (train_stats est
+donc 'partage' par deux learners qui font des choses differentes).
+
+Si on veut un traincost du learner sous-jacent, j'imagine qu'il devrait
+etre possible de s'arranger pour le mettre comme cout dans la derniere
+strategie, afin de pouvoir y acceder aussi dans ceux du HyperLearner.
+
+--
+Olivier
+
+PS: Je comptais juste envoyer a plearn-core, mais avec BerliOS qui a l'air a
+la rue, je prefere t'en parler directement, ca ira plus vite ;)
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000142.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+	<LI>Next message: <A HREF="000130.html">[Plearn-core] location distributed launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

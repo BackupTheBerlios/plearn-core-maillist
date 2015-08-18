@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] throw an PLERROR when their is an interrupt signal?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-August/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20throw%20an%20PLERROR%20when%20their%20is%20an%20interrupt%20signal%3F&In-Reply-To=%3C2d1d7fe70808010728r4a74e18awdaaf68698dbc5a38%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] throw an PLERROR when their is an interrupt signal?</H1>
+    <B>Fr&#233;d&#233;ric Bastien</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20throw%20an%20PLERROR%20when%20their%20is%20an%20interrupt%20signal%3F&In-Reply-To=%3C2d1d7fe70808010728r4a74e18awdaaf68698dbc5a38%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] throw an PLERROR when their is an interrupt signal?">nouiz at nouiz.org
+       </A><BR>
+    <I>Fri Aug  1 16:28:03 CEST 2008</I>
+    <P><UL>
+        
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#432">[ date ]</a>
+              <a href="thread.html#432">[ thread ]</a>
+              <a href="subject.html#432">[ subject ]</a>
+              <a href="author.html#432">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I want plearn to catch the interrupt signal and throw an PLERROR in
+that case. I have the code for it and all pytest succed. My question
+is do you see any reason for me to don't commit this? Should this
+cause trouble at apstat?
+
+The reason of this is when their is the computation of the statistics
+on an VMatrix, we take the lock on the metadatadir. Recently I added
+that if their is an exception when we have the lock(in the case that
+concern me, not all case), we catch it, then remove the lock, then we
+re throw the same exception. I want this when I interrupt the program
+so that I don't have to manually remove the lock.
+
+If I don't have any reason to don't commit it by monday, I will do it
+Monday afternoon.
+
+thanks
+
+Fr&#233;d&#233;ric Bastien
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#432">[ date ]</a>
+              <a href="thread.html#432">[ thread ]</a>
+              <a href="subject.html#432">[ subject ]</a>
+              <a href="author.html#432">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

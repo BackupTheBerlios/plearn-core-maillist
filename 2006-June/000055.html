@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615004216.GA20712%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000056.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615004216.GA20712%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 02:42:16 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000056.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut les gens,
+
+Comme on en a d&#233;j&#224; discut&#233; avec certains, il manque &#224; PLearn un
+m&#233;canisme qui permette facilement de changer la valeur de plusieurs
+options dans un objet, et qui change automatiquement la valeur d'autres
+options (genre des learntoptions) si n&#233;cessaires.
+
+Pour prendre une exemple stupide, si j'ai une classe Classe, qui d&#233;rive
+de PLearn::Object, et qui a un membre Vec v (buildoption) et un autre
+int n (learntoption), qui est cens&#233; valoir v.size().
+
+Je voudrais bien avoir un m&#233;canisme qui me permet, si je fais des choses
+&#224; v, de garder n &#224; jour. Mais j'aimerais aussi pouvoir changer n, et que
+&#231;a resize v automatiquement.
+
+Pour le moment, la r&#232;gle officielle lorsqu'on change une option d'un
+objet depuis l'ext&#233;rieur, c'est d'appeler syst&#233;matiquement build() pour
+&#234;tre s&#251;r que l'objet reste coh&#233;rent. &#199;a pose trois probl&#232;mes :
+  - si n != v.size(), comment savoir lequel a chang&#233; ?
+  - &#231;a peut prendre beaucoup de temps de v&#233;rifier la coh&#233;rence de toutes
+    les options d'un objet, surtout s'il en a beaucoup ;
+  - cons&#233;quence du pr&#233;c&#233;dent : lorsque le changement que l'on veut faire
+    a l'air anodin, souvent le programmeur n'appellera pas build()
+    parce que &#231;a ne sert &#224; rien, et se trouvera bien emb&#234;t&#233; si jamais la
+    classe change.
+
+Pour r&#233;soudre ces probl&#232;mes, le m&#233;canisme de changeOptions(), qui prend
+en argument une table string/string contenant des noms d'options et leur
+valeur, et qui est cens&#233; laisser l'objet dans un &#233;tat coh&#233;rent et avec
+les options chang&#233;es. Par d&#233;faut, il appelle setOption sur les valeurs
+qui vont bien, et termine par build(), mais ce comportement peut &#234;tre
+remplac&#233; dans chaque classe.
+
+Le probl&#232;me de cette approche, c'est qu'il n&#233;cessite une conversion des
+donn&#233;es en cha&#238;ne de caract&#232;res, ce qui n'est pas forc&#233;ment l'id&#233;al pour
+une matrice de 2000 par 3500. En plus, si on veut partager des storages
+entre plusieurs matrices, &#231;a peut devenir tr&#232;s p&#233;nible.
+
+Pour le moment, HyperLearner utilise ce syst&#232;me, qui est bien adapt&#233;
+puisque les valeurs des options sont lues depuis un script, donc sous
+forme de string.
+
+
+Une premi&#232;re chose que l'on pourrait faire, c'est diff&#233;rencier deux
+r&#244;les de la fonction build() : &#234;tre appel&#233;e apr&#232;s la cr&#233;ation de
+l'objet et le premier setting d'options, et &#234;tre appel&#233;e apr&#232;s un
+changement d'options pour &#171; r&#233;parer &#187; l'objet. Si on d&#233;cide de s&#233;parer
+les deux fonctions, on peut appeler la premi&#232;re build() et la deuxi&#232;me
+rebuild().
+
+Jusqu'ici, on n'a fait que d&#233;placer le probl&#232;me, m&#234;me si &#224; mon avis
+c'est plus facile &#224; &#233;crire sous la forme de deux fonctions s&#233;par&#233;es,
+pour le programmeur (puisqu'il conna&#238;t mieux le contexte).
+
+Au lieu de v&#233;rifier les valeurs de toutes les options pour savoir
+lesquelles sont incoh&#233;rentes, ou de garder une copie de toutes les
+options dans le but de voir lesquelles ont chang&#233; depuis le dernier
+appel &#224; rebuild(), on pourrait passer &#224; rebuild() les noms des options
+que l'on a chang&#233;es (&#224; mon avis, pas besoin de conna&#238;tre la valeur
+pr&#233;c&#233;dente de l'option).
+
+
+Pour continuer mon exemple d&#233;bile, on pourrait avoir, dans Classe.cc :
+
+void Class::rebuild( set&lt; string &gt; changed_options )
+{
+    bool v_has_changed = (changed_options.find(&quot;v&quot;) != changed_options.end());
+    bool n_has_changed = (changed_options.find(&quot;n&quot;) != changed_options.end());
+
+    if( v_has_changed &amp;&amp; n_has_changed )
+        assert( n == v.length() );
+    else if( v_has_changed )
+        n = v.length();
+    else if( n_has_changed )
+        v.resize( n );
+}
+
+Le changement des options dans du code ext&#233;rieur se ferait alors de la
+mani&#232;re suivante :
+
+// si on change les deux
+mon_objet.n = 12;
+mon_objet.v = Vec( n, 2 );
+string changed_options[2] = { &quot;v&quot;, &quot;n&quot; };
+mon_objet.rebuild( set&lt;string&gt;( changed_options, changed_options+2 );
+
+// si on n'en change qu'une
+mon_objet.v = Vec( 2, 12 );
+set&lt;string&gt; changed_options;
+changed_options.insert( &quot;v&quot; );
+mon_objet.rebuild( changed_options );
+
+
+Deux questions restent :
+  - que fait-on si on veut changer une option d'un sous-sous-objet ?
+  - finalement, est-ce que changeOptions pourrait appeler rebuild() ?
+
+
+Vu que le probl&#232;me des options se pose de mani&#232;re plus aigues dans les
+learners qui incorporent beaucoup de sous-objets (ceux &#224; base de
+OnlineLearningModule, en particulier), je me propose pour impl&#233;menter &#231;a
+dans ces objets-l&#224; (m&#234;me si &#231;a va introduire quelques hacks au d&#233;but, en
+particulier tant que le reste du code n'appelle pas rebuild()) pour voir
+si &#231;a se fait bien.
+
+Vous en pensez quoi ?
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000056.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

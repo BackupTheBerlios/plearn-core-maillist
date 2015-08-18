@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Meilleurs moyens de r?cuperer et de
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20r%3Fcuperer%20et%20de&In-Reply-To=%3C20061107151419.GA23977%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000243.html">
+   <LINK REL="Next"  HREF="000245.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Meilleurs moyens de r?cuperer et de</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20r%3Fcuperer%20et%20de&In-Reply-To=%3C20061107151419.GA23977%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Meilleurs moyens de r?cuperer et de">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Nov  7 16:14:20 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000243.html">[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?
+</A></li>
+        <LI>Next message: <A HREF="000245.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#244">[ date ]</a>
+              <a href="thread.html#244">[ thread ]</a>
+              <a href="subject.html#244">[ subject ]</a>
+              <a href="author.html#244">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Selon les cas, tu peux mettre un champ public ou juste rajouter une
+m&#233;thode 'accesseur'. G&#233;n&#233;ralement, je pr&#233;f&#232;re une m&#233;thode accesseur si
+le champ ne devrait pas &#234;tre modifi&#233; en dehors de la classe (mais ce
+n'est pas vraiment une convention PLearn).
+
+Ensuite, dans du code C++, la m&#233;thode la plus efficace actuellement est
+de faire un cast de ton objet, comme :
+    PP&lt;BinaryStump&gt; my_object_cast = (BinaryStump*) get_pointer(my_object)
+ou bien tu peux p-&#234; utiliser un dynamic_cast&lt;BinaryStump*&gt;, mais j'avoue
+que je ne sais pas vraiment quelle est la diff&#233;rence.
+L'id&#233;e d'avoir des getOptions qui retournent des trucs plus int&#233;ressants
+que des string a d&#233;j&#224; &#233;t&#233; discut&#233;e, mais pas encore impl&#233;ment&#233;e.
+
+--
+Olivier
+
+On 07 Nov 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Bonjour,
+</I>&gt;<i> Cette question a d&#233;j&#224; &#233;t&#233; soulev&#233; ici, mais n'ayant pas encore trouv&#233; une
+</I>&gt;<i> solution satisfaisante
+</I>&gt;<i> je vais &#224; nouveau vous soumettre le probl&#232;me.
+</I>&gt;<i> Avant toutes choses je tiens encore &#224; pr&#233;ciser que je travaille en C++ ;-).
+</I>&gt;<i> Donc, j'ai un objet qui est une sous classe de Object (au sens de PLearn). Pour
+</I>&gt;<i> &#234;tre pr&#233;cis disons que cet objet est en fait un BinaryStump (c'est l'exemple
+</I>&gt;<i> sur lequel j'exp&#233;rimente actuellement).  BinaryStump &#224; deux membres protected
+</I>&gt;<i> qui m'int&#233;ressent plus particuli&#232;rement :
+</I>&gt;<i> 
+</I>&gt;<i> int feature;
+</I>&gt;<i> real threshold;
+</I>&gt;<i> 
+</I>&gt;<i> J'aimerais bien les r&#233;cuperer apr&#232;s l'apprentissage, mais l&#224; gros probl&#232;me.
+</I>&gt;<i> Etant donner, qu'ils sont innaccessible en dehors de la classe, PLearn m'oblige
+</I>&gt;<i> pour l'instant &#224; utiliser la fonction getOption(...) de la classe Object. Cette
+</I>&gt;<i> derni&#232;re renvoi malheuresement que la serialisation de mon objet, et je trouve
+</I>&gt;<i> que c'est un peu b&#234;te de transformer un entier en string et string en entier
+</I>&gt;<i> avant de pouvoir utiliser l'entier en question. Imaginez quand je dois
+</I>&gt;<i> r&#233;cuperer un membre beaucoup plus compliqu&#233; que des entiers. Par exemple le
+</I>&gt;<i> membre
+</I>&gt;<i> TVec&lt; PP&lt;PLearner&gt; &gt; weak_learners;
+</I>&gt;<i> de la classe Adaboost, qui lui m'interesse aussi mais a le mauvais gout d'etre
+</I>&gt;<i> private.
+</I>&gt;<i> 
+</I>&gt;<i> Les solutions que je vois actuellement sont  :
+</I>&gt;<i> - je rends publics tous les membre qui sont succeptible de m'interess&#233;s. C'est
+</I>&gt;<i> peut &#234;tre une mauvaise id&#233;e dans la mesure o&#249; s'ils sont d&#233;clar&#233;s ainsi c'est
+</I>&gt;<i> qu'il y a une raison qui m'&#233;chappe.
+</I>&gt;<i> 
+</I>&gt;<i> - j'utilise la s&#233;rialisation mais comme j'ai dis, c'est un peu lourd le faite
+</I>&gt;<i> de creer un objet le transformer en string et ensuite transformer le string en
+</I>&gt;<i> objet avant d'utiliser l'objet. En plus au niveau des types standard je ne sais
+</I>&gt;<i> pas trop si c'est g&#233;r&#233; de mani&#232;re transparente
+</I>&gt;<i> 
+</I>&gt;<i> - Enfin, la derni&#232;re solution c'est peut &#234;tre impl&#233;menter une autre fonction
+</I>&gt;<i> membre d'Objet ayant pour signature Object*
+</I>&gt;<i> 
+</I>&gt;<i> Option* getOption(option_name)
+</I>&gt;<i> 
+</I>&gt;<i> et apres un truc du type
+</I>&gt;<i> 
+</I>&gt;<i> TVec&lt; PP&lt;PLearner&gt; &gt; weak_learners = dynamic_cast&lt;TVec&lt; PP&lt;PLearner&gt; &gt; &gt;
+</I>&gt;<i> adaboost.getOption(&quot;weak_learners)
+</I>&gt;<i> 
+</I>&gt;<i> mais l&#224; il faudrait que tous les types soient de Object (y compris les types
+</I>&gt;<i> standard)
+</I>&gt;<i> 
+</I>&gt;<i> Qu'en pensez vous ?
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000243.html">[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?
+</A></li>
+	<LI>Next message: <A HREF="000245.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#244">[ date ]</a>
+              <a href="thread.html#244">[ thread ]</a>
+              <a href="subject.html#244">[ subject ]</a>
+              <a href="author.html#244">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

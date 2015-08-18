@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Probleme etrange
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3C20061103160239.GB12935%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000238.html">
+   <LINK REL="Next"  HREF="000240.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Probleme etrange</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3C20061103160239.GB12935%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Probleme etrange">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Nov  3 17:02:39 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000238.html">[Plearn-core] Probleme etrange
+</A></li>
+        <LI>Next message: <A HREF="000240.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Ca ne devrait pas &#234;tre un probl&#232;me de m&#233;moire, les FileVMatrix (qui
+chargent les .pmat) ne prennent pas beaucoup de m&#233;moire.
+Vu que &#231;a plante quand tu essaie d'ouvrir un fichier, je soup&#231;onne que
+tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+donn&#233;es entrent en m&#233;moire, tu pourrais faire une fonction de chargement
+du genre :
+
+TVec&lt;VMat&gt; my_vec_of_vmat;
+for (int i = 0; i &lt; n; i++) {
+    VMat m1 = new AutoVMatrix(&quot;mon_fichier_&quot; + tostring(i) + &quot;.pmat&quot;);
+    VMat m2(m1.toMat());
+    m2-&gt;getMetaInfoFrom(m1);
+    my_vec_of_vmat.append(m2);
+}
+
+ce qui t'assure que le fichier .pmat va &#234;tre ferm&#233;.
+
+--
+Olivier
+
+On 03 Nov 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Salut a tous,
+</I>&gt;<i> J'ai constate un probleme bizard avec les VMat et AutoVMatrix. En gros, j'ai
+</I>&gt;<i> une liste de VMat (TVec&lt;VMat&gt;).
+</I>&gt;<i> J'initialise cette liste en chargenat un a un les VMat qui m'interesse a l'aide
+</I>&gt;<i> de la classe AutoVMatrix. Les matrices sont
+</I>&gt;<i> stockees en binaire (.pmat). Mon probleme c'est que quand la taille de TVec
+</I>&gt;<i> &lt;VMat&gt; depasse 1020 j'obtients l'erreur suivante :
+</I>&gt;<i> 
+</I>&gt;<i> ERROR: openFile(&quot;/certis/3/rabariso/experiences/pascal_2006/poi/
+</I>&gt;<i> 005303_lowe_sift.pmat.metadata/sizes&quot;,&quot;r&quot;) failed.
+</I>&gt;<i> 
+</I>&gt;<i> et cette erreur apparait toujours au 1021 ieme VMat que je veux charger,
+</I>&gt;<i> independament du VMat. Vous pouvez voir mon code ci-dessus. Quand n_data &gt; 1020
+</I>&gt;<i> j'obtients cette erreur dans le cas contraire ca marche. J'ai pense a un
+</I>&gt;<i> probleme de memoire mais sur ma machine y en a 16GB et quand je lance le
+</I>&gt;<i> programme il utilise a peine 1GB
+</I>&gt;<i> 
+</I>&gt;<i> Une petite idee ?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>      53         TVec&lt;VMat&gt; inputs(n_data);
+</I>&gt;<i>      54         vector&lt;int&gt; targets(n_data);
+</I>&gt;<i>      55
+</I>&gt;<i>      56         ProgressBar* pb1 = new ProgressBar(&quot;Loading data into
+</I>&gt;<i> memory&quot;,n_data);
+</I>&gt;<i>      57         map&lt;string,int&gt;::iterator data_it = input_target.begin();
+</I>&gt;<i>      58         map&lt;string,int&gt;::iterator data_end = input_target.end();
+</I>&gt;<i>      59         string dsuff = string(ptype)+&quot;_&quot;+string(dtype);
+</I>&gt;<i>      60         int idx = 0;
+</I>&gt;<i>      61         for(;data_it!=data_end;++data_it,++idx)
+</I>&gt;<i>      62         {
+</I>&gt;<i>      63                 //cout &lt;&lt; data_it-&gt;first &lt;&lt; endl;
+</I>&gt;<i>      64                 PPath dpath = getPath((data_it-&gt;first).c_str
+</I>&gt;<i> (),dsuff.c_str(),matrix_type,pdir);
+</I>&gt;<i>      65                 inputs[idx] = new AutoVMatrix(dpath);
+</I>&gt;<i>      66                 targets[idx] = data_it-&gt;second;
+</I>&gt;<i>      67                 pb1-&gt;update(idx);
+</I>&gt;<i>      68         }
+</I>&gt;<i>      69         delete pb1;
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000238.html">[Plearn-core] Probleme etrange
+</A></li>
+	<LI>Next message: <A HREF="000240.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

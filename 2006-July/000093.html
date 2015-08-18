@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] changements dans pymake
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C22777a450607030129v5d009f5ek1cadd7de5a84de6e%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000092.html">
+   <LINK REL="Next"  HREF="000098.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] changements dans pymake</H1>
+    <B>Dan Popovici</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C22777a450607030129v5d009f5ek1cadd7de5a84de6e%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] changements dans pymake">dan.popovici at gmail.com
+       </A><BR>
+    <I>Mon Jul  3 10:29:08 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000092.html">[Plearn-core] changements dans pymake
+</A></li>
+        <LI>Next message: <A HREF="000098.html">[Plearn-core] Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#93">[ date ]</a>
+              <a href="thread.html#93">[ thread ]</a>
+              <a href="subject.html#93">[ subject ]</a>
+              <a href="author.html#93">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 6/30/06, Pascal Lamblin &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at iro.umontreal.ca</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> On Fri, Jun 30, 2006, Pascal Vincent wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; &gt;Tant que j'y &#233;tais, j'ai vu qu'il y avait d&#233;j&#224; de quoi g&#233;rer des
+</I>&gt;<i> &gt; &gt;valeurs de &quot;nice&quot; pour la compilation, mais je n'ai rien vu qui y
+</I>&gt;<i> &gt; &gt;faisait appel. Est-ce que &#231;a vous semblerait raisonnable de g&#233;rer un
+</I>&gt;<i> &gt; &gt;format de fichiers .hosts un peu plus compliqu&#233;, de la forme :
+</I>&gt;<i> &gt; &gt;machine1  10
+</I>&gt;<i> &gt; &gt;machine2  19
+</I>&gt;<i> &gt; &gt;machine3 0
+</I>&gt;<i> &gt; &gt;machine4
+</I>&gt;<i> &gt; &gt;machine5 # 19
+</I>&gt;<i> &gt; &gt;machine6 -20
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;avec un deuxi&#232;me champ (facultatif et pouvant &#234;tre en commentaire)
+</I>&gt;<i> &gt; &gt;contenant la valeur de nice sur cette machine ?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Tr&#232;s bonne id&#233;e.
+</I>&gt;<i>
+</I>&gt;<i> OK, je vais faire &#231;a.
+</I>&gt;<i>
+</I>&gt;<i> &gt; &gt;Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+</I>&gt;<i> &gt; &gt;puisse parall&#233;liser la compilation sur le mammouth, o&#249; on n'a aucun
+</I>&gt;<i> &gt; &gt;acc&#232;s direct aux machines : il faut passer par le syst&#232;me de gestion du
+</I>&gt;<i> &gt; &gt;cluster, on ne peut pas faire &quot;ssh machine commande...&quot;.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+</I>&gt;<i> &gt; &gt;je peux modifier le pymake existant (par exemple en rajoutant une
+</I>&gt;<i> &gt; &gt;option
+</I>&gt;<i> &gt; &gt;et des fonctions particuli&#232;res), ou est-ce qu'il vaudrait mieux que je
+</I>&gt;<i> &gt; &gt;fasse un autre script ? Et est-ce que vous auriez des conseils
+</I>&gt;<i> &gt; &gt;particuliers ?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Tu peux hacker pymake (au point o&#251; &#231;a en est!). Mais ce serait
+</I>&gt;<i> &gt; peut-&#234;tre bon d'abstraire la fonctionalit&#233; &quot;lancer job sur machine x&quot;
+</I>&gt;<i> &gt; et l'op&#233;ration de r&#233;cup&#233;ration du r&#233;sultat en temps opportun, ou qqch
+</I>&gt;<i> &gt; du genre. Selon la machine, ssh pourrait n'&#234;tre qu'une option possible.
+</I>&gt;<i>
+</I>&gt;<i> En l'occurrence, c'est m&#234;me un groupe de jobs que l'on veut lancer d'un
+</I>&gt;<i> coup, et la gestion que l'on est oblig&#233; de faire dans le cas du ssh
+</I>&gt;<i> (avoir une liste des machines, relancer une compilation sur la m&#234;me
+</I>&gt;<i> machine lorsque celle-ci a fini, etc.) n'a pas &#224; &#234;tre faite par pymake,
+</I>&gt;<i> mais par le syst&#232;me de cluster (celui du diro, bqtools sur le mammouth,
+</I>&gt;<i> condor peut-&#234;tre un jour).
+</I>&gt;<i>
+</I>&gt;<i> Une nuance quand m&#234;me : lorsque l'on a beaucoup de jobs rapides (&lt;1 mn)
+</I>&gt;<i> &#224; ex&#233;cuter, on n'a pas forc&#233;ment besoin de l'acc&#232;s exclusif &#224; un cpu que
+</I>&gt;<i> donne le syst&#232;me de cluster, par exemple, et la g&#234;ne pour celui qui
+</I>&gt;<i> ex&#233;cute une grosse t&#226;che sur la machine n'est pas tr&#232;s grande (c'est
+</I>&gt;<i> pour &#231;a qu'on peut se permettre d'utiliser ssh sur les machines du
+</I>&gt;<i> cluster au diro). Alors que si on dispatche des vraies exp&#233;riences, il
+</I>&gt;<i> vaut mieux &#233;viter que plusieurs se retrouvent sur le m&#234;me cpu...
+</I>&gt;<i> &#199;a peut &#234;tre une option.
+</I>&gt;<i>
+</I>&gt;<i> &gt; En fait Christian Hudon avait &#224; une &#233;poque lointaine travaill&#233; sur un
+</I>&gt;<i> &gt; script du genre, dans le but de pouvoir utiliser &#224; la fois ssh (chez
+</I>&gt;<i> &gt; ApSTAT) et &#233;ventuellement ce qui &#224; l'&#233;poque &#233;tait la commande &quot;cluster&quot;
+</I>&gt;<i> &gt; au DIRO...
+</I>&gt;<i>
+</I>&gt;<i> Christian si tu m'entends, je veux bien jeter un coup d'oeil &#224; &#231;a.
+</I>&gt;<i>
+</I>&gt;<i> &gt; Diff&#233;rentes personnes ont &#233;crit diff&#233;rentes fa&#231;ons de
+</I>&gt;<i> &gt; trouver des machines et dispatcher des jobs &#224; diff&#233;rents mastodontes et
+</I>&gt;<i> &gt; pt&#233;rodactyles (et si je ne m'abuse, Dan s'appr&#234;te &#224; re-faire de m&#234;me
+</I>&gt;<i> &gt; pour ses hyper-optimisations, et Christian H. pour pytest ...).
+</I>&gt;<i>
+</I>&gt;<i> Donc ce que tu proposes, c'est de faire une couche d'abstraction
+</I>&gt;<i> au-dessus des diff&#233;rentes impl&#233;mentations des syst&#232;mes de r&#233;partition
+</I>&gt;<i> des t&#226;ches sur de gros animaux, qui dans le cas de syst&#232;mes bien faits
+</I>&gt;<i> se contente de traduire ces instructions dans le langage de l'animal en
+</I>&gt;<i> question, et dans le cas d'un parc de machines accessible directement en
+</I>&gt;<i> fait une impl&#233;mentation. J'ai bien compris ?
+</I>&gt;<i>
+</I>&gt;<i> Ce qu'il faudrait que ce syst&#232;me puisse g&#233;rer, au minimum, c'est
+</I>&gt;<i> l'ex&#233;cution d'un groupe de t&#226;che ind&#233;pendantes les unes des autres, et
+</I>&gt;<i> la r&#233;cup&#233;ration des r&#233;sultats. Si on veut &#234;tre un peu plus gourmands, on
+</I>&gt;<i> peut cha&#238;ner l'ex&#233;cution de tels groupes, inconditionnellement (tu fais
+</I>&gt;<i> &#231;a, et ensuite &#231;a) ou conditionnellement (tu fais &#231;a, et si &#231;a n'a pas
+</I>&gt;<i> merd&#233; tu fais &#231;a) ; je crois que le mammouth comprend ce genre
+</I>&gt;<i> d'instructions.
+</I>&gt;<i>
+</I>&gt;<i> Ensuite, ce syst&#232;me serait appel&#233; avec les bonnes options par pymake
+</I>&gt;<i> pour la compilation, apdispatch pour l'ex&#233;cution de t&#226;ches, pytest si
+</I>&gt;<i> besoin, etc.
+</I>&gt;<i>
+</I>&gt;<i> &gt; Je ne sais pas trop o&#249; en sont les derniers d&#233;veloppements, mais il
+</I>&gt;<i> &gt; serait sans doute bon de coordonner tout &#231;a... Un volontaire? :-)
+</I>&gt;<i>
+</I>&gt;<i> Je veux bien m'en charger (bon, il va &#234;tre temps que je me mette
+</I>&gt;<i> s&#233;rieusement &#224; python).
+</I>&gt;<i>
+</I>&gt;<i> Bon allez je commence :
+</I>&gt;<i>   - Dan : est-ce qu'une interface entre un tel syst&#232;me et condor te
+</I>&gt;<i> semble possible, et si on impl&#233;mente &#231;a est-ce que tu l'utiliserais ?
+</I>
+
+Oui une interface intre un system comme ca et condor c'est s&#251;rement
+possible.
+Je voudrais une telle interface. J'ai besoin d'une dans mon &quot;hyper parameter
+optimizer&quot;.
+Je peux t'aider coder ca, si tu veux.
+
+
+  - Christian H. : qu'est-ce que tu comptais faire, au juste, pour
+&gt;<i> pytest ? Est-ce que &#231;a pourrait se faire, par exemple, en utilisant un
+</I>&gt;<i> script du m&#234;me genre qu'apdispatch, qui utiliserait notre interface ?
+</I>&gt;<i>   - Tout le monde : qui serait pr&#234;t &#224; coder l&#224;-dessus ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Au fait, si ce n'est pas encore fait, j'aimerais bien que tout le monde
+</I>&gt;<i> fasse une liste avec :
+</I>&gt;<i>   - ce qu'il aimerait voir dans PLearn
+</I>&gt;<i>   - ce qu'il aimerait voir fait autrement dans PLearn
+</I>&gt;<i>   - ce qui est dans PLearn et qu'il aimerait ne plus voir
+</I>&gt;<i>   - des priorit&#233;s pour tout &#231;a
+</I>
+
+Je te donnerai ma liste en quelques jours.
+
+
+Histoire qu'on puisse en discuter ensemble, rassembler toutes les
+&gt;<i> propositions, et faire une grosse liste avec des priorit&#233;s et des gens
+</I>&gt;<i> qui s'en occuppent.
+</I>&gt;<i>
+</I>&gt;<i> Je ramasse les copies jeudi prochain :)
+</I>&gt;<i> --
+</I>&gt;<i> Pascal
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060703/9c2d3759/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060703/9c2d3759/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000092.html">[Plearn-core] changements dans pymake
+</A></li>
+	<LI>Next message: <A HREF="000098.html">[Plearn-core] Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#93">[ date ]</a>
+              <a href="thread.html#93">[ thread ]</a>
+              <a href="subject.html#93">[ subject ]</a>
+              <a href="author.html#93">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

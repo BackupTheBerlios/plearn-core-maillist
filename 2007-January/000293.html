@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Apprentissage transductif dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Apprentissage%20transductif%20dans%20PLearn&In-Reply-To=%3C1711.207.61.255.171.1168870960.squirrel%40intranet.apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000292.html">
+   <LINK REL="Next"  HREF="000295.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Apprentissage transductif dans PLearn</H1>
+    <B>chapados at apstat.com</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Apprentissage%20transductif%20dans%20PLearn&In-Reply-To=%3C1711.207.61.255.171.1168870960.squirrel%40intranet.apstat.com%3E"
+       TITLE="[Plearn-core] Apprentissage transductif dans PLearn">chapados at apstat.com
+       </A><BR>
+    <I>Mon Jan 15 15:22:40 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000292.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+        <LI>Next message: <A HREF="000295.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut &#224; tous,
+
+J'aimerais recueillir votre avis sur les mani&#232;res de faire de
+l'apprentissage transductif dans PLearn.  Cette forme d'apprentissage est
+lorsque nous avons acc&#232;s AUX INPUTS DE TEST au moment de l'entra&#238;nement. 
+En d'autres termes, on a le droit d'entra&#238;ner en connaissant d'avance les
+points o&#249; la fonction sera interrog&#233;e.
+
+Maintenant la question est: comment faire cela dans le cadre d'un PLearner?
+
+J'imagine deux possibilit&#233;s:
+
+1) Introduire une classe interm&#233;diaire &quot;TransductivePLearner&quot; (d&#233;riv&#233;e de
+PLearner) qui ajouterait une fonction &quot;setTestInputs&quot; en plus de
+&quot;setTrainingSet&quot;.  La fonction setTestInputs serait appel&#233;e avant de faire
+train.  L'ennui avec cette approche est de s'assurer qu'on appelle la
+fonction au bon moment.  De plus, il est souvent sous-optimal (ou
+impossible) de tester sur d'autres points que ceux qu'on a d&#233;clar&#233;s
+d'avance, donc il faut que computeOutput surveille ses entr&#233;es...
+
+2) Laisser PLearner sous sa forme actuelle et &quot;hijacker&quot; la nouvelle
+fonction computeOutputCovMat qui accepte d&#233;j&#224; une liste de points o&#249; l'on
+souhaite tester.  L'id&#233;e serait, pour les learners transductifs, de
+retarder l'entra&#238;nement jusqu'au moment o&#249; computeOutputCovMat est appel&#233;
+(en supposant qu'il l'est), et on refait un entra&#238;nement complet &#224; ce
+moment, ayant connaissance des points de test.
+
+Je penche pour la seconde approche, qui me semble plus simple et entre
+d&#233;j&#224; relativement bien dans le cadre actuel.  Mais je ne connais pas assez
+toutes les vari&#233;t&#233;s d'apprentissage transductif pour dire si la premi&#232;re
+pourrait &#234;tre plus appropri&#233;e dans certains contextes.
+
+Commentaires et suggestions bienvenus!
+
+    + Nicolas
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000292.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+	<LI>Next message: <A HREF="000295.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

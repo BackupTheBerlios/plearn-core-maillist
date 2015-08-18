@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Probleme etrange
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3Cc81af8c30611030811u7bb6a734pd3bcdf007bed44ad%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000239.html">
+   <LINK REL="Next"  HREF="000241.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Probleme etrange</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3Cc81af8c30611030811u7bb6a734pd3bcdf007bed44ad%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Probleme etrange">jaonary at gmail.com
+       </A><BR>
+    <I>Fri Nov  3 17:11:18 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000239.html">[Plearn-core] Probleme etrange
+</A></li>
+        <LI>Next message: <A HREF="000241.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#240">[ date ]</a>
+              <a href="thread.html#240">[ thread ]</a>
+              <a href="subject.html#240">[ subject ]</a>
+              <a href="author.html#240">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Efffectivement, c'est peut etre une limitation au niveau du system. En
+chargeant les donnees en memoir ca marche. J'ai 16G alors autant en
+profiter. Par contre pour les charger j'ai seulement fait
+
+VMat m1 = new AutoVMatrix(&quot;mon_fichier_&quot; + tostring(i) + &quot;.pmat&quot;,true);
+
+i.e en rajoutant true comme deuxieme argument de AutoVMatrix. Dans, ce cas
+quelle est la difference avec le code que tu as propose ? i.e en utilisant
+une VMat temporaire. Est ce que dans ce cas le fichier ne sera pas ferme ?
+
+
+On 11/3/06, Olivier Delalleau &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">delallea at iro.umontreal.ca</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Ca ne devrait pas &#234;tre un probl&#232;me de m&#233;moire, les FileVMatrix (qui
+</I>&gt;<i> chargent les .pmat) ne prennent pas beaucoup de m&#233;moire.
+</I>&gt;<i> Vu que &#231;a plante quand tu essaie d'ouvrir un fichier, je soup&#231;onne que
+</I>&gt;<i> tu as atteint la limite du nombre de fichiers ouverts par ton OS. Si tes
+</I>&gt;<i> donn&#233;es entrent en m&#233;moire, tu pourrais faire une fonction de chargement
+</I>&gt;<i> du genre :
+</I>&gt;<i>
+</I>&gt;<i> TVec&lt;VMat&gt; my_vec_of_vmat;
+</I>&gt;<i> for (int i = 0; i &lt; n; i++) {
+</I>&gt;<i>     VMat m1 = new AutoVMatrix(&quot;mon_fichier_&quot; + tostring(i) + &quot;.pmat&quot;);
+</I>&gt;<i>     VMat m2(m1.toMat());
+</I>&gt;<i>     m2-&gt;getMetaInfoFrom(m1);
+</I>&gt;<i>     my_vec_of_vmat.append(m2);
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/db69f6f9/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/db69f6f9/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000239.html">[Plearn-core] Probleme etrange
+</A></li>
+	<LI>Next message: <A HREF="000241.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#240">[ date ]</a>
+              <a href="thread.html#240">[ thread ]</a>
+              <a href="subject.html#240">[ subject ]</a>
+              <a href="author.html#240">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

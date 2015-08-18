@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Impl&#233;menter un Learner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FImpl%3DC3%3DA9menter_un_Learner%3F%3D&In-Reply-To=%3Cc81af8c30610260332v64073384k3a53baf38e1764c2%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000223.html">
+   <LINK REL="Next"  HREF="000227.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Impl&#233;menter un Learner</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FImpl%3DC3%3DA9menter_un_Learner%3F%3D&In-Reply-To=%3Cc81af8c30610260332v64073384k3a53baf38e1764c2%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Impl&#233;menter un Learner">jaonary at gmail.com
+       </A><BR>
+    <I>Thu Oct 26 12:32:54 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000223.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+        <LI>Next message: <A HREF="000227.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#226">[ date ]</a>
+              <a href="thread.html#226">[ thread ]</a>
+              <a href="subject.html#226">[ subject ]</a>
+              <a href="author.html#226">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 10/24/06, Olivier Delalleau &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">delallea at iro.umontreal.ca</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Salut,
+</I>&gt;<i>
+</I>&gt;<i> Pas de chance, PLearn est tr&#232;s mal foutu pour les inputs de taille
+</I>&gt;<i> variable (c'est un de ses gros d&#233;fauts &#224; l'heure actuelle).
+</I>&gt;<i> Je sais que ceux qui ont travaill&#233; avec de tels inputs ont plus ou moins
+</I>&gt;<i> chacun cod&#233; leurs 'hacks' perso pour pouvoir le faire, mais je ne sais
+</I>&gt;<i> plus exactement comment.
+</I>&gt;<i> Voil&#224; une suggestion relativement facile &#224; impl&#233;menter pour ton
+</I>&gt;<i> probl&#232;me :
+</I>&gt;<i> - rajoute une option dans ton learner qui est le fichier correspondant &#224;
+</I>&gt;<i>   ta base de donn&#233;es initiale (ou, si tu travailles en m&#233;moire, un
+</I>&gt;<i>   pointeur direct vers tes donn&#233;es)
+</I>&gt;<i> - remplace ton jeu de donn&#233;es par une VMat dont l'input est remplac&#233; par
+</I>&gt;<i>   l'index de l'exemple dans ta base de donn&#233;es originale, et la target
+</I>&gt;<i>   par contre est toujours la m&#234;me
+</I>&gt;<i>
+</I>&gt;<i> Maintenant, quand ton learner doit faire un calcul &#224; partir de l'exemple
+</I>&gt;<i> dont l'input est juste un seul nombre r&#233;el 'x', r&#233;cup&#232;re les vraies
+</I>&gt;<i> donn&#233;es en castant 'x' en int (int x_int = int(round(x)) par s&#233;curit&#233;)
+</I>&gt;<i> et en utilisant le r&#233;sultat pour r&#233;cup&#233;rer l'exemple num&#233;ro x_int, de la
+</I>&gt;<i> mani&#232;re que tu pr&#233;f&#232;res.
+</I>
+
+
+J'ai men&#233; quelque refl&#233;xion sur ton id&#233;e, mais j'ai des difficult&#233;s &#224; le
+voir concr&#232;tement pour pouvoir l'impl&#233;menter.
+Comme j'ai dit mes donn&#233;s sont form&#233;e par des listes de taille fini de
+vecteur de dimension d (=128). Il y a plusieurs possibilit&#233;s pour
+repr&#233;senter ces donn&#233;es. Soit effictivement une liste de vecteur (
+TVec&lt;Vec&gt;) ou matriciellement (chaque ligne correspond &#224; un vecteur).
+J'utilise la repr&#233;sentation matricielle car c'est la mani&#232;re la plus simple
+de les  g&#233;rer surtout pour le IO.
+
+Donc, si on note X_i,Y_i les donn&#233;es d'apprentissage
+
+avec Y_i = {0 ou 1} et X_i un matrice avec n_i lignes et d colonnes.
+
+Le nombre de lignes, n_i, des matrices X_i  sont tous diff&#233;rents.
+
+ En suivant, la suggestion ci-dessus, je devrai remplacer mon jeu de donn&#233;e
+(X_i,Y_i) par un autre, notons (Z_i,Y_i). Les Y_i sont les memes, par contre
+les Z_i doivent &#234;tre un poiteur ou ref sur les X_i qui sont dans mon cas
+soit les Mat ou soit des VMat.  Et la question,  n'est il pas bien de faire
+ce hack au  niveau des VMat  ou lieu de learner ? Genre je cr&#233;e une sous
+classe de VMat avec un Vec&lt;VMat&gt; comme membre.
+Aussi, mes Z_i devraient plutot &#234;tre des nom de fichier dans ce cas car je
+pense que je dois laisser mes matrices X_i sur le disque &#224; cause de la
+m&#233;moire. En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En
+plus tout ca devrait se faire de maniere transparente quand je fait un
+getDataSet(...) ou un setTrainigExample(...)
+
+Merci de votre aide :-)
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061026/57f5382d/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061026/57f5382d/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000223.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+	<LI>Next message: <A HREF="000227.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#226">[ date ]</a>
+              <a href="thread.html#226">[ thread ]</a>
+              <a href="subject.html#226">[ subject ]</a>
+              <a href="author.html#226">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

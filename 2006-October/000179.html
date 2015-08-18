@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Un debut de code en C++ qui marche :-)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Un%20debut%20de%20code%20en%20C%2B%2B%20qui%20marche%20%3A-%29&In-Reply-To=%3Cc81af8c30610060356n47a9dba8j4d21b976949aadc8%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000178.html">
+   <LINK REL="Next"  HREF="000180.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Un debut de code en C++ qui marche :-)</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Un%20debut%20de%20code%20en%20C%2B%2B%20qui%20marche%20%3A-%29&In-Reply-To=%3Cc81af8c30610060356n47a9dba8j4d21b976949aadc8%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Un debut de code en C++ qui marche :-)">jaonary at gmail.com
+       </A><BR>
+    <I>Fri Oct  6 12:56:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000178.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+        <LI>Next message: <A HREF="000180.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#179">[ date ]</a>
+              <a href="thread.html#179">[ thread ]</a>
+              <a href="subject.html#179">[ subject ]</a>
+              <a href="author.html#179">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour;
+
+Suite &#224; notre longue discussion, voici donc un petit debut qui marche &#224; peu
+pr&#232;s. Dans ce code j'utilise un KNNClassifier pour r&#233;soudre un probl&#232;me de
+classification avec des donn&#233;es artificielles. Ici je suis donc sens&#233; faire
+l'apprentissage avec data et apr&#232;s tester avec data! Pas tr&#232;s malin mais je
+sais que je peux facilement changer d'ensemble de test en le specifiant dans
+mon ExpliciteSplitter.
+Ce code compile et s'execute sans probl&#232;me, mais je ne comprends pas trop
+les sorties. D&#233;j&#224;, je suis surpris qu'en faisant
+knn-&gt;verbosity = 2;
+je n'ai pas plus d'affichage durant la phase d'apprentissage. J'ai
+l'impression qu'il ne se passe rien. Comme seule sortie &#224; la console j'ai en
+plus du
+
+pout &lt;&lt; tester &lt;&lt; endl;
+
+un
+
+[-------------------------------------- Testing learner (400)
+---------------------------------------]
+[....................................................................................................]
+
+Je suppose qu'il veut dire qu'il est entrain de faire le test sur un
+ensemble contenant 400 &#233;chantillons. Mais il ne me dit rien sur
+l'apprentissage. Une chose &#233;tonant aussi c'est que le &quot;stage&quot; du  knn reste
+&#224; 0, n'est il pas sens&#233; se mettre &#224; nstage apr&#232;s l'apprentissage ?
+
+Ensuite, le PTester &#233;crit plein de chose dans le &quot;expdir&quot; mais c'est
+difficile de s'y retrouver. Je pense que ce qui m'interesse
+&quot;E[test1.E[class_error]]&quot;
+doit &#234;tre dans l'un de ces fichier :
+
+global_stats.pmat ou split_stats.pmat
+
+En outre, est-ce qu'on peut les ecrire en ascii et dans quelle variable ils
+sont stock&#233;s si je veux les utilis&#233; directement ?
+
+Une chose &#233;tonnante aussi, c'est que dans mon splitter j'ai que deux
+ensemble. Pourtant en m'amusant &#224; faire un truc comme
+&quot;E[test3.E[class_error]]&quot;   // stats sur le 3eme ensemble teste!
+Le code tourne sans probl&#232;me.
+
+Une derni&#232;re remarque, en regardant de plus pr&#232;s la source de
+PTester.ccj'ai vu qu'un Learner a en fait une m&#233;thode test. Est-ce que
+je peux
+l'utliser directement au lieux de passer par un PTester ?
+
+
+     15 int main(int argc,char* argv[])
+     16 {
+     17         string data_file = &quot;../data/gauss_mixture_3.amat&quot;;
+     18         VMat data = new AutoVMatrix(data_file);
+     19         //cout &lt;&lt; data-&gt;getOption(&quot;inputsize&quot;) &lt;&lt; endl;
+     20         //pout &lt;&lt; data-&gt;getOption(&quot;targetsize&quot;) &lt;&lt; endl;
+     21
+     22
+     23         // the spliter
+     24         PP&lt;ExplicitSplitter&gt; splitter = new ExplicitSplitter();
+     25         TMat&lt;VMat&gt; splitsets(1,2);
+     26         splitsets(0,0) = data; // training set
+     27         splitsets(0,1) = data; // first testing set : test1
+     28         splitter-&gt;splitsets = splitsets;
+     29         splitter-&gt;build();
+     30
+     31         // the learner
+     32         PP&lt;KNNClassifier&gt; knn = new KNNClassifier();
+     33         knn-&gt;nclasses = 3;
+     34         knn-&gt;verbosity = 2;
+     35         knn-&gt;build();
+     36
+     37         //knn-&gt;setTrainingSet(data);
+     38         //knn-&gt;train();
+     39
+     40         //TVec&lt;string&gt; costName = knn-&gt;getTestCostNames();
+     41         //pout &lt;&lt; costName &lt;&lt; endl;
+     42
+     43         // the PTester
+     44         PP&lt;PTester&gt; tester = new PTester();
+     45         tester-&gt;splitter = splitter;
+     46         tester-&gt;learner  = knn;
+     47         tester-&gt;statnames = TVec&lt;string&gt;(2,&quot;E[test3.E
+[class_error]]&quot;);
+     48         tester-&gt;setExperimentDirectory(&quot;../exp&quot;);
+     49         tester-&gt;train = true;
+     50         tester-&gt;build();
+     51
+     52         pout &lt;&lt; tester &lt;&lt; endl;
+     53         tester-&gt;run();
+     54
+     55         return 0;
+     56 }
+
+Bien &#224; vous;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061006/cdf9a2bd/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061006/cdf9a2bd/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000178.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+	<LI>Next message: <A HREF="000180.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#179">[ date ]</a>
+              <a href="thread.html#179">[ thread ]</a>
+              <a href="subject.html#179">[ subject ]</a>
+              <a href="author.html#179">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

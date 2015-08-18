@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] boundchecks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3CE6008DE7-711E-46C5-B278-CCD3C12DF631%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000306.html">
+   <LINK REL="Next"  HREF="000308.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] boundchecks</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3CE6008DE7-711E-46C5-B278-CCD3C12DF631%40apstat.com%3E"
+       TITLE="[Plearn-core] boundchecks">pascal at apstat.com
+       </A><BR>
+    <I>Wed Feb  7 01:50:46 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000306.html">[Plearn-core] boundchecks
+</A></li>
+        <LI>Next message: <A HREF="000308.html">[Plearn-core] boundchecks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#307">[ date ]</a>
+              <a href="thread.html#307">[ thread ]</a>
+              <a href="subject.html#307">[ subject ]</a>
+              <a href="author.html#307">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+
+&gt;<i> Salut les amis !
+</I>&gt;<i>
+</I>&gt;<i> Je trouve le m&#233;canisme de PLASSERT_MSG( condition, message ) vachement
+</I>&gt;<i> pratique, principalement parce que &#231;a fait des messages d'erreur  
+</I>&gt;<i> clairs,
+</I>&gt;<i> formatt&#233;s pareils, et faciles &#224; mettre en place.
+</I>&gt;<i>
+</I>&gt;<i> J'aurais voulu mettre en place le m&#234;me m&#233;canisme pour les BOUNDCHECK,
+</I>&gt;<i> pour que les v&#233;rifications soient faites ssi #defined BOUNDCHECK
+</I>&gt;<i> (PLASSERT regarde NDEBUG).
+</I>
+Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+qu'on veut que le prg fasse des v&#233;rifications exhaustives ou non.
+
+Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+qu'une des 2 variables.
+
+Et &#224; ce moment l&#224;, Pascal, pourquoi ne pas utiliser simplement les  
+PLASSERT_MSG dans ta refonte?
+
+Note: le terme &quot;boundcheck&quot; est un peu trop restrictif. Les  
+&quot;bouncchecks&quot; au sens large sont certainement les checks les plus  
+courants, mais BOUNDCHECK a &#233;t&#233; utilis&#233; pour toutes sortes de checks  
+qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+
+
+&gt;<i>
+</I>&gt;<i> Je pense que je ne serais pas le seul &#224; utiliser &#231;a, mais m&#234;me si  
+</I>&gt;<i> c'est
+</I>&gt;<i> le cas je compte l'utiliser dans la refonte de TMat_math &#224; venir, et
+</I>&gt;<i> dans pas mal d'OnlineLearningModules.
+</I>&gt;<i>
+</I>&gt;<i> Est-ce qu'il y a des choses dans plerror.{h,cc} que je devrais
+</I>&gt;<i> r&#233;utiliser, modifier, copier-coller ? Des pi&#232;ges particuliers ?
+</I>&gt;<i> Nicolas, je crois que c'est toi qui est &#224; l'origine de &#231;a, peux-tu
+</I>&gt;<i> m'&#233;clairer ?
+</I>&gt;<i>
+</I>&gt;<i> Merci,
+</I>&gt;<i> -- 
+</I>&gt;<i> Pascal
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000306.html">[Plearn-core] boundchecks
+</A></li>
+	<LI>Next message: <A HREF="000308.html">[Plearn-core] boundchecks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#307">[ date ]</a>
+              <a href="thread.html#307">[ thread ]</a>
+              <a href="subject.html#307">[ subject ]</a>
+              <a href="author.html#307">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

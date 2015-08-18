@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] &#224; propos de TMat_maths_impl
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3C20061218225910.GA8392%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000283.html">
+   <LINK REL="Next"  HREF="000284.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] &#224; propos de TMat_maths_impl</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3C20061218225910.GA8392%40pig.zood.org%3E"
+       TITLE="[Plearn-core] &#224; propos de TMat_maths_impl">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Dec 18 23:59:10 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000283.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+        <LI>Next message: <A HREF="000284.html">[Plearn-core] (no subject)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#286">[ date ]</a>
+              <a href="thread.html#286">[ thread ]</a>
+              <a href="subject.html#286">[ subject ]</a>
+              <a href="author.html#286">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, Dec 18, 2006, Pascal Vincent wrote:
+&gt;<i> Je penche pour mettre les op&#233;rations simples genre addition ou  
+</I>&gt;<i> multiplication par un scalaire avec les op&#233;rations &#233;l&#233;ment par  
+</I>&gt;<i> &#233;l&#233;ment, ou bien alors dans leur propre fichier s&#233;par&#233;. Dans tous les  
+</I>&gt;<i> cas, les op&#233;rateurs devraient aller ensemble avec les fonctions qui  
+</I>&gt;<i> font des choses similaires.
+</I>
+Je vais essayer de faire &#231;a comme &#231;a (sauf que je ne sais pas encore
+quand...)
+
+&gt;<i> &gt; En ce qui concerne la nomenclature, j'ai jet&#233; un coup d'oeil &#224;
+</I>&gt;<i> &gt; boost::MPL qui m'a l'air &#224; c&#244;t&#233; de la plaque,
+</I>&gt;<i> 
+</I>&gt;<i> Pourquoi boost::MPL?? Tu ne voulais pas dire plut&#244;t multi_array?
+</I>
+Parce que c'est ce qui a &#233;t&#233; prononc&#233; lors de la r&#233;union, m&#234;me si ce
+n'est pas &#231;a que vous vouliez dire :)
+
+&gt;<i> &gt;   - lapack++ ne passe pas toujours les arguments dans le m&#234;me
+</I>&gt;<i> &gt; ordre, on peut avoir des choses comme : vecteurs/matrices d'entr&#233;e,
+</I>&gt;<i> &gt; vecteur/matrice de r&#233;sultat, param&#232;tres scalaires (avec des valeurs
+</I>&gt;<i> &gt; par d&#233;faut)
+</I>&gt;<i> 
+</I>&gt;<i> Par ailleurs je note que sur la page de lapack++ il est &#233;crit:
+</I>&gt;<i> &quot;superseded by the Template Numerical Toolkit (TNT)&quot;
+</I>&gt;<i> 
+</I>&gt;<i> lapack++ semble d&#233;j&#224; deprecated...
+</I>
+Le lapack++ original oui, mais il a &#233;t&#233; fork&#233; :
+&lt;<A HREF="http://lapackpp.sourceforge.net/">http://lapackpp.sourceforge.net/</A>&gt;, et c'est &#224; la nouvelle version que
+je me suis r&#233;f&#233;r&#233;. Mea culpa, j'aurais d&#251; fournir un lien.
+
+&gt;<i> &gt; Du coup, &#231;a soul&#232;ve &#224; nouveau les questions suivantes :
+</I>&gt;<i> &gt;   - o&#249; c'est qu'on met ce param&#232;tre qui est updat&#233; ?
+</I>&gt;<i> 
+</I>&gt;<i> Je r&#233;affirme mon opinion: en premier. C'est clair, c'est simple,  
+</I>&gt;<i> c'est invariant. &#199;a permet des valeurs par d&#233;faut pour les arguments  
+</I>&gt;<i> &#224; la fin. C'est l'ordre dans lequel on &#233;crirait les &#233;l&#233;ments si on  
+</I>&gt;<i> &#233;crivait l'expression avec un signe = (ou +=).
+</I>
+Je suis d'accord.
+
+&gt;<i> &gt;   - est-ce qu'on essaye de suivre une nomenclature ext&#233;rieure, ou on
+</I>&gt;<i> &gt; se contente d'&#234;tre coh&#233;rent entre nous ?
+</I>&gt;<i>
+</I>&gt;<i> Pour l'instant il me semble qu'on n'a pas encore trouv&#233; d'exemple
+</I>&gt;<i> de nomenclature ext&#233;rieure qui soit franchement limpide et ait
+</I>&gt;<i> un potentiel convaincant de &quot;standard&quot; effectuant un appel de
+</I>&gt;<i> blas/lapack.
+</I>&gt;<i>
+</I>&gt;<i> Note que comme source d'inspiration il y aurait aussi:
+</I>&gt;<i>
+</I>&gt;<i> Blitz++ (expression template encore davantage vaudou que boost::uBLAS)
+</I>&gt;<i> boost::multi_array POOMA MTL TNT
+</I>
+Je vais donc continuer &#224; chercher...
+
+&gt;<i> Note: pour distinguer les fonctions qui prennent l'argument &#224; modifier
+</I>&gt;<i> comme premier argument de celles qui retournent un r&#233;sultat Vec ou
+</I>&gt;<i> Mat, je sugg&#232;re de pr&#233;fixer toutes celles qui retournent leur r&#233;sultat
+</I>&gt;<i> par un pr&#233;fixe explicite (ex: ret_ )
+</I>
+Je vois au moins quatre cas de base :
+  - on veut retourner le r&#233;sultat ;
+  - on veut stocker le r&#233;sultat dans un contenant (Vec ou Mat) ;
+  - on veut ajouter le r&#233;sultat dans ce contenant ;
+  - on veut scaler ce qu'il y a dans le contenant puis ajouter le
+    r&#233;sultat.
+
+Le deuxi&#232;me et le troisi&#232;me cas sont des cas particuliers du quatri&#232;me.
+Il nous faudrait donc 4 pr&#233;fixes (3 si on consid&#232;re un cas, par exemple
+le deuxi&#232;me, comme &#171; standard &#187;).
+
+On pourrait par exemple avoir, pour le produit Mat * Vec :
+
+// r[i] = \sum_j m[i][j] * v[j]
+void product(Vec r, Mat m, Vec v);
+
+// same as above, but return r
+Vec retProduct(Mat m, Vec v);
+
+// r[i] += \sum_j m[i][j] * v[j]
+Vec accProduct(Vec r, Mat m, Vec v);
+
+// r[i] = alpha * r[i] + \sum_j m[i][j] * v[j]
+// where do we put alpha in the call?
+Vec scaleAccProduct(Vec r, real alpha, Mat m, Vec v);
+
+// what if we want to consider
+// r[i] = alpha * r[i] + beta * \sum_j m[i][j] * v[j] ?
+// Do we add another set of &quot;scaleProduct&quot; functions?
+
+&#192; plus,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000283.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+	<LI>Next message: <A HREF="000284.html">[Plearn-core] (no subject)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#286">[ date ]</a>
+              <a href="thread.html#286">[ thread ]</a>
+              <a href="subject.html#286">[ subject ]</a>
+              <a href="author.html#286">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

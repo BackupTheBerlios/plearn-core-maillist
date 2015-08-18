@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Distributed Launcher
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Distributed%20Launcher&In-Reply-To=%3C20060711184947.GA17520%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000124.html">
+   <LINK REL="Next"  HREF="000123.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Distributed Launcher</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Distributed%20Launcher&In-Reply-To=%3C20060711184947.GA17520%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Distributed Launcher">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 11 20:49:47 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000124.html">[Plearn-core] Distributed Launcher
+</A></li>
+        <LI>Next message: <A HREF="000123.html">[Plearn-core] Distributed Launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>[I re-added Dan in the list, otherwise there would be no point in
+writing in English...]
+
+On Tue, Jul 11, 2006, Pascal Vincent wrote:
+&gt;<i> &gt;&gt;It seems that we have a different focus here. You seam really focused
+</I>&gt;<i> &gt;&gt;on a batch job queue of independent jobs,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Yes, since that is what seems to be needed for pymake, pytest and
+</I>&gt;<i> &gt;apdispatch/msdispatch...
+</I>&gt;<i>
+</I>&gt;<i> Indeed. However it's important for some of these tasks (ex: parallel 
+</I>&gt;<i> compilation) to not append a job to a batch queue that might be executed 
+</I>&gt;<i> in, say, 3 days... In that case it's better to compile the file locally. 
+</I>&gt;<i> It seems we really want to use the computation ressources available now 
+</I>&gt;<i> or very soon, or else would rather find another way. So it's not exactly 
+</I>&gt;<i> a typical batch setting.
+</I>
+OK, there should be an option telling to launch the tasks locally if no
+other resources are available. This option should typically be used for
+tasks like pymake and pytest, but not for apdispatch on long tasks. But
+I still believe this is the job of the launcher, not of the calling
+program.
+
+&gt;<i> Well, they would at least be enough to report back for ex. an IP
+</I>&gt;<i> adress. and a port number of a socket to which to connect. Of course,
+</I>&gt;<i> this could. always be worked around by having the plearn server write
+</I>&gt;<i> this stuff to. some file, and the caller retrieve this info from file
+</I>&gt;<i> (?).
+</I>
+I'm not sure that direct network communication (like TCP/IP sockets) is
+allowed on the mammouth. Olivier, do you know more about that?
+
+&gt;<i> By the way, the issue of file-system access is another thing to consider 
+</I>&gt;<i> in the launch system: do the different parallel ressources see the same 
+</I>&gt;<i> file system for read/write or not. If not how do we handle the 
+</I>&gt;<i> putting/retrieving of necessary files in the right locations. Have you 
+</I>&gt;<i> already thought about this issue and come to some conclusions?
+</I>
+Dan and I talked a bit about that, and decided the system would only
+work with a shared filesystem (typically NFS).
+
+&gt;<i> I'd expect it's at least possible to launch some sort of parallel job 
+</I>&gt;<i> (maybe based on MPI), otherwise these systems are seriously limiting the 
+</I>&gt;<i> possible uses of a computation cluster.
+</I>
+They have a second cluster, made especially for parallel jobs. But on
+the &quot;serial&quot; cluster, all you know is that the jobs will begin in
+the order in wich you submitted them. Of course, you could ask the first
+job to wait for all the other ones to be launched, or to use the new
+ones as soon as they arrive.
+
+But in some pathological cases, it could form a sort of deadlock on the
+cluster: no job in the queue is going to be launched before a running
+job finishes, and no running (actually, waiting) job is going to finish
+before all the jobs he's waiting for are launched...
+
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000124.html">[Plearn-core] Distributed Launcher
+</A></li>
+	<LI>Next message: <A HREF="000123.html">[Plearn-core] Distributed Launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#122">[ date ]</a>
+              <a href="thread.html#122">[ thread ]</a>
+              <a href="subject.html#122">[ subject ]</a>
+              <a href="author.html#122">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

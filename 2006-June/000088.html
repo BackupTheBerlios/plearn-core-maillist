@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et optimisation
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20optimisation&In-Reply-To=%3C20060629000631.GA23627%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000087.html">
+   <LINK REL="Next"  HREF="000089.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et optimisation</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20optimisation&In-Reply-To=%3C20060629000631.GA23627%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et optimisation">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 29 02:06:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000087.html">[Plearn-core] pymake et optimisation
+</A></li>
+        <LI>Next message: <A HREF="000089.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, Jun 28, 2006, Christian Hudon wrote:
+&gt;<i> &gt;Est-ce qu'il y a des machines &#224; apstat qui ne supporteraient pas ces
+</I>&gt;<i> &gt;options ?
+</I>&gt;<i>
+</I>&gt;<i> &#201;tant donn&#233; que tes options d&#233;crivent un Pentium 4 (ou probablement m&#234;me 
+</I>&gt;<i> un Pentium 3... je crois qu'ils avaient SSE aussi),
+</I>
+Oui, Pentium 3, et les athlon le supportent aussi. Je me demandais juste
+si vous n'aviez pas de processeurs exotiques d&#233;rivant de i386 mais sans
+sse.
+
+&gt;<i> &#192; mon avis, il y a d&#233;j&#224; trop d'options dans pymake. &#201;tant donn&#233; que les 
+</I>&gt;<i> machines sans SSE sont assez rares de nos jours, je modifierais tout 
+</I>&gt;<i> simplement l'option g++, et comme &#231;a tous les gens qui utilisent &#231;a 
+</I>&gt;<i> auront le gain de vitesse sans devoir fouiller et suivre &#224; la trace les 
+</I>&gt;<i> derni&#232;res nouveaut&#233;s dans le pymake.config...
+</I>
+C'est fait. Maintenant, je ne sais pas trop quoi faire pour les options
+'g++3' et 'g++no-cygwin'. Quelqu'un les utilise ?
+
+
+Au fait, mes r&#233;ponses &#224; des interrogations qui trainent dans le code
+pour l'option 'opt' :
+
+# is -fomit-frame-pointer helping?
+j'ai pas regard&#233; encore
+
+# does -malign-double indeed create core-dumps?
+j'en ai pas vu, mais je n'ai pas constat&#233; d'accroissement de la vitesse
+
+# is -finline hurting?
+si on parle de -finline-functions, c'est activ&#233; automatiquement par -O3
+
+# is -funroll-loops hurting?
+j'ai l'impression que c'est des fois oui, des fois non, selon la
+machine, mais que &#231;a n'a pas un grand impact de toutes fa&#231;ons.
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000087.html">[Plearn-core] pymake et optimisation
+</A></li>
+	<LI>Next message: <A HREF="000089.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

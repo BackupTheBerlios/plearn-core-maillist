@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Un debut de code en C++ qui marche :-)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Un%20debut%20de%20code%20en%20C%2B%2B%20qui%20marche%20%3A-%29&In-Reply-To=%3C20061006134821.GA12064%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000179.html">
+   <LINK REL="Next"  HREF="000181.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Un debut de code en C++ qui marche :-)</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Un%20debut%20de%20code%20en%20C%2B%2B%20qui%20marche%20%3A-%29&In-Reply-To=%3C20061006134821.GA12064%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Un debut de code en C++ qui marche :-)">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Oct  6 15:48:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000179.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+        <LI>Next message: <A HREF="000181.html">[Plearn-core] AddCostToLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#180">[ date ]</a>
+              <a href="thread.html#180">[ thread ]</a>
+              <a href="subject.html#180">[ subject ]</a>
+              <a href="author.html#180">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Ce code compile et s'execute sans probl&#232;me, mais je ne comprends pas trop les
+</I>&gt;<i> sorties. D&#233;j&#224;, je suis surpris qu'en faisant
+</I>&gt;<i> knn-&gt;verbosity = 2;
+</I>&gt;<i> je n'ai pas plus d'affichage durant la phase d'apprentissage. J'ai l'impression
+</I>&gt;<i> qu'il ne se passe rien.
+</I>
+Ce n'est pas si surprenant. Tous les PLearner ont une option verbosity,
+mais tous ne l'utilisent pas. La r&#232;gle est essentiellement que si
+verbosity = 0, ils ne devraient rien afficher, &#224; part des barres de
+progr&#232;s (qui elles sont activ&#233;es / d&#233;sactiv&#233;es avec l'option
+report_progress). La possibilit&#233; d'afficher des informations
+suppl&#233;mentaires est facultative.
+
+&gt;<i> Je suppose qu'il veut dire qu'il est entrain de faire le test sur un ensemble
+</I>&gt;<i> contenant 400 &#233;chantillons. Mais il ne me dit rien sur l'apprentissage. Une
+</I>&gt;<i> chose &#233;tonant aussi c'est que le &quot;stage&quot; du  knn reste &#224; 0, n'est il pas sens&#233;
+</I>&gt;<i> se mettre &#224; nstage apr&#232;s l'apprentissage ?
+</I>
+Si, th&#233;oriquement. Seulement, dans le cas d'un KNN, il n'y a pas
+d'apprentissage proprement dit, ici la m&#233;thode train n'est m&#234;me pas
+impl&#233;ment&#233;e, et donc stage n'est pas mis &#224; jour. Je ne sais pas si c'est
+une tr&#232;s bonne chose, personnellement je pense que &#231;a serait bien
+d'avoir la convention que tout learner pr&#234;t &#224; &#234;tre utilis&#233; ait stage&gt;0,
+mais ce n'est pas, autant que je sache, une recommandation officielle
+dans PLearn.
+
+&gt;<i> Ensuite, le PTester &#233;crit plein de chose dans le &quot;expdir&quot; mais c'est difficile
+</I>&gt;<i> de s'y retrouver. Je pense que ce qui m'interesse &quot;E[test1.E[class_error]]&quot;
+</I>&gt;<i> doit &#234;tre dans l'un de ces fichier :
+</I>&gt;<i> 
+</I>&gt;<i> global_stats.pmat ou split_stats.pmat
+</I>
+Note que tu peux contr&#244;ler la quantit&#233; de choses sauvegard&#233;es avec
+certaines options du PTester. C'est particuli&#232;rement important quand tu
+rajouteras un HyperLearner, car tu peux te retrouver avec beaucoup de
+choses sauvegard&#233;es (par ex. le learner pour chaque combinaison
+d'hyper-param&#232;tres), ce qui peut devenir tr&#232;s gros.
+En particulier, si tu ne donnes pas de &quot;expdir&quot;, il ne devrait en
+th&#233;orie rien sauvegarder (&#224; moins qu'il plante, je ne suis pas s&#251;r...).
+
+Et finalement, oui, tes stats devraient &#234;tre dans global_stats.pmat.
+Le fichier split_stats.pmat contient les stats pour chaque split, ici
+comme il n'y en a qu'un c'est la m&#234;me chose. Par exemple, si tu avais 3
+splits, &#231;a contiendrait
+    test1.E[class_error] (pour split 0)
+    test1.E[class_error] (pour split 1)
+    test1.E[class_error] (pour split 2)
+et dans global_stats.pmat tu aurais la moyenne des trois pour avoir
+E[test1.E[class_error]].
+
+&gt;<i> En outre, est-ce qu'on peut les ecrire en ascii et dans quelle variable ils
+</I>&gt;<i> sont stock&#233;s si je veux les utilis&#233; directement ?
+</I>
+Tu ne peux pas les &#233;crire directement en ascii mais tu peux faire un
+    plearn vmat convert global_stats.pmat global_stats.amat
+ou, si tu veux le faire en C++,
+    VMat stats = getDataset(&quot;global_stats.pmat&quot;);
+    stats-&gt;saveAMAT(&quot;global_stats.amat&quot;);
+et tu pourrais les utiliser direcement par ta VMat stats, ou, pour
+&#233;viter de recharger les donn&#233;es, acc&#233;der au VecStatCollector du PTester,
+mais j'ai peur de me tromper sur la mani&#232;re de faire... Si tu appelles
+toi-m&#234;me PTester-&gt;perform(), le mieux est que tu r&#233;cup&#232;res le Vec qui
+est retourn&#233;, qui devrait &#234;tre la ligne de global_stats.
+
+&gt;<i> Une chose &#233;tonnante aussi, c'est que dans mon splitter j'ai que deux ensemble.
+</I>&gt;<i> Pourtant en m'amusant &#224; faire un truc comme
+</I>&gt;<i> &quot;E[test3.E[class_error]]&quot;   // stats sur le 3eme ensemble teste!
+</I>&gt;<i> Le code tourne sans probl&#232;me.
+</I>
+Regarde dans global_stats.pmat. Si tu as un nan pour cette stats, c'est
+bon, sinon en effet il faudrait mettre un message d'erreur quelque part
+;)
+
+&gt;<i> Une derni&#232;re remarque, en regardant de plus pr&#232;s la source de PTester.cc j'ai
+</I>&gt;<i> vu qu'un Learner a en fait une m&#233;thode test. Est-ce que je peux l'utliser
+</I>&gt;<i> directement au lieux de passer par un PTester ?
+</I>
+Oui, mais &#231;a ne te calculera pas de statistiques sur les co&#251;ts, tu auras
+suelement les outputs (et &#233;ventuellement les co&#251;ts individuels).
+
+&gt;<i>      17         string data_file = &quot;../data/gauss_mixture_3.amat&quot;;
+</I>
+Remplace string par PPath. Un fichier dans PLearn est repr&#233;sent&#233; par un
+PPath, qui est une sous-classe de string.
+
+Sinon, le reste m'a l'air bon.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000179.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+	<LI>Next message: <A HREF="000181.html">[Plearn-core] AddCostToLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#180">[ date ]</a>
+              <a href="thread.html#180">[ thread ]</a>
+              <a href="subject.html#180">[ subject ]</a>
+              <a href="author.html#180">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

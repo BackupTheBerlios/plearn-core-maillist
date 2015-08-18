@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C47FABA5C.5090407%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000424.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C47FABA5C.5090407%40apstat.com%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">chapados at apstat.com
+       </A><BR>
+    <I>Tue Apr  8 02:20:44 CEST 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000424.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#423">[ date ]</a>
+              <a href="thread.html#423">[ thread ]</a>
+              <a href="subject.html#423">[ subject ]</a>
+              <a href="author.html#423">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello PLearn gurus,
+
+(That should include Olivier, Pascal and Hugo, if not many others!).  I 
+have an intriguing question about VarArrays which has just lost me, oh, 
+a few wasted hours.
+
+In Func.cc, we have the following piece of code for computing the 
+fprop-path:
+
+void Function::build_()
+{
+    // ...
+    fproppath = propagationPath(inputs, outputs);
+    if (fproppath.length()==0) // to handle the weird case in which there is no path from inputs to outputs
+        // but outputs still depends on parameters and we want to represent that dependency 
+    {
+        fproppath = propagationPath(inputs &amp; parameters, outputs);
+        bproppath = propagationPath(inputs &amp; parameters, outputs);
+    }
+    else
+        bproppath = propagationPath(inputs, outputs);
+    // ...
+}
+
+My question is as follows: WHY is it that the propagation path is first 
+found from inputs to outputs only, without regard for the parameters, 
+and ONLY if such a path does not exist does it try to include parameters 
+as well?  In other words, why does the code not look like this instead 
+(which I would think to be preferable in ALL circumstances, but that's 
+why I'm asking) ::
+
+void Function::build_()
+{
+    // ...
+    fproppath = propagationPath(inputs &amp; parameters, outputs);
+    bproppath = propagationPath(inputs &amp; parameters, outputs);
+    // ...
+}
+
+The original formulation causes very hard-to-track-down problems.  I 
+have a code snippet of the following form:
+
+    Var output1 =  product(processed_input,   m_woutput1);
+    Var output2 =  product(processed_input,  -m_woutput1);
+
+where &quot;processed_input&quot; is some Var resulting from a prior processing 
+(the hidden layer of a neural network), and m_woutput1 is a 
+SourceVariable representing a model parameter. What happens is as follows:
+
+    * All the computations for output1 proceed correctly, because the
+      path-marking code in BinaryVariable wants to first mark
+      processed_input (which succeeds), then mark m_woutput1 (which
+      fails, since it's a parameter, thence a SourceVariable, but it NOT
+      pre-marked at the start of proppath construction within
+      VarArray::propagationPath). BUT the whole product succeeds in
+      being marked since either branch must succeed.
+    * The computation for output2 produces the following major bug: *the
+      NegateElementsVariable (corresponding to the unary minus) is never
+      made part of the proppath*, since first it's trying to mark
+      m_woutput1 (which fails, for the reason given above), yet the
+      whole product succeeds since processed_input succeeds.
+
+So what happens is that output1 is computed correctly, whereas output2 
+always gives a value of zero, since the &quot;value&quot; of the 
+NegateElementsVariable is never updated, it not being part of the proppath.
+
+So I would gladly like to hear the rationale for the form of the current 
+code.  If nobody can answer me within 24 hours, I will commit the 
+suggested fix (which, incidentally, corrects my problem).
+
+    Thanks to all!
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20080407/b18c63ac/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20080407/b18c63ac/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000424.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#423">[ date ]</a>
+              <a href="thread.html#423">[ thread ]</a>
+              <a href="subject.html#423">[ subject ]</a>
+              <a href="author.html#423">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PLearn et Mac os x
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3C22777a450611010445t6ef9ea91x2c811c0755311b3f%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000231.html">
+   <LINK REL="Next"  HREF="000233.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PLearn et Mac os x</H1>
+    <B>Dan Popovici</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3C22777a450611010445t6ef9ea91x2c811c0755311b3f%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] PLearn et Mac os x">dan.popovici at gmail.com
+       </A><BR>
+    <I>Wed Nov  1 13:45:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000231.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+        <LI>Next message: <A HREF="000233.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#232">[ date ]</a>
+              <a href="thread.html#232">[ thread ]</a>
+              <a href="subject.html#232">[ subject ]</a>
+              <a href="author.html#232">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>salut,
+
+est-ce que tu as essay&#233;e sur une intel mac? Je n'ai pas r&#233;ussi de
+installer plearn sur mon macbook, parce que je n'ai pas trouv&#233;e nspr,
+m&#233;m&#233; avec fink.
+
+Dan
+
+On 11/1/06, Jaonary Rabarisoa &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">jaonary at gmail.com</A>&gt; wrote:
+&gt;<i> Bonjour &#224; tous,
+</I>&gt;<i>
+</I>&gt;<i> Je ne sais pas si parmi vous, il y a quelqu'un qui utilise PLearn sur
+</I>&gt;<i> un Mac. J'ai tent&#233; la compilation sur un mac os 10.4.8. Tous les
+</I>&gt;<i> autres librairies dont PLearn a besoin a &#233;t&#233; installer avec Fink
+</I>&gt;<i> (nspr, python, numarray, boost). Le compilateur est gcc 4.0.1.
+</I>&gt;<i> Apr&#232;s avoir modifier le fichier config de pymake, la compilation de
+</I>&gt;<i> plearn_ligth c'est bien d&#233;roul&#233;. Modulo quelques modification dans les
+</I>&gt;<i> sources de PLearn. Notament j'ai du faire une modification dans
+</I>&gt;<i> pl_math.h car avec la version de gcc que j'ai les fonctions isnan et
+</I>&gt;<i> isinf garde ce meme nom. Donc, &#224; supprimer les lignes :
+</I>&gt;<i>
+</I>&gt;<i> #ifdef darwin
+</I>&gt;<i> #define isnan __isnan
+</I>&gt;<i> #define isinf __isinf
+</I>&gt;<i>
+</I>&gt;<i> Pourriez vous le mettre &#224; jour.
+</I>&gt;<i>
+</I>&gt;<i> Le probl&#232;me vient au moment du link. En effet, il n'arrive pas &#224; faire
+</I>&gt;<i> le link avec numarray. Je pense qu'ici c'est une histoire de library
+</I>&gt;<i> dynamic qui ne sont pas nomm&#233; de la m&#234;me mani&#232;re sur un mac et sur un
+</I>&gt;<i> unix classique. Sur les mac ils ont une extension .dylib et sur un
+</I>&gt;<i> unix .so. Quand on regarde dans le repertoir de numarray on a un beau
+</I>&gt;<i> libnumarray.so. J'ai essay&#233; de faire le malin en faisant un lien
+</I>&gt;<i> symbolique  libnumarray.dylib mais toujours un probl&#232;me de link. J'ai
+</I>&gt;<i> vu dans le fichier config que la compilation sur un mac est pr&#233;vu,
+</I>&gt;<i> alors est ce que quelqu'un a r&#233;ussi et comment avez vous fait ?
+</I>&gt;<i>
+</I>&gt;<i> De ma part, j'ai supprimer tout ce qui fait r&#233;f&#233;rence &#224; python dans le
+</I>&gt;<i> plearn_inc.h et recomplier le tout. Et la &#231;a marche mais je ne sais
+</I>&gt;<i> pas encore la r&#233;percution de cela.
+</I>&gt;<i>
+</I>&gt;<i> Merci &#224; vous,
+</I>&gt;<i>
+</I>&gt;<i> Jaonary
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000231.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+	<LI>Next message: <A HREF="000233.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#232">[ date ]</a>
+              <a href="thread.html#232">[ thread ]</a>
+              <a href="subject.html#232">[ subject ]</a>
+              <a href="author.html#232">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

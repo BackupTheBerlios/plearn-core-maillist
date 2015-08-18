@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake dependency creep
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20dependency%20creep&In-Reply-To=%3C845993D2-DA63-4279-91D4-2C1115A25C2D%40IRO.UMONTREAL.CA%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000266.html">
+   <LINK REL="Next"  HREF="000268.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake dependency creep</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20dependency%20creep&In-Reply-To=%3C845993D2-DA63-4279-91D4-2C1115A25C2D%40IRO.UMONTREAL.CA%3E"
+       TITLE="[Plearn-core] pymake dependency creep">VINCENTP at IRO.UMONTREAL.CA
+       </A><BR>
+    <I>Mon Dec 11 22:39:26 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000266.html">[Plearn-core] Creer un kernel accessible dans torch
+</A></li>
+        <LI>Next message: <A HREF="000268.html">[Plearn-core] pymake dependency creep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#267">[ date ]</a>
+              <a href="thread.html#267">[ thread ]</a>
+              <a href="subject.html#267">[ subject ]</a>
+              <a href="author.html#267">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Guys, it would be nice if people were able to use pymake (which was  
+once an big-ugly but nevertheless tightly self-contained script) to  
+compile basic plearn executables without requiring everything-but-the- 
+kitchen-sink to be installed on their system.
+
+Alas tentacular dependency seems to be creeping in...
+
+So could the person(s) knowledgable about this please quickly find a  
+way to cut the tentacle responsible for the following situation:
+(In short: compiling plearn shouldn't require numarray and certainly  
+not numarray.linear_algebra.inverse !!! )
+
+Thank you!
+
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software  
+distributed under a BSD type license. Report problems to  
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">vincentp at iro.umontreal.ca</A> ]
+*** Current platform is: linux-i386
+
+*** No hosts file found: no parallel compilation, using localhost
+     (create a linux-i386.hosts file in your .pymake directory to  
+list hosts for parallel compilation.)
+Traceback (most recent call last):
+   File &quot;/home/pascal/PLearn/scripts/pymake&quot;, line 43, in ?
+     pymake.main(args)
+   File &quot;/home/pascal/PLearn/python_modules/plearn/pymake/pymake.py&quot;,  
+line 2610, in main
+     execfile( configpath, globals() )
+   File &quot;/home/pascal/PLearn/.pymake/config&quot;, line 154, in ?
+     from plearn.pytest.core import pytest_defines
+   File &quot;/home/pascal/PLearn/python_modules/plearn/pytest/ 
+__init__.py&quot;, line 9, in ?
+     import core, modes
+   File &quot;/home/pascal/PLearn/python_modules/plearn/pytest/modes.py&quot;,  
+line 4, in ?
+     import core, tests
+   File &quot;/home/pascal/PLearn/python_modules/plearn/pytest/tests.py&quot;,  
+line 37, in ?
+     from plearn.utilities import pldiff
+   File &quot;/home/pascal/PLearn/python_modules/plearn/utilities/ 
+pldiff.py&quot;, line 38, in ?
+     from plearn.math import floats_are_equal
+   File &quot;/home/pascal/PLearn/python_modules/plearn/math/__init__.py&quot;,  
+line 33, in ?
+     from arrays import *
+   File &quot;/home/pascal/PLearn/python_modules/plearn/math/arrays.py&quot;,  
+line 35, in ?
+     from numarray.linear_algebra import inverse as __numarray_inverse
+ImportError: No module named linear_algebra
+
+
+
+
+Pascal Vincent,
+Professeur adjoint / Assistant Professor,
+D&#233;partement d'Informatique et Recherche Op&#233;rationnelle,
+Universit&#233; de Montr&#233;al.
+Tel: 514-343-7478
+
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000266.html">[Plearn-core] Creer un kernel accessible dans torch
+</A></li>
+	<LI>Next message: <A HREF="000268.html">[Plearn-core] pymake dependency creep
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#267">[ date ]</a>
+              <a href="thread.html#267">[ thread ]</a>
+              <a href="subject.html#267">[ subject ]</a>
+              <a href="author.html#267">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

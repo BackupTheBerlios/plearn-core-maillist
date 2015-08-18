@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Questions sur commit r6594
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C20070123144250.GA531%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000301.html">
+   <LINK REL="Next"  HREF="000303.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Questions sur commit r6594</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C20070123144250.GA531%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Questions sur commit r6594">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jan 23 15:42:53 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000301.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+        <LI>Next message: <A HREF="000303.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Cf:
+<A HREF="https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html">https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html</A>
+
+Deux questions :
+
+1. D'apres le texte du commit, la nouvelle version devrait utiliser le
+user's umask, mais j'ai l'impression que le commit force en fait un
+chmod 777 au lieu de 775
+
+2. Je crois que la raison du chmod 775 est qu'on veut que les gens du
+meme groupe puissent ecrire dans les .metadata des VMats (pour eviter
+les problemes lorsqu'on partage des datasets). Ca serait bien de le
+garder (le 777 est encore plus genereux, mais je ne sais pas si c'est
+voulu...)
+
+--
+Olivier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000301.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+	<LI>Next message: <A HREF="000303.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#302">[ date ]</a>
+              <a href="thread.html#302">[ thread ]</a>
+              <a href="subject.html#302">[ subject ]</a>
+              <a href="author.html#302">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

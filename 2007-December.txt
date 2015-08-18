@@ -1,0 +1,160 @@
+From saintmlx at apstat.com  Fri Dec  7 23:02:24 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Fri, 07 Dec 2007 17:02:24 -0500
+Subject: [Plearn-core] VMat en Python
+Message-ID: <4759C2F0.1070603@apstat.com>
+
+Salut,
+
+Je viens de changer le comportement par d?faut de la conversion de VMat 
+vers Python.  Plut?t que de donner un array numpy, la VMat est 
+maintenant "wrapp?e" comme tous les autres objets PLearn.  Si vous avez 
+besoin de convertir une VMat en array numpy, il suffit d'appeler la 
+m?thode 'getMat()'.
+
+e.g.:
+ >>> from plearn.pyext import *
+ >>> vm= MemoryVMatrix(data= [[1,2,3],[4,5,6]], inputsize=2, 
+targetsize=1, weightsize=0)
+ >>> vm
+*1 ->MemoryVMatrix(
+data = 2  3  [
+1       2       3
+4       5       6
+]
+;
+source = *0 ;
+fieldnames = []
+;
+deep_copy_memory_data = 1 ;
+writable = 0 ;
+length = 2 ;
+width = 3 ;
+inputsize = 2 ;
+targetsize = 1 ;
+weightsize = 0 ;
+extrasize = 0 ;
+metadatadir = ""  )
+ >>> vm.getMat()
+array([[ 1.,  2.,  3.],
+       [ 4.,  5.,  6.]])
+ >>> type(vm.getMat())
+<type 'numpy.ndarray'>
+ >>>
+
+
+Xavier
+
+
+
+From saintmlx at apstat.com  Fri Dec  7 23:43:15 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Fri, 07 Dec 2007 17:43:15 -0500
+Subject: [Plearn-core] VMat en Python
+In-Reply-To: <4759C2F0.1070603@apstat.com>
+References: <4759C2F0.1070603@apstat.com>
+Message-ID: <4759CC83.8000006@apstat.com>
+
+Salut,
+
+Le comportement pour la conversion de VMat vers python peut maintenant 
+?tre modifi? ? partir de python (run-time), en appelant 
+'setVMatAsPtr(bool)'.  Aussi, 'getVMatAsPtr()' renvoie le comportement 
+actuel:
+- true= les VMat sont wrapp?es comme les autres Object
+- false= conversion vers numpy.ndarray
+
+*N.B.:* Il est fortement conseill? de laisser cette option ? 'true' et 
+d'utiliser '.getMat()' au besoin (voir ci-bas).  La conversion implicite 
+vers numpy est pour *backward-compatibility seulement!*
+
+e.g.:
+ >>> l= LinearRegressor()
+ >>> vm= MemoryVMatrix(data=[[1,2],[3,4]])
+ >>> l.setTrainingSet(vm,0)
+ >>> setVMatAsPtr(True)
+True
+ >>> l.getTrainingSet()
+*1 ->MemoryVMatrix(
+data = 2  2  [
+1       2
+3       4
+]
+;
+source = *0 ;
+fieldnames = []
+;
+deep_copy_memory_data = 1 ;
+writable = 0 ;
+length = 2 ;
+width = 2 ;
+inputsize = -1 ;
+targetsize = -1 ;
+weightsize = -1 ;
+extrasize = 0 ;
+metadatadir = ""  )
+ >>> setVMatAsPtr(False)
+True
+ >>> l.getTrainingSet()
+array([[ 1.,  2.],
+       [ 3.,  4.]])
+ >>> getVMatAsPtr() #current setting
+False
+ >>>
+
+
+Xavier
+
+
+
+
+Xavier Saint-Mleux wrote:
+> Salut,
+>
+> Je viens de changer le comportement par d?faut de la conversion de VMat 
+> vers Python.  Plut?t que de donner un array numpy, la VMat est 
+> maintenant "wrapp?e" comme tous les autres objets PLearn.  Si vous avez 
+> besoin de convertir une VMat en array numpy, il suffit d'appeler la 
+> m?thode 'getMat()'.
+>
+> e.g.:
+>  >>> from plearn.pyext import *
+>  >>> vm= MemoryVMatrix(data= [[1,2,3],[4,5,6]], inputsize=2, 
+> targetsize=1, weightsize=0)
+>  >>> vm
+> *1 ->MemoryVMatrix(
+> data = 2  3  [
+> 1       2       3
+> 4       5       6
+> ]
+> ;
+> source = *0 ;
+> fieldnames = []
+> ;
+> deep_copy_memory_data = 1 ;
+> writable = 0 ;
+> length = 2 ;
+> width = 3 ;
+> inputsize = 2 ;
+> targetsize = 1 ;
+> weightsize = 0 ;
+> extrasize = 0 ;
+> metadatadir = ""  )
+>  >>> vm.getMat()
+> array([[ 1.,  2.,  3.],
+>        [ 4.,  5.,  6.]])
+>  >>> type(vm.getMat())
+> <type 'numpy.ndarray'>
+>  >>>
+>
+>
+> Xavier
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+

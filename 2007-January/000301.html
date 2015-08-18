@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Normalize les lignes d'un VMatrix
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Normalize%20les%20lignes%20d%27un%20VMatrix&In-Reply-To=%3C20070122154403.GA11598%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000300.html">
+   <LINK REL="Next"  HREF="000302.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Normalize les lignes d'un VMatrix</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Normalize%20les%20lignes%20d%27un%20VMatrix&In-Reply-To=%3C20070122154403.GA11598%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Normalize les lignes d'un VMatrix">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Jan 22 16:44:05 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000300.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+        <LI>Next message: <A HREF="000302.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Je ne crois pas qu'il y ait de classe qui le fasse deja, donc le mieux
+serait sans doute que tu ecrives ta propre classe qui herite de
+SourceVMatrix et qui normalise la source.
+
+Essentiellement, le build_() appellerait setMetaInfoFromSource(), et la
+methode getNewRow(int i, const Vec&amp; v) serait
+{
+    source-&gt;getRow(i, v);
+    PLearn::normalize(v); // Necessite #include TMat_maths.h
+}
+
+Fais un pyskeleton SourceVMatrix NormalizeRowVMatrix pour avoir le
+squelette de ta classe.
+Tu pourras ensuite la rajouter dans PLearn, ca peut etre utile.
+
+--
+Olivier
+
+On 22 Jan 2007, Jaonary Rabarisoa wrote:
+&gt;<i> Bonjours a tous,
+</I>&gt;<i> 
+</I>&gt;<i> Je cherche a faire une normalisation des lignes d'une VMatrix. Plus
+</I>&gt;<i> precisement, je voudrais avoir un vecteur
+</I>&gt;<i> de norme &quot;euclidienne&quot; (ou autre )1 pour chaque ligne de ma VMatrix. Le methode
+</I>&gt;<i> naive que j'utilise en ce moment
+</I>&gt;<i> c'est de calculer cette norme en utilisant la fonction dot(row,row).  recuperer
+</I>&gt;<i> les valeurs avec get et les changer avec put.
+</I>&gt;<i> C'est un peu lourd et si je changer de norme il faut que recupere toute la
+</I>&gt;<i> ligne. Je me demande alors, s'il n'y a pas ce genre
+</I>&gt;<i> preprocessing sur les VMatrix deja code dans PLearn ?
+</I>&gt;<i> 
+</I>&gt;<i> Bien a vous,
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000300.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+	<LI>Next message: <A HREF="000302.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

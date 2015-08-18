@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Liste de TODO, faisant suite &#224; la r&#233;union PLearn de vendredi
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FListe_de_TODO%3D2C_faisant_suite_%3DE0_l%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fa_r%3DE9union_PLearn_de_vendredi%3F%3D&In-Reply-To=%3CD7EC1D0D-DC8B-4EB9-B752-0F5557B9D44B%40iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000284.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Liste de TODO, faisant suite &#224; la r&#233;union PLearn de vendredi</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FListe_de_TODO%3D2C_faisant_suite_%3DE0_l%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fa_r%3DE9union_PLearn_de_vendredi%3F%3D&In-Reply-To=%3CD7EC1D0D-DC8B-4EB9-B752-0F5557B9D44B%40iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Liste de TODO, faisant suite &#224; la r&#233;union PLearn de vendredi">vincentp at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Dec 18 22:55:49 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000284.html">[Plearn-core] (no subject)
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#285">[ date ]</a>
+              <a href="thread.html#285">[ thread ]</a>
+              <a href="subject.html#285">[ subject ]</a>
+              <a href="author.html#285">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Merci d'avoir particip&#233; &#224; la r&#233;union de vendredi pour orienter  les  
+d&#233;velopements futurs de PLearn!
+
+Suite &#224; cette r&#233;union, j'ai cr&#233;&#233; la page TWiki suivante, dont je  
+reproduis le contenu (actuel) ci-dessous. Ce n'est pas tant un r&#233;sum&#233;  
+de la r&#233;union qu'une liste de ToDo faisant suite aux points (parfois  
+de d&#233;tail) et priorit&#233;s qui m'ont sembl&#233; &#233;merger de la r&#233;union.  
+N'h&#233;sitez pas &#224; y apporter des changements.
+
+<A HREF="http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/">http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/</A> 
+PLearnImprovementActions
+
+-- Pascal Vincent
+
+---------------------
+  Actions d&#233;cid&#233;es pour am&#233;liorer PLearn
+
+Suite &#224; notre r&#233;union du 15 d&#233;cembre 2006, voici ce qui a &#233;t&#233;  
+discutt&#233;, et ma suggestion initiale de qui pourrait faire quoi, bas&#233;  
+sur ce qui m'a sembl&#233; &#234;tre les int&#233;r&#234;ts/responsabilit&#233;s/expertises de  
+chacun (c'est une assignation provisoire, sentez-vous libre de  
+r&#233;assigner/ajouter/modifier/changer les priorit&#233;s). Je me suis aussi  
+inspir&#233; de certaines des choses que vous aviez not&#233;es sur la page  
+PLearnImprovementWishList. J'ai s&#251;rement oubli&#233; des choses, alors  
+n'h&#233;sitez pas &#224; mettre &#224; jour cette liste.
+
+Note: quand je parle d'&#233;criture de doc dans ce qui suit, je veux dire  
+&#233;criture sous forme de guide/how-to &#224; rajouter dans un des  
+*_guide.tex dans PLearn/doc (ou cr&#233;er un nouveau *_guide.tex si vous  
+jugez que c'est apropri&#233;, &#224; condition qu'on n'en cr&#233;e pas 150...)
+
++++ Pascal Vincent
+
+Diminution du &quot;cognitive load&quot; li&#233; au grand nombre de fichiers/classes:
+
+     * Cr&#233;er des sous-r&#233;pertoires DEPRECATED, EXTRA, EXPERIMENTAL  
+dans chaque r&#233;pertoire de PLearn de mani&#232;re &#224; ne laisser qu'un petit  
+nombre de classes &quot;classiques&quot;/&quot;simples&quot; dans le r&#233;pertoire d'origine.
+     * D&#233;cider avec les autres qu'est-ce qu'on d&#233;place o&#249;.
+     * D&#233;placer les splitters dans leur propre r&#233;pertoire.
+
+Diminution du &quot;cognitive load&quot; li&#233; au grand nombre d'options  
+exotiques dans les classes:
+
+     * Am&#233;lioration du syst&#232;me d'aide en ligne avec l'introduction  
+d'un &quot;help level&quot; pour n'afficher que les choses essentielles/simples/ 
+&#233;videntes au premier niveau.
+     * Possibilit&#233; de changer le help-level d'options des classes  
+parents dans les sous-classes.
+
+Divers:
+
+     * R&#233;instaurer la possibilit&#233; de faire 'plearn vmat view' plut&#244;t  
+que 'plearn vmat_view' (qui semble avoir cr&#233;&#233; une comotion au travers  
+de toute la communaut&#233; PLearn! Mea culpa)
+     * ajouter possibilit&#233; d'afficher graphe de Var depuis gdb.
+     * Extension du protocole de plearn server pour transmettre les  
+update de progress-bar, et les &#233;critures vers pout/perr et le syst&#232;me  
+de logs.
+     * parall&#233;lisation (avec Xavier Saint Mleux)
+
+Documentation:
+
+     * Compl&#233;ter et clarifier la doc sur syst&#232;me de Var / Func /  
+Optimiseurs
+     * Ecrire un minimum de doc sur mes scripts de PLearn/scripts  
+(ex: pyplot)
+
++++ Nicolas Chapados
+
+     * Changer le seed par d&#233;faut de PLearner pour avoir par d&#233;faut  
+des exp&#233;riences reproductibles.
+     * Faire en sorte que l'utilisation de python2.3 ne soit pas  
+hardcod&#233; dans PythonIncludes?.h
+     * Migrer les python code snippets vers numpy.
+     * Faire en sorte qu'on soit capable de linker avec les python  
+code snippets sous Mac OS X.
+     * Comprendre ce qui se passe avec doxygen, et faire en sorte  
+qu'il ne prenne pas 3 jours &#224; g&#233;n&#233;re la doc.
+     * Ecrire un CSVVMatrix (similaire &#224; AsciiVMatrix?).
+
++++ Hugo Larochelle
+
+     * Ecrire la doc sur l'installation/configuration/utilisation des  
+outils pour le langage incluant un plearn_lang et les affaires de  
+WordNet?, setup des bases de donn&#233;es, les formats de fichiers  
+sp&#233;cifiques utilis&#233;s etc... Le but est que qqn de l'ext&#233;rieur puisse  
+facilement reproduire nos exp&#233;riences de langage en partant de z&#233;ro  
+(rien d'install&#233; sur son syst&#232;me).
+     * Maintenir &#224; jour la doc d'install g&#233;n&#233;rale sur linux.
+     * Se concerter avec Pascal V. et Nicolas C. pour voir comment on  
+pourrait &#224; la fois effectuer une cure d'ammaigrissement &#224; VMatrix, et  
+la rendre plus flexible/pratique pour les applications telles que le  
+langage.
+
++++ Pascal Lamblin
+
+Possiblement, investiguer le syst&#232;me de bug-tracking/feature-request  
+de BerliOS? pour s'en servir pour cette liste de TODO.
+
+Nettoyage de TMat_maths_impl.h et cie:
+
+     * Etablir une nomenclature et une division plus claire et  
+congruente pour les fonctions. Produire une liste de transformations  
+&#224; effectuer de la forme: prototype_de_fonction_actuel -&gt;  
+nouveau_prototype (incluant les changement de nom de fonction,  
+d'ordre de param&#232;tres, voire de noms de param&#232;tres).
+     * Evaluer les outils de transformation de code qui pourraient  
+&#234;tre utilis&#233;s pour effectuer la transition (voir avec Pascal V. pour  
+pytransform, voir si il y a qqch de plus complet dans Eclipse, ou  
+autre).
+
+Nettoyage de pymake.config.model:
+
+     * Eliminer les paths hard-cod&#233;s. Les remplacer dans la mesure du  
+possible par l'utilisation des variables d'environnement pr&#233;vues &#224;  
+cet effet par l'OS (comme LD_LIBRARY_PATH, LIBRARY_PATH, CPATH.  
+Adapter la doc d'install pour indiquer aux gens quoi y ajouter &#224; ces  
+variables), et/ou par la d&#233;couverte automatique des libraireis  
+install&#233;es sur le syst&#232;me et la production de message d'erreurs clairs.
+
+Doc:
+
+     * Ecrire un minimum de doc sur les nouvelles op&#233;rations de Mat/Vec
+     * Ecrire la doc sur les OnlineLearningModule?, deep belief nets,  
+etc...
+
++++ Olivier Delalleau
+
+     * Updater le guide d'installation sous Windows avec cygwin/mingw  
+et rajouter une section concernant l'install avec MS Visual.
+     * Se concerter avec Pascal V. sur de possibles r&#233;oganisations/ 
+clarifications de PDistribution
+     * Ecrire la doc sur les PDistribution.
+     * Ajouter de l'info dans le guide d'install sur les &#233;tapes &#224;  
+effectuer pour pouvoir utiliser Torch avec PLearn.
+     * Doc d'utilisation de torch depuis plearn.
+
++++ Pierre-Antoine
+
+     * Continuer &#224; utiliser PLearn et &#224; nous faire part de ce qu'on  
+peut am&#233;liorer!
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000284.html">[Plearn-core] (no subject)
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#285">[ date ]</a>
+              <a href="thread.html#285">[ thread ]</a>
+              <a href="subject.html#285">[ subject ]</a>
+              <a href="author.html#285">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

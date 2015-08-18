@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] inclusion de plapack.h
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20inclusion%20de%20plapack.h&In-Reply-To=%3C20061025023304.GA4252%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000229.html">
+   <LINK REL="Next"  HREF="000225.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] inclusion de plapack.h</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20inclusion%20de%20plapack.h&In-Reply-To=%3C20061025023304.GA4252%40pig.zood.org%3E"
+       TITLE="[Plearn-core] inclusion de plapack.h">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Oct 25 04:33:04 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000229.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+        <LI>Next message: <A HREF="000225.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#224">[ date ]</a>
+              <a href="thread.html#224">[ thread ]</a>
+              <a href="subject.html#224">[ subject ]</a>
+              <a href="author.html#224">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut &#224; vous,
+
+j'ai remarqu&#233; que les fichiers suivants font directement appel &#224;
+&lt;plearn/math/plapack.h&gt;.
+
+plearn/ker/ReconstructionWeightsKernel.cc
+plearn/vmat/VMat_linalg.cc
+plearn_learners/regressors/PLS.cc
+plearn_learners/unsupervised/KernelProjection.cc
+plearn_learners/unsupervised/PCA.cc
+plearn_learners/distributions/GaussianDistribution.cc
+plearn_learners/distributions/GaussMix.cc
+plearn_learners_experimental/LinearInductiveTransferClassifier.cc
+plearn_learners_experimental/SurfaceTemplate/geometry.cc
+
+
+&#199;a pose des probl&#232;mes au link lorsqu'on compile plearn avec l'option
+-noblas, puisqu'alors il ne va pas linker avec lapack.
+
+Qu'est-ce qu'on fait alors :
+  - une impl&#233;mentation inefficace, sans blas ni lapack, des fonctions en
+    question, pour le cas o&#249; on ne dispose pas de blas ;
+  - on linke quand m&#234;me avec lapack en option -noblas ;
+  - on oublie l'option -noblas ?
+
+Merci de vos r&#233;ponses,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000229.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+	<LI>Next message: <A HREF="000225.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#224">[ date ]</a>
+              <a href="thread.html#224">[ thread ]</a>
+              <a href="subject.html#224">[ subject ]</a>
+              <a href="author.html#224">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

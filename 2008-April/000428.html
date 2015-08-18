@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3CCB55EE05-97FD-4195-BA62-3625760CBBAA%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000427.html">
+   <LINK REL="Next"  HREF="000429.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3CCB55EE05-97FD-4195-BA62-3625760CBBAA%40apstat.com%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">pascal at apstat.com
+       </A><BR>
+    <I>Wed Apr  9 23:35:14 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000427.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+        <LI>Next message: <A HREF="000429.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Le 08-04-09 &#224; 14:04, Nicolas Chapados a &#233;crit :
+&gt;<i>
+</I>&gt;<i> Le 8-Apr-08 &#224; 5:02 PM, Pascal Vincent a &#233;crit :
+</I>&gt;<i>
+</I>&gt;&gt;&gt;<i> In other words, why does the code not look like this instead  
+</I>&gt;&gt;&gt;<i> (which I would think to be preferable in ALL circumstances, but  
+</I>&gt;&gt;&gt;<i> that's why I'm asking) ::
+</I>&gt;&gt;&gt;<i> void Function::build_() { // ... fproppath = propagationPath 
+</I>&gt;&gt;&gt;<i> (inputs &amp; parameters, outputs); bproppath = propagationPath 
+</I>&gt;&gt;&gt;<i> (inputs &amp; parameters, outputs); // ... } The original formulation  
+</I>&gt;&gt;&gt;<i> causes very hard-to-track-down problems.  I have a code snippet  
+</I>&gt;&gt;&gt;<i> of the following form:
+</I>&gt;&gt;&gt;<i> Var output1 = product(processed_input, m_woutput1); Var output2 =  
+</I>&gt;&gt;&gt;<i> product(processed_input, -m_woutput1); where &quot;processed_input&quot; is  
+</I>&gt;&gt;&gt;<i> some Var resulting from a prior processing (the hidden layer of a  
+</I>&gt;&gt;&gt;<i> neural network), and m_woutput1 is a SourceVariable representing  
+</I>&gt;&gt;&gt;<i> a model parameter.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I suppose you are declaring a Func with inputs = processed_input  
+</I>&gt;&gt;<i> and outputs = output2 (you didn't specify in your message what  
+</I>&gt;&gt;<i> function you are declaring, but I guess this is it).
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Sorry, I should have been more clear.  The func is not from  
+</I>&gt;<i> processed_input to output2.  The overall picture goes as follows:
+</I>&gt;<i>
+</I>&gt;<i>     Var input = ...;
+</I>&gt;<i>     Var processed_input = f(input);
+</I>&gt;<i>     Var output1 =  product(processed_input,   m_woutput1);
+</I>&gt;<i>     Var output2 =  product(processed_input,  -m_woutput1);
+</I>&gt;<i>     Var final_output = g(output1) - h(output2);
+</I>&gt;<i>     Func my_buggy_func(input, final_output);
+</I>&gt;<i>
+</I>&gt;<i> where f(), g(), and h() are arbitrary C++ functions yielding Vars.
+</I>&gt;<i>
+</I>&gt;<i> So what's happening here is a subtle -- and hard to track down --  
+</I>&gt;<i> bug: the branch computing output1 is all OK, but the branch  
+</I>&gt;<i> computing output2 is totally incorrect: as explained in the  
+</I>&gt;<i> original message, the proppath within &quot;my_buggy_func&quot; DOES NOT  
+</I>&gt;<i> include a traversal of the Var computing the unary minus (i.e. the  
+</I>&gt;<i> expression &quot;-m_woutput1&quot;) in the definition of output2.  What  
+</I>&gt;<i> happens is that since m_woutput1 is considered a &quot;parameter&quot;, it is  
+</I>&gt;<i> never &quot;marked&quot; at the start of the VarArray proppath computation  
+</I>&gt;<i> code, and as a ripple effect the UNARY Vars that directly use this  
+</I>&gt;<i> parameter (e.g. the Unary Minus) are kept unmarked as well.  The  
+</I>&gt;<i> variable &quot;output1&quot; is computed correctly since it only depends on  
+</I>&gt;<i> BINARY variables.
+</I>&gt;<i>
+</I>&gt;<i> Regardless of consequences for MeanOf, this can only be interpreted  
+</I>&gt;<i> as a bug. And goes quite against the spirit of Var graphs: it is  
+</I>&gt;<i> quite literally (and always so) the incorrect function that is  
+</I>&gt;<i> computed as an outcome of &quot;my_buggy_func&quot;.
+</I>&gt;<i>
+</I>&gt;<i> It should be mentioned that my suggested fix only ensures that  
+</I>&gt;<i> &quot;parameters&quot; are considered &quot;marked&quot; when the Func proppath is  
+</I>&gt;<i> created -- it has no other effect, and in particular it does not  
+</I>&gt;<i> make parameters part of the Func inputs.
+</I>
+I suggest you read my answer and Olivier's carefully again. A Func's  
+proppath is created from inputs to outputs only, and I believe for a  
+number of *good* reasons that I tried to enlist, and that risk being  
+broken by your fix. That's what a *function* does, it maps changing  
+inputs to outputs, period. If you want it to take into account  
+changes to source variables that are not enlisted in the functions  
+inputs (i.e. your &quot;parameters&quot;) there are 2 possibilities: either  
+include them in the inputs, or call the Func's recomputeParents().
+
+Now it could be argued that all vars (in particular here -m_woutput1)  
+could do a fprop on themselves upon construction so they are  
+initialized at a &quot;correct&quot; value, or maybe we should at least call  
+recomputeParents in the Func's build_ right after the parentspath has  
+been set (this may fix your problem, supposing the parameters already  
+have their correct value when building the input output function).  
+But if your parameters keep changing you would have to recall  
+recomputeParents anyway.
+
+Then again, if you do want the possibility of systematically  
+including in fproppath the full paths from all source variables (inc.  
+others than inputs) that your output depends on, but do not want to  
+enlist them as inputs, you can add an option to this effect as I  
+suggested in my last email.
+
+Hope this helps.
+
+-- Pascal
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000427.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+	<LI>Next message: <A HREF="000429.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

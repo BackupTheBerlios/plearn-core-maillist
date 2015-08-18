@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMat en Python
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMat%20en%20Python&In-Reply-To=%3C4759C2F0.1070603%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000421.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMat en Python</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMat%20en%20Python&In-Reply-To=%3C4759C2F0.1070603%40apstat.com%3E"
+       TITLE="[Plearn-core] VMat en Python">saintmlx at apstat.com
+       </A><BR>
+    <I>Fri Dec  7 23:02:24 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000421.html">[Plearn-core] VMat en Python
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#420">[ date ]</a>
+              <a href="thread.html#420">[ thread ]</a>
+              <a href="subject.html#420">[ subject ]</a>
+              <a href="author.html#420">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Je viens de changer le comportement par d&#233;faut de la conversion de VMat 
+vers Python.  Plut&#244;t que de donner un array numpy, la VMat est 
+maintenant &quot;wrapp&#233;e&quot; comme tous les autres objets PLearn.  Si vous avez 
+besoin de convertir une VMat en array numpy, il suffit d'appeler la 
+m&#233;thode 'getMat()'.
+
+e.g.:
+ &gt;&gt;&gt; from plearn.pyext import *
+ &gt;&gt;&gt; vm= MemoryVMatrix(data= [[1,2,3],[4,5,6]], inputsize=2, 
+targetsize=1, weightsize=0)
+ &gt;&gt;&gt; vm
+*1 -&gt;MemoryVMatrix(
+data = 2  3  [
+1       2       3
+4       5       6
+]
+;
+source = *0 ;
+fieldnames = []
+;
+deep_copy_memory_data = 1 ;
+writable = 0 ;
+length = 2 ;
+width = 3 ;
+inputsize = 2 ;
+targetsize = 1 ;
+weightsize = 0 ;
+extrasize = 0 ;
+metadatadir = &quot;&quot;  )
+ &gt;&gt;&gt; vm.getMat()
+array([[ 1.,  2.,  3.],
+       [ 4.,  5.,  6.]])
+ &gt;&gt;&gt; type(vm.getMat())
+&lt;type 'numpy.ndarray'&gt;
+ &gt;&gt;&gt;
+
+
+Xavier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000421.html">[Plearn-core] VMat en Python
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#420">[ date ]</a>
+              <a href="thread.html#420">[ thread ]</a>
+              <a href="subject.html#420">[ subject ]</a>
+              <a href="author.html#420">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

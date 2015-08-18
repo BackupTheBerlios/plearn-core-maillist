@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Noms d'options qui se terminent en _
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Noms%20d%27options%20qui%20se%20terminent%20en%20_&In-Reply-To=%3C20060528214300.GB31414%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000048.html">
+   <LINK REL="Next"  HREF="000052.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Noms d'options qui se terminent en _</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Noms%20d%27options%20qui%20se%20terminent%20en%20_&In-Reply-To=%3C20060528214300.GB31414%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Noms d'options qui se terminent en _">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Sun May 28 23:43:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000048.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+        <LI>Next message: <A HREF="000052.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#49">[ date ]</a>
+              <a href="thread.html#49">[ thread ]</a>
+              <a href="subject.html#49">[ subject ]</a>
+              <a href="author.html#49">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Sun, May 28, 2006, Nicolas Chapados wrote:
+&gt;<i> All&#244; les copains,
+</I>
+Salut !
+
+&gt;<i> Beaucoup d'endroits dans PLearn (particuli&#232;rement les Var) contiennent 
+</I>&gt;<i> des options dont les noms se terminent en _ (underscore).  Je trouve 
+</I>&gt;<i> cela hideux.  Suis-je le seul?
+</I>
+Tu parles des noms des options, ou des variables derri&#232;re ?
+
+Si les variables ont un _ &#224; la fin, genre pour &#233;viter les conflits entre
+la variable width_ et la m&#233;thode width(), je ne sais pas quel est le
+pire : avoir le nom d'option (dans un script) correspondant qui se
+termine en _, ou avoir une diff&#233;rence entre le nom de l'option et le nom
+de la variable.
+
+&gt;<i> Y aurait-il beaucoup de scripts &#224; upgrader si on voulait faire une 
+</I>&gt;<i> mise-&#224;-jour &#224; grande &#233;chelle?
+</I>
+En ce qui me concerne, je n'ai jamais vu de Var dans un script.
+
+Mais si on fait une mise &#224; jour &#224; grande &#233;chelle comme tu dis, &#231;a serait
+l'occasion de faire les changements des noms d'options dans les VMat, ce
+qui permettrait de virer les options obsol&#232;tes (je pense en particulier
+&#224; &quot;specification&quot; =&gt; &quot;filename&quot; dans AutoVMatrix).
+
+&#192; plus,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000048.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+	<LI>Next message: <A HREF="000052.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#49">[ date ]</a>
+              <a href="thread.html#49">[ thread ]</a>
+              <a href="subject.html#49">[ subject ]</a>
+              <a href="author.html#49">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,538 @@
+From chapados at apstat.com  Tue Apr  8 02:20:44 2008
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Mon, 07 Apr 2008 20:20:44 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+Message-ID: <47FABA5C.5090407@apstat.com>
+
+Hello PLearn gurus,
+
+(That should include Olivier, Pascal and Hugo, if not many others!).  I 
+have an intriguing question about VarArrays which has just lost me, oh, 
+a few wasted hours.
+
+In Func.cc, we have the following piece of code for computing the 
+fprop-path:
+
+void Function::build_()
+{
+    // ...
+    fproppath = propagationPath(inputs, outputs);
+    if (fproppath.length()==0) // to handle the weird case in which there is no path from inputs to outputs
+        // but outputs still depends on parameters and we want to represent that dependency 
+    {
+        fproppath = propagationPath(inputs & parameters, outputs);
+        bproppath = propagationPath(inputs & parameters, outputs);
+    }
+    else
+        bproppath = propagationPath(inputs, outputs);
+    // ...
+}
+
+My question is as follows: WHY is it that the propagation path is first 
+found from inputs to outputs only, without regard for the parameters, 
+and ONLY if such a path does not exist does it try to include parameters 
+as well?  In other words, why does the code not look like this instead 
+(which I would think to be preferable in ALL circumstances, but that's 
+why I'm asking) ::
+
+void Function::build_()
+{
+    // ...
+    fproppath = propagationPath(inputs & parameters, outputs);
+    bproppath = propagationPath(inputs & parameters, outputs);
+    // ...
+}
+
+The original formulation causes very hard-to-track-down problems.  I 
+have a code snippet of the following form:
+
+    Var output1 =  product(processed_input,   m_woutput1);
+    Var output2 =  product(processed_input,  -m_woutput1);
+
+where "processed_input" is some Var resulting from a prior processing 
+(the hidden layer of a neural network), and m_woutput1 is a 
+SourceVariable representing a model parameter. What happens is as follows:
+
+    * All the computations for output1 proceed correctly, because the
+      path-marking code in BinaryVariable wants to first mark
+      processed_input (which succeeds), then mark m_woutput1 (which
+      fails, since it's a parameter, thence a SourceVariable, but it NOT
+      pre-marked at the start of proppath construction within
+      VarArray::propagationPath). BUT the whole product succeeds in
+      being marked since either branch must succeed.
+    * The computation for output2 produces the following major bug: *the
+      NegateElementsVariable (corresponding to the unary minus) is never
+      made part of the proppath*, since first it's trying to mark
+      m_woutput1 (which fails, for the reason given above), yet the
+      whole product succeeds since processed_input succeeds.
+
+So what happens is that output1 is computed correctly, whereas output2 
+always gives a value of zero, since the "value" of the 
+NegateElementsVariable is never updated, it not being part of the proppath.
+
+So I would gladly like to hear the rationale for the form of the current 
+code.  If nobody can answer me within 24 hours, I will commit the 
+suggested fix (which, incidentally, corrects my problem).
+
+    Thanks to all!
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20080407/b18c63ac/attachment.html>
+
+From pascal at apstat.com  Tue Apr  8 23:02:35 2008
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 8 Apr 2008 17:02:35 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <47FABA5C.5090407@apstat.com>
+References: <47FABA5C.5090407@apstat.com>
+Message-ID: <B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+
+
+Le 08-04-07 ? 20:20, Nicolas Chapados a ?crit :
+> Hello PLearn gurus,
+>
+> (That should include Olivier, Pascal and Hugo, if not many  
+> others!).  I have an intriguing question about VarArrays which has  
+> just lost me, oh, a few wasted hours.
+>
+> In Func.cc, we have the following piece of code for computing the  
+> fprop-path:
+> void Function::build_() { // ... fproppath = propagationPath 
+> (inputs, outputs); if (fproppath.length()==0) // to handle the  
+> weird case in which there is no path from inputs to outputs // but  
+> outputs still depends on parameters and we want to represent that  
+> dependency { fproppath = propagationPath(inputs & parameters,  
+> outputs); bproppath = propagationPath(inputs & parameters,  
+> outputs); } else bproppath = propagationPath(inputs,  
+> outputs); // ... } My question is as follows: WHY is it that the  
+> propagation path is first found from inputs to outputs only,  
+> without regard for the parameters, and ONLY if such a path does not  
+> exist does it try to include parameters as well?
+
+I believe that a Func was meant to compute the output from the input  
+only, not to recompute intermediate transformation of parameters when  
+the parameters they depend on do change.
+There are probably 2 reasons:
+a) efficiency reason. Ex. when computing a function and gradient on a  
+batch (as a SumOf can do), you certainly do not want to unnecessarily  
+recompute possibly very costly transformations of your parameters for  
+each example you see.
+b) correct computation of gradients when using SumOf or similar  
+operations, and in particular when doing a SumOf inside a SumOf or  
+similar (ProductOf?). In this case, you want to accumulate gradients  
+to the immediate parents (transformed parameters) while doing the  
+SumOf and only *then* backpropagate *once* the resulting total  
+gradient to the parents of these  parents (the untransformed  
+parameters).
+
+The special case was probably added as a necessary hack for a special  
+situation (possibly also to do with SumOf or the like).
+
+This explanation is certainly as foggy as that stuff is in my old  
+memory, but this is all I can offer in terms of "explanation".
+I however fear that If you change this as you are suggesting, things  
+are likely to go horribly wrong elsewhere (as might or might not be  
+caught by testsuite). A particularly tricky test case would be SumOf  
+within SumOf or similar that I remember you using somewhere...
+I would also suggest a less dangerous fix: add an option and  
+constructor parameter such as always_propagate_parameters which would  
+be false by default, but you can set to true if this is the behaviour  
+you want here.
+
+> In other words, why does the code not look like this instead (which  
+> I would think to be preferable in ALL circumstances, but that's why  
+> I'm asking) ::
+> void Function::build_() { // ... fproppath = propagationPath(inputs  
+> & parameters, outputs); bproppath = propagationPath(inputs &  
+> parameters, outputs); // ... } The original formulation causes very  
+> hard-to-track-down problems.  I have a code snippet of the  
+> following form:
+> Var output1 = product(processed_input, m_woutput1); Var output2 =  
+> product(processed_input, -m_woutput1); where "processed_input" is  
+> some Var resulting from a prior processing (the hidden layer of a  
+> neural network), and m_woutput1 is a SourceVariable representing a  
+> model parameter.
+
+I suppose you are declaring a Func with inputs = processed_input and  
+outputs = output2 (you didn't specify in your message what function  
+you are declaring, but I guess this is it).
+
+> What happens is as follows:
+> All the computations for output1 proceed correctly, because the  
+> path-marking code in BinaryVariable wants to first mark  
+> processed_input (which succeeds), then mark m_woutput1 (which  
+> fails, since it's a parameter, thence a SourceVariable, but it NOT  
+> pre-marked at the start of proppath construction within  
+> VarArray::propagationPath). BUT the whole product succeeds in being  
+> marked since either branch must succeed.
+> The computation for output2 produces the following major bug: the  
+> NegateElementsVariable (corresponding to the unary minus) is never  
+> made part of the proppath, since first it's trying to mark  
+> m_woutput1 (which fails, for the reason given above), yet the whole  
+> product succeeds since processed_input succeeds.
+> So what happens is that output1 is computed correctly, whereas  
+> output2 always gives a value of zero, since the "value" of the  
+> NegateElementsVariable is never updated, it not being part of the  
+> proppath.
+>
+> So I would gladly like to hear the rationale for the form of the  
+> current code.  If nobody can answer me within 24 hours, I will  
+> commit the suggested fix (which, incidentally, corrects my problem).
+
+Hope the above helps.
+
+-- Pascal
+
+
+
+From delallea at iro.umontreal.ca  Wed Apr  9 17:22:51 2008
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 9 Apr 2008 11:22:51 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+References: <47FABA5C.5090407@apstat.com>
+	<B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+Message-ID: <20080409152251.GA15642@opale.iro.umontreal.ca>
+
+So, I've been trying to follow this discussion, but I never really
+looked at the propagation paths in the past... I just did and it's not
+so easy to get into ;)
+
+> a) efficiency reason. Ex. when computing a function and gradient on a  
+> batch (as a SumOf can do), you certainly do not want to unnecessarily  
+> recompute possibly very costly transformations of your parameters for  
+> each example you see.
+
+I see that, indeed, something like sumOf systematically does a
+f->recomputeParents() in a fprop. So it looks like the "correct" way to
+compute a Func when the parameters have changed is to use this method.
+
+> b) correct computation of gradients when using SumOf or similar  
+> operations, and in particular when doing a SumOf inside a SumOf or  
+> similar (ProductOf?). In this case, you want to accumulate gradients  
+> to the immediate parents (transformed parameters) while doing the  
+> SumOf and only *then* backpropagate *once* the resulting total  
+> gradient to the parents of these  parents (the untransformed  
+> parameters).
+
+I'm a bit lost here. Can you give the kind of mathematical formula you
+have in mind?
+
+> > Var output2 = product(processed_input, -m_woutput1);
+> > (...)
+> > The computation for output2 produces the following major bug: the  
+> > NegateElementsVariable (corresponding to the unary minus) is never  
+> > made part of the proppath, since first it's trying to mark  
+> > m_woutput1 (which fails, for the reason given above), yet the whole  
+> > product succeeds since processed_input succeeds.
+
+So, assuming you have f = Func(processed_input, output2) with parameters
+-m_woutput1.
+It looks like you should call f->recomputeParents() each time
+m_woutput1 changes. Regardless of this not being so intuitive, there may
+be another issue (please correct me if I'm wrong): since the bproppath
+does not include -m_woutput1, when you do a bprop, you will get some
+gradient in -m_woutput1 (provided by the product variable), but it will
+not be forwarded to m_woutput1. Thus you won't be able to update your
+parameters.
+I just looked into the fbprop of SumOfVariable and I don't see how it
+handles this: it basically call func->fpbrop() on each input sample, but
+I can't find where the gradient thus accumulated is backpropagated in a
+possible transformation of the parameters... although it must be done
+somewhere since I tried changing the following in NNet:
+
+         w1 = Var(1 + the_input->width(), nhidden, "w1");
+         params.append(w1);
+-        hidden_layer = hiddenLayer(output, w1);
++        Var w1_tmp = -w1;
++        w1_tmp = -w1_tmp;
++        hidden_layer = hiddenLayer(output, w1_tmp);
+         output = hidden_layer;
+
+and it still gave me the same results. So, I'm going to try to look
+better, but if you know the answer, tell me :)
+
+--
+Olivier
+
+
+
+From delallea at iro.umontreal.ca  Wed Apr  9 17:45:31 2008
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 9 Apr 2008 11:45:31 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <20080409152251.GA15642@opale.iro.umontreal.ca>
+References: <47FABA5C.5090407@apstat.com>
+	<B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+	<20080409152251.GA15642@opale.iro.umontreal.ca>
+Message-ID: <20080409154531.GA20923@opale.iro.umontreal.ca>
+
+> m_woutput1 changes. Regardless of this not being so intuitive, there may
+> be another issue (please correct me if I'm wrong): since the bproppath
+> does not include -m_woutput1, when you do a bprop, you will get some
+> gradient in -m_woutput1 (provided by the product variable), but it will
+> not be forwarded to m_woutput1. Thus you won't be able to update your
+> parameters.
+> I just looked into the fbprop of SumOfVariable and I don't see how it
+> handles this: it basically call func->fpbrop() on each input sample, but
+> I can't find where the gradient thus accumulated is backpropagated in a
+> possible transformation of the parameters... although it must be done
+> somewhere since I tried changing the following in NNet:
+> 
+>          w1 = Var(1 + the_input->width(), nhidden, "w1");
+>          params.append(w1);
+> -        hidden_layer = hiddenLayer(output, w1);
+> +        Var w1_tmp = -w1;
+> +        w1_tmp = -w1_tmp;
+> +        hidden_layer = hiddenLayer(output, w1_tmp);
+>          output = hidden_layer;
+> 
+> and it still gave me the same results. So, I'm going to try to look
+> better, but if you know the answer, tell me :)
+
+Now I understand!
+
+It's the optimizer that does the trick. Basically, the sumOf will indeed
+only accumulate gradients on the transformed parameters. But the
+optimizer takes care of backpropagating it further:
+
+(Somewhere in build)
+    ...
+    proppath = propagationPath(params, cost)
+    ...
+(Main loop in GradientOptimizer)
+    ...
+    proppath.fbprop();
+    ...
+
+--
+Olivier
+
+
+From chapados at apstat.com  Wed Apr  9 20:04:55 2008
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Wed, 9 Apr 2008 14:04:55 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+References: <47FABA5C.5090407@apstat.com>
+	<B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+Message-ID: <1750CC27-4839-419D-A44A-90A35A414937@apstat.com>
+
+
+Le 8-Apr-08 ? 5:02 PM, Pascal Vincent a ?crit :
+
+>> In other words, why does the code not look like this instead  
+>> (which I would think to be preferable in ALL circumstances, but  
+>> that's why I'm asking) ::
+>> void Function::build_() { // ... fproppath = propagationPath 
+>> (inputs & parameters, outputs); bproppath = propagationPath(inputs  
+>> & parameters, outputs); // ... } The original formulation causes  
+>> very hard-to-track-down problems.  I have a code snippet of the  
+>> following form:
+>> Var output1 = product(processed_input, m_woutput1); Var output2 =  
+>> product(processed_input, -m_woutput1); where "processed_input" is  
+>> some Var resulting from a prior processing (the hidden layer of a  
+>> neural network), and m_woutput1 is a SourceVariable representing a  
+>> model parameter.
+>
+> I suppose you are declaring a Func with inputs = processed_input  
+> and outputs = output2 (you didn't specify in your message what  
+> function you are declaring, but I guess this is it).
+>
+
+Sorry, I should have been more clear.  The func is not from  
+processed_input to output2.  The overall picture goes as follows:
+
+     Var input = ...;
+     Var processed_input = f(input);
+     Var output1 =  product(processed_input,   m_woutput1);
+     Var output2 =  product(processed_input,  -m_woutput1);
+     Var final_output = g(output1) - h(output2);
+     Func my_buggy_func(input, final_output);
+
+where f(), g(), and h() are arbitrary C++ functions yielding Vars.
+
+So what's happening here is a subtle -- and hard to track down --  
+bug: the branch computing output1 is all OK, but the branch computing  
+output2 is totally incorrect: as explained in the original message,  
+the proppath within "my_buggy_func" DOES NOT include a traversal of  
+the Var computing the unary minus (i.e. the expression "-m_woutput1")  
+in the definition of output2.  What happens is that since m_woutput1  
+is considered a "parameter", it is never "marked" at the start of the  
+VarArray proppath computation code, and as a ripple effect the UNARY  
+Vars that directly use this parameter (e.g. the Unary Minus) are kept  
+unmarked as well.  The variable "output1" is computed correctly since  
+it only depends on BINARY variables.
+
+Regardless of consequences for MeanOf, this can only be interpreted  
+as a bug. And goes quite against the spirit of Var graphs: it is  
+quite literally (and always so) the incorrect function that is  
+computed as an outcome of "my_buggy_func".
+
+It should be mentioned that my suggested fix only ensures that  
+"parameters" are considered "marked" when the Func proppath is  
+created -- it has no other effect, and in particular it does not make  
+parameters part of the Func inputs.
+
+	+ Nicolas
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20080409/e52ea4c4/attachment.html>
+
+From pascal at apstat.com  Wed Apr  9 23:35:14 2008
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 9 Apr 2008 17:35:14 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <1750CC27-4839-419D-A44A-90A35A414937@apstat.com>
+References: <47FABA5C.5090407@apstat.com>
+	<B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>
+	<1750CC27-4839-419D-A44A-90A35A414937@apstat.com>
+Message-ID: <CB55EE05-97FD-4195-BA62-3625760CBBAA@apstat.com>
+
+Le 08-04-09 ? 14:04, Nicolas Chapados a ?crit :
+>
+> Le 8-Apr-08 ? 5:02 PM, Pascal Vincent a ?crit :
+>
+>>> In other words, why does the code not look like this instead  
+>>> (which I would think to be preferable in ALL circumstances, but  
+>>> that's why I'm asking) ::
+>>> void Function::build_() { // ... fproppath = propagationPath 
+>>> (inputs & parameters, outputs); bproppath = propagationPath 
+>>> (inputs & parameters, outputs); // ... } The original formulation  
+>>> causes very hard-to-track-down problems.  I have a code snippet  
+>>> of the following form:
+>>> Var output1 = product(processed_input, m_woutput1); Var output2 =  
+>>> product(processed_input, -m_woutput1); where "processed_input" is  
+>>> some Var resulting from a prior processing (the hidden layer of a  
+>>> neural network), and m_woutput1 is a SourceVariable representing  
+>>> a model parameter.
+>>
+>> I suppose you are declaring a Func with inputs = processed_input  
+>> and outputs = output2 (you didn't specify in your message what  
+>> function you are declaring, but I guess this is it).
+>>
+>
+> Sorry, I should have been more clear.  The func is not from  
+> processed_input to output2.  The overall picture goes as follows:
+>
+>     Var input = ...;
+>     Var processed_input = f(input);
+>     Var output1 =  product(processed_input,   m_woutput1);
+>     Var output2 =  product(processed_input,  -m_woutput1);
+>     Var final_output = g(output1) - h(output2);
+>     Func my_buggy_func(input, final_output);
+>
+> where f(), g(), and h() are arbitrary C++ functions yielding Vars.
+>
+> So what's happening here is a subtle -- and hard to track down --  
+> bug: the branch computing output1 is all OK, but the branch  
+> computing output2 is totally incorrect: as explained in the  
+> original message, the proppath within "my_buggy_func" DOES NOT  
+> include a traversal of the Var computing the unary minus (i.e. the  
+> expression "-m_woutput1") in the definition of output2.  What  
+> happens is that since m_woutput1 is considered a "parameter", it is  
+> never "marked" at the start of the VarArray proppath computation  
+> code, and as a ripple effect the UNARY Vars that directly use this  
+> parameter (e.g. the Unary Minus) are kept unmarked as well.  The  
+> variable "output1" is computed correctly since it only depends on  
+> BINARY variables.
+>
+> Regardless of consequences for MeanOf, this can only be interpreted  
+> as a bug. And goes quite against the spirit of Var graphs: it is  
+> quite literally (and always so) the incorrect function that is  
+> computed as an outcome of "my_buggy_func".
+>
+> It should be mentioned that my suggested fix only ensures that  
+> "parameters" are considered "marked" when the Func proppath is  
+> created -- it has no other effect, and in particular it does not  
+> make parameters part of the Func inputs.
+
+I suggest you read my answer and Olivier's carefully again. A Func's  
+proppath is created from inputs to outputs only, and I believe for a  
+number of *good* reasons that I tried to enlist, and that risk being  
+broken by your fix. That's what a *function* does, it maps changing  
+inputs to outputs, period. If you want it to take into account  
+changes to source variables that are not enlisted in the functions  
+inputs (i.e. your "parameters") there are 2 possibilities: either  
+include them in the inputs, or call the Func's recomputeParents().
+
+Now it could be argued that all vars (in particular here -m_woutput1)  
+could do a fprop on themselves upon construction so they are  
+initialized at a "correct" value, or maybe we should at least call  
+recomputeParents in the Func's build_ right after the parentspath has  
+been set (this may fix your problem, supposing the parameters already  
+have their correct value when building the input output function).  
+But if your parameters keep changing you would have to recall  
+recomputeParents anyway.
+
+Then again, if you do want the possibility of systematically  
+including in fproppath the full paths from all source variables (inc.  
+others than inputs) that your output depends on, but do not want to  
+enlist them as inputs, you can add an option to this effect as I  
+suggested in my last email.
+
+Hope this helps.
+
+-- Pascal
+
+
+
+From chapados at apstat.com  Tue Apr 15 00:40:22 2008
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Mon, 14 Apr 2008 18:40:22 -0400
+Subject: [Plearn-core] *URGENT* VarArray question
+In-Reply-To: <CB55EE05-97FD-4195-BA62-3625760CBBAA@apstat.com>
+References: <47FABA5C.5090407@apstat.com>	<B6015814-95FC-497F-AAAC-2527A5638460@apstat.com>	<1750CC27-4839-419D-A44A-90A35A414937@apstat.com>
+	<CB55EE05-97FD-4195-BA62-3625760CBBAA@apstat.com>
+Message-ID: <4803DD56.70304@apstat.com>
+
+As suggested by Pascal, I included a call to recomputeParents() in 
+Function::build_(), which appears to do the trick.  A commit is soon to 
+come, after a quick run by the test suite.
+
+Thanks to Pascal and Olivier for their help.
+
+    + Nicolas
+> I suggest you read my answer and Olivier's carefully again. A Func's  
+> proppath is created from inputs to outputs only, and I believe for a  
+> number of *good* reasons that I tried to enlist, and that risk being  
+> broken by your fix. That's what a *function* does, it maps changing  
+> inputs to outputs, period. If you want it to take into account  
+> changes to source variables that are not enlisted in the functions  
+> inputs (i.e. your "parameters") there are 2 possibilities: either  
+> include them in the inputs, or call the Func's recomputeParents().
+>
+> Now it could be argued that all vars (in particular here -m_woutput1)  
+> could do a fprop on themselves upon construction so they are  
+> initialized at a "correct" value, or maybe we should at least call  
+> recomputeParents in the Func's build_ right after the parentspath has  
+> been set (this may fix your problem, supposing the parameters already  
+> have their correct value when building the input output function).  
+> But if your parameters keep changing you would have to recall  
+> recomputeParents anyway.
+>
+> Then again, if you do want the possibility of systematically  
+> including in fproppath the full paths from all source variables (inc.  
+> others than inputs) that your output depends on, but do not want to  
+> enlist them as inputs, you can add an option to this effect as I  
+> suggested in my last email.
+>
+> Hope this helps.
+>
+> -- Pascal
+>   
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+

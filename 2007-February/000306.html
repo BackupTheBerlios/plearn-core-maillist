@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] boundchecks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3C20070206230646.GC1305%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000307.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] boundchecks</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3C20070206230646.GC1305%40pig.zood.org%3E"
+       TITLE="[Plearn-core] boundchecks">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Feb  7 00:06:46 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000307.html">[Plearn-core] boundchecks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#306">[ date ]</a>
+              <a href="thread.html#306">[ thread ]</a>
+              <a href="subject.html#306">[ subject ]</a>
+              <a href="author.html#306">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut les amis !
+
+Je trouve le m&#233;canisme de PLASSERT_MSG( condition, message ) vachement
+pratique, principalement parce que &#231;a fait des messages d'erreur clairs,
+formatt&#233;s pareils, et faciles &#224; mettre en place.
+
+J'aurais voulu mettre en place le m&#234;me m&#233;canisme pour les BOUNDCHECK,
+pour que les v&#233;rifications soient faites ssi #defined BOUNDCHECK
+(PLASSERT regarde NDEBUG).
+
+Je pense que je ne serais pas le seul &#224; utiliser &#231;a, mais m&#234;me si c'est
+le cas je compte l'utiliser dans la refonte de TMat_math &#224; venir, et
+dans pas mal d'OnlineLearningModules.
+
+Est-ce qu'il y a des choses dans plerror.{h,cc} que je devrais
+r&#233;utiliser, modifier, copier-coller ? Des pi&#232;ges particuliers ?
+Nicolas, je crois que c'est toi qui est &#224; l'origine de &#231;a, peux-tu
+m'&#233;clairer ?
+
+Merci,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000307.html">[Plearn-core] boundchecks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#306">[ date ]</a>
+              <a href="thread.html#306">[ thread ]</a>
+              <a href="subject.html#306">[ subject ]</a>
+              <a href="author.html#306">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

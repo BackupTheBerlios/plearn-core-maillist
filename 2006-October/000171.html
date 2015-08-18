@@ -1,0 +1,357 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20061004135345.GA10107%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000170.html">
+   <LINK REL="Next"  HREF="000172.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20061004135345.GA10107%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Oct  4 15:53:52 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000170.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+        <LI>Next message: <A HREF="000172.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Tout d'abord, as-tu une bonne raison pour coder en C++ plut&#244;t que
+d'utiliser un script ? (le script a l'avantage de ne pas n&#233;cessiter de
+compilation, et est plus simple &#224; &#233;crire).
+
+Commen&#231;ons par la fin : quand appeler build() ? Apr&#232;s avoir donn&#233;s des
+valeurs aux options qui nous int&#233;ressent. Dans le cas de ton
+KNNClassifier par exemple, tu devrais appeler build() juste avant
+setTtrainingSet(data_train) (pas &amp;data_train au fait, une VMat est d&#233;j&#224;
+un pointeur vers une VMatrix, c'est en fait 'presque' la m&#234;me chose
+qu'un PP&lt;VMatrix&gt;). Typiquement :
+    MonObjet mon_objet;
+    mon_objet.option1 = val1;
+    mon_objet.option2 = val2;
+    (...)
+    mon_objet.optionN = valN;
+    mon_objet.build();
+
+Pour ce qui est de ton probl&#232;me, je vais l'&#233;crire sous forme de script,
+&#231;a sera plus simple. Tu peux le transposer en C++ en consid&#233;rant que
+tout ce que fait un script, c'est lire les options de chaque objet,
+faire un build() dessus, et appeler la m&#233;thode run() de l'objet
+principal (ici un PTester). Donc tu peux le faire &#224; la main toi-m&#234;me en
+C++. Mais c'est plus inutilement plus complique.
+
+Tout d'abord, sans cross-validation (+ simple) et en utilisant juste
+l'erreur de classification (encore + simple). Il te faudra avoir des
+fichiers train.vmat et test.vmat, par exemple train.vmat pourrait
+contenir simplement
+    ConcatColumnsVMatrix(
+        sources = [
+            AutoVMatrix(filename = &quot;x_part.amat&quot;) # Ascii file.
+            AutoVMatrix(filename = &quot;y_part.amat&quot;) # Ascii file.
+        ]   
+        inputsize = 50 # X's width
+        targetsize = 1 # Y's width
+        weightsize = 0
+    )
+Ou, tu pourrais mettre ce code directement dans le script ci-dessous au
+lieu d'avoir des fichiers train.vmat et test.vmat separes. En tout cas,
+le script serait :
+
+PTester( 
+    # PPath: Path of this tester's directory in which to save all tester results.
+    # The directory will be created if it does not already exist.
+    # If this is an empty string, no directory is created and no output file is generated.
+    expdir = &quot;my_expdir-${DATETIME}&quot;
+    # VMat: The dataset to use to generate splits. 
+    # (This is ignored if your splitter is an ExplicitSplitter)
+    # Data-sets are seen as matrices whose columns or fields are layed out as 
+    # follows: a number of input fields, followed by (optional) target fields, 
+    # followed by a (optional) weight field (to weigh each example).
+    # The sizes of those areas are given by the VMatrix options 
+    # inputsize targetsize, and weightsize, which are typically used by the 
+    # learner upon building
+    dataset = *0 # NULL pointer.
+    # PP&lt; Splitter &gt;: The splitter to use to generate one or several train/test tuples from the dataset.
+    splitter = 
+        ExplicitSplitter( 
+            # TMat&lt; VMat &gt;: This is a matrix of VMat giving explicitly the datasets for each split.
+            splitsets = 1  3  [ 
+                *1-&gt; AutoVMatrix(filename = &quot;train.vmat&quot;)  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = &quot;test.vmat&quot;)
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    # TVec&lt; string &gt;: A list of global statistics we are interested in.
+    # These are strings of the form S1[dataset.S2[cost_name]] where:
+    #   - dataset is train or test1 or test2 ... (train being 
+    #     the first dataset in a split, test1 the second, ...) 
+    #   - cost_name is one of the training or test cost names (depending on dataset) understood 
+    #     by the underlying learner (see its getTrainCostNames and getTestCostNames methods) 
+    #   - S1 and S2 are a statistic, i.e. one of: E (expectation), V(variance), MIN, MAX, STDDEV, ... 
+    #     S2 is computed over the samples of a given dataset split. S1 is over the splits. 
+    # They can also be strings of the form S1[dataset.perf_evaluator_name.cost_name] 
+    # (see option perf_evaluators) 
+    statnames = [ &quot;E[test1.E[class_error]]&quot; &quot;E[test2.E[class_error]]&quot; ]
+    # PP&lt; PLearner &gt;: The learner to train/test.
+    learner =
+        KNNClassifier( 
+            # int: Number of classes in the problem.  MUST be specified.
+            nclasses = 2
+        )
+    # bool: If true, each learner to be trained will have its experiment directory set to Split#k/LearnerExpdir/
+    provide_learner_expdir = 1
+)
+
+Il se peut que j'ai fait une typo, je n'ai pas essaye, mais normalement
+ca devrait marcher.
+
+Si tu veux le lift a 10%, ca va donner (toujours sans cross-validation):
+
+PTester( 
+    expdir = &quot;my_expdir-${DATETIME}&quot;
+    dataset = *0 # NULL pointer.
+    splitter = 
+        ExplicitSplitter( 
+            splitsets = 1  3  [ 
+                *1-&gt; AutoVMatrix(filename = &quot;train.vmat&quot;)  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = &quot;test.vmat&quot;)
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    statnames = [ &quot;E[test1.LIFT(0.1)[lift_output]]&quot; &quot;E[test2.LIFT(0.1)[lift_output]]&quot; ]
+    learner =
+        AddCostToLearner( 
+            # TVec&lt; string &gt;: The costs to be added:
+            #  - 'class_error': 1 if (t != o), 0 otherwise
+            #  - 'binary_class_error': same as class error with output = (o &gt; 0.5)
+            #  - 'lift_output': to compute the lift cost (for the positive class)
+            #  - 'opposite_lift_output': to compute the lift cost (for the negative) class
+            #  - 'cross_entropy': t*log(o) + (1-t)*log(1-o)
+            #  - 'mse': the mean squared error (o - t)^2
+            #  - 'squared_norm_reconstruction_error': | ||i||^2 - ||o||^2 |
+            costs = [ &quot;lift_output&quot; ]
+            learner =
+                KNNClassifier( 
+                    nclasses = 2
+                )
+        )
+    # PP&lt; VecStatsCollector &gt;: If provided, this instance of a subclass of VecStatsCollector will be used as a template
+    # to build all the stats collector used during training and testing of the learner
+    template_stats_collector =
+        VecStatsCollector( 
+            # int: Maximum number of different values to keep track of for each element.
+            # If -1, we will keep track of all different values.
+            # If 0, we will only keep track of global statistics.
+            maxnvalues = -1 # Needed to compute lift, we need to remember all values!
+        )
+)
+
+Et, finalement, il va falloir introduire un HyperLearner pour faire de
+la cross-validation. Essentiellement, l'HyperLearner va suivre une
+strategie d'optimisation (ici optimiser le lift), en essayant
+differentes valeurs d'hyper-parametres (ici le nombre de voisins et le
+sigma du kernel Gaussien), et garder le meilleur resultat (ici la meilleure
+moyenne du lift sur les splits de cross-validation).
+
+PTester( 
+    expdir = &quot;my_expdir-${DATETIME}&quot;
+    dataset = *0 # NULL pointer.
+    splitter = 
+        ExplicitSplitter( 
+            splitsets = 1  3  [ 
+                *1-&gt; AutoVMatrix(filename = &quot;train.vmat&quot;)  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = &quot;test.vmat&quot;)
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    statnames = [ &quot;E[test1.LIFT(0.1)[lift_output]]&quot; &quot;E[test2.LIFT(0.1)[lift_output]]&quot; ]
+    learner =
+        HyperLearner( 
+            # PP&lt; PTester &gt;: A model for the kind of train/test to be performed for each 
+            # combination of hyper-parameters considered. 
+            # The tester's options are used as follows: 
+            #   - You don't need to provide tester.learner, it will be set from 
+            #     the HyperLearner's learner.
+            #   - tester.statnames is the list of cost stats to be computed, 
+            #     reported in the results table, and used as criteria for the hyper-optimization 
+            #   - tester.splitter is the default splitter to use for validation (although this may be 
+            #     overridden locally in HyperOptimize, see help on HyperOptimize) 
+            #   - Similarly, no need to provide tester.learner tester.expdir, 
+            #     and tester.provide_learner_expdir. 
+            #     They will be set by HyperOptimize as it deems appropriate
+            #     for each hyper-parameter combination it tries. 
+            #   - *If* HyperOptimize does set a non-empty expdir, then the kind of
+            #     report and result files to be generated is taken from the remaining 
+            #     report_stats and save_... options of the tester 
+            tester =
+                PTester( 
+                    # PP&lt; Splitter &gt;: The splitter to use to generate one or several train/test tuples from the dataset.
+                    splitter =
+                        KFoldSplitter( 
+                            # int: Split dataset in K parts (you can use K = -1 to perform leave-one-out CV).
+                            K = 10 # Here, 10-fold cross-validation.
+                        )
+                    statnames = [ &quot;E[test.LIFT(0.1)[lift_output]]&quot; ] # test is the same as test1.
+                    provide_learner_expdir = 1
+                    template_stats_collector = VecStatsCollector( maxnvalues = -1 )
+                )
+            # TVec&lt; string &gt;: learner option names to be reported in results table
+            option_fields = [ &quot;learner.kmin&quot; &quot;learner.knn.distance_kernel.sigma&quot; ]
+            # TVec&lt; PP&lt; HyperCommand &gt; &gt;: The strategy to follow to optimize the hyper-parameters.
+            # It's a list of hyper-optimization commands to call sequentially,
+            # (mostly HyperOptimize, HyperSetOption and HyperRetrain commands).
+            strategy = [
+                HyperOptimize( 
+                    # string: An index or a name in the tester's statnames to be used as the objective cost to minimize
+                    which_cost = &quot;0&quot; # 0 is the same as E[test.LIFT(0.1)[lift_output]] in the above PTester's statnames.
+                    # PP&lt; OptionsOracle &gt;: Oracle to interrogate to get hyper-parameter values to try.
+                    oracle =
+                        CartesianProductOracle( 
+                            # TVec&lt; string &gt;: name of each of the options to optimize
+                            option_names = [ &quot;learner.kmin&quot; &quot;learner.knn.distance_kernel.sigma&quot; ] # 'learner.' is because we added an AddCostToLearner on top of the KNNClassifier.
+                            # TVec&lt; TVec&lt; string &gt; &gt;: A list of lists of options: the top list must have as many elements as there areoptions in the option_names field. Each sub-list contains the values to be triedfor the corresponding option.
+                            option_values = [ [ 1 2 3 4 5 10 ] [ 0.1 1 10 ] ] # Values of 'kmin' and 'sigma' to try.
+                        )
+                )
+            ]
+            # PP&lt; PLearner &gt;: The embedded learner
+            learner =
+                AddCostToLearner( 
+                    costs = [ &quot;lift_output&quot; ]
+                    learner =
+                        KNNClassifier( 
+                            nclasses = 2
+                        )
+                )
+        )
+
+    template_stats_collector =
+        VecStatsCollector( 
+            maxnvalues = -1
+        )
+)
+
+Ca a l'air complique a premiere vue, mais quand on comprend comment ca
+fonctionne, ca ne l'est pas tant que ca... Si tu as des questions,
+n'hesite pas !
+
+--
+Olivier
+    
+
+On 04 Oct 2006, Jaonary Rabarisoa wrote:
+&gt;<i> J'aurai peut-&#234;tre besoin d'un peu plus d'explication pour les calculs et cout
+</I>&gt;<i> et les &#233;valuation de PLearner.
+</I>&gt;<i> Dans toute la suite je vais &quot;parler en C++&quot; car c'est ce que j'utilise. Le
+</I>&gt;<i> probl&#232;me que je veux r&#233;soudre est un classique dans l'apprentissage statistique
+</I>&gt;<i> (supervis&#233;), pour faire simple disons une classification binaire (0 ou 1).
+</I>&gt;<i> 
+</I>&gt;<i> Donc, j'ai des donn&#233;es d'apprentissage  que je noterai (X_train,Y_train), des
+</I>&gt;<i> donn&#233;es pour evaluer mon 'Learner' (X_test,Y_test) et je voudrai faire les
+</I>&gt;<i> choses suivante:
+</I>&gt;<i> 1 - Entrainer mon PLearner sur l'ensemble train et l'evaluer sur l'ensemble
+</I>&gt;<i> test.
+</I>&gt;<i> 2 - Etant donner que mon PLearner a des parametres que je dois ajuster (ex le C
+</I>&gt;<i> pour la SVM lineaire ou le k pour KNN). Faire une proc&#233;dure comme la
+</I>&gt;<i> cross-validation par exemple pour choisir le meilleur parametre.
+</I>&gt;<i> 
+</I>&gt;<i> D'apres l'explication d'olivier, je pourrai r&#233;soudre ces probl&#232;me en utilisant
+</I>&gt;<i> les classes
+</I>&gt;<i> StatCollector
+</I>&gt;<i> VecStatCollector
+</I>&gt;<i> PTester
+</I>&gt;<i> 
+</I>&gt;<i> Seulement, je n'arrive pas encore &#224; comprendre les subtilit&#233;s qui relient ces
+</I>&gt;<i> classes entre elles et avec mon PLearner.
+</I>&gt;<i> 
+</I>&gt;<i> Pour l'instant, tout ce que je comprends c'est que StatCollector est un objet
+</I>&gt;<i> qui sais calculer les cout qui m'interesse (parmi ceux cit&#233;s dans la liste E;
+</I>&gt;<i> LIFT; ... ). VecStatCollector devrait faire pareil mais je n'ai pas encore
+</I>&gt;<i> saisi la difference entre les deux;
+</I>&gt;<i> PTester quant &#224; lui et si j'ai bien compris permet de faire une s&#233;rie
+</I>&gt;<i> d'apprentissage et de test du type cross-validation. Mais au moment d'appliquer
+</I>&gt;<i> tout &#231;a, j'ai un petit blocage.
+</I>&gt;<i> 
+</I>&gt;<i> Voici par exemple les bout de code que j'ai commenc&#233; &#224; &#233;crire en utilisant un
+</I>&gt;<i> KNN comme PLearner :
+</I>&gt;<i> 
+</I>&gt;<i>    VMat data_train ; // training set
+</I>&gt;<i>    VMat data_test; // testing set
+</I>&gt;<i> 
+</I>&gt;<i>               KNNClassifier knn;
+</I>&gt;<i>               knn.nclasses = 2;
+</I>&gt;<i>               knn.setTrainingSet(&amp;data_train);
+</I>&gt;<i>               knn.build();
+</I>&gt;<i>               knn.train();
+</I>&gt;<i>  // l'apprentissage est fini mais comment utiliser les StatCollector avec
+</I>&gt;<i> data_test et knn ?
+</I>&gt;<i>     
+</I>&gt;<i> 
+</I>&gt;<i> // ici je voudrai par exemple faire un petit cross-validation en gardant comme
+</I>&gt;<i> cout le LIFT(0.1)
+</I>&gt;<i> // et en utilisant seulement data_train
+</I>&gt;<i>               PTester tester;
+</I>&gt;<i>  
+</I>&gt;<i>               tester.splitter = new KFoldSplitter;
+</I>&gt;<i>               tester.learner  = &knn;
+</I>&gt;<i>               tester.dataset  = &amp;data_train;
+</I>&gt;<i>               tester.train    = 1;
+</I>&gt;<i>               tester.stanames =  ??? // heuuu
+</I>&gt;<i>               tester.build();
+</I>&gt;<i>               tester.perform();  // ici j'obtiens une erreur lors de
+</I>&gt;<i> l'execution
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Une dernierre interogation sur la m&#233;thode build() des objets : &#224; quel moment
+</I>&gt;<i> les appeler ? C'est correcte ce que j'ai &#233;crit ?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Merci &#224; vous;
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000170.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+	<LI>Next message: <A HREF="000172.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

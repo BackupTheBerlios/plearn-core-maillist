@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710003115.GA8876%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000390.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710003115.GA8876%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 10 02:31:15 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000390.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#389">[ date ]</a>
+              <a href="thread.html#389">[ thread ]</a>
+              <a href="subject.html#389">[ subject ]</a>
+              <a href="author.html#389">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+L'utilisation des types &quot;long int&quot; et &quot;unsigned long int&quot; pose des
+probl&#232;mes de compatibilit&#233; entre les plateformes 32 et 64 bits.
+
+En effet, dans le premier cas, ils sont l'&#233;quivalent des &quot;int&quot; (32
+bits ou 4 octets), dans le second, des &quot;long long int&quot; (64 bits ou 8
+octets). Du coup, &#231;a posait des probl&#232;mes d'&#233;criture et de lecture en
+mode binaire, qui devraient &#234;tre r&#233;par&#233;s maintenant.
+
+Le probl&#232;me qui subsiste, c'est le risque d'overflow quand on reloade
+sur une machine 32 bits un fichier qui a &#233;t&#233; sauv&#233; sur une machine &#224; 64
+bits.
+
+Pour &#233;viter ces probl&#232;mes, je vous propose de ne plus utiliser le type
+&quot;long&quot; (en tout cas dans les option), mais &#224; la place :
+  - int64_t (sign&#233;) ou uint64_t (non sign&#233;) si vous avez besoin de la
+    pr&#233;cision,
+  - int, unsigned int, ou encore int32_t ou uint32_t sinon.
+
+Ces types sont d&#233;finis dans le header &lt;stdint.h&gt;, que j'ai trouv&#233;
+dans /usr/include sous linux. S'il n'est pas fourni avec certains
+compilateurs, on devrait pouvoir utiliser &lt;plearn/base/pstdint.h&gt; (mais
+je ne sais pas si je vais le laisser l&#224;).
+
+Quelques fichiers avec des &quot;long&quot; qui posent probl&#232;me pour le moment :
+
+   plearn/base/ProgressBar.cc
+   plearn/misc/vmatmain.cc
+   plearn_learners/generic/BestAveragingPLearner.cc
+   plearn_learners/online/ModuleTester.cc
+   plearn/vmat/BootstrapVMatrix.cc
+   plearn/vmat/ClassSeparationSplitter.cc
+   plearn/vmat/AddMissingVMatrix.cc
+   plearn/vmat/RepeatSplitter.cc
+   plearn/vmat/TrainTestSplitter.cc
+   plearn/vmat/MultiToUniInstanceSelectRandomVMatrix.cc
+   plearn/vmat/RandomSamplesVMatrix.cc
+   plearn/vmat/RandomSamplesFromVMatrix.cc
+   plearn/vmat/SelectRowsMultiInstanceVMatrix.cc
+   plearn/vmat/ShuffleColumnsVMatrix.cc
+   plearn/vmat/VMatrixFromDistribution.cc
+   plearn_learners_experimental/SurfaceTemplate/ScoreLayerVariable.cc
+
+A priori, je suppose que le comportement sur 32 bits &#233;tait satisfaisant,
+je vais donc transformer ces options en (u)int32_t, le comportement ne
+devrait pas changer.
+
+S'il y a une des classes ci-dessus qui a besoin de plus de pr&#233;cision,
+faites le moi savoir.
+
+Merci,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000390.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#389">[ date ]</a>
+              <a href="thread.html#389">[ thread ]</a>
+              <a href="subject.html#389">[ subject ]</a>
+              <a href="author.html#389">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

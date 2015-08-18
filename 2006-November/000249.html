@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] plearn vmat view AND plearn vmat dictionary have been	renamed
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20plearn%20vmat%20view%20AND%20plearn%20vmat%20dictionary%20have%20been%0A%09renamed&In-Reply-To=%3C92395BA3-F47C-45FE-B070-DDEAD0085B10%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000248.html">
+   <LINK REL="Next"  HREF="000250.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] plearn vmat view AND plearn vmat dictionary have been	renamed</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20plearn%20vmat%20view%20AND%20plearn%20vmat%20dictionary%20have%20been%0A%09renamed&In-Reply-To=%3C92395BA3-F47C-45FE-B070-DDEAD0085B10%40apstat.com%3E"
+       TITLE="[Plearn-core] plearn vmat view AND plearn vmat dictionary have been	renamed">pascal at apstat.com
+       </A><BR>
+    <I>Tue Nov  7 19:49:36 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000248.html">[Plearn-core] Meilleurs moyens de recuperer et de
+</A></li>
+        <LI>Next message: <A HREF="000250.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>As part of an over-due rationalization effort in the external- 
+dependency hell of PLearn (and to see what I can get working on OS  
+X), I have tried to isolate parts of PLearn that require non-core  
+external dependencies.
+
+This is in particular the case of two subcommands of the plearn vmat  
+command:
+&quot;vmat view&quot; which depends on ncurses and has been moved to its own  
+command: vmat_view (with an underscore)
+&quot;vmat dictionary&quot; which requires linking with the python runtime and  
+has been moved to its own command: vmat_dictionary
+
+Note: On OS X, I have not yet been able to get plearn to link with  
+the python runtime (numarray linking problems), so be aware that  
+until this is resolved (and I'm moving to other more pressing  
+issues), PythonCodeSnippet, and whatever depends on them are deemed  
+not currently portable to Mac OS X. But I was able to get the other  
+99% of PLearn to compile and link quite easily.
+
+Pascal Vincent
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000248.html">[Plearn-core] Meilleurs moyens de recuperer et de
+</A></li>
+	<LI>Next message: <A HREF="000250.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#249">[ date ]</a>
+              <a href="thread.html#249">[ thread ]</a>
+              <a href="subject.html#249">[ subject ]</a>
+              <a href="author.html#249">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utiliser Plearn en tant que library
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B2872F.2070206%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000108.html">
+   <LINK REL="Next"  HREF="000111.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utiliser Plearn en tant que library</H1>
+    <B>Christian Hudon</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B2872F.2070206%40apstat.com%3E"
+       TITLE="[Plearn-core] Utiliser Plearn en tant que library">chrish at apstat.com
+       </A><BR>
+    <I>Mon Jul 10 18:58:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000108.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+        <LI>Next message: <A HREF="000111.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Olivier Delalleau escribi&#243;:
+&gt;&gt;<i> 2 -  PLearn depend  d'autre biblioth&#232;que comme boost et nspr. Si boost est d&#233;j&#224;
+</I>&gt;&gt;<i> plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour cette
+</I>&gt;&gt;<i> biblioth&#232;que (nspr) je sugg&#232;re que l'on n'&#233;crive pas le chemin absolu des
+</I>&gt;&gt;<i> includes (firefox/nspr/*.h) mais tout de suite &lt;*.h&gt; et specifier le -I pendant
+</I>&gt;&gt;<i> la compilation.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Je *pense* que si le chemin actuel precise firefox/nspr/, c'est que ce
+</I>&gt;<i> chemin est standard, et se retrouve dans la version officielle de la
+</I>&gt;<i> librairie (NB: apparemment, firefox est recent, c'etait mozilla
+</I>&gt;<i> auparavant). Cela permet aussi a pymake de se rendre compte qu'on
+</I>&gt;<i> utilise NSPR grace au 'trigger' nspr.
+</I>&gt;<i>   
+</I>En effet. La solution recommand&#233;e (si NSPR n'est pas encore &#224; la version
+plus r&#233;cente, qui s'installe sous firefox/nspr) et de se servir de CPATH
+et/ou de symlinks pour que gcc trouve les fichiers sous firefox/nspr.
+
+  Christian
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000108.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+	<LI>Next message: <A HREF="000111.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

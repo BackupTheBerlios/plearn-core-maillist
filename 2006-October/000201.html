@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Hack to avoid deepCopy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Hack%20to%20avoid%20deepCopy&In-Reply-To=%3Cc81af8c30610130354q2b97b843r6cfa5aa45004a4d%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000200.html">
+   <LINK REL="Next"  HREF="000202.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Hack to avoid deepCopy</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Hack%20to%20avoid%20deepCopy&In-Reply-To=%3Cc81af8c30610130354q2b97b843r6cfa5aa45004a4d%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Hack to avoid deepCopy">jaonary at gmail.com
+       </A><BR>
+    <I>Fri Oct 13 12:54:52 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000200.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+        <LI>Next message: <A HREF="000202.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#201">[ date ]</a>
+              <a href="thread.html#201">[ thread ]</a>
+              <a href="subject.html#201">[ subject ]</a>
+              <a href="author.html#201">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pour l'instant j'ai choisi la solution bourine en modifiant
+HyperOptimize::optimize() directement. Je voulais avoir un r&#233;sultat tr&#232;s
+rapidement et je ne comprends par encore tr&#232;s bien le fonctionnement des
+CopiesMap pour  modier le makeDeepCopyFromShallowCopy. Voici donc le bout de
+code qui a l'air de marcher
+
+Vec HyperOptimize::optimize
+{
+......................
+
+        if(!is_missing(objective) &amp;&amp;
+           (objective &lt; best_objective || best_results.length()==0) &amp;&amp;
+(trialnum&gt;=min_n_trials || !option_vals))
+        {
+            best_objective = objective;
+            best_results = results;
+            CopiesMap copies;
+            best_learner = NULL;
+
+            //best_learner = hlearner-&gt;getLearner()-&gt;deepCopy(copies);
+            string best_str =
+tostring(hlearner-&gt;getLearner(),PStream::plearn_ascii);
+            //cout &lt;&lt; best_str &lt;&lt; endl;
+            PStream best_learner_stream =
+openString(best_str,PStream::plearn_ascii);
+            best_learner_stream &gt;&gt; best_learner;
+            //pout &lt;&lt; best_learner &lt;&lt; endl;
+
+        }
+
+....................
+
+}
+
+Les r&#233;sultats que j'obtiens semblent correcte sur des donn&#233;es simul&#233;es. Par
+contre je voudrais savoir si j'ai acc&#232;s aux valeurs des statistiques
+utilis&#233;s durant la phase d'optimisation (par exemple class_error pour chaque
+valeur des hyper parameters test&#233;s).
+Sinon quand je fixe l'option &quot;save_final_learner&quot; &#224; 1 j'obtiens une erreur
+car mon expir==&quot;&quot;. Quelle est l'option que j'ai oubli&#233; ?
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/ec06d495/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/ec06d495/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000200.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+	<LI>Next message: <A HREF="000202.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#201">[ date ]</a>
+              <a href="thread.html#201">[ thread ]</a>
+              <a href="subject.html#201">[ subject ]</a>
+              <a href="author.html#201">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

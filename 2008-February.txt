@@ -1,0 +1,22 @@
+From delallea at iro.umontreal.ca  Mon Feb 25 17:57:22 2008
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 25 Feb 2008 11:57:22 -0500
+Subject: [Plearn-core] Change in NNet data representation
+Message-ID: <20080225165720.GA28146@opale.iro.umontreal.ca>
+
+Just to let everyone know I made some changes in NNet to store the data
+(e.g. input, hidden layer and output layer variables) as row vectors
+rather than column vectors (so that I can more easily use matrices of
+multiple row input vectors).
+Everything should still be working as expected, but if you run into any
+trouble (most likely size mismatchs in Variable / Matrix operations),
+please let me know. NNet should be fine, but maybe sub-classes not
+tested in PLearn could exhibit some issues.
+
+Quick fix if anything really bad happens: update NNet.cc back to r8568.
+
+--
+Olivier
+
+
+

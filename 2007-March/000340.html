@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%0A%09in%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C20070307212725.GA18754%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000339.html">
+   <LINK REL="Next"  HREF="000341.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%0A%09in%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C20070307212725.GA18754%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Mar  7 22:27:28 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000339.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+        <LI>Next message: <A HREF="000341.html">[Plearn-core] PLearner::test maintenant en parall&#232;le
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#340">[ date ]</a>
+              <a href="thread.html#340">[ thread ]</a>
+              <a href="subject.html#340">[ subject ]</a>
+              <a href="author.html#340">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>A y regarder de plus pres, le comportement officiel de PR_ReadDir est
+bien de renvoyer PR_NO_MORE_FILES_ERROR a la fin de la lecture d'un
+repertoire. Je (et Pascal) soupconnons donc que c'est la vieille version
+du Lisa qui est en cause.
+J'ai committe le bug fix, qui devrait maintenant tourner a la fois sur
+la vieille et la nouvelle version. Si d'autres crashs surviennent, merci
+de me prevenir ! (et de ne pas taper trop fort)
+
+Merci pour ton aide,
+
+--
+Olivier
+
+On 07 Mar 2007, Xavier Saint-Mleux wrote:
+&gt;<i> J'ai vu d'autres trucs de NSPR qui ont un comportement diff&#233;rent entre 
+</I>&gt;<i> ApSTAT et le Lisa.  Par exemple, si j'essaie de lire sur un socket ferm&#233; 
+</I>&gt;<i> de l'autre c&#244;t&#233;, j'ai une erreur chez ApSTAT (connection reset by peer) 
+</I>&gt;<i> et un EOF au DIRO...  je crois qu'il va falloir s'arranger pour que 
+</I>&gt;<i> PLearn fonctionne avec n'importe quelle version de NSPR.
+</I>&gt;<i> 
+</I>&gt;<i> Xavier
+</I>&gt;<i> 
+</I>&gt;<i> Olivier Delalleau wrote:
+</I>&gt;<i> &gt; Au fait, merci de m'avoir indique le message d'erreur. Je comprends
+</I>&gt;<i> &gt; maintenant ce qui doit se passer (je pense), et je vais corriger ca tout
+</I>&gt;<i> &gt; de suite.
+</I>&gt;<i> &gt; D'ailleurs je trouve ca bizarre que rien ne plante au Lisa...
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; Olivier
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On 07 Mar 2007, Xavier Saint-Mleux wrote:
+</I>&gt;<i> &gt;   
+</I>&gt;<i> &gt;&gt; Salut Olivier,
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Je viens de rouler test_FileVMatrix de mon c&#244;t&#233; et &#231;a termine avec ceci:
+</I>&gt;<i> &gt;&gt; FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+</I>&gt;<i> &gt;&gt; the directory.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;     
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000339.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+	<LI>Next message: <A HREF="000341.html">[Plearn-core] PLearner::test maintenant en parall&#232;le
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#340">[ date ]</a>
+              <a href="thread.html#340">[ thread ]</a>
+              <a href="subject.html#340">[ subject ]</a>
+              <a href="author.html#340">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060705001959.GB29466%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000110.html">
+   <LINK REL="Next"  HREF="000096.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060705001959.GB29466%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jul  5 02:19:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000110.html">[Plearn-core] Debut avec plearn
+</A></li>
+        <LI>Next message: <A HREF="000096.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut encore,
+
+J'ai &#224; nouveau r&#233;fl&#233;chi (faut faire gaffe, il para&#238;t que c'est une
+drogue au bout d'un moment) &#224; comment impl&#233;menter un m&#233;canisme simple
+pour d&#233;tecter dans un fichier source les #include qui ne seront jamais
+vus parce que la plateforme (ou les variables du pr&#233;processeurs) ne sont
+pas favorables.
+
+La solution d'appeler cpp (qui a pourtant le bon go&#251;t de pouvoir nous
+sortir une liste des fichiers n&#233;cessaires &#224; la compilation) en passant
+les m&#234;mes options qu'&#224; la compilation (-DUSEDOUBLE, -DUSING_MPI=0, etc.)
+m'a vraiment l'air de prendre trop de temps pour &#234;tre utilisable.
+
+Reste donc la solution du hack manuel. Voil&#224; comment je verrais les
+choses :
+
+Dans le pymake.config.model, une liste de variables qui ne peuvent
+&#234;tre sett&#233;es qu'&#224; la compilation, et pas par des #define dans le
+code. Par exemple [ 'USEFLOAT', 'USEDOUBLE', 'USING_MPI' ].
+
+Soit dans la m&#234;me liste soit dans une autre, les variables qui
+seront sett&#233;es automatiquement par le compilateur, typiquement les
+variables d'architectures, comme ['__linux__', '__unix__', 'WIN32',
+'__CYGWIN__' ]
+
+Dans les pymakeOptions, rajouter un champ &quot;preproc_variables&quot;, qui
+contiendrait les variables que l'on d&#233;finit, mettons [ 'USEDOUBLE',
+'USING_MPI=0' ] et enlever ces options du champ &quot;compiler_options&quot;.
+
+Dans pymake, &#224; partir de ces informations et de la plateforme,
+cr&#233;er deux listes : celles des variables d&#233;finies et celles des
+variables ind&#233;finies, dans notre cas sous linux, def_variables = [
+'USEDOUBLE', 'USING_MPI', '__linux__', '__unix__' ] et undef_variables =
+[ 'USEFLOAT', 'WIN32' ], ainsi qu'un dictionnaire variables_values = {
+&quot;USING_MPI&quot;:&quot;0&quot; }.
+
+Lorsqu'on conna&#238;t le statut d'une variable, on en tient compte :
+une directive #include dans une section &#171; #ifdef USEDOUBLE &#187; sera prise
+en compte, mais pas si elle est dans &#171; #ifndef USEDOUBLE &#187; (ou dans un
+#else du premier) ; de m&#234;me &#171; #ifdef USEFLOAT &#187; sera coup&#233; mais pas &#171;
+#ifndef USEFLOAT &#187;. Lorsqu'on conna&#238;t la valeur d'une variable, m&#234;me
+combat : #if USING_MPI ne sera pas ex&#233;cut&#233;.
+
+Lorsqu'on rencontre un identifiant inconnu, il vaut mieux ne pas
+prendre de risque et prendre en compte les #include, que l'identifiant
+soit d&#233;fini ou pas : on veut que #ifdef POUET &#233;value &#224; vrai, mais que
+#ifndef POUET aussi.
+
+Il faut finalement trois valeurs : &quot;Vrai&quot;, &quot;Faux&quot;, &quot;Je sais pas encore
+mais dans le doute c'est vrai et son contraire aussi&quot;.
+
+Ce qui peut arriver, c'est de ne pas avoir un simple #ifdef, mais une
+ligne comme :
+#if defined WIN32 || USING_MPI &amp;&amp; !(defined USEFLOAT)
+
+et l&#224; on est bien emmerd&#233; parce qu'il nous faudrait un parseur avec des
+r&#232;gles de priorit&#233; pour parser tout &#231;a, en en parlant avec Xavier &#231;a
+avait l'air assez gal&#232;re.
+
+Mais en fait, on n'a pas besoin de parser la ligne, juste de l'&#233;valuer.
+Si on d&#233;finit &quot;Vrai&quot; par &quot;1&quot;, &quot;Faux&quot; par &quot;0&quot; et &quot;Je sais pas encore...&quot;
+par &quot;PLOUF&quot; (ou n'importe quoi, y'a un caract&#232;re interdit dans les
+macros, pour qu'on soit s&#251;r de ne jamais le rencontrer ?), on peut
+remplacer les tokens par leur valeur, mais est-ce que c'est possible
+d'&#233;valuer facilement l'expression apr&#232;s ?
+
+Sinon, est-ce qu'on pourrait appeler cpp sur une petit bout de code, qui
+comprendrait un #define de toutes les variables d&#233;finies, et qui
+regarderait la valeur du pr&#233;dicat pour toutes les combinaisons de
+valeurs des tokens &quot;Je sais pas encore...&quot;. Si c'est tout le temps 0 ou
+1, on sait &#224; quoi s'en tenir, si &#231;a varie on consid&#232;re que c'est 1 mais
+que le &quot;else&quot; sera vrai aussi.
+
+Vous avez des id&#233;es, vous en pensez quelque chose ?
+
+&#192; bient&#244;t,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000110.html">[Plearn-core] Debut avec plearn
+</A></li>
+	<LI>Next message: <A HREF="000096.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

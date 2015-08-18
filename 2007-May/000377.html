@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] build peut etre appel&#233; plusieurs fois
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%20%3D%3Fiso-8859-1%3Fq%3Fbuild_peut_etre_appel%3DE9_plusieurs_f%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fois%3F%3D&In-Reply-To=%3C465DF13A.2030307%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000376.html">
+   <LINK REL="Next"  HREF="000378.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] build peut etre appel&#233; plusieurs fois</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%20%3D%3Fiso-8859-1%3Fq%3Fbuild_peut_etre_appel%3DE9_plusieurs_f%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fois%3F%3D&In-Reply-To=%3C465DF13A.2030307%40apstat.com%3E"
+       TITLE="[Plearn-core] build peut etre appel&#233; plusieurs fois">saintmlx at apstat.com
+       </A><BR>
+    <I>Wed May 30 23:48:42 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000376.html">[Plearn-core] build peut etre appel&#233; plusieurs fois
+</A></li>
+        <LI>Next message: <A HREF="000378.html">[Plearn-core] build peut etre appel&#233; plusieurs fois
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#377">[ date ]</a>
+              <a href="thread.html#377">[ thread ]</a>
+              <a href="subject.html#377">[ subject ]</a>
+              <a href="author.html#377">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Apr&#232;s discussion avec Nicolas, j'ai chang&#233; l'extension python pour que 
+build ne soit appel&#233; qu'une seule fois sur les nouveaux objets (apr&#232;s 
+tous les setOption).  On peut m&#234;me mettre une &quot;option&quot; 
+__call_build=False pour que le constructeur python n'appelle pas build.  
+Tout devrait donc &#234;tre possible en attendant que la s&#233;mantique exacte de 
+build soit d&#233;termin&#233;e.
+
+Xavier
+
+Yoshua Bengio wrote:
+&gt;<i> Gang,
+</I>&gt;<i>
+</I>&gt;<i> Notez qu'actuellement les objets construits depuis python semblent avoir
+</I>&gt;<i> leur build() appel&#233;s avant que toutes les options soient en place. C'est 
+</I>&gt;<i> pour
+</I>&gt;<i> cela que je me suis forc&#233; &#224; permettre &#224; build() de retourner si toutes ses
+</I>&gt;<i> options ne sont pas pr&#234;tes &#224; former un objet coh&#233;rent.
+</I>&gt;<i>
+</I>&gt;<i> Par ailleurs, plusieurs classes importantes sont d&#233;j&#224; &#233;crites avec (en
+</I>&gt;<i> apparence) cette philosophie: leur build() ne fait rien si certaines options
+</I>&gt;<i> ne sont pas sett&#233;es &#224; des valeurs raisonnables, e.g.
+</I>&gt;<i>
+</I>&gt;<i> void NNet::build_()
+</I>&gt;<i> {
+</I>&gt;<i>     
+</I>&gt;<i> /*                                                                                                         
+</I>&gt;<i>
+</I>&gt;<i>      * Create Topology Var 
+</I>&gt;<i> Graph                                                                               
+</I>&gt;<i>
+</I>&gt;<i>      */
+</I>&gt;<i>       
+</I>&gt;<i>     // Don't do anything if we don't have a 
+</I>&gt;<i> train_set                                                         
+</I>&gt;<i>     // It's the only one who knows the inputsize and targetsize 
+</I>&gt;<i> anyway...                                     
+</I>&gt;<i>
+</I>&gt;<i>     if(inputsize_&gt;=0 &amp;&amp; targetsize_&gt;=0 &amp;&amp; weightsize_&gt;=0)
+</I>&gt;<i>     {
+</I>&gt;<i>      ...
+</I>&gt;<i>     }
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> Que disent les uber-PLearn-masters?
+</I>&gt;<i>
+</I>&gt;<i> Pascal Lamblin a &#233;crit :
+</I>&gt;<i>   
+</I>&gt;&gt;<i> On Sat, May 26, 2007, Yoshua Bengio wrote:
+</I>&gt;&gt;<i>   
+</I>&gt;&gt;<i>     
+</I>&gt;&gt;&gt;<i> Malheureusement il arrive que des objets soient construits
+</I>&gt;&gt;&gt;<i> partiellement et que build() soient appel&#233;s sur eux (c'est ce qui
+</I>&gt;&gt;&gt;<i> arrivait quand j'essayais d'utiliser cette classe depuis python). Il
+</I>&gt;&gt;&gt;<i> faut donc que build_() puisse faire un simple &quot;return&quot; quand il n'est
+</I>&gt;&gt;&gt;<i> pas pr&#234;t &#224; &#234;tre fait correctement.
+</I>&gt;&gt;&gt;<i>     
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> J'ai l'impression que &#231;a serait un changement majeur de la conception du
+</I>&gt;&gt;<i> build_(), puisque &#231;a voudrait dire qu'un objet sur lequel on a fait
+</I>&gt;&gt;<i> build() n'est pas n&#233;cessairement en &#233;tat d'&#234;tre utilis&#233;. Dans ce cas-l&#224;,
+</I>&gt;&gt;<i> il n'y a aucun moyen de savoir quand l'objet est dans un &#233;tat
+</I>&gt;&gt;<i> coh&#233;rent...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Il me semble qu'il y a plein d'objets qui lancent une erreur au build()
+</I>&gt;&gt;<i> lorsqu'il ne sont pas capables de se builder parce que les
+</I>&gt;&gt;<i> sp&#233;cifications sont incoh&#233;rentes ou incompl&#232;tes, et &#231;a me para&#238;t un
+</I>&gt;&gt;<i> comportement normal.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Ou alors, il nous faudrait un m&#233;canisme pour savoir si un objet est dans
+</I>&gt;&gt;<i> un &#233;tat coh&#233;rent, et un autre pour s'assurer qu'on n'utilise pas un
+</I>&gt;&gt;<i> objet dont l'&#233;tat n'est pas coh&#233;rent.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>   
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>   
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000376.html">[Plearn-core] build peut etre appel&#233; plusieurs fois
+</A></li>
+	<LI>Next message: <A HREF="000378.html">[Plearn-core] build peut etre appel&#233; plusieurs fois
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#377">[ date ]</a>
+              <a href="thread.html#377">[ thread ]</a>
+              <a href="subject.html#377">[ subject ]</a>
+              <a href="author.html#377">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

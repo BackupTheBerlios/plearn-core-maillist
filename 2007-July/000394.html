@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710053514.GA10621%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000393.html">
+   <LINK REL="Next"  HREF="000395.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C20070710053514.GA10621%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 10 07:35:14 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000393.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000395.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#394">[ date ]</a>
+              <a href="thread.html#394">[ thread ]</a>
+              <a href="subject.html#394">[ subject ]</a>
+              <a href="author.html#394">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Jul 10, 2007, saintmlx wrote:
+&gt;<i> Tout &#231;a a l'air d'&#234;tre un peu pressant pour toi, et, pour une solution 
+</I>&gt;<i> rapide et potable, je crois que ton truc va marcher (&#224; r7736 ou 7, 
+</I>&gt;<i> &quot;Trial++!+?#@*!!&quot;) ;o)
+</I>
+En effet, &#231;a a l'air de marcher, et &#231;a passe aussi sur 64 bits. C'est
+pas tant que c'est pressant, c'est que moi non plus je n'ai pas envie
+d'y passer trop de temps et de laisser &#231;a s'&#233;taler sur trois jours avec
+des tests p&#233;t&#233;s entre temps.
+
+&gt;<i> Je vais quand-m&#234;me essayer de penser &#224; qqch. pour limiter &#231;a &#224; la 
+</I>&gt;<i> s&#233;rialisation, m&#234;me si ce n'est vraiment pas trivial.  Pour ce qui est 
+</I>&gt;<i> du fait que &quot;long long&quot; est long &#224; taper (sic.), on peut toujours se 
+</I>&gt;<i> faire des typedefs &#224; notre go&#251;t, mais (svp!) dont le type C/C++ ne 
+</I>&gt;<i> change pas d'une machine &#224; l'autre;
+</I>
+Ben moi ce que je voudrais, c'est des types dont la taille en m&#233;moire ne
+change pas d'une machine &#224; l'autre... pour pouvoir sauvegarder des
+mod&#232;les en plearn_binary et les lire sans probl&#232;me sur une autre
+architecture, par exemple.
+
+&gt;<i> Si tu penses &#224; qqch. de mieux, fais-moi signe,
+</I>
+On peut toujours rajouter de rajouter entre #ifdef certaines m&#233;thodes
+(operator&lt;&lt;, par exemple) surcharg&#233;es avec un argument long, mais &#231;a
+suppose de savoir exactement ce qui est typedeff&#233; en quoi, ce qui n'est
+pas forc&#233;ment la m&#234;me chose sous tous les OS, etc., et je ne sais pas si
+c'est possible de checker &#231;a &#224; la compilation.
+
+Bonne nuit,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000393.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000395.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#394">[ date ]</a>
+              <a href="thread.html#394">[ thread ]</a>
+              <a href="subject.html#394">[ subject ]</a>
+              <a href="author.html#394">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

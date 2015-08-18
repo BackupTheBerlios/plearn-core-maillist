@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C4491A2B3.7090202%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000067.html">
+   <LINK REL="Next"  HREF="000062.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C4491A2B3.7090202%40apstat.com%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">pascal at apstat.com
+       </A><BR>
+    <I>Thu Jun 15 20:10:59 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000067.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000062.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#69">[ date ]</a>
+              <a href="thread.html#69">[ thread ]</a>
+              <a href="subject.html#69">[ subject ]</a>
+              <a href="author.html#69">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> En fait, j'avais dans l'idee que si on avait un changeOptions, on
+</I>&gt;<i> n'aurait pas de rebuild (les deux ayant le meme but). Donc si ca
+</I>&gt;<i> se passe dans un objet imbrique, il suffirait de 'desimbriquer' le
+</I>&gt;<i> premier element et faire un sous_object-&gt;changeOptions(...).
+</I>&gt;<i>   
+</I>Le rebuild propos&#233; par Pascal L. re&#231;oit seulement les noms d'option qui 
+ont chang&#233;, pas leur valuers (il suppose que ces valeurs ont d&#233;j&#224; &#233;t&#233; 
+chang&#233;es). C'est la diff&#233;rence essentielle avec le changeOptions comme 
+tu le vois.
+
+L'inconv&#233;nient avec rebuild(...) est qu'il n'a pas un acc&#232;s direct &#224; 
+l'ancienne valeur et la nouvelle valeur de l'option (mais s'il a 
+*vraiment* besoin de l'ancienne valeur, elle est souvent accessible de 
+mani&#232;re indirecte, comme dans la longueur d'un Vec, ou bien elle peut 
+avoir &#233;t&#233; copi&#233;e).
+
+L'avantage avec rebuild(...), c'est qu'il n'a pas &#224; se soucier de la 
+mani&#232;re dont la nouvelle valeur d'option a &#233;t&#233; sett&#233;e (il peut s'agir 
+d'un setOption depuis string, depuis void*, ou d'un changement direct du 
+champ de l'objet par du code C++ ex: obj1-&gt;obj2-&gt;weight_decay = 0.1; )
+
+Le probl&#232;me c'est qu'on veut au moins deux changeOptions, un comprenant 
+des string, l'autre des void*, voire peut-&#234;tre un troisi&#232;me de genre 
+template prenant des tuples, comme l'a propos&#233; Nicolas. Le rebuild(...) 
+serait une mani&#232;re de factoriser le code pour permettre tout &#231;a. Mais 
+sans doute pas la seule...
+Voyez-vous une autre mani&#232;re de le faire?
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000067.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000062.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#69">[ date ]</a>
+              <a href="thread.html#69">[ thread ]</a>
+              <a href="subject.html#69">[ subject ]</a>
+              <a href="author.html#69">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

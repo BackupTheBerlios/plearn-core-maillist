@@ -1,0 +1,121 @@
+From saintmlx at apstat.com  Wed Aug  8 19:06:43 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Wed, 08 Aug 2007 13:06:43 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_NumPy?=
+In-Reply-To: <46AE72B9.2050508@apstat.com>
+References: <466D9EF2.3070109@apstat.com> <46AE72B9.2050508@apstat.com>
+Message-ID: <46B9F823.70801@apstat.com>
+
+C'est fait.  ? partir de maintenant, numarray n'existe plus pour PLearn 
+et il faut utiliser numpy.  Si vous avez des questions, faites-moi signe.
+
+Xavier
+
+Xavier Saint-Mleux wrote:
+> Salut,
+>
+> Je vais faire un commit pour le passage ? numpy d'ici 24~48 heures.  Il 
+> ne sera plus possible d'utiliser numarray avec PLearn apr?s ce 
+> changement.  Le commit inclut les modifications n?cessaires pour faire 
+> passer tous les pytests (buildbot) avec numpy.  Ce qui n'est pas test? 
+> par le buildbot risque de ne plus marcher.
+>
+> Dans la plupart des cas, pour passer de numarray ? numpy, il suffit de 
+> remplacer
+> from numarray import *
+> par
+> from numpy.numarray import *
+>
+> N'h?sitez pas ? me contacter si vous avez des questions,
+>
+> Xavier
+>
+> Xavier Saint-Mleux wrote:
+>   
+>> Salut,
+>>
+>> Je suis en train de faire la transition de numarray ? numpy.  Puisque 
+>> numarray est officiellement "deprecated", ?a ne sera plus support? par 
+>> PLearn apr?s le passage ? numpy (i.e. d'ici quelques semaines).  En 
+>> particulier, tout code python qui importe numarray va ?tre modifi? pour 
+>> importer numpy.numarray ? la place (interface "numarray" de numpy, pour 
+>> simplifier la transition; ? ne pas utiliser dans du nouveau code).
+>>
+>> Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+>> install? partout o? vous utilisez numarray en ce moment?  Il serait 
+>> pr?f?rable d'avoir la derni?re version (1.0.3); la version 1.0.1 a des 
+>> bugs qui nous affectent et je n'ai pas essay? 1.0.2.
+>>
+>> N.B. numpy.numarray donne essentiellement la m?me interface (syntaxe) 
+>> que numarray, mais il y a quelques diff?rences et la s?mantique peut 
+>> ?tre diff?rente aussi.  Si vous avez des choses qui d?pendent de 
+>> numarray, il serait bon d'en faire des pytest:  je ne ferai pas de 
+>> commit tant les tests ne passeront pas tous.
+>>
+>> Xavier
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> https://lists.berlios.de/mailman/listinfo/plearn-core
+>>   
+>>     
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+
+From chapados at apstat.com  Mon Aug 13 16:07:43 2007
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Mon, 13 Aug 2007 10:07:43 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_numpy=3A_al=E9as?=
+Message-ID: <29648D26-F083-47D7-8F88-B9B62ED29780@apstat.com>
+
+Bonjour ? tous,
+
+Une petite remarque d'int?r?t public concernant l'interaction entre  
+numpy et matplotlib/pylab:: comme vous le savez s?rement, matplotlib  
+contient sa propre couche d'abstraction num?rique qui est suppos?ment  
+compatible Numeric/numarray/numpy.  Matplotlib appelle cela numerix.
+
+CEPENDANT, il y a certaines diff?rences comportementales entre une  
+array numerix qui wrappe numarray versus numpy (certaines m?thodes  
+qui ?taient pr?sentes avec numarray qui ne le sont plus sous numpy,  
+lorsque vus ? travers la lentille de matplotlib::numerix).  En  
+particulier, pour ?viter tout ennui, l'ordre des imports devient  
+important.  Vous devez inclure matplotlib AVANT numpy, pour que les  
+m?thodes de ce dernier aient pr?s?ance.
+
+Par exemple:
+
+	from numpy.numarray import *
+	from pylab import *
+	a = arange(100.)
+	b = reshape(a, (10,10))
+	print b.min()         # La m?thode min n'existe pas!
+
+alors que
+
+	from pylab import *
+	from numpy.numarray import *
+	a = arange(100.)
+	b = reshape(a, (10,10))
+	print b.min()         # La m?thode existe!
+
+Vaut mieux ?tre avertis que de rencontrer un plantage bizarre...
+
+	+ Nicolas
+
+---
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070813/22af7bcb/attachment.html>
+

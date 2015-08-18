@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060705220652.GA3604%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000095.html">
+   <LINK REL="Next"  HREF="000097.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060705220652.GA3604%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jul  6 00:06:52 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000095.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000097.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, Jul 05, 2006, Pascal Lamblin wrote:
+&gt;<i> Ce qui peut arriver, c'est de ne pas avoir un simple #ifdef, mais une
+</I>&gt;<i> ligne comme :
+</I>&gt;<i> #if defined WIN32 || USING_MPI &amp;&amp; !(defined USEFLOAT)
+</I>&gt;<i> 
+</I>&gt;<i> et l&#224; on est bien emmerd&#233; parce qu'il nous faudrait un parseur avec des
+</I>&gt;<i> r&#232;gles de priorit&#233; pour parser tout &#231;a, en en parlant avec Xavier &#231;a
+</I>&gt;<i> avait l'air assez gal&#232;re.
+</I>
+Yoshua m'a conseill&#233; d'utiliser DParser, qui a remplac&#233; Pyacc que Xavier
+me conseillait d'utiliser, et c'est probablement ce que je vais faire,
+vu la simplicit&#233; d'utilisation.
+
+Le probl&#232;me qui se pose alors, c'est que pymake d&#233;pend de DParser, ce
+qui veut dire qu'on doit l'installer un peu partout l&#224; o&#249; on veut que &#231;a
+marche. Dans le cas o&#249; il n'est pas install&#233;, on peut juste lancer un
+message d'avertissement et continuer comme maintenant.
+
+Est-ce que requ&#233;rir (ou au moins sugg&#233;rer fortement) l'installation de
+DParser vous semble suffisant, ou alors il faudrait le distribuer avec
+PLearn ? C'est une licence BSD, donc on devrait pouvoir, mais est-ce une
+bonne id&#233;e ?
+
+&#192; plus,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000095.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000097.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

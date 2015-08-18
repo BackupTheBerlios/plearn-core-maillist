@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #ifdef
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23ifdef&In-Reply-To=%3C44511502.1030400%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000022.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #ifdef</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23ifdef&In-Reply-To=%3C44511502.1030400%40apstat.com%3E"
+       TITLE="[Plearn-core] pymake et #ifdef">pascal at apstat.com
+       </A><BR>
+    <I>Thu Apr 27 21:01:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000022.html">[Plearn-core] pymake et #ifdef
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pascal Lamblin wrote:
+&gt;<i> Salut encore,
+</I>&gt;<i>
+</I>&gt;<i> j'ai remarqu&#233; dans le graphe de d&#233;pendances g&#233;n&#233;r&#233; par pymake
+</I>&gt;<i> -dependency que pymake va consid&#233;rer que les headers inclus dans un
+</I>&gt;<i> #ifdef sont toujours inclus.
+</I>&gt;<i>   
+</I>C'est un probl&#232;me connu. pymake fait unparsing rudimentaire pour ignorer 
+les commentaires C++, mais les #ifdef c'est plus compliqu&#233;.
+On ne veut pas appeler le pr&#233;processeur de gcc sur chaque fichier 
+examin&#233;, car je pense que &#231;a serait trop long (en plus il expandrait les 
+#include).
+Une gestion compl&#232;te du macro-processing C au niveau de pymake ne me 
+parait pas n&#233;cessaire ni forc&#233;ment souhaitable. Mais on peut sans doute 
+assez facilement modifier le script pour g&#233;rer les cas de #ifdef simples 
+tels que celui que tu d&#233;cris.
+&gt;<i> &#199;a donne par exemple que plerror.cc d&#233;pend de PLMPI.h, qui lui-m&#234;me
+</I>&gt;<i> d&#233;pend de Mat.h et de tout un bazar.
+</I>&gt;<i>
+</I>&gt;<i> Est-ce que certains ont d&#233;j&#224; tent&#233; d'am&#233;liorer &#231;a, et trouv&#233; que c'&#233;tait
+</I>&gt;<i> impossible, ou que &#231;a ne valait pas le coup, ou est-ce que c'est en
+</I>&gt;<i> cours ? Si vous avez des r&#233;f&#233;rences, ou connaissances que des outils
+</I>&gt;<i> existants font d&#233;j&#224; &#231;a, je suis aussi preneur.
+</I>&gt;<i>
+</I>&gt;<i> &#192; plus,
+</I>&gt;<i>   
+</I>
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000022.html">[Plearn-core] pymake et #ifdef
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

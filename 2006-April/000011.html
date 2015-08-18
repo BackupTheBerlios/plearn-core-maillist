@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Aide de PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C20060426102403.GA666%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000012.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Aide de PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C20060426102403.GA666%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Aide de PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Apr 26 12:24:03 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000012.html">[Plearn-core] Aide de PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#11">[ date ]</a>
+              <a href="thread.html#11">[ thread ]</a>
+              <a href="subject.html#11">[ subject ]</a>
+              <a href="author.html#11">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut les gens,
+
+j'ai deux probl&#232;mes lorsque j'essaie de r&#233;g&#233;n&#233;rer la documentation de
+PLearn, en tapant simplement &#171; make &#187; dans PLearn/doc/.
+
+Le premier, c'est que le make s'arr&#234;te sur une erreur apr&#232;s avoir
+g&#233;n&#233;rer les &#171; guides &#187; en pdf, mais vu qu'il les g&#233;n&#232;re correctement, je
+penche pour un probl&#232;me dans le makefile lui-m&#234;me, je jetterai un coup
+d'oeil.
+
+Le deuxi&#232;me arrive apr&#232;s, si je relance &#171; make &#187;, pendant la g&#233;n&#233;ration
+de la documentation des modules python. J'ai coll&#233; les messages d'erreur
+qui persistent apr&#232;s plusieurs appels &#224; make ici :
+<A HREF="http://pastebin.com/682639">http://pastebin.com/682639</A>
+
+Autre chose : je ne sais pas si du code (par exemple dans la nouvelle
+interface graphique) utilise la commande &#171; htmlhelp &#187;, mais sachant que
+pour l'utiliser il faut un objet HTMLHelpConfig, est-ce que &#231;a ne serait
+pas plus simple de mettre le code dans cette classe, d'impl&#233;menter
+HTMLHelpConfig.run(), pour pouvoir lancer &#171; plearn html_config.plearn &#187;
+au lieu de &#171; plearn htmlhelp html_config.plearn &#187;, et de supprimer cette
+commande ?
+
+Vous en pensez quoi ?
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000012.html">[Plearn-core] Aide de PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#11">[ date ]</a>
+              <a href="thread.html#11">[ thread ]</a>
+              <a href="subject.html#11">[ subject ]</a>
+              <a href="author.html#11">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

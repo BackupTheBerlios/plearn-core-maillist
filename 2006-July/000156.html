@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PPath et PStream
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PPath%20et%20PStream&In-Reply-To=%3C44C122B9.6040907%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000155.html">
+   <LINK REL="Next"  HREF="000157.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PPath et PStream</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PPath%20et%20PStream&In-Reply-To=%3C44C122B9.6040907%40apstat.com%3E"
+       TITLE="[Plearn-core] PPath et PStream">pascal at apstat.com
+       </A><BR>
+    <I>Fri Jul 21 20:53:45 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000155.html">[Plearn-core] PPath et PStream
+</A></li>
+        <LI>Next message: <A HREF="000157.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#156">[ date ]</a>
+              <a href="thread.html#156">[ thread ]</a>
+              <a href="subject.html#156">[ subject ]</a>
+              <a href="author.html#156">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pascal Lamblin wrote:
+&gt;<i> Est-ce que &#231;a vaudrait le coup de passer partout &#224; des PPath et des
+</I>&gt;<i> PStream ? Est-ce qu'il y a des pi&#232;ges avec les PStream, ou des
+</I>&gt;<i> limitations qui font qu'il ne font pas tout ce que les ifstream/ofstream
+</I>&gt;<i> peuvent faire ?
+</I>&gt;<i>   
+</I>Les PStream ont &#233;t&#233; avant tout con&#231;u pour la 
+s&#233;rialisation/d&#233;s&#233;rialisation d'objets PLearn et la possibilit&#233; de 
+d&#233;finir facilement des nouvelles sources de stream.
+Les op&#233;rations de seek, qui sont sp&#233;cifiques &#224; des streams de type 
+fichier (elles n'ont gu&#232;re de sens pour les pipe et les sockets par 
+ex.), ne sont pas pour le moment support&#233;es. (notamment car c'est assez 
+d&#233;licat &#224; implanter sans faire de gaffes quand on a des buffers d'entr&#233;e 
+sortie).
+
+La politique actuelle est la suivante:
+
+Pour les acc&#232;s bas niveau de fichiers, n&#233;cessitant des seek et/ou des 
+lectures de formats binaires sp&#233;cifiques, je pr&#233;conise l'utilisation des 
+fonctions NSPR permettant des acc&#232;s 64 bits &#224; des gros fichiers (&gt;2 
+Gig). NSPR &#233;tant notre principale couche d'abstraction d'OS, je 
+conseille aussi l'utilisation de NSPR pour toutes les autres op&#233;rations 
+d'OS (metainfo sur les fichiers, parcours du file system, etc...). NSPR 
+devrait &#234;tre utilis&#233; de pr&#233;f&#233;rence plut&#244;t que les FILE* de stdio.h 
+(notamment &#224; cause des acc&#232;s 64 bits), mais si il y a des implantations 
+historiques qui utilisent encore FILE* et qui fonctionnent, ce n'est 
+vraiment pas une urgence de les r&#233;&#233;crire (&quot;If it ain't broken, don't fix 
+it...&quot;), car stdio.h est tr&#232;s standard, stable et lightweight (on ne 
+peut pas en dire autant de std::stream).
+
+Pour les acc&#232;s n&#233;cessitant la lecture &#233;criture d'objets s&#233;rialis&#233;s 
+PLearn, et/ou le logging c'est &#233;videmment PStream. J'aimerais id&#233;alement 
+voir dispara&#238;tre toute utilisation des std::stream, y compris les cin, 
+cout et cerr (qui devraient &#234;tre remplac&#233;s par pin, pout, perr).
+
+Note: les op&#233;rations de formattage ascii fancy de std::stream ne sont 
+pas support&#233;es pas PStream.
+
+Les avantages de Pstream:
+  * s&#233;rialisation d'objets PLearn (deep, comporte une map indispensable 
+pour g&#233;rer les r&#233;f&#233;rences circulaires)
+  * putback pas limit&#233; &#224; un caract&#232;re (tr&#232;s utile pour le lookahead de 
+parsing)
+  * ce sont des smart pointers faciles &#224; partager et &#224; copier
+  * facile d'&#233;crire de nouvelles classes de PStreamBuf pour utiliser 
+d'autres channels de communication (ex: MPI).
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000155.html">[Plearn-core] PPath et PStream
+</A></li>
+	<LI>Next message: <A HREF="000157.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#156">[ date ]</a>
+              <a href="thread.html#156">[ thread ]</a>
+              <a href="subject.html#156">[ subject ]</a>
+              <a href="author.html#156">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

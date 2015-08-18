@@ -1,0 +1,143 @@
+From jaonary at gmail.com  Thu Sep 28 10:38:20 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 28 Sep 2006 10:38:20 +0200
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le Precision-Recall
+	curve
+Message-ID: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+
+Bonjour a tous,
+
+Apr?s un petit moment de break sur cette liste, me revoici avec quelques
+questions relatives
+? l'utilisation de PLearn. Je voudrai savoir s'il existe d?j? des classes ou
+des fonctions qui
+permettent de construire les courbes ROC et precision-recall ou s'il faudra
+les coder. J'ai d?j?
+essayer de fouiller dans la foret des sources de PLearn mais il n'y a pas de
+nom de fichier
+qui m'?voque ce que je cherche.
+
+Merci ? vous,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060928/062d9db8/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Sep 28 15:25:58 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 28 Sep 2006 09:25:58 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+Message-ID: <20060928132557.GA3988@opale.iro.umontreal.ca>
+
+Bonjour,
+
+Voila ce qui est disponible actuellement dans ce domaine :
+- La statistique NIPS_LIFT dans StatsCollector est une sorte d'aire sous
+  la courbe ROC (voir 'plearn help StatsCollector')
+- La statistique LIFT(f) permet d'avoir la valeur du lift a une fraction
+  f, ie. un point de la courbe ROC (encore 'plearn help StatsCollector')
+- La statistique PRBP donne la valeur de Precision et Recall lorsqu'ils
+  sont egaux (voir encore 'plearn help StatsCollector')
+- La classe LiftStatsCollector (deprecated) permettait de faire des
+  courbes ROC, et devrait encore fonctionner (elle est deprecated car on
+  voudrait que StatsCollector puisse le faire, mais ce n'est pas encore
+  le cas)
+
+Pour utiliser les 3 premiers, il te faut un PLearner qui ait un cout qui
+soit, pour un exemple, le 'score' de l'algorithme pour cette exemple,
+avec un signe qui indique la valeur de la vraie target (+ pour classe
+positive, - pour classe negative, faire attention a ne pas avoir 0).
+Typiquement, dans PLearn, ce cout s'appelle 'lift_output', certains
+PLearner l'ont deja, sinon on peut leur rajouter par dessus un
+AddCostToLearner pour rajouter 'lift_output' comme cost.
+
+Dans ton PTester, il te suffit alors de rajouter dans les statnames un
+cout du genre "E[test1.LIFT(0.1)[lift_output]]" pour par ex. calculer
+le lift a 0.1 sur le premier ensemble de test.
+
+Pour utiliser LiftStatsCollector, je ne suis plus sur, donc cf. l'aide.
+
+Si tu as besoin de plus, n'hesite pas a les implementer :)
+
+--
+Olivier
+
+On 28 Sep 2006, Jaonary Rabarisoa wrote:
+> Bonjour a tous,
+> 
+> Apr?s un petit moment de break sur cette liste, me revoici avec quelques
+> questions relatives
+> ? l'utilisation de PLearn. Je voudrai savoir s'il existe d?j? des classes ou
+> des fonctions qui
+> permettent de construire les courbes ROC et precision-recall ou s'il faudra les
+> coder. J'ai d?j?
+> essayer de fouiller dans la foret des sources de PLearn mais il n'y a pas de
+> nom de fichier
+> qui m'?voque ce que je cherche.
+> 
+> Merci ? vous,
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From delallea at iro.umontreal.ca  Thu Sep 28 15:29:11 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 28 Sep 2006 09:29:11 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <20060928132557.GA3988@opale.iro.umontreal.ca>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+Message-ID: <20060928132910.GA4226@opale.iro.umontreal.ca>
+
+J'ai oublie de preciser que tu devras utiliser un StatsCollector
+template dans ton PTester (ici 'template_stats_collector') qui sauve
+toutes les valeurs, donc avec maxnvalues = -1 (cf. plearn help
+VecStatsCollector). C'est aussi explique dans l'aide de StatsCollector.
+
+--
+Olivier
+
+On 28 Sep 2006, Olivier Delalleau wrote:
+> Bonjour,
+> 
+> Voila ce qui est disponible actuellement dans ce domaine :
+> - La statistique NIPS_LIFT dans StatsCollector est une sorte d'aire sous
+>   la courbe ROC (voir 'plearn help StatsCollector')
+> - La statistique LIFT(f) permet d'avoir la valeur du lift a une fraction
+>   f, ie. un point de la courbe ROC (encore 'plearn help StatsCollector')
+> - La statistique PRBP donne la valeur de Precision et Recall lorsqu'ils
+>   sont egaux (voir encore 'plearn help StatsCollector')
+> - La classe LiftStatsCollector (deprecated) permettait de faire des
+>   courbes ROC, et devrait encore fonctionner (elle est deprecated car on
+>   voudrait que StatsCollector puisse le faire, mais ce n'est pas encore
+>   le cas)
+> 
+> Pour utiliser les 3 premiers, il te faut un PLearner qui ait un cout qui
+> soit, pour un exemple, le 'score' de l'algorithme pour cette exemple,
+> avec un signe qui indique la valeur de la vraie target (+ pour classe
+> positive, - pour classe negative, faire attention a ne pas avoir 0).
+> Typiquement, dans PLearn, ce cout s'appelle 'lift_output', certains
+> PLearner l'ont deja, sinon on peut leur rajouter par dessus un
+> AddCostToLearner pour rajouter 'lift_output' comme cost.
+> 
+> Dans ton PTester, il te suffit alors de rajouter dans les statnames un
+> cout du genre "E[test1.LIFT(0.1)[lift_output]]" pour par ex. calculer
+> le lift a 0.1 sur le premier ensemble de test.
+> 
+> Pour utiliser LiftStatsCollector, je ne suis plus sur, donc cf. l'aide.
+> 
+> Si tu as besoin de plus, n'hesite pas a les implementer :)
+> 
+
+

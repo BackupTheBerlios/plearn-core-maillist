@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utiliser Plearn en tant que library
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B40ED3.6000008%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000118.html">
+   <LINK REL="Next"  HREF="000127.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utiliser Plearn en tant que library</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B40ED3.6000008%40apstat.com%3E"
+       TITLE="[Plearn-core] Utiliser Plearn en tant que library">pascal at apstat.com
+       </A><BR>
+    <I>Tue Jul 11 22:49:23 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000118.html">[Plearn-core] Re: plugin interface for learners
+</A></li>
+        <LI>Next message: <A HREF="000127.html">[Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#126">[ date ]</a>
+              <a href="thread.html#126">[ thread ]</a>
+              <a href="subject.html#126">[ subject ]</a>
+              <a href="author.html#126">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Dans debian, les include concernant nspr sont install&#233;s dans 
+</I>&gt;<i> /usr/include/mozilla/nspr/*
+</I>&gt;<i> si on utilise apt. Donc je pense que &lt;nspr/*.h&gt; fera l'affaire.
+</I>J'ai commit&#233; le changement sous SVN. On fait d&#233;sormais des #include 
+&lt;nspr/...&gt;.
+
+&gt;<i> La solution que j'ai trouver c'est le cast :
+</I>&gt;<i> FILE* f = txtfiles[(int)fileno];
+</I>J'ai aussi commit&#233; ce changement sous SVN. Merci.
+&gt;<i>
+</I>&gt;<i> Le code qui pose le plus problem sous visual  c'est la methode
+</I>&gt;<i>
+</I>&gt;<i> void Object::declareMethods(RemoteMethodMap&amp; rmm)
+</I>OK &#231;a c'est de la magie-noire de template de Nicolas Chapados, je lui 
+fais une issue pour qu'il arrange &#231;a (si c'est possible).
+
+De toute fa&#231;on pour l'instant, &#224; moins que tu veuilles appeler plearn 
+depuis python, ou utiliser des remote methods sur un serveur plearn ou 
+le parall&#233;lisme, les declareMethods ne t'apportent rien.
+
+&gt;<i> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces 
+</I>&gt;<i> lignes. Mais je ne sais pas trop les conc&#233;quences de cela. J'ai tout 
+</I>&gt;<i> de meme r&#233;ussi &#224; compiler tout plearn en librairy static (win xp + 
+</I>&gt;<i> visual 2005 et fedora + gcc 4) et &#224; faire quelques testes sur les VMat 
+</I>&gt;<i> (les testes du tutorial).
+</I>OK, cool.
+&gt;<i>
+</I>&gt;<i> Mon prochaine &#233;tape est maintenant d'utiliser les Plearner. Par 
+</I>&gt;<i> contre, j'aimerai vous demander comment utiliser les donn&#233;es ? Je 
+</I>&gt;<i> pense que l'utilisation des PLearners est assez claire pour moi 
+</I>&gt;<i> maintenant. Par contre les donn&#233;es, je ne sais pas trop. Tout ce que 
+</I>&gt;<i> je sais c'est que c'est bas&#233; sur les VMat. Mais concretement je ne 
+</I>&gt;<i> sais pas trop comment faire. Par example, si j'ai un probl&#232;me 
+</I>&gt;<i> d'apprentissage suppervis&#233; avec des donn&#233;es (X_i;Y_i), comment je les 
+</I>&gt;<i> charge ? comment je les &#233;cris dans un fichier, dans quel format ?
+</I>VMat est essentiellement un smart pointer sur VMatrix, qui est une 
+classe de base au d&#233;part tr&#232;s simple (qui s'est malheureusement quelque 
+peu complexifi&#233; &#224; force de l'&#233;tendre). L'id&#233;e est qu'on peut facilement 
+&#233;crire des sous-classes de VMatrix (ou plus souvent de 
+RowBufferredVMatrix) pour acc&#233;der &#224; toutes sortes de matrices de donn&#233;es 
+d'entra&#238;nement, m&#234;me si elles sont trop grosses pour rentrer en m&#233;moire, 
+ou sont le r&#233;sultat d'un calcul fait au vol, ou sont une vue  &quot;matrice&quot; 
+d'un format de donn&#233;e compliqu&#233;.
+
+PLearn a des classes de vecteurs et matrice compacte en m&#233;moire pour des 
+op&#233;rations &#224; la matlab (manipulations simples efficaces et alg&#232;bre 
+lin&#233;are): les Vec et les Mat.
+Mais les VMatrix sont une hi&#233;rarche de classe diff&#233;rente  qui permettent 
+l'acc&#232;s aux ensembles de donn&#233;es vus comme des matrices, mais avec en 
+plus de la m&#233;tainformation qui peut &#234;tre utile pour les algos 
+d'apprentissage, notamment inputsize et targetsize qui donne la taille 
+de la partie input et de la partie target dans la matrice de donn&#233;es.
+
+Si tes donn&#233;es sont d&#233;j&#224; en m&#233;moire sous la forme d'une Mat m, tu peux 
+faire une VMat vm = new MemoryVMatrix(m); Mais il reste ensuite &#224; 
+pr&#233;ciser les tailles du probl&#232;me avec vm-&gt;defineSizes(inputsize, 
+targetsize).
+
+Pour obtenir une VMat depuis un des formats de donn&#233;es sur disque 
+reconnus par PLearn, tu peux appeler la fonction getDataSet(path) qui se 
+trouve dans PLearn/plearn/db/getDataSet.h  (le path peut &#234;tre une simple 
+string contenant le path du fichier).
+
+Le format le plus simple pour commencer est le format .amat  (ASCII) 
+dont un exemple est donn&#233; dans le user's guide ( 
+<A HREF="http://plearn.berlios.de/users_guide/index.html">http://plearn.berlios.de/users_guide/index.html</A> ) &#224; la fin de la section 
+3.2, et les sp&#233;cificit&#233;s du format expliqu&#233; bri&#232;vement &#224; la section 5.5
+
+Bonne chance!
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000118.html">[Plearn-core] Re: plugin interface for learners
+</A></li>
+	<LI>Next message: <A HREF="000127.html">[Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#126">[ date ]</a>
+              <a href="thread.html#126">[ thread ]</a>
+              <a href="subject.html#126">[ subject ]</a>
+              <a href="author.html#126">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

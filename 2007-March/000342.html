@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DC9limination_de_OptionBase%3D3A%3D3Adef%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Faultval%3D5F_et_pytransform_de_declareOption%3F%3D&In-Reply-To=%3C45F321D3.4080002%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000341.html">
+   <LINK REL="Next"  HREF="000354.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption</H1>
+    <B>saintmlx</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DC9limination_de_OptionBase%3D3A%3D3Adef%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Faultval%3D5F_et_pytransform_de_declareOption%3F%3D&In-Reply-To=%3C45F321D3.4080002%40apstat.com%3E"
+       TITLE="[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption">saintmlx at apstat.com
+       </A><BR>
+    <I>Sat Mar 10 22:23:31 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000341.html">[Plearn-core] PLearner::test maintenant en parall&#232;le
+</A></li>
+        <LI>Next message: <A HREF="000354.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#342">[ date ]</a>
+              <a href="thread.html#342">[ thread ]</a>
+              <a href="subject.html#342">[ subject ]</a>
+              <a href="author.html#342">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut aux PLearners,
+
+Je suis en train de faire quelques modifications au syst&#232;me d'options et 
+je voudrais me d&#233;barasser de ceci dans OptionBase:
+
+    string defaultval_;  //!&lt; string representation of the default value 
+(will be printed by optionHelp())
+
+De un, &#231;a ne semble pas &#234;tre utilis&#233;: j'ai mis ceci dans le constructeur 
+d'OptionBase et rien ne p&#232;te:
+
+    if(defaultval_ != &quot;&quot;)
+        PLERROR(&quot;DEFAULT VAL: '%s'&quot;, defaultval_.c_str());
+
+(j'ai aussi mis entry.getoptionlist_method() dans 
+TypeFactory::registerType pour que toutes les options soient &quot;d&#233;clar&#233;es&quot; 
+automatiquement au &quot;boot&quot; de plearn...)
+
+De deux, &#231;a me semble &#234;tre la mauvaise mani&#232;re de faire les choses;  
+TypeFactory s'occupe d&#233;j&#224; d'instancier un objet du bon type si possible 
+et donne &quot;?&quot; comme valeur par d&#233;faut sinon.  C'est ce qui devrait 
+toujours &#234;tre fait selon moi.
+
+Du m&#234;me coup, tant qu'&#224; changer declareOption (pour enlever le param. 
+defaultval), Pascal Lamblin a propos&#233; de mettre le param&#232;tre &quot;level&quot; 
+(voir plus bas) juste apr&#232;s &quot;flags&quot; et de faire un pytransform, de 
+mani&#232;re &#224; inciter le monde &#224; s'en servir.  J'ai d&#233;j&#224; un petit script qui 
+fait ceci:
+avant:
+    declareOption(
+        ol, &quot;report_progress&quot;, &amp;PLearner::report_progress, 
+OptionBase::buildoption,
+        &quot;should progress in learning and testing be reported in a 
+ProgressBar.\n&quot;);
+
+apr&#232;s:
+    declareOption(
+        ol, &quot;report_progress&quot;, &amp;PLearner::report_progress, 
+OptionBase::buildoption,
+/*&lt;!&gt;*/ OptionBase::normal_level /**** TODO: check wether this is the 
+right level and adapt as needed (see OptionBase.h)*/,
+        &quot;should progress in learning and testing be reported in a 
+ProgressBar.\n&quot;);
+
+Si personne n'a d'objection, je vais transformer tout ce que je vois et 
+faire un commit (apr&#232;s un d&#233;lai raisonnable pour recevoir vos 
+commentaires, suggestions, insultes ou contributions financi&#232;res ;)
+
+Xavier
+
+N.B.: les &quot;levels&quot; ne sont pas encore tr&#232;s bien document&#233;s, mais &#231;a 
+marche &#224; peu pr&#232;s comme ceci pour l'instant:
+chaque option a un level parmi les suivants, qui repr&#233;sente un &quot;niveau 
+de difficult&#233;&quot;  (copi&#233;/coll&#233; d'OptionBase.h) :
+    static const OptionLevel basic_level; //!&lt; mandatory options
+    static const OptionLevel normal_level; //!&lt; simple, useful options
+    static const OptionLevel advanced_level; //!&lt; useful but seldom used
+    static const OptionLevel experimental_level; //!&lt; only a few people 
+understand those
+    static const OptionLevel deprecated_level; //!&lt; should not be used 
+anymore
+
+Ensuite, quand on fait 'plearn help &lt;classname&gt;', on peut d&#233;cider du 
+niveau d'aide voulu avec l'option '--option-level &lt;level&gt;'.  Toutes les 
+options &#224; ce niveau ou &#224; un niveau inf&#233;rieur sont affich&#233;es; 
+'--option-level deprecated' montre toutes les options, m&#234;me celles qui 
+ne doivent jamais &#234;tre utilis&#233;es...
+Par exemple:
+~&gt; plearn --option-level advanced help NNet
+
+Vos commentaires sont bienvenus, il est encore temps!
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000341.html">[Plearn-core] PLearner::test maintenant en parall&#232;le
+</A></li>
+	<LI>Next message: <A HREF="000354.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#342">[ date ]</a>
+              <a href="thread.html#342">[ thread ]</a>
+              <a href="subject.html#342">[ subject ]</a>
+              <a href="author.html#342">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

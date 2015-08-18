@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3Cc81af8c30610040601m69d69091t308a18794e2ae0c0%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000169.html">
+   <LINK REL="Next"  HREF="000171.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3Cc81af8c30610040601m69d69091t308a18794e2ae0c0%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve">jaonary at gmail.com
+       </A><BR>
+    <I>Wed Oct  4 15:01:54 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000169.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+        <LI>Next message: <A HREF="000171.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#170">[ date ]</a>
+              <a href="thread.html#170">[ thread ]</a>
+              <a href="subject.html#170">[ subject ]</a>
+              <a href="author.html#170">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>J'aurai peut-&#234;tre besoin d'un peu plus d'explication pour les calculs et
+cout et les &#233;valuation de PLearner.
+Dans toute la suite je vais &quot;parler en C++&quot; car c'est ce que j'utilise. Le
+probl&#232;me que je veux r&#233;soudre est un classique dans l'apprentissage
+statistique (supervis&#233;), pour faire simple disons une classification binaire
+(0 ou 1).
+
+Donc, j'ai des donn&#233;es d'apprentissage  que je noterai (X_train,Y_train),
+des donn&#233;es pour evaluer mon 'Learner' (X_test,Y_test) et je voudrai faire
+les choses suivante:
+1 - Entrainer mon PLearner sur l'ensemble train et l'evaluer sur l'ensemble
+test.
+2 - Etant donner que mon PLearner a des parametres que je dois ajuster (ex
+le C pour la SVM lineaire ou le k pour KNN). Faire une proc&#233;dure comme la
+cross-validation par exemple pour choisir le meilleur parametre.
+
+D'apres l'explication d'olivier, je pourrai r&#233;soudre ces probl&#232;me en
+utilisant les classes
+StatCollector
+VecStatCollector
+PTester
+
+Seulement, je n'arrive pas encore &#224; comprendre les subtilit&#233;s qui relient
+ces classes entre elles et avec mon PLearner.
+
+Pour l'instant, tout ce que je comprends c'est que StatCollector est un
+objet qui sais calculer les cout qui m'interesse (parmi ceux cit&#233;s dans la
+liste E;LIFT; ... ). VecStatCollector devrait faire pareil mais je n'ai pas
+encore saisi la difference entre les deux;
+PTester quant &#224; lui et si j'ai bien compris permet de faire une s&#233;rie
+d'apprentissage et de test du type cross-validation. Mais au moment
+d'appliquer tout &#231;a, j'ai un petit blocage.
+
+Voici par exemple les bout de code que j'ai commenc&#233; &#224; &#233;crire en utilisant
+un KNN comme PLearner :
+
+   VMat data_train ; // training set
+   VMat data_test; // testing set
+
+              KNNClassifier knn;
+              knn.nclasses = 2;
+              knn.setTrainingSet(&amp;data_train);
+              knn.build();
+              knn.train();
+ // l'apprentissage est fini mais comment utiliser les StatCollector avec
+data_test et knn ?
+
+
+// ici je voudrai par exemple faire un petit cross-validation en gardant
+comme cout le LIFT(0.1)
+// et en utilisant seulement data_train
+              PTester tester;
+
+              tester.splitter = new KFoldSplitter;
+              tester.learner  = &knn;
+              tester.dataset  = &amp;data_train;
+              tester.train    = 1;
+              tester.stanames =  ??? // heuuu
+              tester.build();
+              tester.perform();  // ici j'obtiens une erreur lors de
+l'execution
+
+
+Une dernierre interogation sur la m&#233;thode build() des objets : &#224; quel moment
+les appeler ? C'est correcte ce que j'ai &#233;crit ?
+
+
+Merci &#224; vous;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061004/bae149b1/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061004/bae149b1/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000169.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+	<LI>Next message: <A HREF="000171.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#170">[ date ]</a>
+              <a href="thread.html#170">[ thread ]</a>
+              <a href="subject.html#170">[ subject ]</a>
+              <a href="author.html#170">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

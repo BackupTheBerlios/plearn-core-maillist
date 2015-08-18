@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Questions sur commit r6594
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C45B62F53.6020908%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000302.html">
+   <LINK REL="Next"  HREF="000304.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Questions sur commit r6594</H1>
+    <B>Christian Hudon</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C45B62F53.6020908%40apstat.com%3E"
+       TITLE="[Plearn-core] Questions sur commit r6594">chrish at apstat.com
+       </A><BR>
+    <I>Tue Jan 23 16:52:51 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000302.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+        <LI>Next message: <A HREF="000304.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#303">[ date ]</a>
+              <a href="thread.html#303">[ thread ]</a>
+              <a href="subject.html#303">[ subject ]</a>
+              <a href="author.html#303">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Olivier Delalleau escribi&#243;:
+&gt;<i> Cf:
+</I>&gt;<i> <A HREF="https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html">https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html</A>
+</I>&gt;<i>
+</I>&gt;<i> Deux questions :
+</I>&gt;<i>
+</I>&gt;<i> 1. D'apres le texte du commit, la nouvelle version devrait utiliser le
+</I>&gt;<i> user's umask, mais j'ai l'impression que le commit force en fait un
+</I>&gt;<i> chmod 777 au lieu de 775
+</I>&gt;<i>   
+</I>Humm. Si je peux me permettre un &#233;nonc&#233; assez cat&#233;gorique, c'est une
+mauvaise compr&#233;hension de l'API POSIX. Premi&#232;rement, il n'y a pas de
+chmod de fait: la cr&#233;ation d'un fichier ou d'un r&#233;pertoire (avec les
+permissions donn&#233;es) est une op&#233;ration atomique. Sinon, les permissions
+qui sont pass&#233;es dans les appels &#224; mkdir et &#224; open / creat sont des
+permissions *maximales*. Le umask du processus en cours est toujours
+appliqu&#233; &#224; ces permissions pour obtenir celles avec lesquelles le
+fichier ou r&#233;pertoire est cr&#233;&#233;. (Contrairement &#224; un appel &#224; chmod, o&#249;
+bien s&#251;r les permissions sont appliqu&#233;es directement.) C'est m&#234;me bien
+expliqu&#233; (ce qui n'est pas toujours donn&#233;) dans les manpages ou la docum
+de NSPR. Un extrait de la manpage de mkdir:
+
+&gt;<i>        int mkdir(const char *pathname, mode_t mode);
+</I>&gt;<i>
+</I>&gt;<i> DESCRIPTION
+</I>&gt;<i>        mkdir() attempts to create a directory named pathname.
+</I>&gt;<i>
+</I>&gt;<i>        The  parameter mode specifies the permissions to use. It is
+</I>&gt;<i> modified by the process's umask in the usual way: the permissions of
+</I>&gt;<i> the created directory are (mode &amp; ~umask &amp; 0777). 
+</I>
+Dont, comme je l'avais expliqu&#233; dans le message de commit, &#224; moins de
+t'appeler par exemple ssh (ou gnupg, etc.), o&#249; tu veux cr&#233;er ton
+r&#233;pertoire .ssh avec des permissions restreintes pour stocker des mots
+de passe, etc., tous les appels &#224; mkdir, open et creat devraient &#234;tre
+faits avec un mode de 0777 (ou 0666 pour les fichiers non ex&#233;cutables),
+parce que &#231;a laisse le umask de l'usager d&#233;cider des permissions finales.
+
+En esp&#233;rant que &#231;a &#233;claircit les choses,
+
+  Christian
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000302.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+	<LI>Next message: <A HREF="000304.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#303">[ date ]</a>
+              <a href="thread.html#303">[ thread ]</a>
+              <a href="subject.html#303">[ subject ]</a>
+              <a href="author.html#303">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

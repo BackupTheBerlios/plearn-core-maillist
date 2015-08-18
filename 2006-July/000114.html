@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: Wishlist PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Wishlist%20PLearn&In-Reply-To=%3C20060710210831.GA11658%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000113.html">
+   <LINK REL="Next"  HREF="000116.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: Wishlist PLearn</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Wishlist%20PLearn&In-Reply-To=%3C20060710210831.GA11658%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Re: Wishlist PLearn">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Jul 10 23:08:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000113.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+        <LI>Next message: <A HREF="000116.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#114">[ date ]</a>
+              <a href="thread.html#114">[ thread ]</a>
+              <a href="subject.html#114">[ subject ]</a>
+              <a href="author.html#114">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, Jul 10, 2006, Pascal Vincent wrote:
+&gt;<i> A few additional requirements for the distributed launcher:
+</I>&gt;<i>   * It should be possible to &quot;query&quot; the availability of ressources, 
+</I>&gt;<i> such as a subcommand returning an answer to the question: how many 
+</I>&gt;<i> computation units are currently available
+</I>
+It might be useful, but in my opinion, the calling program shouldn't
+worry about that, since the queuing of jobs is done by the cluster
+managing system (or the &quot;dispatching-by-ssh module&quot;).
+
+For instance, on the mammouth, we don't have a way to know on which
+sub-cluster the next batch of jobs we submit will be launched, so we
+don't really know the number of &quot;available&quot; computation units... but we
+don't care, because even if we submit a large batch, the remaining jobs
+will be queued and executed when machines are free.
+
+If we add the support for another &quot;cluster&quot; system that has no support
+for queuing, then we should implement it inside the module.
+
+&gt;<i>   * When requesting to launch a command, and it fails, it should be 
+</I>&gt;<i> possible to easily know if this is because there are no more 
+</I>&gt;<i> computational ressources available (which is very different than failing 
+</I>&gt;<i> because of a bug in the command).
+</I>
+I think &quot;no more resources available&quot; should not produce an error, but
+&quot;queue full&quot; should. That being said, we should make a difference
+between the following cases:
+  - the command line is ill-formed (syntax error in calling distrlaunch)
+  - distrlaunch did not manage to launch the jobs (queue full, the
+    &quot;cluster&quot; command failed, ...)
+  - the job was launched and failed
+In the last case, we should not produce an error, it would be the job of
+the program (or programmer) who wanted to execute these jobs to check
+their output and return value in the logs.
+
+&gt;<i>   * Most importantly, it should be possible for the process calling the 
+</I>&gt;<i> distributed launcher (whether it be a C++ process or a python script) to 
+</I>&gt;<i> access i/o streams of the launched command (i.e. its 
+</I>&gt;<i> stdin/stdout/stderr) for communication purpose. This should at least be 
+</I>&gt;<i> possible when launching a single command (the i/o of the remotely 
+</I>&gt;<i> launched command should be redirected to the caller).
+</I>
+I totally agree that it should be possible to easily redirect i/o
+from/to files, but I'm a bit skeptical about redirecting to a tty.
+I don't even know if bqtools allows to do that.
+
+&gt;<i>   * I suggest using a single python command (ex: distrlaunch) with 
+</I>&gt;<i> several possible subcommands or options and online help.
+</I>
+I think that specifying a batch of commands to run on the command line
+is not really easy... I would rather export a python function, one
+argument of which would be a list of strings: the commands to execute.
+
+The execution of jobs from the command-line should go through another
+script, such as apdispatch.
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000113.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+	<LI>Next message: <A HREF="000116.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#114">[ date ]</a>
+              <a href="thread.html#114">[ thread ]</a>
+              <a href="subject.html#114">[ subject ]</a>
+              <a href="author.html#114">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,451 @@
+From lamblinp at iro.umontreal.ca  Wed Mar 15 20:49:03 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 15 Mar 2006 20:49:03 +0100
+Subject: [Plearn-core] Re: Updates des VMat :: =?iso-8859-1?Q?=C9?=
+ =?iso-8859-1?Q?tat?= de la situation
+In-Reply-To: <441629F0.5090004@apstat.com>
+References: <441629F0.5090004@apstat.com>
+Message-ID: <20060315194903.GA28598@pig.zood.org>
+
+Salut tout le monde,
+
+Et premi?rement un rappel : pour ceux qui ne l'ont pas encore
+fait, inscrivez-vous ? la liste plearn-core, s'il-vous-pla?t !
+https://lists.berlios.de/mailman/listinfo/plearn-core
+
+Il se peut que vous ne receviez pas d'e-mail de confirmation si vous
+vous inscrivez avec votre adresse @users.berlios.de, changer l'adresse
+de redirection (m?me si ?a prend du temps) a l'air de marcher.
+
+On Mon, Mar 13, 2006, Nicolas Chapados wrote:
+> Cependant, il y a 2 tests PLearn qui ?chouent chez ApsTAT.  
+> PL_PLS_Regression, pour une raison incompr?hensible, produit un "." de 
+> moins dans son run_results/RUN.log que dans expected_results/RUN.log.  
+> Jamais vu cela avant, et ci-attach? si cela peut t'inspirer.
+
+J'obtiens les m?mes r?sultats que toi en roulant le test sur une machine
+32 bits, et ?a me para?t assez suspect, je vais regarder ?a.
+
+? plus,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Wed Mar 15 22:44:23 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 15 Mar 2006 22:44:23 +0100
+Subject: [Plearn-core] Re: =?iso-8859-1?Q?Updat?=
+	=?iso-8859-1?Q?es_des_VMat_=3A=3A_=C9tat?= de la situation
+In-Reply-To: <20060315194903.GA28598@pig.zood.org>
+References: <441629F0.5090004@apstat.com> <20060315194903.GA28598@pig.zood.org>
+Message-ID: <20060315214423.GA28872@pig.zood.org>
+
+On Wed, Mar 15, 2006, Pascal Lamblin wrote:
+> > Cependant, il y a 2 tests PLearn qui ?chouent chez ApsTAT.
+> > PL_PLS_Regression, pour une raison incompr?hensible, produit
+> > un "." de moins dans son run_results/RUN.log que dans
+> > expected_results/RUN.log. Jamais vu cela avant, et ci-attach? si
+> > cela peut t'inspirer.
+>
+> J'obtiens les m?mes r?sultats que toi en roulant le test sur une
+> machine 32 bits, et ?a me para?t assez suspect, je vais regarder ?a.
+
+C'?tait un probl?me d'arrondi (cast de real en int), qui arrivait si le
+nombre d'?tapes ?tait 33, 66... mais pas sur 64 bits.
+
+Sur le conseil d'Olivier, j'ai rajout? des ? round() ? et ?a marche,
+mais ?a pourrait p?ter (mod?r?ment) d'autres tests qui n'auraient jamais
+?t? roul?s sur 64 bits.
+
+Au fait, les gens d'Apstat, vous en ?tes o? avec l'installation de vos
+machines 64 bits ? Un espoir de pouvoir rouler des PythonCodeSnippet
+compil?s en 32 bits sur une machine 64 bits ?
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Wed Mar 15 22:51:43 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Wed, 15 Mar 2006 16:51:43 -0500
+Subject: [Plearn-core] =?ISO-8859-1?Q?Re=3A_=5BPlearn-core=5D_Re=3A_Updates_des?=
+ =?ISO-8859-1?Q?_VMat_=3A=3A_=C9tat_de_la_situation?=
+In-Reply-To: <20060315214423.GA28872@pig.zood.org>
+References: <441629F0.5090004@apstat.com> <20060315194903.GA28598@pig.zood.org> <20060315214423.GA28872@pig.zood.org>
+Message-ID: <44188C6F.5020702@apstat.com>
+
+Non, pr?sentement les machines "64-bits" sont install?es comme des 
+machines 32-bits (sysadmin sujet aussi ? limite 1 jour=24 heures).
+
+Pascal Lamblin wrote:
+> On Wed, Mar 15, 2006, Pascal Lamblin wrote:
+>   
+>>> Cependant, il y a 2 tests PLearn qui ?chouent chez ApsTAT.
+>>> PL_PLS_Regression, pour une raison incompr?hensible, produit
+>>> un "." de moins dans son run_results/RUN.log que dans
+>>> expected_results/RUN.log. Jamais vu cela avant, et ci-attach? si
+>>> cela peut t'inspirer.
+>>>       
+>> J'obtiens les m?mes r?sultats que toi en roulant le test sur une
+>> machine 32 bits, et ?a me para?t assez suspect, je vais regarder ?a.
+>>     
+>
+> C'?tait un probl?me d'arrondi (cast de real en int), qui arrivait si le
+> nombre d'?tapes ?tait 33, 66... mais pas sur 64 bits.
+>
+> Sur le conseil d'Olivier, j'ai rajout? des ? round() ? et ?a marche,
+> mais ?a pourrait p?ter (mod?r?ment) d'autres tests qui n'auraient jamais
+> ?t? roul?s sur 64 bits.
+>
+> Au fait, les gens d'Apstat, vous en ?tes o? avec l'installation de vos
+> machines 64 bits ? Un espoir de pouvoir rouler des PythonCodeSnippet
+> compil?s en 32 bits sur une machine 64 bits ?
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Mar 15 23:22:44 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 15 Mar 2006 23:22:44 +0100
+Subject: [Plearn-core] Re: Les tailles d'une VMatrix
+In-Reply-To: <44104AC2.1050509@apstat.com>
+References: <20060302002002.GA11319@pig.zood.org> <44104AC2.1050509@apstat.com>
+Message-ID: <20060315222244.GA29077@pig.zood.org>
+
+On Thu, Mar 09, 2006, Nicolas Chapados wrote:
+> >?a me fait penser qu'on pourrait peut-?tre mettre en place une
+> >mailing-list des d?veloppeurs qui touchent le coeur de PLearn
+>
+> Eh, bonne id?e! Et on pourrait m?me s'autoriser ? parler en fran?ais
+> sur celle-l?! :-)
+
+Voil?, la conversation est amen?e dessus !
+
+> >Pour revenir dans le sujet, j'ai une interrogation profonde sur ce que
+> >l'on doit faire avec les inputsize_, targetsize_ et weightsize_ d'une
+> >SourceVMatrix, en fonction de celles de sa source.
+> >
+> >Pour le moment, il semble y avoir deux possibilit?s :
+> >
+> >  - les red?finir en fonction de la source, tout le temps, mais ?a
+> >emp?che l'utilisateur de les sp?cifier dans un script, ce que je trouve
+> >vraiment dommage, en plus d'?tre d?routant ;
+> >
+> >  - les red?finir si elles manquent (sont -1), ou sont incoh?rentes,
+> >le probl?me se pose alors si la source change pendant l'ex?cution : en
+> >effet, les tailles calcul?es ? partir de la premi?re source passent
+> >alors pour des valeurs explicitement sp?cifi?es par l'utilisateur
+> >(sous r?serve qu'elles soient coh?rentes), m?me si celui-ci avait
+> >initialis? les tailles ? -1, et s'attendait ? ce que les tailles soient
+> >recalcul?es.
+>
+> Ne pourrait-on pas appliquer un peu de la magie de changeOptions() sur 
+> ce point, pour s'assurer que si la source change alors les *size_ sont 
+> recalcul?s automatiquement si la nouvelle source en poss?de?
+
+Utiliser uniquement changeOptions() ne r?sout pas le probl?me : si l'on
+change la source et que les *size_ sont coh?rentes, on ne sait pas si
+l'utilisateur les avait sp?cifi?es initialement, en supposant qu'elles
+allaient ?tre correctes pour toutes les 'source' suivantes, ou si elles
+avaient ?t? calcul?es ? partir des dimensions de la source pr?c?dente,
+ce qui n'est peut-?tre plus d'actualit?.
+
+> Si je t'ai bien compris, inputsize_ (et ses copains) demeurent les 
+> "overrides" de l'utilisateur, alors que ce que tu appelles 
+> default_inputsize (faudrait changer le nom)
+
+Je suis ouvert ? toute suggestion de nom...
+
+> sont calcul?s automatiquement depuis la source si elle existe. Cela me
+> semble une bonne solution. Pour ce qui est du temps de calcul, il n'y
+> a qu'? copier au build inputsize_ vers default_inputsize si le premier
+> est > 0, et toujours retourner default_inputsize dans les accesseurs.
+
+En effet.
+
+> Oui, nous avions parl? depuis bien longtemps d'avoir une plage 
+> "extrasize" de sorte que l'invariant 
+> (inputsize+targetsize+weightsize+extrasize == width()) soit pr?serv?.  
+> Je crois que c'est une excellente id?e, mais il y a beaucoup de code qui 
+> d?pend de l'invariant pr?c?dent (inputsize+targetsize+weights==width()), 
+> donc comme tu dis il faudra repasser au peigne fin sur bien des lignes 
+> de code...
+
+Le nombre de VMatrix (du moins dans PLearn) n'est pas si ?norme, surtout
+si on fait un peu de tri et de factorisation avant. A-t-on du code qui
+d?pend de cet invariant ailleurs que dans un fichier *VMatrix.{h,cc} ?
+Autre question li?e : vous avez beaucoup de VMat ? Apstat qui ne sont
+pas dans PLearn (ni LisaPLearn) ?
+
+> Avant une telle t?che, je sugg?re de mettre dans pytest (oui oui!) des 
+> r?sultats de r?f?rence pour tous les PLearners qui sont utilis?s au DIRO 
+> (et ailleurs, par exemple Double V3, Yoshua???) afin de s'assurer de 
+> capturer les plus gros plantages...
+
+?a, ?a reste une bonne id?e...
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Mar 16 01:00:03 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 16 Mar 2006 01:00:03 +0100
+Subject: [Plearn-core] un PRandom dans PLearner ?
+Message-ID: <20060316000003.GA29501@pig.zood.org>
+
+Salut encore,
+
+Maintenant que cette liste est cr??e, je ne vais pas me g?ner pour
+l'utiliser (et pour tanner ceux qui devraient, ? mon avis, ?tre inscrits
+dessus mais qui peuvent toujours me le dire si en fait ils ne le veulent
+pas)...
+
+Y a-t-il une raison pour laquelle il n'y a pas de PRandom dans la classe
+PLearner ? Sachant qu'il y a une option 'seed_', et que rajouter un
+PP<PRandom> ne me semble pas tr?s gourmand, je pense que ?a serait une
+bonne id?e de le rajouter. En plus, ?a ?viterait que chacun ne donne un
+nom diff?rent ? une option qui fait la m?me chose.
+
+? bient?t pour de nouvelles aventures !
+-- 
+Pascal
+
+
+From bengioy at iro.umontreal.ca  Thu Mar 16 01:40:58 2006
+From: bengioy at iro.umontreal.ca (Yoshua Bengio)
+Date: Wed, 15 Mar 2006 19:40:58 -0500
+Subject: [Plearn-core] Re: un PRandom dans PLearner ?
+In-Reply-To: <20060316000003.GA29501@pig.zood.org>
+References: <20060316000003.GA29501@pig.zood.org>
+Message-ID: <4418B41A.1010904@iro.umontreal.ca>
+
+N.B. j'en ai mis un dans OnlineLearningModule et il n'y a pas de raison 
+que pour les m?mes
+raisons on n'en mette pas dans PLearner.
+
+Pascal Lamblin a ?crit :
+
+>Salut encore,
+>
+>Maintenant que cette liste est cr??e, je ne vais pas me g?ner pour
+>l'utiliser (et pour tanner ceux qui devraient, ? mon avis, ?tre inscrits
+>dessus mais qui peuvent toujours me le dire si en fait ils ne le veulent
+>pas)...
+>
+>Y a-t-il une raison pour laquelle il n'y a pas de PRandom dans la classe
+>PLearner ? Sachant qu'il y a une option 'seed_', et que rajouter un
+>PP<PRandom> ne me semble pas tr?s gourmand, je pense que ?a serait une
+>bonne id?e de le rajouter. En plus, ?a ?viterait que chacun ne donne un
+>nom diff?rent ? une option qui fait la m?me chose.
+>
+>? bient?t pour de nouvelles aventures !
+>  
+>
+
+
+-- 
+Yoshua Bengio 
+
+
+
+
+From delallea at iro.umontreal.ca  Thu Mar 16 02:25:16 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 15 Mar 2006 20:25:16 -0500
+Subject: [Plearn-core] Re: un PRandom dans PLearner ?
+In-Reply-To: <4418B41A.1010904@iro.umontreal.ca>
+References: <20060316000003.GA29501@pig.zood.org> <4418B41A.1010904@iro.umontreal.ca>
+Message-ID: <20060316012514.GA678@opale.iro.umontreal.ca>
+
+J'en ai aussi rajout? un dans PDistribution.
+Je serais plut?t pour, il faudrait juste v?rifier quelle taille m?moire
+?a prend (? moins qu'on ne l'initialise m?me pas dans le PLearner, ce
+qui est aussi une possibilit?).
+
+--
+Olivier
+
+On 15 Mar 2006, Yoshua Bengio wrote:
+> N.B. j'en ai mis un dans OnlineLearningModule et il n'y a pas de raison 
+> que pour les m?mes
+> raisons on n'en mette pas dans PLearner.
+> 
+> Pascal Lamblin a ?crit :
+> 
+> >Salut encore,
+> >
+> >Maintenant que cette liste est cr??e, je ne vais pas me g?ner pour
+> >l'utiliser (et pour tanner ceux qui devraient, ? mon avis, ?tre inscrits
+> >dessus mais qui peuvent toujours me le dire si en fait ils ne le veulent
+> >pas)...
+> >
+> >Y a-t-il une raison pour laquelle il n'y a pas de PRandom dans la classe
+> >PLearner ? Sachant qu'il y a une option 'seed_', et que rajouter un
+> >PP<PRandom> ne me semble pas tr?s gourmand, je pense que ?a serait une
+> >bonne id?e de le rajouter. En plus, ?a ?viterait que chacun ne donne un
+> >nom diff?rent ? une option qui fait la m?me chose.
+> >
+> >? bient?t pour de nouvelles aventures !
+
+
+From bengioy at iro.umontreal.ca  Thu Mar 16 03:12:15 2006
+From: bengioy at iro.umontreal.ca (Yoshua Bengio)
+Date: Wed, 15 Mar 2006 21:12:15 -0500
+Subject: [Plearn-core] Re: un PRandom dans PLearner ?
+In-Reply-To: <20060316012514.GA678@opale.iro.umontreal.ca>
+References: <20060316000003.GA29501@pig.zood.org> <4418B41A.1010904@iro.umontreal.ca> <20060316012514.GA678@opale.iro.umontreal.ca>
+Message-ID: <4418C97F.9030008@iro.umontreal.ca>
+
+Olivier Delalleau a ?crit :
+
+>J'en ai aussi rajout? un dans PDistribution.
+>Je serais plut?t pour, il faudrait juste v?rifier quelle taille m?moire
+>?a prend (? moins qu'on ne l'initialise m?me pas dans le PLearner, ce
+>qui est aussi une possibilit?).
+>  
+>
+
+Dans OnlineLearningModule c'est une option 'random_generator'.
+Dans le build d'une sous-classe qui a besoin d'initialisation aleatoire,
+on verifie si 'random_generator' est nil, et dans ce cas on construit
+un nouveau PRandom(). Donc si l'objet est dans un autre qui
+a son PRandom() et qui veut le partager, le random_generator
+peut etre affect? de l'ext?rieur. Sinon, un generateur local est cr??.
+
+>--
+>Olivier
+>
+>On 15 Mar 2006, Yoshua Bengio wrote:
+>  
+>
+>>N.B. j'en ai mis un dans OnlineLearningModule et il n'y a pas de raison 
+>>que pour les m?mes
+>>raisons on n'en mette pas dans PLearner.
+>>
+>>Pascal Lamblin a ?crit :
+>>
+>>    
+>>
+>>>Salut encore,
+>>>
+>>>Maintenant que cette liste est cr??e, je ne vais pas me g?ner pour
+>>>l'utiliser (et pour tanner ceux qui devraient, ? mon avis, ?tre inscrits
+>>>dessus mais qui peuvent toujours me le dire si en fait ils ne le veulent
+>>>pas)...
+>>>
+>>>Y a-t-il une raison pour laquelle il n'y a pas de PRandom dans la classe
+>>>PLearner ? Sachant qu'il y a une option 'seed_', et que rajouter un
+>>>PP<PRandom> ne me semble pas tr?s gourmand, je pense que ?a serait une
+>>>bonne id?e de le rajouter. En plus, ?a ?viterait que chacun ne donne un
+>>>nom diff?rent ? une option qui fait la m?me chose.
+>>>
+>>>? bient?t pour de nouvelles aventures !
+>>>      
+>>>
+
+
+-- 
+Yoshua Bengio 
+
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Mar 16 03:36:31 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 16 Mar 2006 03:36:31 +0100
+Subject: [Plearn-core] Re: un PRandom dans PLearner ?
+In-Reply-To: <20060316012514.GA678@opale.iro.umontreal.ca>
+References: <20060316000003.GA29501@pig.zood.org> <4418B41A.1010904@iro.umontreal.ca> <20060316012514.GA678@opale.iro.umontreal.ca>
+Message-ID: <20060316023631.GA29788@pig.zood.org>
+
+On Wed, Mar 15, 2006, Olivier Delalleau wrote:
+> J'en ai aussi rajout? un dans PDistribution.
+> Je serais plut?t pour, il faudrait juste v?rifier quelle taille
+> m?moire ?a prend (? moins qu'on ne l'initialise m?me pas dans le
+> PLearner, ce qui est aussi une possibilit?).
+
+? mon avis, c'est une mauvaise id?e de ne pas l'initialiser, parce que
+c'est d?routant pour l'utilisateur d'avoir ? explicitement initialiser
+un PRandom, alors que tout est connu dans la classe parent pour le
+faire. Enfin on peut aussi mettre un message dans le skeleton.
+
+Un PRandom prend environ 10 ko sur le tas, je ne sais pas trop
+pourquoi... C'est beaucoup ?
+
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Thu Mar 16 15:03:13 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 16 Mar 2006 09:03:13 -0500
+Subject: [Plearn-core] Re: un PRandom dans PLearner ?
+In-Reply-To: <20060316023631.GA29788@pig.zood.org>
+References: <20060316000003.GA29501@pig.zood.org> <4418B41A.1010904@iro.umontreal.ca> <20060316012514.GA678@opale.iro.umontreal.ca> <20060316023631.GA29788@pig.zood.org>
+Message-ID: <20060316140312.GA9562@opale.iro.umontreal.ca>
+
+On 16 Mar 2006, Pascal Lamblin wrote:
+> On Wed, Mar 15, 2006, Olivier Delalleau wrote:
+> > J'en ai aussi rajout? un dans PDistribution.
+> > Je serais plut?t pour, il faudrait juste v?rifier quelle taille
+> > m?moire ?a prend (? moins qu'on ne l'initialise m?me pas dans le
+> > PLearner, ce qui est aussi une possibilit?).
+> 
+> ? mon avis, c'est une mauvaise id?e de ne pas l'initialiser, parce que
+> c'est d?routant pour l'utilisateur d'avoir ? explicitement initialiser
+> un PRandom, alors que tout est connu dans la classe parent pour le
+> faire. Enfin on peut aussi mettre un message dans le skeleton.
+> 
+> Un PRandom prend environ 10 ko sur le tas, je ne sais pas trop
+> pourquoi... C'est beaucoup ?
+
+Non, ?a ne me para?t pas trop *a priori*. La raison est sans doute que
+le g?n?rateur de Boost doit initialiser son ?tat. Je me demandais
+justement quelle ?tait sa taille.
+Sinon, une solution est que l'initialisation (= le seed) ne soit fait
+dans le PLearner que si le PRandom existe, et qu'une sous-classe doivent
+le cr?er elle-m?me dans son constructeur si elle en a besoin (ce n'est
+pas trop contraignant, et ?a peut ?tre facilement rajout? en commentaire
+dans le skeleton).
+
+--
+Olivier
+
+
+From chapados at apstat.com  Thu Mar 16 17:33:58 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 16 Mar 2006 11:33:58 -0500
+Subject: [Plearn-core] Nouvelle option --no-progress
+Message-ID: <44199376.7030402@apstat.com>
+
+Salut messieurs,
+
+J'ai ajout? une nouvelle option ? PLearn: --no-progress, qui disable 
+globalement l'affichage des progress bars.  Christian Dorion va 
+maintenant modifier pytest afin que tout ex?cutable "plearn-like" soit 
+invoqu? avec cette option.  Ainsi, si quelqu'un se pla?t ? modifier 
+?sot?riquement les progress bars pour que l'affichage des points d?pende 
+de la couleur de ses sous-v?tements, les tests ne vont pas planter.
+
+(Nous avons plein de tests qui ?chouent car ils entrelacent l'affichage 
+des progress bars avec d'autres affichages (logging, etc) en cours de 
+test, donc les modifs de Pascal Lamblin qui affichent les points de la 
+PB dans un ordre diff?rent causent pas mal d'ennui...)
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+

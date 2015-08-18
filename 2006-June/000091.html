@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] changements dans pymake
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C6ea25c9ba934a6fd4db878054fa99453%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000090.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] changements dans pymake</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C6ea25c9ba934a6fd4db878054fa99453%40apstat.com%3E"
+       TITLE="[Plearn-core] changements dans pymake">pascal at apstat.com
+       </A><BR>
+    <I>Fri Jun 30 23:17:01 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000090.html">[Plearn-core] changements dans pymake
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 29-Jun-06, at 9:12 PM, Pascal Lamblin wrote:
+
+&gt;<i> Salut,
+</I>&gt;<i>
+</I>&gt;<i> Comme je viens de le dire dans plearn-developers, j'ai fait quelques
+</I>&gt;<i> changements dans pymake pour r&#233;gler le cas (qui arrive souvent au lisa)
+</I>&gt;<i> o&#249; une machine arr&#234;te de r&#233;pondre au ssh inopin&#233;ment, pour ne pas avoir
+</I>&gt;<i> &#224; trop s'emb&#234;ter &#224; updater son .pymake/linux-...hosts tous les jours.
+</I>
+C'est une excellente am&#233;lioration &#224; pymake! Merci!
+
+&gt;<i> Tant que j'y &#233;tais, j'ai vu qu'il y avait d&#233;j&#224; de quoi g&#233;rer des 
+</I>&gt;<i> valeurs
+</I>&gt;<i> de &quot;nice&quot; pour la compilation, mais je n'ai rien vu qui y faisait 
+</I>&gt;<i> appel.
+</I>&gt;<i> Est-ce que &#231;a vous semblerait raisonnable de g&#233;rer un format de 
+</I>&gt;<i> fichiers
+</I>&gt;<i> .hosts un peu plus compliqu&#233;, de la forme :
+</I>&gt;<i> machine1  10
+</I>&gt;<i> machine2  19
+</I>&gt;<i> machine3 0
+</I>&gt;<i> machine4
+</I>&gt;<i> machine5 # 19
+</I>&gt;<i> machine6 -20
+</I>&gt;<i>
+</I>&gt;<i> avec un deuxi&#232;me champ (facultatif et pouvant &#234;tre en commentaire)
+</I>&gt;<i> contenant la valeur de nice sur cette machine ?
+</I>&gt;<i>
+</I>&gt;<i> &#199;a permettrait de compiler sur les postes de travail sans g&#234;ner les
+</I>&gt;<i> utilisateurs, et de donner la priorit&#233; &#224; la compilation sur les t&#226;ches
+</I>&gt;<i> du cluster par exemple.
+</I>
+Tr&#232;s bonne id&#233;e.
+&gt;<i>
+</I>&gt;<i> Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+</I>&gt;<i> puisse parall&#233;liser la compilation sur le mammouth, o&#249; on n'a aucun
+</I>&gt;<i> acc&#232;s direct aux machines : il faut passer par le syst&#232;me de gestion du
+</I>&gt;<i> cluster, on ne peut pas faire &quot;ssh machine commande...&quot;.
+</I>&gt;<i>
+</I>&gt;<i> Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+</I>&gt;<i> je peux modifier le pymake existant (par exemple en rajoutant une 
+</I>&gt;<i> option
+</I>&gt;<i> et des fonctions particuli&#232;res), ou est-ce qu'il vaudrait mieux que je
+</I>&gt;<i> fasse un autre script ? Et est-ce que vous auriez des conseils
+</I>&gt;<i> particuliers ?
+</I>
+Tu peux hacker pymake (au point o&#251; &#231;a en est!). Mais ce serait 
+peut-&#234;tre bon d'abstraire la fonctionalit&#233; &quot;lancer job sur machine x&quot; 
+et l'op&#233;ration de r&#233;cup&#233;ration du r&#233;sultat en temps opportun, ou qqch 
+du genre. Selon la machine, ssh pourrait n'&#234;tre qu'une option possible.
+
+En fait Christian Hudon avait &#224; une &#233;poque lointaine travaill&#233; sur un 
+script du genre, dans le but de pouvoir utiliser &#224; la fois ssh (chez 
+ApSTAT) et &#233;ventuellement ce qui &#224; l'&#233;poque &#233;tait la commande &quot;cluster&quot; 
+au DIRO... Diff&#233;rentes personnes ont &#233;crit diff&#233;rentes fa&#231;ons de 
+trouver des machines et dispatcher des jobs &#224; diff&#233;rents mastodontes et 
+pt&#233;rodactyles (et si je ne m'abuse, Dan s'appr&#234;te &#224; re-faire de m&#234;me 
+pour ses hyper-optimisations, et Christian H. pour pytest ...). Je ne 
+sais pas trop o&#249; en sont les derniers d&#233;veloppements, mais il serait 
+sans doute bon de coordonner tout &#231;a... Un volontaire? :-)
+
+-- Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000090.html">[Plearn-core] changements dans pymake
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

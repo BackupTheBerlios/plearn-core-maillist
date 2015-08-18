@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: plugin interface for learners
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20plugin%20interface%20for%20learners&In-Reply-To=%3C44B2D81D.1030200%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000111.html">
+   <LINK REL="Next"  HREF="000126.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: plugin interface for learners</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20plugin%20interface%20for%20learners&In-Reply-To=%3C44B2D81D.1030200%40apstat.com%3E"
+       TITLE="[Plearn-core] Re: plugin interface for learners">pascal at apstat.com
+       </A><BR>
+    <I>Tue Jul 11 00:43:41 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000111.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+        <LI>Next message: <A HREF="000126.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>James Bergstra wrote:
+&gt;<i> On Thu, Jul 06, 2006 at 05:00:17PM -0400, Pascal Vincent wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> The Advisor framework is in several ways a real improvement over the 
+</I>&gt;&gt;<i> PLearner framework, but it is not (yet) the answer to the widest 
+</I>&gt;&gt;<i> possible range of learning data and problems, as it was designed 
+</I>&gt;&gt;<i> specifically for  the type of problems encountered with financial time 
+</I>&gt;&gt;<i> series.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I think at some point we should meet to try and redesign first a truly 
+</I>&gt;&gt;<i> general TrainingSet abstraction, suitable for the wide variety of kinds 
+</I>&gt;&gt;<i> of training sets we have already encountered or can think of.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Do you believe that we could design a truly general TrainingSet
+</I>&gt;<i> abstraction, that people who write algorithms would actually want to
+</I>&gt;<i> use?  Surely we can't foresee all the learning problems that will arise!
+</I>&gt;<i>   
+</I>Well, I at least believe it could be useful to take the time to think 
+about it. I also believe a good dataset abstraction is a prerequisite 
+before attempting designing class interfaces that are to process 
+datates. Also this comes form seeing how the VMatrix abstraction has 
+been extended beyond its limits.
+&gt;&gt;<i> This, I believe, is a prerequisite before attempting any serious generic 
+</I>&gt;&gt;<i> learner redesign.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> What I have been proposing is a strategy for refactoring the code such
+</I>&gt;<i> that the learners, splitting algorithms, testing methods, and data
+</I>&gt;<i> sources can be implemented as independently as possible, and we can
+</I>&gt;<i> build the class hierarchy *last*, without needing to recode any of the
+</I>&gt;<i> implementations.  If our first hierarchy doesn't work for a particular
+</I>&gt;<i> new problem, we can just as easily make another one that is more
+</I>&gt;<i> suitable.
+</I>&gt;<i>   
+</I>Independent implementations will always use some specific (and 
+potentially large) language/framework/runtime (ex: matlab). So I really 
+see what you propose as a way  to define another basic framework (made 
+of dlls) which would *hopefully* make it easier to build 2-way bridges 
+between other frameworks or codes. A good reality check would then be 
+whether this would make it easy to use a learner written in matlab 
+inside a boosting algorithm written in Java with a data source object 
+from Torch, using a python Splitter inside a PLearn HyperLearner???? In 
+any case you or somebody will have to build the bridges for each of the 
+target frameworks to export a dll interface according to your 
+specifications. Without this, the dll interface will be either a mostly 
+empty shell, or the start of yet another new independant framework from 
+scratch. Building these bridges is a huge undertaking in itself, and 
+you'll find out that each framework will have slightly different 
+abstractions that will not exactly match yours or easily fit with the 
+way you intended to use them. The Devil *really* is in the details, but 
+unfortunately you might not know how much this is true until you broke a 
+few teeth over it on your own...
+
+Anyway, I don't want to carry on this discussion over email, as it is 
+eating up too much of my time (I'm a terribly slow email writer). I feel 
+I already did share what I could as constructive (or destructive? OK, 
+let's say re-structive) comments. But if you still want to write your 
+own framework the way you envision it, go ahead, it certainly is a very 
+instructive (although time-consuming) undertaking, and it's natural to 
+want to attempt doing it better than what exists.
+
+-- Pascal
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000111.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+	<LI>Next message: <A HREF="000126.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

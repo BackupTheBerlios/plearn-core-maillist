@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Questions sur commit r6594
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C45B63F09.9040909%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000304.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Questions sur commit r6594</H1>
+    <B>Christian Hudon</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Questions%20sur%20commit%20r6594&In-Reply-To=%3C45B63F09.9040909%40apstat.com%3E"
+       TITLE="[Plearn-core] Questions sur commit r6594">chrish at apstat.com
+       </A><BR>
+    <I>Tue Jan 23 17:59:53 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000304.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#305">[ date ]</a>
+              <a href="thread.html#305">[ thread ]</a>
+              <a href="subject.html#305">[ subject ]</a>
+              <a href="author.html#305">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Olivier Delalleau escribi&#243;:
+&gt;<i>
+</I>&gt;<i> Merci pour les explications. Il y a quand meme un truc que je ne
+</I>&gt;<i> comprends pas :
+</I>&gt;<i> - si je fais &quot;mkdir test&quot; dans mon shell, j'ai les permissions
+</I>&gt;<i> drwxr-xr-x  2 delallea neurones 4096 Jan 23 11:00 test
+</I>&gt;<i> - si je fais un PLearn::force_mkdir(&quot;test&quot;), j'ai les permissions
+</I>&gt;<i> drwxrwxr-x   2 delallea neurones       4096 Jan 23 11:02 test
+</I>&gt;<i>
+</I>&gt;<i> Question : qu'est-ce qui fait que le 'w' pour le groupe a ete rajoute ?
+</I>&gt;<i>
+</I>&gt;<i> (mon umask est 22 &lt;=&gt; u=rwx,g=rx,o=rx)
+</I>&gt;<i>   
+</I>
+Bonne question. Il ne devrait pas &#234;tre rajout&#233;. Mon hypoth&#232;ses serait
+qu'un des trucs ci-haut est incorrect. Il faudrait v&#233;rifier. Tu peux
+faire un &quot;strace -e trace=mkdir&quot; sur les deux commandes pour voir
+comment le system call est appel&#233;. Il doit aussi avoir un moyen de voir
+le umask de chaque processus, mais je n'ai pas trouv&#233; comment. Pour
+PLearn, si tu veux tu peux rajouter le code suivant temporairement pour
+voir le umask:
+
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+mode_t current = umask(0777);
+cout &lt;&lt; &quot;Umask: &quot; &lt;&lt; oct &lt;&lt; current &lt;&lt; endl;
+umask(current);
+
+
+  Christian
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000304.html">[Plearn-core] Questions sur commit r6594
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#305">[ date ]</a>
+              <a href="thread.html#305">[ thread ]</a>
+              <a href="subject.html#305">[ subject ]</a>
+              <a href="author.html#305">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Destruction des objets avec l'interface Python
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Destruction%20des%20objets%20avec%20l%27interface%20Python&In-Reply-To=%3C20070913145841.GA31440%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000411.html">
+   <LINK REL="Next"  HREF="000413.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Destruction des objets avec l'interface Python</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Destruction%20des%20objets%20avec%20l%27interface%20Python&In-Reply-To=%3C20070913145841.GA31440%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Destruction des objets avec l'interface Python">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Sep 13 16:58:42 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000411.html">[Plearn-core] Une nouvelle script pour executer des programmes avec	dbidispatch
+</A></li>
+        <LI>Next message: <A HREF="000413.html">[Plearn-core] Destruction des objets avec l'interface Python
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 13 Sep 2007, Christian Hudon wrote:
+&gt;<i> Olivier Delalleau escribi&#243;:
+</I>&gt;<i> &gt; Salut,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; J'ai du code python qui cree et utilise des objets PLearn (avec la
+</I>&gt;<i> &gt; librairie .so). En l'occurrence je cree un learner, je l'entraine, je le
+</I>&gt;<i> &gt; teste, et ca finit la. Probleme : j'ai du code important dans le
+</I>&gt;<i> &gt; destructeur de mon learner, et apparemment il n'est pas appele, ce qui
+</I>&gt;<i> &gt; empeche la liberation de certaines ressources systeme.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Question : est-ce que c'est normal ? Si ce n'est pas le cas, ou
+</I>&gt;<i> &gt; devrais-je regarder pour localiser le bug ?
+</I>&gt;<i> &gt;   
+</I>&gt;<i> Oui, c'est normal. Python est un langage garbage-collected. Les objets
+</I>&gt;<i> sont d&#233;truits quand python d&#233;cide de &quot;sortir les vidanges&quot;, et non
+</I>&gt;<i> aussit&#244;t qu'ils sortent de leur scope (comme le C++). Si tu as des
+</I>&gt;<i> ressources syst&#232;me &#224; lib&#233;rer, c'est mieux de d&#233;finir une m&#233;thode close()
+</I>&gt;<i> (ou sous un autre nom) et de l'appeler explicitement. Tu peux mettre un
+</I>&gt;<i> try: finally: si tu veux &#234;tre s&#251;r que c'est appel&#233; m&#234;me si il y a une
+</I>&gt;<i> exception de lanc&#233;e. Et le nouveau statement &quot;using&quot; de python 2.5 a &#233;t&#233;
+</I>&gt;<i> pens&#233; entre autres pour ce genre d'usage...
+</I>
+Est-ce que &#231;a veut dire que quand je lance un script python en ligne de
+commande, lorsque l'ex&#233;cution est finie, il est possible que python
+n'ait pas fait le m&#233;nage de la m&#233;moire ? Je pensais que &#231;a serait quand
+m&#234;me fait &#224; la fin du script.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000411.html">[Plearn-core] Une nouvelle script pour executer des programmes avec	dbidispatch
+</A></li>
+	<LI>Next message: <A HREF="000413.html">[Plearn-core] Destruction des objets avec l'interface Python
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615181656.GD25988%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000068.html">
+   <LINK REL="Next"  HREF="000071.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615181656.GD25988%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 20:16:57 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000068.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000071.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 15 Jun 2006, Pascal Vincent wrote:
+&gt;<i> Je pense donc que c'est viable si on adopte la politique que le 
+</I>&gt;<i> setOption fait toujours une shallow-copy de l'&#233;l&#233;ment point&#233;.
+</I>
+Oui, c'est ce que j'avais en tete.
+
+&gt;<i> Mais cela soul&#232;ve une autre question: il est utile, voire n&#233;cessaire, 
+</I>&gt;<i> pour des algos tels que HyperLearner, de conserver un 
+</I>&gt;<i> changeOptions(const map&lt;string,string&gt;&amp;), ou les valeurs sont sp&#233;cifi&#233;es 
+</I>&gt;<i> sous forme s&#233;rialis&#233;e en string. Comment proposez-vous d'&#233;crire ce 
+</I>&gt;<i> changeOptions pour qu'il fasse appel &#224; newChangeOptions (ou tout autre 
+</I>&gt;<i> mani&#232;re &#233;vitant de dupliquer le code qui fait la job)???
+</I>
+Si le reste marche, il devrait etre aussi possible d'avoir dans la
+classe Option&lt;ObjectType, ObjectType&gt; une methode qui prend un PStream
+et renvoie un void* qui pointe vers un nouvel objet ObjectType serialise
+a partir du PStream.
+Sauf qu'il faut que ce pointeur reste valide pour pouvoir le repasser a
+l'autre changeOptions, ce qui n'est peut-etre pas evident.
+
+&gt;<i> Il faut aussi r&#233;fl&#233;chir &#224; comment g&#233;rer des changements d'options du 
+</I>&gt;<i> type &quot;aaa-&gt;bbb[3]-&gt;cccc-&gt;x&quot; ... !!!!???!!!!
+</I>
+Le comportement par defaut me semblerait etre logiquement d'appeler
+aaa-&gt;changeOptions(&quot;bbb[3]-&gt;cccc-&gt;x&quot;, ...) (en gros).
+
+&gt;<i> En fait pour les deux raisons ci-dessus, je crois que ce n'est pas une 
+</I>&gt;<i> mauvaise id&#233;e que la m&#233;thode qui fasse vraiment le travail soit une 
+</I>&gt;<i> m&#233;thode du genre rebuild(const set&lt;string&gt;&amp; optionnames) comme on avait 
+</I>&gt;<i> parl&#233; avec Pascal hier. Les changeOptions depuis string et void* 
+</I>&gt;<i> pourrait &#234;tre &#233;crit en faisant des appels &#224; un tel rebuild.
+</I>
+En effet, apres y avoir plus reflechi, un rebuild me parait plus simple.
+Il y a juste un truc qu'on ne pourrait pas faire avec un rebuild : se
+servir de la valeur precedente d'une option pour faire quelque chose en
+particulier (puisque le rebuild n'est appele qu'apres que les options
+ont ete changees). Je ne vois pas vraiment de cas ou ca pourrait
+arriver, mais bon...
+
+Au fait, comme le disait Pascal L., une seule methode pourrait etre
+necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+d'options changees), avec une liste vide (par defaut) signifiant que
+tout a ete change (&lt;=&gt; build initial apres avoir cree / charge un
+objet) ?
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000068.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000071.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#70">[ date ]</a>
+              <a href="thread.html#70">[ thread ]</a>
+              <a href="subject.html#70">[ subject ]</a>
+              <a href="author.html#70">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

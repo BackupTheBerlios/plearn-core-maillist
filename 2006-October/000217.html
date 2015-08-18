@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PlearnPointer et Heritage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PlearnPointer%20et%20Heritage&In-Reply-To=%3C20061013155634.GA21440%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000216.html">
+   <LINK REL="Next"  HREF="000215.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PlearnPointer et Heritage</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PlearnPointer%20et%20Heritage&In-Reply-To=%3C20061013155634.GA21440%40pig.zood.org%3E"
+       TITLE="[Plearn-core] PlearnPointer et Heritage">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Oct 13 17:56:34 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000216.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+        <LI>Next message: <A HREF="000215.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, Oct 13, 2006, Olivier Delalleau wrote:
+&gt;<i> On 13 Oct 2006, Jaonary Rabarisoa wrote:
+</I>&gt;<i> &gt; Alors comment faire pour r&#233;cuperer ce one_subclass_member ?
+</I>&gt;<i> 
+</I>&gt;<i> Soit :
+</I>&gt;<i>     PP&lt;SubClass&gt; an_instance = new SubClass;
+</I>&gt;<i> et si tu as besoin de le transformer en PP&lt;SuperClass&gt; plus tard, tu
+</I>&gt;<i> devrais pouvoir faire un
+</I>&gt;<i>     PP&lt;SuperClass&gt; super_ptr = (SubClass*) an_instance;
+</I>&gt;<i> (possiblement sans d&#233;clarer super_ptr si c'est juste pour une
+</I>&gt;<i> utilisation dans une affectation ou un appel de fonction).
+</I>
+Ou encore :
+    PP&lt;SuperClass&gt; super_ptr = get_pointer(an_instance);
+
+ce qui t'&#233;vite d'avoir &#224; retrouver le type exact de SubClass.
+get_pointer(...) te permet de r&#233;cup&#233;rer le &#171; vrai &#187; pointeur qui est
+dans le PP&lt;...&gt;.
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000216.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+	<LI>Next message: <A HREF="000215.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

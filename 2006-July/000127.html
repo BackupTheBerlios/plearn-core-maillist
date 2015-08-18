@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20%5Bissue234%5D%20Portability%20problem%20with%20declareMethods%20wizardry&In-Reply-To=%3C44B4157A.8070904%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000126.html">
+   <LINK REL="Next"  HREF="000128.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20%5Bissue234%5D%20Portability%20problem%20with%20declareMethods%20wizardry&In-Reply-To=%3C44B4157A.8070904%40apstat.com%3E"
+       TITLE="[Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry">chapados at apstat.com
+       </A><BR>
+    <I>Tue Jul 11 23:17:46 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000126.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+        <LI>Next message: <A HREF="000128.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour Jaonary,
+
+Je n'ai pas acc&#232;s &#224; Visual C++ pour tester, mais je te sugg&#232;re les tests 
+suivants:
+
+1) Prendre les deux classes locales (ObjectTrampolineGetOption et 
+ObjectTrampolineGetObject) et les sortir de la fonction 
+Object::declareMethods.  Il est suffisant de les d&#233;placer imm&#233;diatement 
+avant Object::declareMethods (sans rien mettre dans le .h).
+
+2) Si &#231;a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+
+namespace {
+
+struct ObjectTrampolineGetOption { ... };
+struct ObjectTrampolineGetObject { ... };
+
+}
+
+et si &#231;a fonctionne, je vais incorporer le changement &#224; PLearn.
+
+    + Nicolas
+
+
+Pascal Vincent wrote:
+&gt;<i> New submission from Pascal Vincent &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">pascal at apstat.com</A>&gt;:
+</I>&gt;<i>
+</I>&gt;<i> Probl&#232;me de compilation avec Visual C++ (visual 2005 je crois) rapport&#233; par
+</I>&gt;<i> &quot;Jaonary Rabarisoa&quot; &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">jaonary at gmail.com</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i> Voici l'extrait pertinent de son message:
+</I>&gt;<i>
+</I>&gt;<i> Le code qui pose le plus problem sous visual  c'est la methode
+</I>&gt;<i>
+</I>&gt;<i> void Object::declareMethods(RemoteMethodMap&amp; rmm)
+</I>&gt;<i>
+</I>&gt;<i> de la class Object.
+</I>&gt;<i>
+</I>&gt;<i> Dans cette methode, il y a deux classes internes. Et ces classes ont une methode
+</I>&gt;<i> qui prend en argument, entre autre, un Objet PStream et utilise l'operateur &lt;&lt;
+</I>&gt;<i> de cet objet.
+</I>&gt;<i> Et l&#224;, visual debloque et me dit que la fonction ne peut pas acceder &#224;
+</I>&gt;<i> l'op&#233;rateur &lt;&lt; et &gt;&gt; :
+</I>&gt;<i>
+</I>&gt;<i> struct ObjectTrampolineGetOption : public RemoteTrampoline
+</I>&gt;<i>     {
+</I>&gt;<i>         ObjectTrampolineGetOption(const string&amp; methodname, const
+</I>&gt;<i> RemoteMethodDoc&amp; doc)
+</I>&gt;<i>             : RemoteTrampoline(methodname, doc)
+</I>&gt;<i>         { }
+</I>&gt;<i>
+</I>&gt;<i>         virtual void call(Object* instance, int nargs, PStream&amp; io) const
+</I>&gt;<i>         {
+</I>&gt;<i>             checkNargs(nargs, 1);
+</I>&gt;<i>             string optionname;
+</I>&gt;<i>             io &gt;&gt; optionname;   // on ne peut pas acceder a l'operateur &gt;&gt; . Je
+</I>&gt;<i> pense qu'il est hors de porte ici (pour visual)
+</I>&gt;<i>           
+</I>&gt;<i> ...
+</I>&gt;<i>         }
+</I>&gt;<i>     };
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces lignes. Mais
+</I>&gt;<i> je ne sais pas trop les conc&#233;quences de cela. J'ai tout de meme r&#233;ussi &#224;
+</I>&gt;<i> compiler tout plearn en librairy static (win xp + visual 2005 et fedora + gcc 4)
+</I>&gt;<i> et &#224; faire quelques testes sur les VMat (les testes du tutorial).
+</I>&gt;<i>
+</I>&gt;<i> ----------
+</I>&gt;<i> assignedto: chapados
+</I>&gt;<i> messages: 725
+</I>&gt;<i> nosy: chapados, pascal
+</I>&gt;<i> priority: bug
+</I>&gt;<i> status: unread
+</I>&gt;<i> title: Portability problem with declareMethods wizardry
+</I>&gt;<i> topic: PLearn
+</I>&gt;<i>
+</I>&gt;<i> ________________________________________________
+</I>&gt;<i> Roundup issue tracker &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">issue_tracker at apstat.com</A>&gt;
+</I>&gt;<i> &lt;<A HREF="https://intranet.apstat.com/roundup/issue234">https://intranet.apstat.com/roundup/issue234</A>&gt;
+</I>&gt;<i> ________________________________________________
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000126.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+	<LI>Next message: <A HREF="000128.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

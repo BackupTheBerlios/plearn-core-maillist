@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Early stopping et NNet
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Early%20stopping%20et%20NNet&In-Reply-To=%3CA523E387-E39D-47A5-A94D-ABCCF37B82FF%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000259.html">
+   <LINK REL="Next"  HREF="000261.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Early stopping et NNet</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Early%20stopping%20et%20NNet&In-Reply-To=%3CA523E387-E39D-47A5-A94D-ABCCF37B82FF%40apstat.com%3E"
+       TITLE="[Plearn-core] Early stopping et NNet">pascal at apstat.com
+       </A><BR>
+    <I>Wed Nov 29 15:37:56 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000259.html">[Plearn-core] Early stopping et NNet
+</A></li>
+        <LI>Next message: <A HREF="000261.html">[Plearn-core] Manier correcte pour charger un PLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#260">[ date ]</a>
+              <a href="thread.html#260">[ thread ]</a>
+              <a href="subject.html#260">[ subject ]</a>
+              <a href="author.html#260">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;&gt;<i> &#199;a, ce n'est pas clair. &#199;a d&#233;pend de la s&#233;mantique qu'on veut  
+</I>&gt;&gt;<i> donner &#224; stage. Si on veut que ce soit le nombre de tours  
+</I>&gt;&gt;<i> d'optimiseur effectivement effectu&#233;s (ce qui est l'id&#233;e &#224;  
+</I>&gt;&gt;<i> l'origine), il n'y a pas de raison de le setter &#224; nstages. Mais il  
+</I>&gt;&gt;<i> faudrait alors que NNet (ou bien l'optimiseur) soit assez  
+</I>&gt;&gt;<i> intelligent pour retourner imm&#233;diatement si il est appel&#233; &#224;  
+</I>&gt;&gt;<i> nouveau avec un nstages sup&#233;rieur (dans le cadre d'un  
+</I>&gt;&gt;<i> hyperlearner  qui ferait du v&#233;ritable &quot;early stopping&quot;, sur la  
+</I>&gt;&gt;<i> base d'une performance de validation, en faisant varier nstages).
+</I>&gt;<i> C'est l&#224; le probl&#232;me: si on n'effectue pas cette affectation, le  
+</I>&gt;<i> learner ne s'ins&#232;re pas bien dans un learner englobant.  La notion  
+</I>&gt;<i> de &quot;nstages&quot; donne au learner un BUGDET de stages.  S'il a r&#233;ussi &#224;  
+</I>&gt;<i> s'entra&#238;ner en ne d&#233;pensant pas tout son budget, on n'a pas &#224;  
+</I>&gt;<i> forcer le learner &#224; tout le d&#233;penser.  Mais c'est ce qui arrive si  
+</I>&gt;<i> on ne met pas &#224; jour nstages: un HyperLearner englobant risque  
+</I>&gt;<i> d'&#234;tre pas mal confus, car &#231;a forcerait -- contre nature --  
+</I>&gt;<i> l'optimiseur &#224; essayer de sortir d'un minimum local, ce qui  
+</I>&gt;<i> pourrait &#234;tre impossible (p.e. avec un ConjGradientOptimizer).
+</I>&gt;<i>
+</I>&gt;<i> Consid&#232;re un autre point.  Suppose qu'on veuille d&#233;river de NNet  
+</I>&gt;<i> pour faire un entra&#238;nement en deux &#233;tapes: une premi&#232;re passe de  
+</I>&gt;<i> &quot;prefitting&quot; selon un premier crit&#232;re, suivie d'une deuxi&#232;me passe  
+</I>&gt;<i> selon un autre crit&#232;re (qu'on pr&#233;sume plus difficile &#224; optimiser  
+</I>&gt;<i> que le premier, mais qui devrait tirer b&#233;n&#233;fice d'un bon point de  
+</I>&gt;<i> d&#233;part r&#233;sultant du prefitting).  Dans ce cas, on veut clairement  
+</I>&gt;<i> attribuer deux budgets: un pour le prefitting, et un pour le &quot;fine- 
+</I>&gt;<i> tuned fitting&quot;.  S'il y a eu early-stopping apr&#232;s le prefitting, je  
+</I>&gt;<i> ne veux pas que augmenter (par un hasard qui r&#233;sulte des al&#233;as du  
+</I>&gt;<i> early-stopping) le budget du fine-tuned fitting.  Je veux que ce  
+</I>&gt;<i> budget reste constant.
+</I>&gt;<i>
+</I>&gt;<i> L'id&#233;e d'amener &quot;stage&quot; &#224; &quot;nstages&quot; apr&#232;s l'entra&#238;nement est de  
+</I>&gt;<i> dire: &quot;Moi, PLearner, j'ai fini avec succ&#232;s la t&#226;che d'entra&#238;nement  
+</I>&gt;<i> &#224; l'int&#233;rieur du budget prescrit&quot;.  On pourrait bien s&#251;r ajouter un  
+</I>&gt;<i> train-cost qui produirait des statistiques sur le nombre effectif  
+</I>&gt;<i> de stages requis avant le early-stopping, mais &quot;stage&quot; devrait &#234;tre  
+</I>&gt;<i> amen&#233; &#224; &quot;nstages&quot; apr&#232;s train (dont c'est la d&#233;finition, faut-il le  
+</I>&gt;<i> rappeler).
+</I>
+Je ne suis toujours pas convaincu. Pour moi mettre &quot;stage=nstages&quot;  
+sent le &quot;work-around&quot; pour contourner le fait que NNet et/ou  
+l'optimiseur sont trop idiot pour se souvenir qu'ils n'ont rien a  
+faire si on rappelle &#224; nouveau leur m&#233;thode train/optimize. Et ce  
+work-around ne r&#232;gle pas tout: Ex: on utilise un HyperLearner qui  
+essaye des valeurs croissantes de nstages pour faire de l'early- 
+stopping bas&#233; sur une performance sur un validation set. Mettons  
+qu'il essaye des valeurs de nstages de 1 &#224; 1000 par incr&#233;ment de 10.  
+Alors &#224; chaque fois qu'il va rappeler le train du NNet, on aura  
+stage&lt;nstages et l'optimiseur va &#234;tre rappel&#233;!
+
+Une solution propre que je vois est que NNet ait un champ booleen  
+genre 'optimization_converged' qui soit mis a true lorsque  
+l'optimiseur retourne qu'il y a convergence. Ainsi lorsque train est  
+rappel&#233; &#224; nouveau et que optimization_converged est true, m&#234;me si  
+stage&lt;nstages, le train ne fait rien.
+Bien entendu, il faut que les m&#233;thodes qui changent le setting (forget 
+() setTrainingSet() changeOptions() et buildI()) remettent  
+optimization_converged a false.
+
+En fait plut&#244;t que de le faire au niveau de NNet, on pourrait mettre  
+en place un tel m&#233;canisme (c.a.d. &quot;je me souviens que j'ai converg&#233;  
+et donc que je n'ai rien a faire quand on appelle mes m&#233;thodes  
+optimize&quot;) au niveau des optimiseurs. L&#224; aussi il suffit de remettre  
+le flag &#224; false lorsqu'une m&#233;thode est appel&#233;e qui change le setting  
+(reset() setToOptimize() ). MAIS D'AILLEURS N'ETAIT-CE PAS LA LE ROLE  
+ENVISAGE DE LA VARIABLE early_stop d'Optimizer!?!??!!!!
+
+Ou bien y a-t-il qqch qui m'&#233;chappe?
+
+-- Pascal
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000259.html">[Plearn-core] Early stopping et NNet
+</A></li>
+	<LI>Next message: <A HREF="000261.html">[Plearn-core] Manier correcte pour charger un PLearner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#260">[ date ]</a>
+              <a href="thread.html#260">[ thread ]</a>
+              <a href="subject.html#260">[ subject ]</a>
+              <a href="author.html#260">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

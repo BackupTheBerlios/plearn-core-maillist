@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Types d'entiers dans PLearn, suite
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Types%20d%27entiers%20dans%20PLearn%2C%20suite&In-Reply-To=%3C20070716223059.GA3587%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000395.html">
+   <LINK REL="Next"  HREF="000397.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Types d'entiers dans PLearn, suite</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Types%20d%27entiers%20dans%20PLearn%2C%20suite&In-Reply-To=%3C20070716223059.GA3587%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Types d'entiers dans PLearn, suite">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 17 00:30:59 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000395.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000397.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Si j'ai bien compris ce que Pascal (l'autre, le gentil) m'a racont&#233;, le
+plan pour la suite du bordel d'entiers serait :
+  - utiliser boost::[u]int[n]_t, en les injectant dans le namespace
+    PLearn si n&#233;cessaire
+  - d&#233;finir operator&lt;&lt;(long int) sur les plateformes n&#233;cessaires (au
+    moins i386) &#224; coups de #if
+
+L&#224; o&#249; je ne suis pas s&#251;r, c'est :
+  - est-ce qu'on d&#233;finit operator&gt;&gt;(long int), pour laisser la
+    possibilit&#233; de d&#233;clarer une option long int et de la d&#233;s&#233;rialiser
+    (ou s'il y a d'autres usages de cet op&#233;rateur) ?
+  - est-ce qu'on fait la m&#234;me chose pour les long long int ?
+  - quelle est la couleur du cheval blanc d'Henri XIV (attention, il y a
+    un pi&#232;ge)
+  - est-ce qu'il y a des changements que j'avais faits qu'il faudra
+    annuler ?
+  - qu'en est-il de l'interface avec python ? (Xavier, c'est &#224; toi que je
+    parle... je suis au poste 1868 si tu pr&#233;f&#232;res le t&#233;l&#233;phone)
+  - d'une mani&#232;re g&#233;n&#233;rale, qu'est-ce que j'ai cass&#233; &#224; Apstat, &#224; part
+    l'op&#233;rateur &lt;&lt; ?
+
+Je ne vais pas committer cette nuit (rassurez-vous), mais j'aimerais
+bien avoir vos commentaires.
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000395.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000397.html">[Plearn-core] Types d'entiers dans PLearn, suite
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#396">[ date ]</a>
+              <a href="thread.html#396">[ thread ]</a>
+              <a href="subject.html#396">[ subject ]</a>
+              <a href="author.html#396">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

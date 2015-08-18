@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FMeilleurs_moyens_de_r%3DC3%3DA9cuperer_et_de_%3F%3D%0A%09%3D%3Futf-8%3Fq%3Fmodifier_les_membre_private_et_protected_%3D3F%3F%3D&In-Reply-To=%3Cc81af8c30611070704hc9667e8x2b67fbe86d9b6c6a%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000242.html">
+   <LINK REL="Next"  HREF="000244.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FMeilleurs_moyens_de_r%3DC3%3DA9cuperer_et_de_%3F%3D%0A%09%3D%3Futf-8%3Fq%3Fmodifier_les_membre_private_et_protected_%3D3F%3F%3D&In-Reply-To=%3Cc81af8c30611070704hc9667e8x2b67fbe86d9b6c6a%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?">jaonary at gmail.com
+       </A><BR>
+    <I>Tue Nov  7 16:04:20 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000242.html">[Plearn-core] Trigger pour BLAS et LAPACK
+</A></li>
+        <LI>Next message: <A HREF="000244.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#243">[ date ]</a>
+              <a href="thread.html#243">[ thread ]</a>
+              <a href="subject.html#243">[ subject ]</a>
+              <a href="author.html#243">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour,
+Cette question a d&#233;j&#224; &#233;t&#233; soulev&#233; ici, mais n'ayant pas encore trouv&#233; une
+solution satisfaisante
+je vais &#224; nouveau vous soumettre le probl&#232;me.
+Avant toutes choses je tiens encore &#224; pr&#233;ciser que je travaille en C++ ;-).
+Donc, j'ai un objet qui est une sous classe de Object (au sens de PLearn).
+Pour &#234;tre pr&#233;cis disons que cet objet est en fait un BinaryStump (c'est
+l'exemple sur lequel j'exp&#233;rimente actuellement).  BinaryStump &#224; deux
+membres protected qui m'int&#233;ressent plus particuli&#232;rement :
+
+int feature;
+real threshold;
+
+J'aimerais bien les r&#233;cuperer apr&#232;s l'apprentissage, mais l&#224; gros probl&#232;me.
+Etant donner, qu'ils sont innaccessible en dehors de la classe, PLearn
+m'oblige pour l'instant &#224; utiliser la fonction getOption(...) de la classe
+Object. Cette derni&#232;re renvoi malheuresement que la serialisation de mon
+objet, et je trouve que c'est un peu b&#234;te de transformer un entier en string
+et string en entier avant de pouvoir utiliser l'entier en question. Imaginez
+quand je dois r&#233;cuperer un membre beaucoup plus compliqu&#233; que des entiers.
+Par exemple le membre
+TVec&lt; PP&lt;PLearner&gt; &gt; weak_learners;
+de la classe Adaboost, qui lui m'interesse aussi mais a le mauvais gout
+d'etre private.
+
+Les solutions que je vois actuellement sont  :
+- je rends publics tous les membre qui sont succeptible de m'interess&#233;s.
+C'est peut &#234;tre une mauvaise id&#233;e dans la mesure o&#249; s'ils sont d&#233;clar&#233;s
+ainsi c'est qu'il y a une raison qui m'&#233;chappe.
+
+- j'utilise la s&#233;rialisation mais comme j'ai dis, c'est un peu lourd le
+faite de creer un objet le transformer en string et ensuite transformer le
+string en objet avant d'utiliser l'objet. En plus au niveau des types
+standard je ne sais pas trop si c'est g&#233;r&#233; de mani&#232;re transparente
+
+- Enfin, la derni&#232;re solution c'est peut &#234;tre impl&#233;menter une autre fonction
+membre d'Objet ayant pour signature Object*
+
+Option* getOption(option_name)
+
+et apres un truc du type
+
+TVec&lt; PP&lt;PLearner&gt; &gt; weak_learners = dynamic_cast&lt;TVec&lt; PP&lt;PLearner&gt; &gt; &gt;
+adaboost.getOption(&quot;weak_learners)
+
+mais l&#224; il faudrait que tous les types soient de Object (y compris les types
+standard)
+
+Qu'en pensez vous ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061107/48b058c8/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061107/48b058c8/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000242.html">[Plearn-core] Trigger pour BLAS et LAPACK
+</A></li>
+	<LI>Next message: <A HREF="000244.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#243">[ date ]</a>
+              <a href="thread.html#243">[ thread ]</a>
+              <a href="subject.html#243">[ subject ]</a>
+              <a href="author.html#243">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

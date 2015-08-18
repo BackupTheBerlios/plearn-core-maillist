@@ -1,0 +1,1833 @@
+From lamblinp at iro.umontreal.ca  Thu Jun 15 02:42:16 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 02:42:16 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+Message-ID: <20060615004216.GA20712@pig.zood.org>
+
+Salut les gens,
+
+Comme on en a d?j? discut? avec certains, il manque ? PLearn un
+m?canisme qui permette facilement de changer la valeur de plusieurs
+options dans un objet, et qui change automatiquement la valeur d'autres
+options (genre des learntoptions) si n?cessaires.
+
+Pour prendre une exemple stupide, si j'ai une classe Classe, qui d?rive
+de PLearn::Object, et qui a un membre Vec v (buildoption) et un autre
+int n (learntoption), qui est cens? valoir v.size().
+
+Je voudrais bien avoir un m?canisme qui me permet, si je fais des choses
+? v, de garder n ? jour. Mais j'aimerais aussi pouvoir changer n, et que
+?a resize v automatiquement.
+
+Pour le moment, la r?gle officielle lorsqu'on change une option d'un
+objet depuis l'ext?rieur, c'est d'appeler syst?matiquement build() pour
+?tre s?r que l'objet reste coh?rent. ?a pose trois probl?mes :
+  - si n != v.size(), comment savoir lequel a chang? ?
+  - ?a peut prendre beaucoup de temps de v?rifier la coh?rence de toutes
+    les options d'un objet, surtout s'il en a beaucoup ;
+  - cons?quence du pr?c?dent : lorsque le changement que l'on veut faire
+    a l'air anodin, souvent le programmeur n'appellera pas build()
+    parce que ?a ne sert ? rien, et se trouvera bien emb?t? si jamais la
+    classe change.
+
+Pour r?soudre ces probl?mes, le m?canisme de changeOptions(), qui prend
+en argument une table string/string contenant des noms d'options et leur
+valeur, et qui est cens? laisser l'objet dans un ?tat coh?rent et avec
+les options chang?es. Par d?faut, il appelle setOption sur les valeurs
+qui vont bien, et termine par build(), mais ce comportement peut ?tre
+remplac? dans chaque classe.
+
+Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al pour
+une matrice de 2000 par 3500. En plus, si on veut partager des storages
+entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+
+Pour le moment, HyperLearner utilise ce syst?me, qui est bien adapt?
+puisque les valeurs des options sont lues depuis un script, donc sous
+forme de string.
+
+
+Une premi?re chose que l'on pourrait faire, c'est diff?rencier deux
+r?les de la fonction build() : ?tre appel?e apr?s la cr?ation de
+l'objet et le premier setting d'options, et ?tre appel?e apr?s un
+changement d'options pour ? r?parer ? l'objet. Si on d?cide de s?parer
+les deux fonctions, on peut appeler la premi?re build() et la deuxi?me
+rebuild().
+
+Jusqu'ici, on n'a fait que d?placer le probl?me, m?me si ? mon avis
+c'est plus facile ? ?crire sous la forme de deux fonctions s?par?es,
+pour le programmeur (puisqu'il conna?t mieux le contexte).
+
+Au lieu de v?rifier les valeurs de toutes les options pour savoir
+lesquelles sont incoh?rentes, ou de garder une copie de toutes les
+options dans le but de voir lesquelles ont chang? depuis le dernier
+appel ? rebuild(), on pourrait passer ? rebuild() les noms des options
+que l'on a chang?es (? mon avis, pas besoin de conna?tre la valeur
+pr?c?dente de l'option).
+
+
+Pour continuer mon exemple d?bile, on pourrait avoir, dans Classe.cc :
+
+void Class::rebuild( set< string > changed_options )
+{
+    bool v_has_changed = (changed_options.find("v") != changed_options.end());
+    bool n_has_changed = (changed_options.find("n") != changed_options.end());
+
+    if( v_has_changed && n_has_changed )
+        assert( n == v.length() );
+    else if( v_has_changed )
+        n = v.length();
+    else if( n_has_changed )
+        v.resize( n );
+}
+
+Le changement des options dans du code ext?rieur se ferait alors de la
+mani?re suivante :
+
+// si on change les deux
+mon_objet.n = 12;
+mon_objet.v = Vec( n, 2 );
+string changed_options[2] = { "v", "n" };
+mon_objet.rebuild( set<string>( changed_options, changed_options+2 );
+
+// si on n'en change qu'une
+mon_objet.v = Vec( 2, 12 );
+set<string> changed_options;
+changed_options.insert( "v" );
+mon_objet.rebuild( changed_options );
+
+
+Deux questions restent :
+  - que fait-on si on veut changer une option d'un sous-sous-objet ?
+  - finalement, est-ce que changeOptions pourrait appeler rebuild() ?
+
+
+Vu que le probl?me des options se pose de mani?re plus aigues dans les
+learners qui incorporent beaucoup de sous-objets (ceux ? base de
+OnlineLearningModule, en particulier), je me propose pour impl?menter ?a
+dans ces objets-l? (m?me si ?a va introduire quelques hacks au d?but, en
+particulier tant que le reste du code n'appelle pas rebuild()) pour voir
+si ?a se fait bien.
+
+Vous en pensez quoi ?
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 03:21:44 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 03:21:44 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615004216.GA20712@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org>
+Message-ID: <20060615012144.GA21096@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Lamblin wrote:
+> Pour r?soudre ces probl?mes, le m?canisme de changeOptions(), qui prend
+> en argument une table string/string contenant des noms d'options et leur
+> valeur, et qui est cens? laisser l'objet dans un ?tat coh?rent et avec
+> les options chang?es.
+
+Dans cette phrase, le verbe.
+
+> // si on change les deux
+> mon_objet.n = 12;
+> mon_objet.v = Vec( n, 2 );
+> string changed_options[2] = { "v", "n" };
+> mon_objet.rebuild( set<string>( changed_options, changed_options+2 );
+
+En fait :
+mon_objet.rebuild( set<string>( changed_options, changed_options+2 ) );
+
+> Deux questions restent :
+>   - que fait-on si on veut changer une option d'un sous-sous-objet ?
+>   - finalement, est-ce que changeOptions pourrait appeler rebuild() ?
+
+Encore une :
+  - quid des classes d?riv?es ?
+
+> Vous en pensez quoi ?
+
+En particulier, Pascal, est-ce que j'ai oubli? des choses de ce qu'on a
+dit ?
+
+-- 
+Pascal (l'autre)
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 16:12:58 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 10:12:58 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615004216.GA20712@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org>
+Message-ID: <20060615141257.GA23148@opale.iro.umontreal.ca>
+
+> Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+> donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al pour
+> une matrice de 2000 par 3500. En plus, si on veut partager des storages
+> entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+
+Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+templates pour que ca soit correctement caste selon le type d'option ?
+
+--
+Olivier
+
+
+From chapados at apstat.com  Thu Jun 15 16:44:17 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 15 Jun 2006 10:44:17 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615141257.GA23148@opale.iro.umontreal.ca>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca>
+Message-ID: <44917241.3070303@apstat.com>
+
+Peux-tu ?laborer?
+
+Olivier Delalleau wrote:
+>> Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+>> donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al pour
+>> une matrice de 2000 par 3500. En plus, si on veut partager des storages
+>> entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+>>     
+>
+> Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+> d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+> templates pour que ca soit correctement caste selon le type d'option ?
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> http://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 17:18:30 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 11:18:30 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44917241.3070303@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com>
+Message-ID: <20060615151827.GA24276@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Nicolas Chapados wrote:
+> Olivier Delalleau wrote:
+> >>Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+> >>donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al 
+> >>pour
+> >>une matrice de 2000 par 3500. En plus, si on veut partager des storages
+> >>entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+> >>    
+> >
+> >Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+> >d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+> >templates pour que ca soit correctement caste selon le type d'option ?
+> >
+> Peux-tu ?laborer?
+
+Actuellement on a :
+virtual void changeOptions(const map<string,string>& name_value);
+
+Ma proposition consisterait a avoir plutot :
+virtual void changeOptions(const map<string, const void* >& name_value);
+
+Et il faudrait un setOption associe :
+void setOption(const string& optionname, const void* value);
+
+Et tout le probleme (il me semble) devrait etre d'etre capable de caster
+ce void* dans le bon type pour le mettre dans l'option. Ma reflexion
+s'etait arretee la, mais essayons d'elaborer.
+
+(... un p'tit coup d'oeil dans PLearn ...)
+
+Actuellement, Object::setOption appelle Object::readOptionVal qui appelle
+OptionBase::read(this, pstream_with_serialized_option).
+Il me semble que l'output de doxygen n'est plus dispo, mais la seule
+sous-classe de OptionBase parait etre Option<ObjectType, OptionType>. Le
+code de read(object, pstream_with_serialized_option) est simplement :
+    pstream_with_serialized_option >> dynamic_cast<ObjectType*>(object)->*ptr;
+Le membre de droite devrait etre du type OptionType& si je comprends
+bien le code (ce dont je ne suis pas du tout sur), et la magie du PStream
+est invoquee pour lire l'option.
+
+Si on avait une nouvelle methode du genre
+    OptionBase::read(Object* object, void* pointer_to_option)
+elle pourrait peut-etre faire un truc du genre
+    dynamic_cast<ObjectType*>(object)->*ptr = *(dynamic_cast<OptionType*> pointer_to_option)
+et voila. Oui, moi aussi ca me parait trop simple ;)
+
+--
+Olivier
+
+
+From chrish at apstat.com  Thu Jun 15 17:32:07 2006
+From: chrish at apstat.com (Christian Hudon)
+Date: Thu, 15 Jun 2006 11:32:07 -0400
+Subject: [Plearn-core] learntoption et buildoption
+In-Reply-To: <20060615004216.GA20712@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org>
+Message-ID: <44917D77.2000109@apstat.com>
+
+Pascal Lamblin wrote:
+> Pour prendre une exemple stupide, si j'ai une classe Classe, qui d?rive
+> de PLearn::Object, et qui a un membre Vec v (buildoption) et un autre
+> int n (learntoption), qui est cens? valoir v.size().
+>
+> Je voudrais bien avoir un m?canisme qui me permet, si je fais des choses
+> ? v, de garder n ? jour. Mais j'aimerais aussi pouvoir changer n, et que
+> ?a resize v automatiquement.
+>   
+
+Je n'ai pas d'insight particulier sur le reste du probl?me, mais je ne 
+pense pas que ?a soit une bonne id?e en g?n?ral d'avoir une learnoption 
+qui influcence une buildoption. Si on fait ?a, les concepts de 
+"learntoption" et "buildoption" perdent un peu leur sens... ?a peut 
+aussi donner des d?pendances circulaires, etc. ? tout le moins, ?a me 
+semble pas tr?s intuitif...
+
+  Christian
+
+
+
+From chapados at apstat.com  Thu Jun 15 18:11:03 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 15 Jun 2006 12:11:03 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615151827.GA24276@opale.iro.umontreal.ca>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca>
+Message-ID: <44918697.7010701@apstat.com>
+
+
+
+Olivier Delalleau wrote:
+> On 15 Jun 2006, Nicolas Chapados wrote:
+>   
+>> Olivier Delalleau wrote:
+>>     
+>>>> Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+>>>> donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al 
+>>>> pour
+>>>> une matrice de 2000 par 3500. En plus, si on veut partager des storages
+>>>> entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+>>>>    
+>>>>         
+>>> Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+>>> d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+>>> templates pour que ca soit correctement caste selon le type d'option ?
+>>>
+>>>       
+>> Peux-tu ?laborer?
+>>     
+>
+> Actuellement on a :
+> virtual void changeOptions(const map<string,string>& name_value);
+>
+> Ma proposition consisterait a avoir plutot :
+> virtual void changeOptions(const map<string, const void* >& name_value);
+>
+> Et il faudrait un setOption associe :
+> void setOption(const string& optionname, const void* value);
+>
+> Et tout le probleme (il me semble) devrait etre d'etre capable de caster
+> ce void* dans le bon type pour le mettre dans l'option. Ma reflexion
+> s'etait arretee la, mais essayons d'elaborer.
+>
+> (... un p'tit coup d'oeil dans PLearn ...)
+>
+> Actuellement, Object::setOption appelle Object::readOptionVal qui appelle
+> OptionBase::read(this, pstream_with_serialized_option).
+> Il me semble que l'output de doxygen n'est plus dispo, mais la seule
+> sous-classe de OptionBase parait etre Option<ObjectType, OptionType>. Le
+> code de read(object, pstream_with_serialized_option) est simplement :
+>     pstream_with_serialized_option >> dynamic_cast<ObjectType*>(object)->*ptr;
+> Le membre de droite devrait etre du type OptionType& si je comprends
+> bien le code (ce dont je ne suis pas du tout sur), et la magie du PStream
+> est invoquee pour lire l'option.
+>
+> Si on avait une nouvelle methode du genre
+>     OptionBase::read(Object* object, void* pointer_to_option)
+> elle pourrait peut-etre faire un truc du genre
+>     dynamic_cast<ObjectType*>(object)->*ptr = *(dynamic_cast<OptionType*> pointer_to_option)
+> et voila. Oui, moi aussi ca me parait trop simple ;)
+>
+> --
+Oui, et c'est effectivement trop simple :: si tu transformes un objet en 
+void*, tu perds toute information de type et elle est pratiquement 
+impossible ? r?cup?rer.  Cependant tout n'est pas perdu.
+
+Boost a un type "tuple" que Pascal V. a r?cemment mieux int?gr? ? 
+PLearn.  Il permettrait de construire des "type lists" dans le genre:
+
+    object->changeOptions(make_tuple(make_pair("option_matrix", mymat),
+                                     make_pair("option_int",    myint),
+                                     make_pair("option_foo",    foo_object)));
+
+L'id?e ici est pr?server l'information de type et de la canaliser vers 
+l'op?rateur d'affectation ? l'int?rieur de changeOptions.  Avec un peu 
+de vaudou templatique, on peut it?rer compile-time sur les ?l?ments d'un 
+tuple de mani?re type-safe.  On pourra ?videmment se d?finir des 
+raccourcis syntaxiques qui ?viteront le fastidieux "make_pair" pour lier 
+le nom de l'option au type ? changer.
+
+Le seul ennui est le suivant: pour que cette recette fonctionne, il faut 
+que changeOptions soit une template function dans PLearn::Object.  Or en 
+faisant cela, on perd la possibilit? de la rendre virtuelle (il n'est 
+pas permis d'avoir une function-template virtuelle dans une classe).  
+Voici quelques pistes de solution si on va de l'avant avec la solution 
+non-virtuelle:
+
+    * changeOptions passe par les objets Options (ceux dans la
+      OptionList) pour effectuer l'affectation (car il n'a pas acc?s aux
+      membre ? modifier dans une classe d?riv?e).  Pour cela, on peut
+      ajouter une fonction virtuelle ? OptionBase qui reprend l'id?e
+      d'Olivier, c'est-?-dire qu'elle accepte un void* et effectue un
+      cast vers le bon type de membre.  La principale consid?ration ici
+      est au niveau de la type-safety: faisant cela, on perd tout espoir
+      d'interdire (compile-time ou run-time) les affectations de mauvais
+      type.
+    * Une fois que changeOptions a modifi? ? la main toutes les options
+      (gr?ce ? la nouvelle fonction de l'item pr?c?dent), elle appelle
+      la fonction rebuild() de l'objet.
+
+Pour r?pondre ? la question des options des objets imbriqu?s, on peut 
+adopter la convention suivante:
+
+    * On appelle changeOptions sur l'objet top-level, en utilisant la
+      syntaxe d'options "sous_objet.sous_sous_objet.option" pour
+      sp?cifier les options ? modifier dans les objets imbriqu?s.
+    * Ici ?a devient sexy: changeOptions appelle rebuild() sur l'objet
+      top-level, en s'attendant ? ce qu'il g?re lui-m?me les rebuilds
+      des sous-objets et retourne "true".  Mais peut-?tre que le rebuild
+      du top-level se fiche compl?tement des sous-objets: si rebuild
+      retourne "false", changeOptions va lui-m?me faire un rebuild() des
+      sous-objets dans un ordre top-down, i.e. on donne toujours la
+      possibilit? au rebuild() d'un parent de contr?ler le rebuild de
+      ses enfants en fonction de l'ensemble des options modifi?es dans
+      le parent et les enfants.
+    * Donc en conclusion: pour que ce protocole fonctionne correctement,
+      il faut que rebuild() retourne un bool.  Il faut ?galement,
+      id?alement, que rebuild() ne soit appel? que depuis changeOptions,
+      d'o? l'int?r?t ?ventuel d?clarer cette fonction private.  (Il est
+      l?gal en C++ d'avoir une fonction virtuelle private, et d'en faire
+      un override dans une classe d?riv?e; il sera seulement impossible
+      de l'appeler de quelque endroit autre que depuis la classe de base.)
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060615/84e86403/attachment.html>
+
+From pascal at apstat.com  Thu Jun 15 18:49:11 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 12:49:11 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615151827.GA24276@opale.iro.umontreal.ca>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca>
+Message-ID: <44918F87.4000205@apstat.com>
+
+C'est s?r que dans la cat?gorie "je peux repr?senter n'importe quel 
+type" on peut mettre void* en concurrence avec string...
+Ils ont tous deux leurs avantages et inconv?nients.
+
+Je trouve qu'un m?canisme de setOption acceptant void* est une bonne 
+id?e ? explorer. Examinons la question de plus pr?s:
+
+Une difficult? de void* est li? aux questions de gestion m?moire:
+
+Puisque, dans les cas simples, le pointeur en question pourrait ?tre, 
+par ex. l'adresse d'un int allou? sur la stack dans le scope de 
+l'appelant, il semble qu'on doive convenir que l'objet point? peut 
+n'avoir qu'une dur?e de vie temporaire, et que le setOption doive donc 
+en faire une copie.
+Faire une copie d'un int, pas de probl?me.
+Faire une copie d'un PP<PLearner>, il y a plusieurs possibilit?s:
+  a) on copie le PP<PLearner>
+  b) on deep-copie le PLearner
+L'option b) est plus risqu?e, car les deepCopy ne sont pas 
+syst?matiquement bien implant?. Par ailleurs avec l'option b) il serait 
+plus difficile d'assurer le partage de param?tres. Donc l'option a) 
+s'impose.
+
+Je pense donc que c'est viable si on adopte la politique que le 
+setOption fait toujours une shallow-copy de l'?l?ment point?.
+
+Quant ? changeOptions, on pourrait imaginer une version telle que celle-ci:
+
+typedef map<string, const void*> OptionMap;
+
+virtual void newChangeOptions(const OptionMap& name_value)
+{
+   // ex:
+   OptionMap::const_iterator found = name_value.find("weight_decay");
+  if(found!=name_value.end())
+    {
+       real wd = *found->second;
+      // do something with the new wd
+    }
+}
+
+La version par d?faut pourrait se contenter de faire appel au nouveau 
+setOption et d'appeler build (pour l'instant, pour la backward 
+compatibilit?).
+
+Mais cela soul?ve une autre question: il est utile, voire n?cessaire, 
+pour des algos tels que HyperLearner, de conserver un 
+changeOptions(const map<string,string>&), ou les valeurs sont sp?cifi?es 
+sous forme s?rialis?e en string. Comment proposez-vous d'?crire ce 
+changeOptions pour qu'il fasse appel ? newChangeOptions (ou tout autre 
+mani?re ?vitant de dupliquer le code qui fait la job)???
+
+Il faut aussi r?fl?chir ? comment g?rer des changements d'options du 
+type "aaa->bbb[3]->cccc->x" ... !!!!???!!!!
+
+En fait pour les deux raisons ci-dessus, je crois que ce n'est pas une 
+mauvaise id?e que la m?thode qui fasse vraiment le travail soit une 
+m?thode du genre rebuild(const set<string>& optionnames) comme on avait 
+parl? avec Pascal hier. Les changeOptions depuis string et void* 
+pourrait ?tre ?crit en faisant des appels ? un tel rebuild.
+
+Par ailleurs, je veux r?p?ter ici ce que j'ai dit ? Pascal hier:
+Il y a un bout de temps que je crois souhaitable de s?parer l'op?ration 
+de construction initiale (pour des options sp?cifi?es par l'utilisateur, 
+ou relues d'un objet sauv?) de l'op?ration de "remise en ?tat de l'objet 
+apr?s qu'on ait *chang?* des options" (qui est quelquechose de bien plus 
+mal d?fini), et c'est pourquoi j'avais ajout? la m?thode changeOptions.
+Mais ? y regarder de plus pr?s, c'est peut-?tre un faux probl?me. Le 
+vrai probl?me est que impl?menter du code qui assure la "remise en ?tat 
+apr?s changement d'options" pour un objet complexe est en g?n?ral prise 
+de t?te et compliqu?, et que quand on ?crit une classe au d?part, c'est 
+souvent le dernier de nos soucis. Le fait de soustraire cette difficult? 
+de l'?criture de build ne fera pas n?cessairement qu'il sera plus ais? 
+d'impl?menter cette fonctionalit? dans une autre m?thode comme 
+changeOptions. De tels changeOptions risquent par ailleurs d'?tre une 
+duplication, en plus compliqu?, du code de build, et la duplication de 
+code dans ce contexte est ? mon avis dangereuse. Donc peut-?tre que 
+centraliser cette logique dans build n'est pas si mal que ?a. Et 
+peut-?tre que si. A m?diter...
+
+
+Olivier Delalleau wrote:
+> On 15 Jun 2006, Nicolas Chapados wrote:
+>   
+>> Olivier Delalleau wrote:
+>>     
+>>>> Le probl?me de cette approche, c'est qu'il n?cessite une conversion des
+>>>> donn?es en cha?ne de caract?res, ce qui n'est pas forc?ment l'id?al 
+>>>> pour
+>>>> une matrice de 2000 par 3500. En plus, si on veut partager des storages
+>>>> entre plusieurs matrices, ?a peut devenir tr?s p?nible.
+>>>>    
+>>>>         
+>>> Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+>>> d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+>>> templates pour que ca soit correctement caste selon le type d'option ?
+>>>
+>>>       
+>> Peux-tu ?laborer?
+>>     
+>
+> Actuellement on a :
+> virtual void changeOptions(const map<string,string>& name_value);
+>
+> Ma proposition consisterait a avoir plutot :
+> virtual void changeOptions(const map<string, const void* >& name_value);
+>
+> Et il faudrait un setOption associe :
+> void setOption(const string& optionname, const void* value);
+>
+> Et tout le probleme (il me semble) devrait etre d'etre capable de caster
+> ce void* dans le bon type pour le mettre dans l'option. Ma reflexion
+> s'etait arretee la, mais essayons d'elaborer.
+>
+> (... un p'tit coup d'oeil dans PLearn ...)
+>
+> Actuellement, Object::setOption appelle Object::readOptionVal qui appelle
+> OptionBase::read(this, pstream_with_serialized_option).
+> Il me semble que l'output de doxygen n'est plus dispo, mais la seule
+> sous-classe de OptionBase parait etre Option<ObjectType, OptionType>. Le
+> code de read(object, pstream_with_serialized_option) est simplement :
+>     pstream_with_serialized_option >> dynamic_cast<ObjectType*>(object)->*ptr;
+> Le membre de droite devrait etre du type OptionType& si je comprends
+> bien le code (ce dont je ne suis pas du tout sur), et la magie du PStream
+> est invoquee pour lire l'option.
+>
+> Si on avait une nouvelle methode du genre
+>     OptionBase::read(Object* object, void* pointer_to_option)
+> elle pourrait peut-etre faire un truc du genre
+>     dynamic_cast<ObjectType*>(object)->*ptr = *(dynamic_cast<OptionType*> pointer_to_option)
+> et voila. Oui, moi aussi ca me parait trop simple ;)
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> http://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 19:05:21 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 19:05:21 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44918697.7010701@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918697.7010701@apstat.com>
+Message-ID: <20060615170521.GA29517@pig.zood.org>
+
+On Thu, Jun 15, 2006, Nicolas Chapados wrote:
+> Oui, et c'est effectivement trop simple :: si tu transformes un objet en 
+> void*, tu perds toute information de type et elle est pratiquement 
+> impossible ? r?cup?rer.  Cependant tout n'est pas perdu.
+
+On ne peut pas r?cup?rer le type de l'option ? partir de la string
+associ?e ?
+
+> Boost a un type "tuple" que Pascal V. a r?cemment mieux int?gr? ? 
+> PLearn.  Il permettrait de construire des "type lists" dans le genre:
+> 
+>    object->changeOptions(make_tuple(make_pair("option_matrix", mymat),
+>                                     make_pair("option_int",    myint),
+>                                     make_pair("option_foo",    foo_object)));
+
+?a me para?t une bonne id?e.
+
+> Le seul ennui est le suivant: pour que cette recette fonctionne, il faut 
+> que changeOptions soit une template function dans PLearn::Object.  Or en 
+> faisant cela, on perd la possibilit? de la rendre virtuelle (il n'est 
+> pas permis d'avoir une function-template virtuelle dans une classe).  
+> Voici quelques pistes de solution si on va de l'avant avec la solution 
+> non-virtuelle:
+> 
+>    * changeOptions passe par les objets Options (ceux dans la
+>      OptionList) pour effectuer l'affectation (car il n'a pas acc?s aux
+>      membre ? modifier dans une classe d?riv?e).  Pour cela, on peut
+>      ajouter une fonction virtuelle ? OptionBase qui reprend l'id?e
+>      d'Olivier, c'est-?-dire qu'elle accepte un void* et effectue un
+>      cast vers le bon type de membre.  La principale consid?ration ici
+>      est au niveau de la type-safety: faisant cela, on perd tout espoir
+>      d'interdire (compile-time ou run-time) les affectations de mauvais
+>      type.
+>    * Une fois que changeOptions a modifi? ? la main toutes les options
+>      (gr?ce ? la nouvelle fonction de l'item pr?c?dent), elle appelle
+>      la fonction rebuild() de l'objet.
+
+Il faudrait qu'elle passe en argument de rebuild le set des noms des
+options modifi?es, alors. Sinon on perd toute la connaissance de la
+liste des options qui ont chang?, et rebuild() devient aussi inefficace
+que l'actuel build().
+
+> Pour r?pondre ? la question des options des objets imbriqu?s, on peut 
+> adopter la convention suivante:
+> 
+>    * On appelle changeOptions sur l'objet top-level, en utilisant la
+>      syntaxe d'options "sous_objet.sous_sous_objet.option" pour
+>      sp?cifier les options ? modifier dans les objets imbriqu?s.
+>    * Ici ?a devient sexy: changeOptions appelle rebuild() sur l'objet
+>      top-level, en s'attendant ? ce qu'il g?re lui-m?me les rebuilds
+>      des sous-objets et retourne "true".
+
+Donc l?, il faudrait passer au rebuild() du top-level la liste de toutes
+les options et sous-options modifi?es, genre { "option",
+"sous_objet.sous_sous_objet.option" }. Est-ce qu'on rajoute aussi
+"sous_objet" et "sous_objet.sous_sous_objet" ?
+
+>      Mais peut-?tre que le rebuild
+>      du top-level se fiche compl?tement des sous-objets: si rebuild
+>      retourne "false", changeOptions va lui-m?me faire un rebuild() des
+>      sous-objets dans un ordre top-down, i.e. on donne toujours la
+>      possibilit? au rebuild() d'un parent de contr?ler le rebuild de
+>      ses enfants en fonction de l'ensemble des options modifi?es dans
+>      le parent et les enfants.
+>    * Donc en conclusion: pour que ce protocole fonctionne correctement,
+>      il faut que rebuild() retourne un bool.  Il faut ?galement,
+>      id?alement, que rebuild() ne soit appel? que depuis changeOptions,
+>      d'o? l'int?r?t ?ventuel d?clarer cette fonction private.  (Il est
+>      l?gal en C++ d'avoir une fonction virtuelle private, et d'en faire
+>      un override dans une classe d?riv?e; il sera seulement impossible
+>      de l'appeler de quelque endroit autre que depuis la classe de base.)
+
+Est-ce que le rebuild des sous-objets doit se faire uniquement ? l'aide
+de la fonction changeOptions ? Sinon, il faudrait que l'objet parent
+puisse appeler la fonction rebuild(...) du sous-objet.
+
+? mon avis, le cas o? un objet parent devra intervenir sur le sous_objet
+entre le moment o? ses options ont chang? et le moment o? il est
+reconstruit sera assez rare. Surtout qu'on ne conna?t pas forc?ment le
+type exact, et que la recherche pour un string commen?ant par
+"sous_objet." est fastidieuse.
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Thu Jun 15 19:15:25 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 13:15:25 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44918F87.4000205@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com>
+Message-ID: <449195AD.7010905@apstat.com>
+
+>       real wd = *found->second;
+Je voulais ?rire, ?videmment
+
+real wd = *(static_cast<real*>(found->second));
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 19:18:21 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 19:18:21 +0200
+Subject: [Plearn-core] learntoption et buildoption
+In-Reply-To: <44917D77.2000109@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <44917D77.2000109@apstat.com>
+Message-ID: <20060615171821.GC29517@pig.zood.org>
+
+On Thu, Jun 15, 2006, Christian Hudon wrote:
+> >Pour prendre une exemple stupide, si j'ai une classe Classe, qui d?rive
+> >de PLearn::Object, et qui a un membre Vec v (buildoption) et un autre
+> >int n (learntoption), qui est cens? valoir v.size().
+> >
+> >Je voudrais bien avoir un m?canisme qui me permet, si je fais des choses
+> >? v, de garder n ? jour. Mais j'aimerais aussi pouvoir changer n, et que
+> >?a resize v automatiquement.
+> 
+> Je n'ai pas d'insight particulier sur le reste du probl?me, mais je ne 
+> pense pas que ?a soit une bonne id?e en g?n?ral d'avoir une learnoption 
+> qui influcence une buildoption. Si on fait ?a, les concepts de 
+> "learntoption" et "buildoption" perdent un peu leur sens... ?a peut 
+> aussi donner des d?pendances circulaires, etc. ? tout le moins, ?a me 
+> semble pas tr?s intuitif...
+
+Tout ? fait d'accord, mon exemple ?tait volontairement simplifi?. Mais
+il arrive des cas o? les deux sont en fait des buildoption, soit parce
+qu'on veut laisser l'utilisateur choisir comment il veut sp?cifier son
+objet dans le script, soit parce que l'une des options n'a pas le m?me
+statut dans la classe de base et une classe d?riv?e, ce que l'on ne sait
+pas forc?ment dans du code qui a un pointeur vers la classe de base.
+
+Et je suis s?r qu'on peut trouver d'autres exemples. En tous cas, il y a
+du code qui change des buildoptions en fonction d'autres buildoptions,
+y'a qu'? chercher dans les sous-classes de SourceVMatrix.
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 19:30:14 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 19:30:14 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44918F87.4000205@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com>
+Message-ID: <20060615173014.GD29517@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> Par ailleurs, je veux r?p?ter ici ce que j'ai dit ? Pascal hier:
+> Il y a un bout de temps que je crois souhaitable de s?parer l'op?ration 
+> de construction initiale (pour des options sp?cifi?es par l'utilisateur, 
+> ou relues d'un objet sauv?) de l'op?ration de "remise en ?tat de l'objet 
+> apr?s qu'on ait *chang?* des options" (qui est quelquechose de bien plus 
+> mal d?fini), et c'est pourquoi j'avais ajout? la m?thode changeOptions.
+> Mais ? y regarder de plus pr?s, c'est peut-?tre un faux probl?me. Le 
+> vrai probl?me est que impl?menter du code qui assure la "remise en ?tat 
+> apr?s changement d'options" pour un objet complexe est en g?n?ral prise 
+> de t?te et compliqu?, et que quand on ?crit une classe au d?part, c'est 
+> souvent le dernier de nos soucis. Le fait de soustraire cette difficult? 
+> de l'?criture de build ne fera pas n?cessairement qu'il sera plus ais? 
+> d'impl?menter cette fonctionalit? dans une autre m?thode comme 
+> changeOptions. De tels changeOptions risquent par ailleurs d'?tre une 
+> duplication, en plus compliqu?, du code de build, et la duplication de 
+> code dans ce contexte est ? mon avis dangereuse. Donc peut-?tre que 
+> centraliser cette logique dans build n'est pas si mal que ?a. Et 
+> peut-?tre que si. A m?diter...
+
+J'en profite alors pour r?p?ter ce que j'ai dit ? Pascal hier:
+Ce que je pense, c'est que dans la m?thode qui assure la ? remise en
+?tat apr?s changement d'options ?, ?a ne peut ?tre que plus facile si
+on conna?t la liste des options qui ont chang? (ou qui n'ont pas chang?,
+apr?s tout).
+
+Si cela _n?cessite_ le fait de passer par une fonction particuli?re
+(changeOptions) lorsqu'on veut changer une option, pourquoi pas, mais
+c'est lourd pour tout le monde. Si on a un moyen plus simple de notifier
+? l'objet ce qui a chang?, c'est ? mon avis mieux.
+
+D'ailleurs, par d?faut, on peut consid?rer que toutes les options ont
+chang?, c'est ce que fait build() pour le moment. Et on n'est m?me pas
+oblig? de diff?rencier build et rebuild, on peut simplement faire en
+sorte que build() appelle build(toutes_les_options) si on veut ?viter la
+duplication de code.
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 19:44:27 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 13:44:27 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44918697.7010701@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918697.7010701@apstat.com>
+Message-ID: <20060615174426.GA25988@opale.iro.umontreal.ca>
+
+>     Si on avait une nouvelle methode du genre
+>         OptionBase::read(Object* object, void* pointer_to_option)
+>     elle pourrait peut-etre faire un truc du genre
+>         dynamic_cast<ObjectType*>(object)->*ptr = *(dynamic_cast<OptionType*> pointer_to_option)
+>     et voila. Oui, moi aussi ca me parait trop simple ;)
+> 
+> 
+> Oui, et c'est effectivement trop simple :: si tu transformes un objet en void*,
+> tu perds toute information de type et elle est pratiquement impossible ?
+> r?cup?rer.  Cependant tout n'est pas perdu.
+
+Ok, la il doit me manquer quelque chose : qu'est-ce qui est perdu
+exactement ? Si on le recaste dans le bon Type*, est-ce qu'on a perdu
+quelque chose ? Car dans le cas ci-dessus, l'option connait le bon type
+(grace au template OptionType), meme s'il a ete perdu dans le cast en
+void*.
+
+D'ailleurs, tu ecris ensuite :
+
+>     une classe d?riv?e).  Pour cela, on peut ajouter une fonction virtuelle ?
+>     OptionBase qui reprend l'id?e d'Olivier, c'est-?-dire qu'elle accepte un
+>     void* et effectue un cast vers le bon type de membre.  La principale
+>     consid?ration ici est au niveau de la type-safety: faisant cela, on perd
+>     tout espoir d'interdire (compile-time ou run-time) les affectations de
+>     mauvais type.
+
+Donc on dirait que tu dis que ca pourrait marcher. Pour le cast en
+mauvais type, est-ce que le cast ne devrait pas renvoyer NULL s'il
+echoue a l'execution ? Ou alors le fait que ce soit un void* l'en
+empeche ?
+
+> Pour r?pondre ? la question des options des objets imbriqu?s, on peut adopter
+> la convention suivante:
+> (...)
+
+En fait, j'avais dans l'idee que si on avait un changeOptions, on
+n'aurait pas de rebuild (les deux ayant le meme but). Donc si ca
+se passe dans un objet imbrique, il suffirait de 'desimbriquer' le
+premier element et faire un sous_object->changeOptions(...).
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 19:52:11 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 13:52:11 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615173014.GD29517@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615173014.GD29517@pig.zood.org>
+Message-ID: <20060615175210.GC25988@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Pascal Lamblin wrote:
+> On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> > Par ailleurs, je veux r?p?ter ici ce que j'ai dit ? Pascal hier:
+> > Il y a un bout de temps que je crois souhaitable de s?parer l'op?ration 
+> > de construction initiale (pour des options sp?cifi?es par l'utilisateur, 
+> > ou relues d'un objet sauv?) de l'op?ration de "remise en ?tat de l'objet 
+> > apr?s qu'on ait *chang?* des options" (qui est quelquechose de bien plus 
+> > mal d?fini), et c'est pourquoi j'avais ajout? la m?thode changeOptions.
+> > Mais ? y regarder de plus pr?s, c'est peut-?tre un faux probl?me. Le 
+> > vrai probl?me est que impl?menter du code qui assure la "remise en ?tat 
+> > apr?s changement d'options" pour un objet complexe est en g?n?ral prise 
+> > de t?te et compliqu?, et que quand on ?crit une classe au d?part, c'est 
+> > souvent le dernier de nos soucis. Le fait de soustraire cette difficult? 
+> > de l'?criture de build ne fera pas n?cessairement qu'il sera plus ais? 
+> > d'impl?menter cette fonctionalit? dans une autre m?thode comme 
+> > changeOptions. De tels changeOptions risquent par ailleurs d'?tre une 
+> > duplication, en plus compliqu?, du code de build, et la duplication de 
+> > code dans ce contexte est ? mon avis dangereuse. Donc peut-?tre que 
+> > centraliser cette logique dans build n'est pas si mal que ?a. Et 
+> > peut-?tre que si. A m?diter...
+> 
+> J'en profite alors pour r?p?ter ce que j'ai dit ? Pascal hier:
+> Ce que je pense, c'est que dans la m?thode qui assure la ? remise en
+> ?tat apr?s changement d'options ?, ?a ne peut ?tre que plus facile si
+> on conna?t la liste des options qui ont chang? (ou qui n'ont pas chang?,
+> apr?s tout).
+> 
+> Si cela _n?cessite_ le fait de passer par une fonction particuli?re
+> (changeOptions) lorsqu'on veut changer une option, pourquoi pas, mais
+> c'est lourd pour tout le monde. Si on a un moyen plus simple de notifier
+> ? l'objet ce qui a chang?, c'est ? mon avis mieux.
+> 
+> D'ailleurs, par d?faut, on peut consid?rer que toutes les options ont
+> chang?, c'est ce que fait build() pour le moment. Et on n'est m?me pas
+> oblig? de diff?rencier build et rebuild, on peut simplement faire en
+> sorte que build() appelle build(toutes_les_options) si on veut ?viter la
+> duplication de code.
+
+Pascal #1 : je suis d'accord que "le fait de soustraire cette difficult?
+de l'?criture de build ne fera pas n?cessairement qu'il sera plus ais?
+d'impl?menter cette fonctionalit? dans une autre m?thode comme
+changeOptions". Mais dans le cas ou on veut cette fonctionnalite, je
+pense que c'est mieux de la coder dans une fonction separee que de la
+melanger au build, car ca rend le build inutilement complexe.
+
+Pascal #2 : idealement, passer par une fonction particuliere
+(changeOptions) ou appeler rebuild(options_qui_ont_change) devrait etre
+a peu pres du meme niveau de lourdeur (il me semble). Dans le premier
+cas, tu passes tout dans la fonction, tandis que dans le deuxieme cas tu
+fais toi-meme les affectations avant de passer les noms des options.
+
+--
+Olivier
+
+
+From pascal at apstat.com  Thu Jun 15 20:10:59 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 14:10:59 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615174426.GA25988@opale.iro.umontreal.ca>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918697.7010701@apstat.com> <20060615174426.GA25988@opale.iro.umontreal.ca>
+Message-ID: <4491A2B3.7090202@apstat.com>
+
+> En fait, j'avais dans l'idee que si on avait un changeOptions, on
+> n'aurait pas de rebuild (les deux ayant le meme but). Donc si ca
+> se passe dans un objet imbrique, il suffirait de 'desimbriquer' le
+> premier element et faire un sous_object->changeOptions(...).
+>   
+Le rebuild propos? par Pascal L. re?oit seulement les noms d'option qui 
+ont chang?, pas leur valuers (il suppose que ces valeurs ont d?j? ?t? 
+chang?es). C'est la diff?rence essentielle avec le changeOptions comme 
+tu le vois.
+
+L'inconv?nient avec rebuild(...) est qu'il n'a pas un acc?s direct ? 
+l'ancienne valeur et la nouvelle valeur de l'option (mais s'il a 
+*vraiment* besoin de l'ancienne valeur, elle est souvent accessible de 
+mani?re indirecte, comme dans la longueur d'un Vec, ou bien elle peut 
+avoir ?t? copi?e).
+
+L'avantage avec rebuild(...), c'est qu'il n'a pas ? se soucier de la 
+mani?re dont la nouvelle valeur d'option a ?t? sett?e (il peut s'agir 
+d'un setOption depuis string, depuis void*, ou d'un changement direct du 
+champ de l'objet par du code C++ ex: obj1->obj2->weight_decay = 0.1; )
+
+Le probl?me c'est qu'on veut au moins deux changeOptions, un comprenant 
+des string, l'autre des void*, voire peut-?tre un troisi?me de genre 
+template prenant des tuples, comme l'a propos? Nicolas. Le rebuild(...) 
+serait une mani?re de factoriser le code pour permettre tout ?a. Mais 
+sans doute pas la seule...
+Voyez-vous une autre mani?re de le faire?
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 20:16:57 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 14:16:57 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <44918F87.4000205@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com>
+Message-ID: <20060615181656.GD25988@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Pascal Vincent wrote:
+> Je pense donc que c'est viable si on adopte la politique que le 
+> setOption fait toujours une shallow-copy de l'?l?ment point?.
+
+Oui, c'est ce que j'avais en tete.
+
+> Mais cela soul?ve une autre question: il est utile, voire n?cessaire, 
+> pour des algos tels que HyperLearner, de conserver un 
+> changeOptions(const map<string,string>&), ou les valeurs sont sp?cifi?es 
+> sous forme s?rialis?e en string. Comment proposez-vous d'?crire ce 
+> changeOptions pour qu'il fasse appel ? newChangeOptions (ou tout autre 
+> mani?re ?vitant de dupliquer le code qui fait la job)???
+
+Si le reste marche, il devrait etre aussi possible d'avoir dans la
+classe Option<ObjectType, ObjectType> une methode qui prend un PStream
+et renvoie un void* qui pointe vers un nouvel objet ObjectType serialise
+a partir du PStream.
+Sauf qu'il faut que ce pointeur reste valide pour pouvoir le repasser a
+l'autre changeOptions, ce qui n'est peut-etre pas evident.
+
+> Il faut aussi r?fl?chir ? comment g?rer des changements d'options du 
+> type "aaa->bbb[3]->cccc->x" ... !!!!???!!!!
+
+Le comportement par defaut me semblerait etre logiquement d'appeler
+aaa->changeOptions("bbb[3]->cccc->x", ...) (en gros).
+
+> En fait pour les deux raisons ci-dessus, je crois que ce n'est pas une 
+> mauvaise id?e que la m?thode qui fasse vraiment le travail soit une 
+> m?thode du genre rebuild(const set<string>& optionnames) comme on avait 
+> parl? avec Pascal hier. Les changeOptions depuis string et void* 
+> pourrait ?tre ?crit en faisant des appels ? un tel rebuild.
+
+En effet, apres y avoir plus reflechi, un rebuild me parait plus simple.
+Il y a juste un truc qu'on ne pourrait pas faire avec un rebuild : se
+servir de la valeur precedente d'une option pour faire quelque chose en
+particulier (puisque le rebuild n'est appele qu'apres que les options
+ont ete changees). Je ne vois pas vraiment de cas ou ca pourrait
+arriver, mais bon...
+
+Au fait, comme le disait Pascal L., une seule methode pourrait etre
+necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+d'options changees), avec une liste vide (par defaut) signifiant que
+tout a ete change (<=> build initial apres avoir cree / charge un
+objet) ?
+
+--
+Olivier
+
+
+From pascal at apstat.com  Thu Jun 15 20:27:53 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 14:27:53 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615181656.GD25988@opale.iro.umontreal.ca>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca>
+Message-ID: <4491A6A9.6080808@apstat.com>
+
+> Au fait, comme le disait Pascal L., une seule methode pourrait etre
+> necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+> d'options changees), avec une liste vide (par defaut) signifiant que
+> tout a ete change (<=> build initial apres avoir cree / charge un
+> objet) ?
+>   
+Ah, alors on remet tout dans le build? La boucle est presque boucl?e...
+OK, maintenant on conna?t les noms des options qui ont chang?es en plus.
+
+Est-ce que ?a simplifie vraiment ? ce point la t?che? Bien souvent, on 
+aurait pu faire l'?quivalent de, par ex.
+if(changed_option_names.find("nhidden")!=changed_option_names.end())
+  { ... }
+d?j? maintenant avec un
+if(nhidden!=somevec.length())
+  { ... }
+
+ou AU PIRE:
+if(nhidden!=nhidden_copy)
+{
+   ...
+   nhidden_copy = nhidden;
+}
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 20:37:46 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 14:37:46 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491A6A9.6080808@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com>
+Message-ID: <20060615183744.GA26714@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Pascal Vincent wrote:
+> 
+> >Au fait, comme le disait Pascal L., une seule methode pourrait etre
+> >necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+> >d'options changees), avec une liste vide (par defaut) signifiant que
+> >tout a ete change (<=> build initial apres avoir cree / charge un
+> >objet) ?
+> >  
+> Ah, alors on remet tout dans le build? La boucle est presque boucl?e...
+> OK, maintenant on conna?t les noms des options qui ont chang?es en plus.
+> 
+> Est-ce que ?a simplifie vraiment ? ce point la t?che? Bien souvent, on 
+> aurait pu faire l'?quivalent de, par ex.
+> if(changed_option_names.find("nhidden")!=changed_option_names.end())
+>  { ... }
+> d?j? maintenant avec un
+> if(nhidden!=somevec.length())
+>  { ... }
+> 
+> ou AU PIRE:
+> if(nhidden!=nhidden_copy)
+> {
+>   ...
+>   nhidden_copy = nhidden;
+> }
+> 
+
+C'est justement ce qu'on veut eviter, d'avoir a faire des copies des
+options pour savoir lesquelles ont change.
+Au fait, malgre ce que j'ai dit, je ne sais pas si on veut vraiment une
+seule methode build(liste_des_options_changees). Ca pourrait etre plus
+simple pour comprendre le code de separer les deux.
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 20:41:25 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 20:41:25 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491A6A9.6080808@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com>
+Message-ID: <20060615184125.GA30010@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> 
+> >Au fait, comme le disait Pascal L., une seule methode pourrait etre
+> >necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+> >d'options changees), avec une liste vide (par defaut) signifiant que
+> >tout a ete change (<=> build initial apres avoir cree / charge un
+> >objet) ?
+>
+> Ah, alors on remet tout dans le build? La boucle est presque boucl?e...
+
+... et ?a montre que le design initial ?tait bien, en fait.
+
+> OK, maintenant on conna?t les noms des options qui ont chang?es en plus.
+
+C'est exactement ce que je voulais ;^)
+
+> Est-ce que ?a simplifie vraiment ? ce point la t?che? Bien souvent, on 
+> aurait pu faire l'?quivalent de, par ex.
+> if(changed_option_names.find("nhidden")!=changed_option_names.end())
+>  { ... }
+> d?j? maintenant avec un
+> if(nhidden!=somevec.length())
+>  { ... }
+
+C'est vrai, sauf que dans le deuxi?me cas on ne sait pas quelle option a
+chang?, et on doit se rabattre sur une priorit? d'options les unes sur
+les autres (genre buildoption sur learntoption) pour savoir quoi faire.
+Je suis d'accord que c'est mineur.
+
+> ou AU PIRE:
+> if(nhidden!=nhidden_copy)
+> {
+>   ...
+>   nhidden_copy = nhidden;
+> }
+
+Surtout, si ?a concerne un objet PLearn ou une grosse matrice, la copie
+et la comparaison peuvent ?tre beaucoup plus longues que v?rifier la
+pr?sence d'un string dans un set. Ce qui est ? mon avis la raison pour
+laquelle build() n'est pas syst?matiquement appel? ? chaque changement
+d'option.
+
+Finalement, cette solution resterait r?trocompatible, mais en ajoutant
+un m?canisme pour ne pas faire des dizaines de v?rifications dans les
+valeurs.
+
+?a me pla?t pas mal comme ?a, mais si on d?cide de diff?rencier
+build/rebuild, ?a pourrait ?tre le moment de le faire.
+
+-- 
+Pascal
+
+
+From dorionc at apstat.com  Thu Jun 15 20:53:50 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Thu, 15 Jun 2006 14:53:50 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615184125.GA30010@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org>
+Message-ID: <4491ACBE.3030906@apstat.com>
+
+Bonjour groupe!
+> Surtout, si ?a concerne un objet PLearn ou une grosse matrice, la copie
+> et la comparaison peuvent ?tre beaucoup plus longues que v?rifier la
+> pr?sence d'un string dans un set. Ce qui est ? mon avis la raison pour
+> laquelle build() n'est pas syst?matiquement appel? ? chaque changement
+> d'option.
+>
+> Finalement, cette solution resterait r?trocompatible, mais en ajoutant
+> un m?canisme pour ne pas faire des dizaines de v?rifications dans les
+> valeurs.
+>
+> ?a me pla?t pas mal comme ?a, mais si on d?cide de diff?rencier
+> build/rebuild, ?a pourrait ?tre le moment de le faire.
+>
+>   
+ Je suis tout ? fait d'accord, il faut faire qqc avec les 
+changeOptions... Mon 'bug' principal c'est plus avec la d?marche... Je 
+suis tout ? fait conscient qu'avec nos horaires plus que vari?s ;), un 
+petit thread de mails c'est cool... Mais mon petit c?t? "ultra-parano" 
+me pousse ? croire que si l'on envisage de faire un changement aussi 
+profond, il faudrait au moins se planifier une petite rencontre de 
+design en t?te-?-t?te... Ce n'est vraiment pas le genre de truc sur 
+lequel on veut faire mille passes de re-engineering...
+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+Apstat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060615/98eafe50/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 20:57:37 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 20:57:37 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491ACBE.3030906@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com>
+Message-ID: <20060615185737.GA30134@pig.zood.org>
+
+On Thu, Jun 15, 2006, Christian Dorion wrote:
+> Je suis tout ? fait d'accord, il faut faire qqc avec les 
+> changeOptions... Mon 'bug' principal c'est plus avec la d?marche... Je 
+> suis tout ? fait conscient qu'avec nos horaires plus que vari?s ;), un 
+> petit thread de mails c'est cool... Mais mon petit c?t? "ultra-parano" 
+> me pousse ? croire que si l'on envisage de faire un changement aussi 
+> profond, il faudrait au moins se planifier une petite rencontre de 
+> design en t?te-?-t?te... Ce n'est vraiment pas le genre de truc sur 
+> lequel on veut faire mille passes de re-engineering...
+
+On va se boire une bi?re un de ces jours pour discuter de ?a, alors ?
+Genre demain en fin d'apr?s-midi ?
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Thu Jun 15 21:14:46 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 15:14:46 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615185737.GA30134@pig.zood.org>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org>
+Message-ID: <4491B1A6.2050005@apstat.com>
+
+> On va se boire une bi?re un de ces jours pour discuter de ?a, alors ?
+> Genre demain en fin d'apr?s-midi ?
+>   
+?a n'est pas possible pour moi, j'ai un cours demain soir.
+
+Mais c'est vrai que ce serait plus productif de se voir en t?te ? t?te 
+pour ce genre de discussions de design.
+N?anmoins je pense qu'on a d?j? bien avanc? sur cette question pr?cise 
+de changeOptions.
+
+Concernant l'am?lioration de PLearn, la "liste des choses qu'on veut 
+faire depuis longtemp" s'allonge de jour en jour dans la t?te de chacun. 
+Il serait peut-?tre bon de se voir pour la colliger, la coucher noir sur 
+blanc, et attribuer ? chaque chose un ordre de priorit?, ainsi que des 
+volontaires pour s'attaquer ? ce qui est jug? le plus prioritaire...
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From pascal at apstat.com  Thu Jun 15 21:48:07 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 15:48:07 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491B1A6.2050005@apstat.com>
+References: <20060615004216.GA20712@pig.zood.org> <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com>
+Message-ID: <4491B977.8040006@apstat.com>
+
+Pour r?sumer l? o? on en est pour l'instant sur la question des 
+changements d'option:
+
+1) On pense faire un
+
+virtual void rebuild(const set<string>& changed_options)
+
+changed_options ne devrait contenir que des noms d'options simples  de 
+l'objet courant (pas des options de sous-objets).
+
+2) On aura potentiellement plusieurs m?thodes de type changeOptions(...) 
+prenant une map de noms d'options potentiellement complexes (faisant par 
+ex. ref. ? des options de sous-objets), et qui devra s'assurer 
+d'effectuer les choses suivantes:
+   * setter les valeurs de toutes les options sp?cifi?es
+   * appeler rebuild() de fa?on bottom-up sur tous les objets affect?s, 
+en passant la liste de noms d'options simples affect?es.
+
+On peut consid?rer des variantes, selon que l'on d?cide de d?l?guer 
+certaines de ces responsabilit?s ? rebuild() (par ex. comme le sugg?rait 
+Nicolas, ce pourrait aussi ?tre la reponsabilit? optionelle de rebuild 
+d'appeler les rebuild de ses sous-objets dans l'ordre qui lui chante; 
+rebuild pourrait aussi parser des noms d'options complexes, au cas o? ce 
+serait utile pour lui de conna?tre quelles options de ses sous-objets 
+ont chang?es).
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 22:35:29 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 16:35:29 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491B977.8040006@apstat.com>
+References: <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <4491B977.8040006@apstat.com>
+Message-ID: <20060615203527.GA28412@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Pascal Vincent wrote:
+> Pour r?sumer l? o? on en est pour l'instant sur la question des 
+> changements d'option:
+> 
+> 1) On pense faire un
+> 
+> virtual void rebuild(const set<string>& changed_options)
+> 
+> changed_options ne devrait contenir que des noms d'options simples  de 
+> l'objet courant (pas des options de sous-objets).
+
+A priori ca ne me semble pas trop restrictif, dans la mesure ou lorsque
+quelqu'un appelle rebuild, il a fait les updates des options a la main,
+donc il est aussi bien d'appeler lui-meme le rebuild d'un sous-objet
+dont l'option a ete changee.
+
+Sinon, il devrait etre possible d'avoir un mecanisme dans le rebuild de
+Object qui va appeler automatiquement le rebuild d'un sous-objet,
+puisque j'imagine que chaque rebuild va commencer par un appel a
+inherited::rebuild (comme le mecanisme actuel de build).
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 22:47:36 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 22:47:36 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615203527.GA28412@opale.iro.umontreal.ca>
+References: <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <4491B977.8040006@apstat.com> <20060615203527.GA28412@opale.iro.umontreal.ca>
+Message-ID: <20060615204736.GA30726@pig.zood.org>
+
+On Thu, Jun 15, 2006, Olivier Delalleau wrote:
+> > virtual void rebuild(const set<string>& changed_options)
+> > 
+> > changed_options ne devrait contenir que des noms d'options simples  de 
+> > l'objet courant (pas des options de sous-objets).
+> 
+> A priori ca ne me semble pas trop restrictif, dans la mesure ou lorsque
+> quelqu'un appelle rebuild, il a fait les updates des options a la main,
+> donc il est aussi bien d'appeler lui-meme le rebuild d'un sous-objet
+> dont l'option a ete changee.
+
+Je suis assez d'accord. Ensuite, ?a sera au constructeur de voir si
+la modification qu'il a apport?e au sous-objet est minime, auquel cas il
+ne mettra pas forc?ment "sous_objet" dans la liste des options chang?es.
+
+> Sinon, il devrait etre possible d'avoir un mecanisme dans le rebuild de
+> Object qui va appeler automatiquement le rebuild d'un sous-objet,
+> puisque j'imagine que chaque rebuild va commencer par un appel a
+> inherited::rebuild (comme le mecanisme actuel de build).
+
+Je pensais ? ?a, aussi. Il faudrait probablement un m?canisme qui
+permette de v?rifier qu'on ne s'est pas tromp? dans le nom d'option,
+parce que si on appelle rebuild( { "inputsize_" } ) au lieu de
+"inputsize", on ne s'en rendra pas compte.
+
+Dans ce cas-l?, il faudrait appeler inherited::rebuild( intersection
+entre les options de inherited et les options chang?es ), pour ne pas
+avoir de fausses alertes.
+
+Est-ce qu'il est facile de r?cup?rer les noms des options d'une classe ?
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 22:48:35 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 22:48:35 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491B1A6.2050005@apstat.com>
+References: <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com>
+Message-ID: <20060615204835.GB30726@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> >On va se boire une bi?re un de ces jours pour discuter de ?a, alors ?
+> >Genre demain en fin d'apr?s-midi ?
+>
+> ?a n'est pas possible pour moi, j'ai un cours demain soir.
+
+Ou alors dans la journ?e et sans bi?re, si vous pr?f?rez...
+
+La semaine prochaine, sinon ? Vous avez des imp?ratifs ?
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Thu Jun 15 22:56:26 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 15 Jun 2006 16:56:26 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615204736.GA30726@pig.zood.org>
+References: <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <4491B977.8040006@apstat.com> <20060615203527.GA28412@opale.iro.umontreal.ca> <20060615204736.GA30726@pig.zood.org>
+Message-ID: <20060615205625.GA28976@opale.iro.umontreal.ca>
+
+On 15 Jun 2006, Pascal Lamblin wrote:
+> On Thu, Jun 15, 2006, Olivier Delalleau wrote:
+> > > virtual void rebuild(const set<string>& changed_options)
+> > > 
+> > > changed_options ne devrait contenir que des noms d'options simples  de 
+> > > l'objet courant (pas des options de sous-objets).
+> > 
+> > A priori ca ne me semble pas trop restrictif, dans la mesure ou lorsque
+> > quelqu'un appelle rebuild, il a fait les updates des options a la main,
+> > donc il est aussi bien d'appeler lui-meme le rebuild d'un sous-objet
+> > dont l'option a ete changee.
+> 
+> Je suis assez d'accord. Ensuite, ?a sera au constructeur de voir si
+> la modification qu'il a apport?e au sous-objet est minime, auquel cas il
+> ne mettra pas forc?ment "sous_objet" dans la liste des options chang?es.
+> 
+> > Sinon, il devrait etre possible d'avoir un mecanisme dans le rebuild de
+> > Object qui va appeler automatiquement le rebuild d'un sous-objet,
+> > puisque j'imagine que chaque rebuild va commencer par un appel a
+> > inherited::rebuild (comme le mecanisme actuel de build).
+> 
+> Je pensais ? ?a, aussi. Il faudrait probablement un m?canisme qui
+> permette de v?rifier qu'on ne s'est pas tromp? dans le nom d'option,
+> parce que si on appelle rebuild( { "inputsize_" } ) au lieu de
+> "inputsize", on ne s'en rendra pas compte.
+> 
+> Dans ce cas-l?, il faudrait appeler inherited::rebuild( intersection
+> entre les options de inherited et les options chang?es ), pour ne pas
+> avoir de fausses alertes.
+> 
+> Est-ce qu'il est facile de r?cup?rer les noms des options d'une classe ?
+
+Une solution qui evite de changer le set<string>& changed_options serait
+de passer le meme a toutes les classes parentes, et de ne faire la
+verification que dans Object (qui peut facilement avoir la liste des
+noms d'options, autant que je sache).
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 23:01:01 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 23:01:01 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491B1A6.2050005@apstat.com>
+References: <20060615141257.GA23148@opale.iro.umontreal.ca> <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com>
+Message-ID: <20060615210101.GA30818@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> Concernant l'am?lioration de PLearn, la "liste des choses qu'on veut 
+> faire depuis longtemp" s'allonge de jour en jour dans la t?te de chacun. 
+> Il serait peut-?tre bon de se voir pour la colliger, la coucher noir sur 
+> blanc, et attribuer ? chaque chose un ordre de priorit?, ainsi que des 
+> volontaires pour s'attaquer ? ce qui est jug? le plus prioritaire...
+
+[Oups, j'ai oubli? de r?pondre ? la fin du courriel]
+
+Je n'ai pas test?, mais il me semble qu'on peut utiliser le syst?me de
+feature requests de berlios, pour ?a. Je vais essayer de voir ce qu'on
+peut faire avec, mais si c'est bien fait ?a devrait g?rer les priorit?s,
+les assignations, et les d?pendances entre t?ches.
+
+S'il faut les droits d'admin pour manager ?a, je les demanderai :)
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 23:32:41 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 23:32:41 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615210101.GA30818@pig.zood.org>
+References: <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <20060615210101.GA30818@pig.zood.org>
+Message-ID: <20060615213241.GA30975@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Lamblin wrote:
+> S'il faut les droits d'admin pour manager ?a, je les demanderai :)
+
+Pascal, Olivier ou Nicolas, l'un de vous pourrait me faire passer
+admin?? Si le syst?me marche correctement, je suis volontaire pour
+administrer ?a ? long terme.
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Thu Jun 15 23:47:46 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 15 Jun 2006 17:47:46 -0400
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <20060615213241.GA30975@pig.zood.org>
+References: <44917241.3070303@apstat.com> <20060615151827.GA24276@opale.iro.umontreal.ca> <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <20060615210101.GA30818@pig.zood.org> <20060615213241.GA30975@pig.zood.org>
+Message-ID: <4491D582.7050307@apstat.com>
+
+Pascal Lamblin wrote:
+> On Thu, Jun 15, 2006, Pascal Lamblin wrote:
+>   
+>> S'il faut les droits d'admin pour manager ?a, je les demanderai :)
+>>     
+>
+> Pascal, Olivier ou Nicolas, l'un de vous pourrait me faire passer
+> admin ? Si le syst?me marche correctement, je suis volontaire pour
+> administrer ?a ? long terme.
+>   
+C'est fait, je t'ai donn? les droits d'admin.
+
+C'est une bonne id?e d'utiliser le syst?me de feature request. Mais je 
+pense qu'il serait bon de d'abord faire un brain storming sur le sujet ? 
+plusieurs. Chacun pourrait apporter sa liste de dol?ance prioritaires 
+(et possiblement une ?bauche de plan pour les adresser), et on pourrait 
+les lister, en discutter, et ?valuer leur 
+faisabilit?/urgence/importance, ...
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 15 23:57:12 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 15 Jun 2006 23:57:12 +0200
+Subject: [Plearn-core] Mecanisme de changement d'options
+In-Reply-To: <4491D582.7050307@apstat.com>
+References: <44918F87.4000205@apstat.com> <20060615181656.GD25988@opale.iro.umontreal.ca> <4491A6A9.6080808@apstat.com> <20060615184125.GA30010@pig.zood.org> <4491ACBE.3030906@apstat.com> <20060615185737.GA30134@pig.zood.org> <4491B1A6.2050005@apstat.com> <20060615210101.GA30818@pig.zood.org> <20060615213241.GA30975@pig.zood.org> <4491D582.7050307@apstat.com>
+Message-ID: <20060615215712.GA31106@pig.zood.org>
+
+On Thu, Jun 15, 2006, Pascal Vincent wrote:
+> C'est fait, je t'ai donn? les droits d'admin.
+
+Hourra !
+
+> C'est une bonne id?e d'utiliser le syst?me de feature request.
+> Mais je pense qu'il serait bon de d'abord faire un brain storming
+> sur le sujet ? plusieurs. Chacun pourrait apporter sa liste de
+> dol?ance prioritaires (et possiblement une ?bauche de plan pour les
+> adresser), et on pourrait les lister, en discutter, et ?valuer leur
+> faisabilit?/urgence/importance, ...
+
+Tout ? fait. Mais je pense que si on veut que ?a dure plus d'un mois, il
+nous faut un syst?me de suivi qui soit mis ? jour r?guli?rement.
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Wed Jun 28 23:39:08 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 28 Jun 2006 23:39:08 +0200
+Subject: [Plearn-core] pymake et optimisation
+Message-ID: <20060628213908.GA22984@pig.zood.org>
+
+Salut les gens,
+
+en essayant de mesurer la vitesse d'ex?cution de diff?rents morceaux de
+code, je me suis rendu compte que la vitesse d'ex?cution du m?me script
+sur la m?me machine pouvait varier beaucoup (mais pas toujours) selon
+s'il avait ?t? compil? en 32 bits ou 64 bits.
+
+De fait, les ex?cutables 32 bits sont compil?s par g++ pour le
+processeur i386 de base, sans aucune optimisation particuli?re ?
+certaines classes de processeur (ce que la compilation en 64 bits fait
+puisqu'on sait qu'il va ?tre ex?cut? par un amd64).
+
+J'ai fait quelques tests qui montrent que si on ajoute les options
+" -mmmx -msse -mfpmath=sse -march=i686" ? la compilation, la vitesse est
+augment?e sur toutes les machines sur lesquelles j'ai test? (athlon, p4,
+athlon64).
+
+Est-ce qu'il y a des machines ? apstat qui ne supporteraient pas ces
+options ?
+Est-ce qu'? votre avis il vaut mieux que dans le pymake.config.model :
+  - je modifie l'option 'g++' pour rajouter ces options au compilo ?
+  - je rajoute une option 'g++i686' (ou un autre nom) avec ces option ?
+  - je rajoute une option 'g++i386' sans ces options en modifiant 'g++' ?
+  - Obi-Wan Kenobi ?
+Si je rajoute une option, laquelle vaudrait-il mieux mettre par d?faut ?
+
+Et vous m'avez toujours pas dit quand vous auriez du temps pour qu'on se
+voie ? propos de build, rebuild, changeOptions et leur amis...
+
+? bient?t !
+-- 
+Pascal
+
+
+From chrish at apstat.com  Thu Jun 29 00:01:20 2006
+From: chrish at apstat.com (Christian Hudon)
+Date: Wed, 28 Jun 2006 18:01:20 -0400
+Subject: [Plearn-core] pymake et optimisation
+In-Reply-To: <20060628213908.GA22984@pig.zood.org>
+References: <20060628213908.GA22984@pig.zood.org>
+Message-ID: <44A2FC30.4000900@apstat.com>
+
+Pascal Lamblin wrote:
+> J'ai fait quelques tests qui montrent que si on ajoute les options
+> " -mmmx -msse -mfpmath=sse -march=i686" ? la compilation, la vitesse est
+> augment?e sur toutes les machines sur lesquelles j'ai test? (athlon, p4,
+> athlon64).
+>   
+Cool!
+
+> Est-ce qu'il y a des machines ? apstat qui ne supporteraient pas ces
+> options ?
+>   
+?tant donn? que tes options d?crivent un Pentium 4 (ou probablement m?me 
+un Pentium 3... je crois qu'ils avaient SSE aussi), je ne crois pas 
+qu'il y ait beaucoup de machines qui font du travail en apprentissage 
+machine qui ne remplissent pas ces crit?res de nos jours. En tous cas, 
+ce ne serait pas un probl?me pour ici.
+
+> Est-ce qu'? votre avis il vaut mieux que dans le pymake.config.model :
+>   - je modifie l'option 'g++' pour rajouter ces options au compilo ?
+>   - je rajoute une option 'g++i686' (ou un autre nom) avec ces option ?
+>   - je rajoute une option 'g++i386' sans ces options en modifiant 'g++' ?
+>   - Obi-Wan Kenobi ?
+> Si je rajoute une option, laquelle vaudrait-il mieux mettre par d?faut ?
+>   
+? mon avis, il y a d?j? trop d'options dans pymake. ?tant donn? que les 
+machines sans SSE sont assez rares de nos jours, je modifierais tout 
+simplement l'option g++, et comme ?a tous les gens qui utilisent ?a 
+auront le gain de vitesse sans devoir fouiller et suivre ? la trace les 
+derni?res nouveaut?s dans le pymake.config... Si il y a des gens pour 
+qui ?a cause probl?me, ?a sera facile de rajouter une option 
+g++AntiqueIntelMachine. :-)
+
+  Christian
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Jun 29 02:06:31 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 29 Jun 2006 02:06:31 +0200
+Subject: [Plearn-core] pymake et optimisation
+In-Reply-To: <44A2FC30.4000900@apstat.com>
+References: <20060628213908.GA22984@pig.zood.org> <44A2FC30.4000900@apstat.com>
+Message-ID: <20060629000631.GA23627@pig.zood.org>
+
+On Wed, Jun 28, 2006, Christian Hudon wrote:
+> >Est-ce qu'il y a des machines ? apstat qui ne supporteraient pas ces
+> >options ?
+>
+> ?tant donn? que tes options d?crivent un Pentium 4 (ou probablement m?me 
+> un Pentium 3... je crois qu'ils avaient SSE aussi),
+
+Oui, Pentium 3, et les athlon le supportent aussi. Je me demandais juste
+si vous n'aviez pas de processeurs exotiques d?rivant de i386 mais sans
+sse.
+
+> ? mon avis, il y a d?j? trop d'options dans pymake. ?tant donn? que les 
+> machines sans SSE sont assez rares de nos jours, je modifierais tout 
+> simplement l'option g++, et comme ?a tous les gens qui utilisent ?a 
+> auront le gain de vitesse sans devoir fouiller et suivre ? la trace les 
+> derni?res nouveaut?s dans le pymake.config...
+
+C'est fait. Maintenant, je ne sais pas trop quoi faire pour les options
+'g++3' et 'g++no-cygwin'. Quelqu'un les utilise ?
+
+
+Au fait, mes r?ponses ? des interrogations qui trainent dans le code
+pour l'option 'opt' :
+
+# is -fomit-frame-pointer helping?
+j'ai pas regard? encore
+
+# does -malign-double indeed create core-dumps?
+j'en ai pas vu, mais je n'ai pas constat? d'accroissement de la vitesse
+
+# is -finline hurting?
+si on parle de -finline-functions, c'est activ? automatiquement par -O3
+
+# is -funroll-loops hurting?
+j'ai l'impression que c'est des fois oui, des fois non, selon la
+machine, mais que ?a n'a pas un grand impact de toutes fa?ons.
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Thu Jun 29 15:30:48 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 29 Jun 2006 09:30:48 -0400
+Subject: [Plearn-core] pymake et optimisation
+In-Reply-To: <20060629000631.GA23627@pig.zood.org>
+References: <20060628213908.GA22984@pig.zood.org> <44A2FC30.4000900@apstat.com> <20060629000631.GA23627@pig.zood.org>
+Message-ID: <20060629133048.GB5231@opale.iro.umontreal.ca>
+
+> C'est fait. Maintenant, je ne sais pas trop quoi faire pour les options
+> 'g++3' et 'g++no-cygwin'. Quelqu'un les utilise ?
+
+g++no-cygwin est utilise pour compiler sous Windows sans les dependances
+avec la DLL Cygwin.
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Fri Jun 30 03:12:28 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 30 Jun 2006 03:12:28 +0200
+Subject: [Plearn-core] changements dans pymake
+Message-ID: <20060630011228.GD29560@pig.zood.org>
+
+Salut,
+
+Comme je viens de le dire dans plearn-developers, j'ai fait quelques
+changements dans pymake pour r?gler le cas (qui arrive souvent au lisa)
+o? une machine arr?te de r?pondre au ssh inopin?ment, pour ne pas avoir
+? trop s'emb?ter ? updater son .pymake/linux-...hosts tous les jours.
+
+Tant que j'y ?tais, j'ai vu qu'il y avait d?j? de quoi g?rer des valeurs
+de "nice" pour la compilation, mais je n'ai rien vu qui y faisait appel.
+Est-ce que ?a vous semblerait raisonnable de g?rer un format de fichiers
+.hosts un peu plus compliqu?, de la forme :
+machine1  10
+machine2  19
+machine3 0
+machine4
+machine5 # 19
+machine6 -20
+
+avec un deuxi?me champ (facultatif et pouvant ?tre en commentaire)
+contenant la valeur de nice sur cette machine ?
+
+?a permettrait de compiler sur les postes de travail sans g?ner les
+utilisateurs, et de donner la priorit? ? la compilation sur les t?ches
+du cluster par exemple.
+
+
+Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+puisse parall?liser la compilation sur le mammouth, o? on n'a aucun
+acc?s direct aux machines : il faut passer par le syst?me de gestion du
+cluster, on ne peut pas faire "ssh machine commande...".
+
+Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+je peux modifier le pymake existant (par exemple en rajoutant une option
+et des fonctions particuli?res), ou est-ce qu'il vaudrait mieux que je
+fasse un autre script ? Et est-ce que vous auriez des conseils
+particuliers ?
+
+? bient?t,
+-- 
+Pascal
+
+
+From pascal at apstat.com  Fri Jun 30 23:17:01 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 30 Jun 2006 17:17:01 -0400
+Subject: [Plearn-core] changements dans pymake
+In-Reply-To: <20060630011228.GD29560@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org>
+Message-ID: <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+
+On 29-Jun-06, at 9:12 PM, Pascal Lamblin wrote:
+
+> Salut,
+>
+> Comme je viens de le dire dans plearn-developers, j'ai fait quelques
+> changements dans pymake pour r?gler le cas (qui arrive souvent au lisa)
+> o? une machine arr?te de r?pondre au ssh inopin?ment, pour ne pas avoir
+> ? trop s'emb?ter ? updater son .pymake/linux-...hosts tous les jours.
+
+C'est une excellente am?lioration ? pymake! Merci!
+
+> Tant que j'y ?tais, j'ai vu qu'il y avait d?j? de quoi g?rer des 
+> valeurs
+> de "nice" pour la compilation, mais je n'ai rien vu qui y faisait 
+> appel.
+> Est-ce que ?a vous semblerait raisonnable de g?rer un format de 
+> fichiers
+> .hosts un peu plus compliqu?, de la forme :
+> machine1  10
+> machine2  19
+> machine3 0
+> machine4
+> machine5 # 19
+> machine6 -20
+>
+> avec un deuxi?me champ (facultatif et pouvant ?tre en commentaire)
+> contenant la valeur de nice sur cette machine ?
+>
+> ?a permettrait de compiler sur les postes de travail sans g?ner les
+> utilisateurs, et de donner la priorit? ? la compilation sur les t?ches
+> du cluster par exemple.
+
+Tr?s bonne id?e.
+>
+> Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+> puisse parall?liser la compilation sur le mammouth, o? on n'a aucun
+> acc?s direct aux machines : il faut passer par le syst?me de gestion du
+> cluster, on ne peut pas faire "ssh machine commande...".
+>
+> Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+> je peux modifier le pymake existant (par exemple en rajoutant une 
+> option
+> et des fonctions particuli?res), ou est-ce qu'il vaudrait mieux que je
+> fasse un autre script ? Et est-ce que vous auriez des conseils
+> particuliers ?
+
+Tu peux hacker pymake (au point o? ?a en est!). Mais ce serait 
+peut-?tre bon d'abstraire la fonctionalit? "lancer job sur machine x" 
+et l'op?ration de r?cup?ration du r?sultat en temps opportun, ou qqch 
+du genre. Selon la machine, ssh pourrait n'?tre qu'une option possible.
+
+En fait Christian Hudon avait ? une ?poque lointaine travaill? sur un 
+script du genre, dans le but de pouvoir utiliser ? la fois ssh (chez 
+ApSTAT) et ?ventuellement ce qui ? l'?poque ?tait la commande "cluster" 
+au DIRO... Diff?rentes personnes ont ?crit diff?rentes fa?ons de 
+trouver des machines et dispatcher des jobs ? diff?rents mastodontes et 
+pt?rodactyles (et si je ne m'abuse, Dan s'appr?te ? re-faire de m?me 
+pour ses hyper-optimisations, et Christian H. pour pytest ...). Je ne 
+sais pas trop o? en sont les derniers d?veloppements, mais il serait 
+sans doute bon de coordonner tout ?a... Un volontaire? :-)
+
+-- Pascal
+
+

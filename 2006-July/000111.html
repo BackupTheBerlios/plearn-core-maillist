@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utiliser Plearn en tant que library
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B2922A.6080602%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000109.html">
+   <LINK REL="Next"  HREF="000118.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utiliser Plearn en tant que library</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utiliser%20Plearn%20en%20tant%20que%20library&In-Reply-To=%3C44B2922A.6080602%40apstat.com%3E"
+       TITLE="[Plearn-core] Utiliser Plearn en tant que library">pascal at apstat.com
+       </A><BR>
+    <I>Mon Jul 10 19:45:14 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000109.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+        <LI>Next message: <A HREF="000118.html">[Plearn-core] Re: plugin interface for learners
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Jaonary Rabarisoa wrote:
+&gt;<i> Bonjour,
+</I>&gt;<i> Apr&#232;s avoir fait le tour de la documentation actuellement disponible, 
+</I>&gt;<i> j'ai compris que PLearn est avant tout une
+</I>&gt;<i> biblioth&#232;que destiner aux chercheurs en apprentissage statistique (ce 
+</I>&gt;<i> qui est mon cas). En plus, il y a des outils qui permettent 
+</I>&gt;<i> l'utilisation haut niveau de PLearn via les script. Une sorte de mini 
+</I>&gt;<i> compilateur ou de langage utilisateur.
+</I>&gt;<i> Je suis surtout int&#233;ress&#233; par l'aspect biblioth&#232;que C++ de PLearn car 
+</I>&gt;<i> nous utilisons ce langage pour tous nos developpements et 
+</I>&gt;<i> expr&#233;riences. Donc, &#224; priori je n'aurai pas besoin de toutes les 
+</I>&gt;<i> fonctions qui se trouve dans de dossier &quot;commands&quot; et seulement faire 
+</I>&gt;<i> le lien avec les fonctions et classes qui sont dans &quot;plearn&quot;, 
+</I>&gt;<i> &quot;plearn_learners&quot; et eventuellement &quot;plearn_learners_experimental&quot;. 
+</I>&gt;<i> Pour cela, j'ai donc quelques question et suggestion :
+</I>Bonjour et d&#233;sol&#233; pour la r&#233;ponse tardive. Je vois que tu as d&#233;j&#224; 
+parcouru au moins en partie la documentation, ce qui est un bon d&#233;but. 
+Il faut n&#233;anmoins que je te pr&#233;vienne que jusqu'&#224; pr&#233;sent PLearn est 
+surtout d&#233;velopp&#233; &#224; deux endroits localis&#233;s par des &#233;quippes qui ont la 
+possibilit&#233; de se voir ou au moins de se parler fr&#233;quemment. Peu 
+d'efforts ont pour l'instant &#233;t&#233; consacr&#233;s &#224; le rendre facilement 
+accessible &#224; du monde ext&#233;rieur. Et ceci concerne en particulier la 
+documentation qui est en partie out-of -date et largement incompl&#232;te.
+&gt;<i> 1 - Il y a tellement de fichier dans ces repertoirs et les compiler 
+</I>&gt;<i> tous prend beaucoup de temps. Je voudrais donc savoir s'il y a de 
+</I>&gt;<i> fichiers essentiels que l'on doit absolument compiler et des fichiers 
+</I>&gt;<i> optionnels. J'ai d&#233;j&#224; essay&#233; de faire le tri moi meme mais c'est pas 
+</I>&gt;<i> evident de deviner ce que l'on doit garder sans parcourir les sources.
+</I>Pour compiler un ex&#233;cutable plearn, nous utilisons l'utilitaire pymake 
+qui se charge lui-m&#234;me de trouver toutes les d&#233;pendances, recompiler 
+uniquement ce qui est n&#233;cessaire et linker avec ce qui est n&#233;cessaire. 
+Le principe pour ne pas avoir &#224; tout compiler/linker, est de faire un 
+ex&#233;cutable sur le mod&#232;le de PLearn/commands/plearn.cc en ne faisant  des 
+includes que pour les  classes dont on veut se servir, et de compiler 
+ledit ex&#233;cutable avec pymake. (Note: nous sommes conscients que m&#234;me 
+ainsi, il y aurait un grand m&#233;nage &#224; faire dans les d&#233;pendances, et 
+c'est assez haut sur notre liste de priorit&#233;). Si tu veux utiliser un 
+autre syst&#232;me de compilation, libre &#224; toi, mais peut-&#234;tre que tu peux au 
+moins utiliser pymake pour lister les d&#233;pendances. Nous n'avons pas 
+beaucoup tendance &#224; utiliser plearn comme une librairie (.so) qui serait 
+ensuite link&#233;e avec un autre ex&#233;cutable, mais rien ne l'emp&#234;che.
+
+&gt;<i> 2 -  PLearn depend  d'autre biblioth&#232;que comme boost et nspr. Si boost 
+</I>&gt;<i> est d&#233;j&#224; plus ou moins standard sur tous les os, nspr, lui , l'est 
+</I>&gt;<i> moins. Pour cette biblioth&#232;que (nspr) je sugg&#232;re que l'on n'&#233;crive pas 
+</I>&gt;<i> le chemin absolu des includes (firefox/nspr/*.h) mais tout de suite 
+</I>&gt;<i> &lt;*.h&gt; et specifier le -I pendant la compilation.
+</I>Oui, nous avons d&#233;j&#224; rencontr&#233; ce probl&#232;me entre nos diverses 
+installations. Pour l'instant il a &#233;t&#233; r&#233;gl&#233; en faisant quelques 
+symlinks. Mais je pense effectivement qu'il vaudrait mieux en partie le 
+r&#233;gler au niveau des includes. Par contre je n'aime pas les includes 
+&lt;*.h&gt; tout seuls, mais pr&#233;conise plut&#244;t &lt;nspr/*.h&gt;. Ceci ferait-il 
+l'affaire dans ton installation?
+&gt;<i>
+</I>&gt;<i> 3 - Est ce que quelqu'un a d&#233;j&#224; r&#233;ussit &#224; compiler PLearn et lancer 
+</I>&gt;<i> correctement des test avec visual studio (windows) et xcode (mac os x). 
+</I>Nous d&#233;veloppons presque exclusivement sous linux avec gcc (et icc). 
+Nous avons d&#233;j&#224; &#224; plusieurs reprises fait des &quot;ports&quot; windows et Mac OS 
+X, pour certains projets particuliers, mais la plupart du temps ceci a 
+&#233;t&#233; fait avec des versions de gcc pour ces OS. Je sais que quelqu'un 
+avait d&#233;j&#224; entrepris de compiler le tout avec Visual Studio avec un 
+certain succ&#232;s (apr&#232;s avoir rajout&#233; quelques #ifdef sp&#233;cifiques &#224; des 
+endroits strat&#233;giques) mais je ne sais pas jusqu'o&#249; il s'est rendu. Et 
+comme nous d&#233;veloppons sous linux/gcc, les choses que d'autres compilos 
+n'aiment pas, on ne s'en rend pas compte tant qu'on a pas a faire un 
+port vers ledit compilo... Ah vivement le jour o&#249; tout le monde aura la 
+m&#234;me compr&#233;hension de ce qu'est le &quot;C++ standard&quot;...
+&gt;<i> Pour le premier j'ai des probl&#232;me de compilation purement c++. Par 
+</I>&gt;<i> example :
+</I>&gt;<i> la class TVec (TVec_decl.h) a un operateur surcharg&#233;
+</I>&gt;<i>         
+</I>&gt;<i>          inline T&amp; operator[](unsigned int i) const
+</I>&gt;<i>         
+</I>&gt;<i>          inline T&amp; operator[](int i) const
+</I>&gt;<i>
+</I>&gt;<i> Quand le type que l'on passe en parametre n'est pas un &quot;int&quot; ou un 
+</I>&gt;<i> &quot;unsigned int&quot; le compilateur ne sait plus quoi prendre et on obtient 
+</I>&gt;<i> une erreur. En plus il trouve 3 surcharges possible de cette fonction 
+</I>&gt;<i> et moi j'en vois que deux. La solution que j'ai trouv&#233; c'est de faire 
+</I>&gt;<i> un cast static. Mais alors, pourquoi avoir surcharger cet operateur ?
+</I>Sans doute quelqu'un a-t-il un jour &#233;t&#233; fatigu&#233; de devoir faire des cast 
+de unsigned int en int et a rajout&#233; cette surcharge. Dans tous les cas, 
+si l'index est autre chose qu'un entier, je pense plus sage de devoir 
+faire explicitement le cast. Quel est le code qui pose probl&#232;me?
+
+&gt;<i> 4 - Est ce que le developpent de PLearn est ouvert &#224; tout ceux qui 
+</I>&gt;<i> veulent participer et si oui comment faire ?
+</I>Comme je disais plus haut, le d&#233;veloppement s'est jusqu'&#224; pr&#233;sent fait 
+surtout dans deux groupes localis&#233;s. Comme nous n'avons pas l'habitude 
+de travailler de mani&#232;re d&#233;localis&#233;e, je suis un peu frileux &#224; l'id&#233;e de 
+donner aussi rapidement des droits d'&#233;criture sur le repository &#224; 
+quelqu'un d'ext&#233;rieur.  Mais  tu peux bien entendu participer au 
+d&#233;veloppement: si tu trouves et r&#233;pares des bugs, fais des 
+am&#233;liorations, ou cr&#233;e de nouvelles classes utiles, envoie-les nous et 
+on les incorporera. Quand tu seras suffisamment familier avec la 
+librairie, le mode de d&#233;veloppement et qu'on aura  pris l'habitude de 
+travailler ensemble on pourra alors te donner un acc&#232;s direct en 
+&#233;critutre sur le r&#233;pository.
+
+Au fait, par curiosit&#233;, peux-tu nous en dire un peu plus sur toi et les 
+projets pour lesquels tu envisages d'utiliser PLearn? Et comment tu en 
+as entendu parler??
+
+-- 
+Pascal Vincent
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000109.html">[Plearn-core] Utiliser Plearn en tant que library
+</A></li>
+	<LI>Next message: <A HREF="000118.html">[Plearn-core] Re: plugin interface for learners
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

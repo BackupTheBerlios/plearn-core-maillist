@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Probleme etrange
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3Cc81af8c30611030533u75b29bb7x1af6af55b48d7e4d%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000237.html">
+   <LINK REL="Next"  HREF="000239.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Probleme etrange</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Probleme%20etrange&In-Reply-To=%3Cc81af8c30611030533u75b29bb7x1af6af55b48d7e4d%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Probleme etrange">jaonary at gmail.com
+       </A><BR>
+    <I>Fri Nov  3 14:33:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000237.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+        <LI>Next message: <A HREF="000239.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#238">[ date ]</a>
+              <a href="thread.html#238">[ thread ]</a>
+              <a href="subject.html#238">[ subject ]</a>
+              <a href="author.html#238">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut a tous,
+J'ai constate un probleme bizard avec les VMat et AutoVMatrix. En gros, j'ai
+une liste de VMat (TVec&lt;VMat&gt;).
+J'initialise cette liste en chargenat un a un les VMat qui m'interesse a
+l'aide de la classe AutoVMatrix. Les matrices sont
+stockees en binaire (.pmat). Mon probleme c'est que quand la taille de
+TVec&lt;VMat&gt; depasse 1020 j'obtients l'erreur suivante :
+
+ERROR:
+openFile(&quot;/certis/3/rabariso/experiences/pascal_2006/poi/005303_lowe_sift.pmat.metadata/sizes&quot;,&quot;r&quot;)
+failed.
+
+et cette erreur apparait toujours au 1021 ieme VMat que je veux charger,
+independament du VMat. Vous pouvez voir mon code ci-dessus. Quand n_data &gt;
+1020 j'obtients cette erreur dans le cas contraire ca marche. J'ai pense a
+un probleme de memoire mais sur ma machine y en a 16GB et quand je lance le
+programme il utilise a peine 1GB
+
+Une petite idee ?
+
+
+     53         TVec&lt;VMat&gt; inputs(n_data);
+     54         vector&lt;int&gt; targets(n_data);
+     55
+     56         ProgressBar* pb1 = new ProgressBar(&quot;Loading data into
+memory&quot;,n_data);
+     57         map&lt;string,int&gt;::iterator data_it = input_target.begin();
+     58         map&lt;string,int&gt;::iterator data_end = input_target.end();
+     59         string dsuff = string(ptype)+&quot;_&quot;+string(dtype);
+     60         int idx = 0;
+     61         for(;data_it!=data_end;++data_it,++idx)
+     62         {
+     63                 //cout &lt;&lt; data_it-&gt;first &lt;&lt; endl;
+     64                 PPath dpath = getPath((data_it-&gt;first).c_str(),
+dsuff.c_str(),matrix_type,pdir);
+     65                 inputs[idx] = new AutoVMatrix(dpath);
+     66                 targets[idx] = data_it-&gt;second;
+     67                 pb1-&gt;update(idx);
+     68         }
+     69         delete pb1;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/6591c1fd/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061103/6591c1fd/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000237.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+	<LI>Next message: <A HREF="000239.html">[Plearn-core] Probleme etrange
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#238">[ date ]</a>
+              <a href="thread.html#238">[ thread ]</a>
+              <a href="subject.html#238">[ subject ]</a>
+              <a href="author.html#238">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

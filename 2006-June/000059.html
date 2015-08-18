@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615151827.GA24276%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000058.html">
+   <LINK REL="Next"  HREF="000061.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615151827.GA24276%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 17:18:30 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000058.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000061.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#59">[ date ]</a>
+              <a href="thread.html#59">[ thread ]</a>
+              <a href="subject.html#59">[ subject ]</a>
+              <a href="author.html#59">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 15 Jun 2006, Nicolas Chapados wrote:
+&gt;<i> Olivier Delalleau wrote:
+</I>&gt;<i> &gt;&gt;Le probl&#232;me de cette approche, c'est qu'il n&#233;cessite une conversion des
+</I>&gt;<i> &gt;&gt;donn&#233;es en cha&#238;ne de caract&#232;res, ce qui n'est pas forc&#233;ment l'id&#233;al 
+</I>&gt;<i> &gt;&gt;pour
+</I>&gt;<i> &gt;&gt;une matrice de 2000 par 3500. En plus, si on veut partager des storages
+</I>&gt;<i> &gt;&gt;entre plusieurs matrices, &#231;a peut devenir tr&#232;s p&#233;nible.
+</I>&gt;<i> &gt;&gt;    
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Je n'y ai absolument pas reflechi, mais est-ce qu'il serait possible
+</I>&gt;<i> &gt;d'utiliser de pointeurs (genre des void*) et melanger tout ca a des
+</I>&gt;<i> &gt;templates pour que ca soit correctement caste selon le type d'option ?
+</I>&gt;<i> &gt;
+</I>&gt;<i> Peux-tu &#233;laborer?
+</I>
+Actuellement on a :
+virtual void changeOptions(const map&lt;string,string&gt;&amp; name_value);
+
+Ma proposition consisterait a avoir plutot :
+virtual void changeOptions(const map&lt;string, const void* &gt;&amp; name_value);
+
+Et il faudrait un setOption associe :
+void setOption(const string&amp; optionname, const void* value);
+
+Et tout le probleme (il me semble) devrait etre d'etre capable de caster
+ce void* dans le bon type pour le mettre dans l'option. Ma reflexion
+s'etait arretee la, mais essayons d'elaborer.
+
+(... un p'tit coup d'oeil dans PLearn ...)
+
+Actuellement, Object::setOption appelle Object::readOptionVal qui appelle
+OptionBase::read(this, pstream_with_serialized_option).
+Il me semble que l'output de doxygen n'est plus dispo, mais la seule
+sous-classe de OptionBase parait etre Option&lt;ObjectType, OptionType&gt;. Le
+code de read(object, pstream_with_serialized_option) est simplement :
+    pstream_with_serialized_option &gt;&gt; dynamic_cast&lt;ObjectType*&gt;(object)-&gt;*ptr;
+Le membre de droite devrait etre du type OptionType&amp; si je comprends
+bien le code (ce dont je ne suis pas du tout sur), et la magie du PStream
+est invoquee pour lire l'option.
+
+Si on avait une nouvelle methode du genre
+    OptionBase::read(Object* object, void* pointer_to_option)
+elle pourrait peut-etre faire un truc du genre
+    dynamic_cast&lt;ObjectType*&gt;(object)-&gt;*ptr = *(dynamic_cast&lt;OptionType*&gt; pointer_to_option)
+et voila. Oui, moi aussi ca me parait trop simple ;)
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000058.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000061.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#59">[ date ]</a>
+              <a href="thread.html#59">[ thread ]</a>
+              <a href="subject.html#59">[ subject ]</a>
+              <a href="author.html#59">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

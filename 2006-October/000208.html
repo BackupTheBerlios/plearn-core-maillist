@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Hack to avoid deepCopy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Hack%20to%20avoid%20deepCopy&In-Reply-To=%3C7DFA9666-0080-45D0-8853-C2863789AC47%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000213.html">
+   <LINK REL="Next"  HREF="000209.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Hack to avoid deepCopy</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Hack%20to%20avoid%20deepCopy&In-Reply-To=%3C7DFA9666-0080-45D0-8853-C2863789AC47%40apstat.com%3E"
+       TITLE="[Plearn-core] Hack to avoid deepCopy">pascal at apstat.com
+       </A><BR>
+    <I>Fri Oct 13 17:16:18 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000213.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+        <LI>Next message: <A HREF="000209.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#208">[ date ]</a>
+              <a href="thread.html#208">[ thread ]</a>
+              <a href="subject.html#208">[ subject ]</a>
+              <a href="author.html#208">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Le 06-10-13 &#224; 11:10, Jaonary Rabarisoa a &#233;crit :
+
+&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On 10/13/06, Nicolas Chapados &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A>&gt; wrote:
+</I>&gt;<i> Voici un extrait de la documentation de HyperOptimise:
+</I>&gt;<i> * Note that after optimization, the matrix of all trials is  
+</I>&gt;<i> available through
+</I>&gt;<i> * the option 'resultsmat' (which is declared as nosave). This is  
+</I>&gt;<i> available
+</I>&gt;<i> * even if no expdir has been declared.
+</I>&gt;<i> Donc oui, l'option resultsmat contient les r&#233;sultats de  
+</I>&gt;<i> l'hyperoptimisation, et on peut y acc&#233;der depuis le C++.
+</I>&gt;<i>
+</I>&gt;<i>  Au fait mon seul petit souci c'est que resultsmat est un membre  
+</I>&gt;<i> priv&#233; donc je suis oblig&#233; d'utiliser getOption qui lui renvoie un  
+</I>&gt;<i> string. Mais du coup je dois serialiser et deserialiser ce qui  
+</I>&gt;<i> donne le code pas propre ci-dessus
+</I>&gt;<i>
+</I>&gt;<i>     VMat results;
+</I>&gt;<i>     string res_str = hyper_learner-&gt;strategy[0]-&gt;getOption 
+</I>&gt;<i> (&quot;resultsmat&quot;);
+</I>&gt;<i>     PStream res_stream = openString(res_str,PStream::plearn_ascii);
+</I>&gt;<i>     res_stream &gt;&gt; results;
+</I>&gt;<i>
+</I>&gt;<i> Ca marche mais je trouve que c'est pas du tout propre et trop de  
+</I>&gt;<i> chose pour rien. J'aurais aim&#233; quelque chose du genre
+</I>&gt;<i>
+</I>&gt;<i> VMat res = hyper_learner-&gt;strategy[0]-&gt;getOption(&quot;resultsmat&quot;);
+</I>&gt;<i>
+</I>&gt;<i> i.e que get option renvoi l'objet non pas le string. Je ne sais pas  
+</I>&gt;<i> si c'est possible de faire une chose pareille. Peut &#234;tre surcharg&#233;  
+</I>&gt;<i> getOption pour qu'il puisse aussi renvoy&#233; un pointeur void ou un PP  
+</I>&gt;<i> sur un objet + un coup de dynamic cast. Enfin, je suis peut &#234;tre  
+</I>&gt;<i> entrain de me compliquer la vie la :)
+</I>
+Beaucoup plus simple et efficace en C++ que les getOption: mettre  
+resultsmat public. (Et si vraiment &#231;a choque les puristes,  
+possibilit&#233; d'ajouter une b&#234;te m&#233;thode accesseur qui retourne la  
+resultsmat, mais franchement, &#231;a n'apporte pas grand chose, &#224; part  
+une m&#233;thode de plus.)
+
+-- Pascal
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000213.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+	<LI>Next message: <A HREF="000209.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#208">[ date ]</a>
+              <a href="thread.html#208">[ thread ]</a>
+              <a href="subject.html#208">[ subject ]</a>
+              <a href="author.html#208">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

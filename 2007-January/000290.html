@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Acc&#232;s &#224; la matrice
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FAcc%3DE8s_%3DE0_la_matrice%3F%3D&In-Reply-To=%3CC87CAD0B-3193-4766-B3F4-C2D3205CEA6C%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000288.html">
+   <LINK REL="Next"  HREF="000289.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Acc&#232;s &#224; la matrice</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FAcc%3DE8s_%3DE0_la_matrice%3F%3D&In-Reply-To=%3CC87CAD0B-3193-4766-B3F4-C2D3205CEA6C%40apstat.com%3E"
+       TITLE="[Plearn-core] Acc&#232;s &#224; la matrice">pascal at apstat.com
+       </A><BR>
+    <I>Wed Jan 10 15:59:44 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000288.html">Acc&#232;s &#224; la matrice
+</A></li>
+        <LI>Next message: <A HREF="000289.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#290">[ date ]</a>
+              <a href="thread.html#290">[ thread ]</a>
+              <a href="subject.html#290">[ subject ]</a>
+              <a href="author.html#290">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i> On 10 Jan 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A> wrote:
+</I>&gt;&gt;<i> Bonjour Messieurs,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> En continuant mon travail sur les processus gaussiens, il appert  
+</I>&gt;&gt;<i> que ces
+</I>&gt;&gt;<i> derniers peuvent fournir assez facilement une information qui  
+</I>&gt;&gt;<i> n'est pas
+</I>&gt;&gt;<i> support&#233;e par l'interface de PLearner: au-del&#224; des simples  
+</I>&gt;&gt;<i> intervalles de
+</I>&gt;&gt;<i> confiance, un GP peut nous donner la pleine matrice de covariance  
+</I>&gt;&gt;<i> entre un
+</I>&gt;&gt;<i> ensemble de pr&#233;visions effectu&#233;es par le mod&#232;le.  J'aurais besoin  
+</I>&gt;&gt;<i> de cette
+</I>&gt;&gt;<i> information.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Pascal a ajout&#233; r&#233;cemment une fonction (non-virtuelle)
+</I>&gt;&gt;<i> computeInputOutputMat.  Je proposerais d'ajouter une fonction  
+</I>&gt;&gt;<i> (virtuelle,
+</I>&gt;&gt;<i> cette fois) computeInputOutputCovMat, laquelle retournerait la  
+</I>&gt;&gt;<i> matrice de
+</I>&gt;&gt;<i> covariance entre tous les points de test, en plus de l'esp&#233;rance des
+</I>&gt;&gt;<i> sorties.
+</I>&gt;<i>
+</I>&gt;<i> Pourquoi le Input dans le nom de la fonction ?
+</I>
+Il me semble que le 'input&quot; dans ma fonction d'origine, c'est parce  
+que ce qui est retourn&#233; est l'input concat&#233;n&#233; &#224; l'output. C'est parce  
+que c'est une fonction utilitaire (non virtuelle) destin&#233;e &#224; &#234;tre  
+appel&#233; via RMI depuis python par pyplot pour lui simplifier la vie.
+Je ne pense pas qu'une fonction virtuelle g&#233;n&#233;rale devrait retourner  
+la conact&#233;nation avec les inputs, et donc le input ne devrait pas  
+&#234;tre dans le nom.
+Qu'en penses-tu Nicolas?
+&gt;<i>
+</I>&gt;&gt;<i> J'aimerais avoir votre avis sur la meilleure fa&#231;on de retourner cette
+</I>&gt;&gt;<i> matrice de covariance. Consid&#233;rons les utilisations:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 1) calcul d'intervalles de confiance &quot;classiques&quot;, lesquels ne  
+</I>&gt;&gt;<i> demandent
+</I>&gt;&gt;<i> que la diagonale de la matrice de covariance
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 2) calcul du (log) likelihood conjoint des observations de test par
+</I>&gt;&gt;<i> rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi  
+</I>&gt;&gt;<i> que son
+</I>&gt;&gt;<i> d&#233;terminant.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je penche pour retourner la matrice sous la forme de sa  
+</I>&gt;&gt;<i> d&#233;composition de
+</I>&gt;&gt;<i> Cholesky.  Avec la cholesky, nous pouvons:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 1) Calculer rapidement la matrice de covariance originale comme le  
+</I>&gt;&gt;<i> produit
+</I>&gt;&gt;<i> matriciel L*L'.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 2) Calculer la diagonale de la matrice de covariance originale  
+</I>&gt;&gt;<i> (l'&#233;l&#233;ment
+</I>&gt;&gt;<i> \sigma^2_{i,i} de la diagonale est la somme des carr&#233;s de la  
+</I>&gt;&gt;<i> rang&#233;e i de
+</I>&gt;&gt;<i> la Cholesky).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 3) R&#233;soudre facilement un syst&#232;me lin&#233;aire (deux back- 
+</I>&gt;&gt;<i> substitutions) ainsi
+</I>&gt;&gt;<i> que calculer le (log) d&#233;terminant (somme de la log-diagonale de la
+</I>&gt;&gt;<i> Cholesky).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+</I>&gt;<i>
+</I>&gt;<i> La forme demandee pourrait toujours etre un parametre de la methode
+</I>&gt;<i> (qui retournerait par ex. un TVec&lt;Mat&gt;, si on souhaite par ex. pouvoir
+</I>&gt;<i> demander une SVD, en plus de Cholesky ou matrice pleine).
+</I>&gt;<i> La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+</I>&gt;<i> avoir une fonction generique qui transforme une forme en une autre.
+</I>&gt;<i> Cela dit, je ne sais pas si ca vaut le coup de se casser la tete  
+</I>&gt;<i> dessus,
+</I>&gt;<i> Cholesky me parait etre une bonne idee.
+</I>
+Il y a sans doute des cas pour lesquelles on voudra calculer et  
+retourner seulement la diagonale et pour lesquels ce sera plus  
+efficace que de calculer/retorner cholesky ou la matrice originale  
+(ne serait-ce que pour des consid&#233;rations de taille m&#233;moire quand on  
+a un grand ensemble). Donc je pense que le plus propre, c'est de  
+rajouter une m&#233;thode diff&#233;rente pour les trois cas: matrce de cov  
+originale, diagonale, ou cholesky. Avec une impl&#233;mentation par d&#233;faut  
+de 2 de ces m&#233;thodes (par ex. originale et diagonale) &#224; partir de la  
+troisi&#232;me.
+
+-- Pascal
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000288.html">Acc&#232;s &#224; la matrice
+</A></li>
+	<LI>Next message: <A HREF="000289.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#290">[ date ]</a>
+              <a href="thread.html#290">[ thread ]</a>
+              <a href="subject.html#290">[ subject ]</a>
+              <a href="author.html#290">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

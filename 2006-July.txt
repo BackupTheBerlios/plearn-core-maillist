@@ -1,0 +1,4166 @@
+From lamblinp at iro.umontreal.ca  Sat Jul  1 00:57:03 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Sat, 1 Jul 2006 00:57:03 +0200
+Subject: [Plearn-core] changements dans pymake
+In-Reply-To: <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+Message-ID: <20060630225703.GB2241@pig.zood.org>
+
+On Fri, Jun 30, 2006, Pascal Vincent wrote:
+
+> >Tant que j'y ?tais, j'ai vu qu'il y avait d?j? de quoi g?rer des
+> >valeurs de "nice" pour la compilation, mais je n'ai rien vu qui y
+> >faisait appel. Est-ce que ?a vous semblerait raisonnable de g?rer un
+> >format de fichiers .hosts un peu plus compliqu?, de la forme :
+> >machine1  10
+> >machine2  19
+> >machine3 0
+> >machine4
+> >machine5 # 19
+> >machine6 -20
+> >
+> >avec un deuxi?me champ (facultatif et pouvant ?tre en commentaire)
+> >contenant la valeur de nice sur cette machine ?
+> 
+> Tr?s bonne id?e.
+
+OK, je vais faire ?a.
+
+> >Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+> >puisse parall?liser la compilation sur le mammouth, o? on n'a aucun
+> >acc?s direct aux machines : il faut passer par le syst?me de gestion du
+> >cluster, on ne peut pas faire "ssh machine commande...".
+> >
+> >Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+> >je peux modifier le pymake existant (par exemple en rajoutant une 
+> >option
+> >et des fonctions particuli?res), ou est-ce qu'il vaudrait mieux que je
+> >fasse un autre script ? Et est-ce que vous auriez des conseils
+> >particuliers ?
+> 
+> Tu peux hacker pymake (au point o? ?a en est!). Mais ce serait 
+> peut-?tre bon d'abstraire la fonctionalit? "lancer job sur machine x" 
+> et l'op?ration de r?cup?ration du r?sultat en temps opportun, ou qqch 
+> du genre. Selon la machine, ssh pourrait n'?tre qu'une option possible.
+
+En l'occurrence, c'est m?me un groupe de jobs que l'on veut lancer d'un
+coup, et la gestion que l'on est oblig? de faire dans le cas du ssh
+(avoir une liste des machines, relancer une compilation sur la m?me
+machine lorsque celle-ci a fini, etc.) n'a pas ? ?tre faite par pymake,
+mais par le syst?me de cluster (celui du diro, bqtools sur le mammouth,
+condor peut-?tre un jour).
+
+Une nuance quand m?me : lorsque l'on a beaucoup de jobs rapides (<1 mn)
+? ex?cuter, on n'a pas forc?ment besoin de l'acc?s exclusif ? un cpu que
+donne le syst?me de cluster, par exemple, et la g?ne pour celui qui
+ex?cute une grosse t?che sur la machine n'est pas tr?s grande (c'est
+pour ?a qu'on peut se permettre d'utiliser ssh sur les machines du
+cluster au diro). Alors que si on dispatche des vraies exp?riences, il
+vaut mieux ?viter que plusieurs se retrouvent sur le m?me cpu...
+?a peut ?tre une option.
+
+> En fait Christian Hudon avait ? une ?poque lointaine travaill? sur un 
+> script du genre, dans le but de pouvoir utiliser ? la fois ssh (chez 
+> ApSTAT) et ?ventuellement ce qui ? l'?poque ?tait la commande "cluster" 
+> au DIRO...
+
+Christian si tu m'entends, je veux bien jeter un coup d'oeil ? ?a.
+
+> Diff?rentes personnes ont ?crit diff?rentes fa?ons de 
+> trouver des machines et dispatcher des jobs ? diff?rents mastodontes et 
+> pt?rodactyles (et si je ne m'abuse, Dan s'appr?te ? re-faire de m?me 
+> pour ses hyper-optimisations, et Christian H. pour pytest ...).
+
+Donc ce que tu proposes, c'est de faire une couche d'abstraction
+au-dessus des diff?rentes impl?mentations des syst?mes de r?partition
+des t?ches sur de gros animaux, qui dans le cas de syst?mes bien faits
+se contente de traduire ces instructions dans le langage de l'animal en
+question, et dans le cas d'un parc de machines accessible directement en
+fait une impl?mentation. J'ai bien compris ?
+
+Ce qu'il faudrait que ce syst?me puisse g?rer, au minimum, c'est
+l'ex?cution d'un groupe de t?che ind?pendantes les unes des autres, et
+la r?cup?ration des r?sultats. Si on veut ?tre un peu plus gourmands, on
+peut cha?ner l'ex?cution de tels groupes, inconditionnellement (tu fais
+?a, et ensuite ?a) ou conditionnellement (tu fais ?a, et si ?a n'a pas
+merd? tu fais ?a) ; je crois que le mammouth comprend ce genre
+d'instructions.
+
+Ensuite, ce syst?me serait appel? avec les bonnes options par pymake
+pour la compilation, apdispatch pour l'ex?cution de t?ches, pytest si
+besoin, etc.
+
+> Je ne sais pas trop o? en sont les derniers d?veloppements, mais il
+> serait sans doute bon de coordonner tout ?a... Un volontaire? :-)
+
+Je veux bien m'en charger (bon, il va ?tre temps que je me mette
+s?rieusement ? python).
+
+Bon allez je commence :
+  - Dan : est-ce qu'une interface entre un tel syst?me et condor te
+semble possible, et si on impl?mente ?a est-ce que tu l'utiliserais ?
+  - Christian H. : qu'est-ce que tu comptais faire, au juste, pour
+pytest ? Est-ce que ?a pourrait se faire, par exemple, en utilisant un
+script du m?me genre qu'apdispatch, qui utiliserait notre interface ?
+  - Tout le monde : qui serait pr?t ? coder l?-dessus ?
+
+
+Au fait, si ce n'est pas encore fait, j'aimerais bien que tout le monde
+fasse une liste avec :
+  - ce qu'il aimerait voir dans PLearn
+  - ce qu'il aimerait voir fait autrement dans PLearn
+  - ce qui est dans PLearn et qu'il aimerait ne plus voir
+  - des priorit?s pour tout ?a
+
+Histoire qu'on puisse en discuter ensemble, rassembler toutes les
+propositions, et faire une grosse liste avec des priorit?s et des gens
+qui s'en occuppent.
+
+Je ramasse les copies jeudi prochain :)
+-- 
+Pascal
+
+
+From dan.popovici at gmail.com  Mon Jul  3 10:29:08 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Mon, 3 Jul 2006 04:29:08 -0400
+Subject: [Plearn-core] changements dans pymake
+In-Reply-To: <20060630225703.GB2241@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org>
+	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+	 <20060630225703.GB2241@pig.zood.org>
+Message-ID: <22777a450607030129v5d009f5ek1cadd7de5a84de6e@mail.gmail.com>
+
+On 6/30/06, Pascal Lamblin <lamblinp at iro.umontreal.ca> wrote:
+>
+> On Fri, Jun 30, 2006, Pascal Vincent wrote:
+>
+> > >Tant que j'y ?tais, j'ai vu qu'il y avait d?j? de quoi g?rer des
+> > >valeurs de "nice" pour la compilation, mais je n'ai rien vu qui y
+> > >faisait appel. Est-ce que ?a vous semblerait raisonnable de g?rer un
+> > >format de fichiers .hosts un peu plus compliqu?, de la forme :
+> > >machine1  10
+> > >machine2  19
+> > >machine3 0
+> > >machine4
+> > >machine5 # 19
+> > >machine6 -20
+> > >
+> > >avec un deuxi?me champ (facultatif et pouvant ?tre en commentaire)
+> > >contenant la valeur de nice sur cette machine ?
+> >
+> > Tr?s bonne id?e.
+>
+> OK, je vais faire ?a.
+>
+> > >Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+> > >puisse parall?liser la compilation sur le mammouth, o? on n'a aucun
+> > >acc?s direct aux machines : il faut passer par le syst?me de gestion du
+> > >cluster, on ne peut pas faire "ssh machine commande...".
+> > >
+> > >Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+> > >je peux modifier le pymake existant (par exemple en rajoutant une
+> > >option
+> > >et des fonctions particuli?res), ou est-ce qu'il vaudrait mieux que je
+> > >fasse un autre script ? Et est-ce que vous auriez des conseils
+> > >particuliers ?
+> >
+> > Tu peux hacker pymake (au point o? ?a en est!). Mais ce serait
+> > peut-?tre bon d'abstraire la fonctionalit? "lancer job sur machine x"
+> > et l'op?ration de r?cup?ration du r?sultat en temps opportun, ou qqch
+> > du genre. Selon la machine, ssh pourrait n'?tre qu'une option possible.
+>
+> En l'occurrence, c'est m?me un groupe de jobs que l'on veut lancer d'un
+> coup, et la gestion que l'on est oblig? de faire dans le cas du ssh
+> (avoir une liste des machines, relancer une compilation sur la m?me
+> machine lorsque celle-ci a fini, etc.) n'a pas ? ?tre faite par pymake,
+> mais par le syst?me de cluster (celui du diro, bqtools sur le mammouth,
+> condor peut-?tre un jour).
+>
+> Une nuance quand m?me : lorsque l'on a beaucoup de jobs rapides (<1 mn)
+> ? ex?cuter, on n'a pas forc?ment besoin de l'acc?s exclusif ? un cpu que
+> donne le syst?me de cluster, par exemple, et la g?ne pour celui qui
+> ex?cute une grosse t?che sur la machine n'est pas tr?s grande (c'est
+> pour ?a qu'on peut se permettre d'utiliser ssh sur les machines du
+> cluster au diro). Alors que si on dispatche des vraies exp?riences, il
+> vaut mieux ?viter que plusieurs se retrouvent sur le m?me cpu...
+> ?a peut ?tre une option.
+>
+> > En fait Christian Hudon avait ? une ?poque lointaine travaill? sur un
+> > script du genre, dans le but de pouvoir utiliser ? la fois ssh (chez
+> > ApSTAT) et ?ventuellement ce qui ? l'?poque ?tait la commande "cluster"
+> > au DIRO...
+>
+> Christian si tu m'entends, je veux bien jeter un coup d'oeil ? ?a.
+>
+> > Diff?rentes personnes ont ?crit diff?rentes fa?ons de
+> > trouver des machines et dispatcher des jobs ? diff?rents mastodontes et
+> > pt?rodactyles (et si je ne m'abuse, Dan s'appr?te ? re-faire de m?me
+> > pour ses hyper-optimisations, et Christian H. pour pytest ...).
+>
+> Donc ce que tu proposes, c'est de faire une couche d'abstraction
+> au-dessus des diff?rentes impl?mentations des syst?mes de r?partition
+> des t?ches sur de gros animaux, qui dans le cas de syst?mes bien faits
+> se contente de traduire ces instructions dans le langage de l'animal en
+> question, et dans le cas d'un parc de machines accessible directement en
+> fait une impl?mentation. J'ai bien compris ?
+>
+> Ce qu'il faudrait que ce syst?me puisse g?rer, au minimum, c'est
+> l'ex?cution d'un groupe de t?che ind?pendantes les unes des autres, et
+> la r?cup?ration des r?sultats. Si on veut ?tre un peu plus gourmands, on
+> peut cha?ner l'ex?cution de tels groupes, inconditionnellement (tu fais
+> ?a, et ensuite ?a) ou conditionnellement (tu fais ?a, et si ?a n'a pas
+> merd? tu fais ?a) ; je crois que le mammouth comprend ce genre
+> d'instructions.
+>
+> Ensuite, ce syst?me serait appel? avec les bonnes options par pymake
+> pour la compilation, apdispatch pour l'ex?cution de t?ches, pytest si
+> besoin, etc.
+>
+> > Je ne sais pas trop o? en sont les derniers d?veloppements, mais il
+> > serait sans doute bon de coordonner tout ?a... Un volontaire? :-)
+>
+> Je veux bien m'en charger (bon, il va ?tre temps que je me mette
+> s?rieusement ? python).
+>
+> Bon allez je commence :
+>   - Dan : est-ce qu'une interface entre un tel syst?me et condor te
+> semble possible, et si on impl?mente ?a est-ce que tu l'utiliserais ?
+
+
+Oui une interface intre un system comme ca et condor c'est s?rement
+possible.
+Je voudrais une telle interface. J'ai besoin d'une dans mon "hyper parameter
+optimizer".
+Je peux t'aider coder ca, si tu veux.
+
+
+  - Christian H. : qu'est-ce que tu comptais faire, au juste, pour
+> pytest ? Est-ce que ?a pourrait se faire, par exemple, en utilisant un
+> script du m?me genre qu'apdispatch, qui utiliserait notre interface ?
+>   - Tout le monde : qui serait pr?t ? coder l?-dessus ?
+>
+>
+> Au fait, si ce n'est pas encore fait, j'aimerais bien que tout le monde
+> fasse une liste avec :
+>   - ce qu'il aimerait voir dans PLearn
+>   - ce qu'il aimerait voir fait autrement dans PLearn
+>   - ce qui est dans PLearn et qu'il aimerait ne plus voir
+>   - des priorit?s pour tout ?a
+
+
+Je te donnerai ma liste en quelques jours.
+
+
+Histoire qu'on puisse en discuter ensemble, rassembler toutes les
+> propositions, et faire une grosse liste avec des priorit?s et des gens
+> qui s'en occuppent.
+>
+> Je ramasse les copies jeudi prochain :)
+> --
+> Pascal
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060703/9c2d3759/attachment.html>
+
+From jaonary at gmail.com  Mon Jul  3 14:12:09 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 3 Jul 2006 14:12:09 +0200
+Subject: [Plearn-core] Debut avec plearn
+Message-ID: <c81af8c30607030512v487f85fepf77dc92b12747526@mail.gmail.com>
+
+Bonjour,
+Je viens de d?couvrir l'existence de Plearn et je voudrai l'utiliser  pour
+mes exp?riences. Mais je suis  un peu perdu face aux nombreux code qui fond
+d?j?  partie de cette biblioth?que, meme s'il y a deja une bonne
+organisation des codes. J'aimarais alors savoir si quelqu'un a quelques
+examples d'utilisation r?elle de plearn en c++ (probl?me de classification,
+clustering, ...)
+J'utilise d?j? Torch en ce moment mais ayant vu les possibilit?s offert par
+Plearn je voudrai bas? mes codes sur cette derni?re.
+
+Merci d'avance;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060703/6c36bce2/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Wed Jul  5 02:19:59 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 5 Jul 2006 02:19:59 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+Message-ID: <20060705001959.GB29466@pig.zood.org>
+
+Salut encore,
+
+J'ai ? nouveau r?fl?chi (faut faire gaffe, il para?t que c'est une
+drogue au bout d'un moment) ? comment impl?menter un m?canisme simple
+pour d?tecter dans un fichier source les #include qui ne seront jamais
+vus parce que la plateforme (ou les variables du pr?processeurs) ne sont
+pas favorables.
+
+La solution d'appeler cpp (qui a pourtant le bon go?t de pouvoir nous
+sortir une liste des fichiers n?cessaires ? la compilation) en passant
+les m?mes options qu'? la compilation (-DUSEDOUBLE, -DUSING_MPI=0, etc.)
+m'a vraiment l'air de prendre trop de temps pour ?tre utilisable.
+
+Reste donc la solution du hack manuel. Voil? comment je verrais les
+choses :
+
+Dans le pymake.config.model, une liste de variables qui ne peuvent
+?tre sett?es qu'? la compilation, et pas par des #define dans le
+code. Par exemple [ 'USEFLOAT', 'USEDOUBLE', 'USING_MPI' ].
+
+Soit dans la m?me liste soit dans une autre, les variables qui
+seront sett?es automatiquement par le compilateur, typiquement les
+variables d'architectures, comme ['__linux__', '__unix__', 'WIN32',
+'__CYGWIN__' ]
+
+Dans les pymakeOptions, rajouter un champ "preproc_variables", qui
+contiendrait les variables que l'on d?finit, mettons [ 'USEDOUBLE',
+'USING_MPI=0' ] et enlever ces options du champ "compiler_options".
+
+Dans pymake, ? partir de ces informations et de la plateforme,
+cr?er deux listes : celles des variables d?finies et celles des
+variables ind?finies, dans notre cas sous linux, def_variables = [
+'USEDOUBLE', 'USING_MPI', '__linux__', '__unix__' ] et undef_variables =
+[ 'USEFLOAT', 'WIN32' ], ainsi qu'un dictionnaire variables_values = {
+"USING_MPI":"0" }.
+
+Lorsqu'on conna?t le statut d'une variable, on en tient compte :
+une directive #include dans une section ? #ifdef USEDOUBLE ? sera prise
+en compte, mais pas si elle est dans ? #ifndef USEDOUBLE ? (ou dans un
+#else du premier) ; de m?me ? #ifdef USEFLOAT ? sera coup? mais pas ?
+#ifndef USEFLOAT ?. Lorsqu'on conna?t la valeur d'une variable, m?me
+combat : #if USING_MPI ne sera pas ex?cut?.
+
+Lorsqu'on rencontre un identifiant inconnu, il vaut mieux ne pas
+prendre de risque et prendre en compte les #include, que l'identifiant
+soit d?fini ou pas : on veut que #ifdef POUET ?value ? vrai, mais que
+#ifndef POUET aussi.
+
+Il faut finalement trois valeurs : "Vrai", "Faux", "Je sais pas encore
+mais dans le doute c'est vrai et son contraire aussi".
+
+Ce qui peut arriver, c'est de ne pas avoir un simple #ifdef, mais une
+ligne comme :
+#if defined WIN32 || USING_MPI && !(defined USEFLOAT)
+
+et l? on est bien emmerd? parce qu'il nous faudrait un parseur avec des
+r?gles de priorit? pour parser tout ?a, en en parlant avec Xavier ?a
+avait l'air assez gal?re.
+
+Mais en fait, on n'a pas besoin de parser la ligne, juste de l'?valuer.
+Si on d?finit "Vrai" par "1", "Faux" par "0" et "Je sais pas encore..."
+par "PLOUF" (ou n'importe quoi, y'a un caract?re interdit dans les
+macros, pour qu'on soit s?r de ne jamais le rencontrer ?), on peut
+remplacer les tokens par leur valeur, mais est-ce que c'est possible
+d'?valuer facilement l'expression apr?s ?
+
+Sinon, est-ce qu'on pourrait appeler cpp sur une petit bout de code, qui
+comprendrait un #define de toutes les variables d?finies, et qui
+regarderait la valeur du pr?dicat pour toutes les combinaisons de
+valeurs des tokens "Je sais pas encore...". Si c'est tout le temps 0 ou
+1, on sait ? quoi s'en tenir, si ?a varie on consid?re que c'est 1 mais
+que le "else" sera vrai aussi.
+
+Vous avez des id?es, vous en pensez quelque chose ?
+
+? bient?t,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jul  6 00:06:52 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 6 Jul 2006 00:06:52 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060705001959.GB29466@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>
+Message-ID: <20060705220652.GA3604@pig.zood.org>
+
+On Wed, Jul 05, 2006, Pascal Lamblin wrote:
+> Ce qui peut arriver, c'est de ne pas avoir un simple #ifdef, mais une
+> ligne comme :
+> #if defined WIN32 || USING_MPI && !(defined USEFLOAT)
+> 
+> et l? on est bien emmerd? parce qu'il nous faudrait un parseur avec des
+> r?gles de priorit? pour parser tout ?a, en en parlant avec Xavier ?a
+> avait l'air assez gal?re.
+
+Yoshua m'a conseill? d'utiliser DParser, qui a remplac? Pyacc que Xavier
+me conseillait d'utiliser, et c'est probablement ce que je vais faire,
+vu la simplicit? d'utilisation.
+
+Le probl?me qui se pose alors, c'est que pymake d?pend de DParser, ce
+qui veut dire qu'on doit l'installer un peu partout l? o? on veut que ?a
+marche. Dans le cas o? il n'est pas install?, on peut juste lancer un
+message d'avertissement et continuer comme maintenant.
+
+Est-ce que requ?rir (ou au moins sugg?rer fortement) l'installation de
+DParser vous semble suffisant, ou alors il faudrait le distribuer avec
+PLearn ? C'est une licence BSD, donc on devrait pouvoir, mais est-ce une
+bonne id?e ?
+
+? plus,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jul  6 17:34:34 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 6 Jul 2006 17:34:34 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44AD1D9A.1040300@apstat.com>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+Message-ID: <20060706153434.GA7712@pig.zood.org>
+
+On Thu, Jul 06, 2006, Christian Hudon wrote:
+> Pascal Lamblin wrote:
+> >Yoshua m'a conseill? d'utiliser DParser, qui a remplac? Pyacc que Xavier
+> >me conseillait d'utiliser, et c'est probablement ce que je vais faire,
+> >vu la simplicit? d'utilisation.
+> >  
+> Un autre parser (en python celui-l?) est pyparsing: 
+> http://pyparsing.wikispaces.com/. Je ne l'ai jamais utilis?, alors je ne 
+> sais pas ce que ?a donne c?t? vitesse, mais ?a a l'air bien fait. ?a 
+> vaudrait peut-?tre la peine que tu y jettes un coup d'oeil.
+
+Je viens de jeter un coup d'oeil rapide, ?a a l'air bien pour r?cup?rer
+des tokens, mais leur ?valuation apr?s a l'air plus gal?re, voil? un
+exemple simple qui prend deux pages de code :
+http://pyparsing.wikispaces.com/space/showimage/SimpleCalc.py
+
+Pascal vient de me dire qu'il vaudrait peut-?tre mieux utiliser une fois
+un g?n?rateur de code python, et inclure ce code dans pymake (ou dans un
+module utilis? par pymake), je vais essayer de regarder ?a.
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Thu Jul  6 17:48:07 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 6 Jul 2006 17:48:07 +0200
+Subject: [Plearn-core] Wishlist PLearn
+In-Reply-To: <20060630225703.GB2241@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org>
+Message-ID: <20060706154807.GB7712@pig.zood.org>
+
+R?cemment, je disais :
+> Au fait, si ce n'est pas encore fait, j'aimerais bien que tout le monde
+> fasse une liste avec :
+>   - ce qu'il aimerait voir dans PLearn
+>   - ce qu'il aimerait voir fait autrement dans PLearn
+>   - ce qui est dans PLearn et qu'il aimerait ne plus voir
+>   - des priorit?s pour tout ?a
+> 
+> Histoire qu'on puisse en discuter ensemble, rassembler toutes les
+> propositions, et faire une grosse liste avec des priorit?s et des gens
+> qui s'en occuppent.
+> 
+> Je ramasse les copies jeudi prochain :)
+
+Vu qu'on est jeudi prochain, est-ce que vous avez fait vos devoirs ?
+
+Pascal (l'autre) a fait une page twiki, et je suis en train de rajouter
+la liste de mes requ?tes.
+
+Si vous n'avez pas fait la v?tre, je pr?f?rerais que vous ne copiiez pas
+sur votre voisin : ?a risque surtout de vous faire oublier vos id?es.
+
+Si vous l'avez faite, vous pouvez me l'envoyer ou modifier directement
+la page :
+http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/PLearnImprovementWishList
+
+On va essayer de faire une r?union vers la fin du mois de juillet, pour
+passer une demi-journ?e l?-dessus, r?soudre les incompatibilit? des
+requ?tes, ?valuer la longueur des t?ches, etc.
+
+? bient?t,
+-- 
+Pascal
+
+
+From dan.popovici at gmail.com  Thu Jul  6 18:52:44 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Thu, 6 Jul 2006 12:52:44 -0400
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <20060706154807.GB7712@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org>
+	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+	 <20060630225703.GB2241@pig.zood.org>
+	 <20060706154807.GB7712@pig.zood.org>
+Message-ID: <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com>
+
+I attached a document with all sorts of ideas related to PLearn. I'm curious
+about you guys think about them.
+
+Dan
+
+On 7/6/06, Pascal Lamblin <lamblinp at iro.umontreal.ca> wrote:
+>
+> R?cemment, je disais :
+> > Au fait, si ce n'est pas encore fait, j'aimerais bien que tout le monde
+> > fasse une liste avec :
+> >   - ce qu'il aimerait voir dans PLearn
+> >   - ce qu'il aimerait voir fait autrement dans PLearn
+> >   - ce qui est dans PLearn et qu'il aimerait ne plus voir
+> >   - des priorit?s pour tout ?a
+> >
+> > Histoire qu'on puisse en discuter ensemble, rassembler toutes les
+> > propositions, et faire une grosse liste avec des priorit?s et des gens
+> > qui s'en occuppent.
+> >
+> > Je ramasse les copies jeudi prochain :)
+>
+> Vu qu'on est jeudi prochain, est-ce que vous avez fait vos devoirs ?
+>
+> Pascal (l'autre) a fait une page twiki, et je suis en train de rajouter
+> la liste de mes requ?tes.
+>
+> Si vous n'avez pas fait la v?tre, je pr?f?rerais que vous ne copiiez pas
+> sur votre voisin : ?a risque surtout de vous faire oublier vos id?es.
+>
+> Si vous l'avez faite, vous pouvez me l'envoyer ou modifier directement
+> la page :
+>
+> http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/PLearnImprovementWishList
+>
+> On va essayer de faire une r?union vers la fin du mois de juillet, pour
+> passer une demi-journ?e l?-dessus, r?soudre les incompatibilit? des
+> requ?tes, ?valuer la longueur des t?ches, etc.
+>
+> ? bient?t,
+> --
+> Pascal
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060706/c3bb3aaf/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: plearn_opinions.pdf
+Type: application/pdf
+Size: 65164 bytes
+Desc: not available
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060706/c3bb3aaf/attachment.pdf>
+
+From dan.popovici at gmail.com  Thu Jul  6 21:55:40 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Thu, 6 Jul 2006 15:55:40 -0400
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com>
+References: <20060630011228.GD29560@pig.zood.org>
+	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+	 <20060630225703.GB2241@pig.zood.org>
+	 <20060706154807.GB7712@pig.zood.org>
+	 <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com>
+Message-ID: <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+
+Hi All,
+
+The link below contains a requirements document for the Distributed
+Launcher, a layer that will allow executing jobs without having to worry
+about which system we use(condor, cluster, ssh)
+
+http://www-etud.iro.umontreal.ca/~popovicd/distributed_launcher.pdf
+
+If you have any comments on this, please share them, so that we can get to
+the text step.
+
+Dan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060706/3ec9d4dc/attachment.html>
+
+From chapados at apstat.com  Fri Jul  7 00:39:50 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 06 Jul 2006 18:39:50 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060706153434.GA7712@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org>
+Message-ID: <44AD9136.4010107@apstat.com>
+
+L'approche Python-only me semble pr?f?rable (mais les outils de 
+g?n?ration de parser/?valuateurs ?taient pr?historiques/inexistants pour 
+Python, la derni?re fois que j'ai regard?).  Si on admet quand m?me le 
+C++, j'ai eu beaucoup de succ?s avec la librairie Spirit en C++ (fait 
+partie de Boost), laquelle permet de d?finir des grammaires ? m?me le 
+code C++.  Ils utilisent les surcharges d'op?rateur pour d?finir leur 
+langage de grammaire (un peu comme les Var en PLearn), mais au contraire 
+des Vars, l'?valuation des expressions se fait compile-time (deep 
+template voodoo) pour g?n?rer directement (behind-the-scenes) le parser C++.
+
+Le pire dans tout cela, c'est que ?a fonctionne!  Je l'utilise 
+abondamment dans FinLearn, pour d?finir des petits langages qui 
+permettent d'acc?der aux donn?es et les manipuler de mani?re flexible?.  
+Le langage de composition des Advisors (discut? dans une autre 
+conversation) est ?galement d?fini gr?ce ? Spirit.
+
+Autre point: il existe bon nombre de grammaires du preprocessor C; 
+probablement pas n?cessaire de r?inventer la roue.
+
+Pascal L: pourrais-tu me r?-expliquer en 3 phrases POURQUOI il est 
+n?cessaire d'inclure cette fonctionnalit? dans pymake?
+
+    Merci,
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+> On Thu, Jul 06, 2006, Christian Hudon wrote:
+>   
+>> Pascal Lamblin wrote:
+>>     
+>>> Yoshua m'a conseill? d'utiliser DParser, qui a remplac? Pyacc que Xavier
+>>> me conseillait d'utiliser, et c'est probablement ce que je vais faire,
+>>> vu la simplicit? d'utilisation.
+>>>  
+>>>       
+>> Un autre parser (en python celui-l?) est pyparsing: 
+>> http://pyparsing.wikispaces.com/. Je ne l'ai jamais utilis?, alors je ne 
+>> sais pas ce que ?a donne c?t? vitesse, mais ?a a l'air bien fait. ?a 
+>> vaudrait peut-?tre la peine que tu y jettes un coup d'oeil.
+>>     
+>
+> Je viens de jeter un coup d'oeil rapide, ?a a l'air bien pour r?cup?rer
+> des tokens, mais leur ?valuation apr?s a l'air plus gal?re, voil? un
+> exemple simple qui prend deux pages de code :
+> http://pyparsing.wikispaces.com/space/showimage/SimpleCalc.py
+>
+> Pascal vient de me dire qu'il vaudrait peut-?tre mieux utiliser une fois
+> un g?n?rateur de code python, et inclure ce code dans pymake (ou dans un
+> module utilis? par pymake), je vais essayer de regarder ?a.
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060706/0d817701/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Fri Jul  7 00:48:31 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 7 Jul 2006 00:48:31 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44AD9136.4010107@apstat.com>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+Message-ID: <20060706224831.GA9773@pig.zood.org>
+
+On Thu, Jul 06, 2006, Nicolas Chapados wrote:
+> L'approche Python-only me semble pr?f?rable (mais les outils de 
+> g?n?ration de parser/?valuateurs ?taient pr?historiques/inexistants pour 
+> Python, la derni?re fois que j'ai regard?).
+
+Pascal V. m'a parl? de yapps, qui permet de d?finir dans un fichier une
+grammaire, et de le convertir en un parser en python qui fonctionne en
+stand-alone : pas besoin de d?pendre de yapps, on peut simplement
+utiliser ce code.
+
+> Autre point: il existe bon nombre de grammaires du preprocessor C; 
+> probablement pas n?cessaire de r?inventer la roue.
+
+OK, je vais regarder ?a sur google. Yapps est limit? aux grammaires
+LL(1), mais je suppose que ?a va suffire.
+
+> Pascal L: pourrais-tu me r?-expliquer en 3 phrases POURQUOI il est 
+> n?cessaire d'inclure cette fonctionnalit? dans pymake?
+
+Oui.
+
+Je veux pouvoir faire
+#ifdef WIN32
+# include <header_win_32.h>
+#else
+# include <other_header.h>
+#endif
+sans que pymake ne tente d'inclure les deux et se plaigne que l'un
+n'existe pas.
+
+Voil?, ?a fait trois phrases.
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Fri Jul  7 01:00:44 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 7 Jul 2006 01:00:44 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060706224831.GA9773@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org>
+Message-ID: <20060706230043.GA9904@pig.zood.org>
+
+On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+> > Pascal L: pourrais-tu me r?-expliquer en 3 phrases POURQUOI il est 
+> > n?cessaire d'inclure cette fonctionnalit? dans pymake?
+> 
+> Oui.
+> 
+> Je veux pouvoir faire
+> #ifdef WIN32
+> # include <header_win_32.h>
+> #else
+> # include <other_header.h>
+> #endif
+> sans que pymake ne tente d'inclure les deux et se plaigne que l'un
+> n'existe pas.
+
+Mauvais exemple, puisque dans ce cas il n'a pas l'air de se plaindre
+(pourtant il me semble que ?a avait pos? probl?me ? Olivier).
+
+Mais par exemple, pymake essaie toujours de compiler PLMPI, que l'on aie
+USE_MPI=0 ou USE_MPI=1, ce qui d?clenche un paquet de d?pendances dont
+on n'a pas toujours besoin.
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Fri Jul  7 17:14:16 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 07 Jul 2006 11:14:16 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060706230043.GA9904@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org> <20060706230043.GA9904@pig.zood.org>
+Message-ID: <44AE7A48.7070101@apstat.com>
+
+Au lieu de r??crire un pr?processeur complet, ne pourrait-on pas adopter 
+la mani?re indirecte, mais sans doute aussi efficace, qui suit:
+
+    * pymake suit les #includes qu'il reconna?t, par exemple les formes
+      <plearn/*> (extensible, car on doit pouvoir faire <apstatlib/*>
+      aussi, par exemple).
+    * des options pass?es ? pymake, genre -mpi peuvent ajouter ? la
+      liste ci-haut au besoin
+    * pymake ne suit AUCUN AUTRE #include.
+
+?a ?vite, entre autres, de parcourir les headers des librairies 
+standard.  Je ne sais pas si pymake ?vite de les parcourir pr?sentement, 
+mais ?a ?conomise potentiellement du temps d'analyse de d?pendances.
+
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+> On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+>   
+>>> Pascal L: pourrais-tu me r?-expliquer en 3 phrases POURQUOI il est 
+>>> n?cessaire d'inclure cette fonctionnalit? dans pymake?
+>>>       
+>> Oui.
+>>
+>> Je veux pouvoir faire
+>> #ifdef WIN32
+>> # include <header_win_32.h>
+>> #else
+>> # include <other_header.h>
+>> #endif
+>> sans que pymake ne tente d'inclure les deux et se plaigne que l'un
+>> n'existe pas.
+>>     
+>
+> Mauvais exemple, puisque dans ce cas il n'a pas l'air de se plaindre
+> (pourtant il me semble que ?a avait pos? probl?me ? Olivier).
+>
+> Mais par exemple, pymake essaie toujours de compiler PLMPI, que l'on aie
+> USE_MPI=0 ou USE_MPI=1, ce qui d?clenche un paquet de d?pendances dont
+> on n'a pas toujours besoin.
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060707/9852fe57/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Fri Jul  7 17:47:58 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 7 Jul 2006 17:47:58 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44AE7A48.7070101@apstat.com>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org> <20060706230043.GA9904@pig.zood.org> <44AE7A48.7070101@apstat.com>
+Message-ID: <20060707154758.GA17407@pig.zood.org>
+
+On Fri, Jul 07, 2006, Nicolas Chapados wrote:
+> Au lieu de r??crire un pr?processeur complet,
+
+Je ne compte pas r??crire un pr?processeur complet, juste un moyen
+d'?liminer les #include qui sont contenu dans un #if... que l'on sait
+?valuer imm?diatement, sans parser les fichiers inclus pr?c?dents,
+simplement en connaissant la plate-forme et les options -D pass?es au
+compilateur. En particulier, je ne veux pas parcourir les fichiers
+inclus (sinon j'aurais fait appel ? cpp lui-m?me).
+
+> ne pourrait-on pas adopter
+> la mani?re indirecte, mais sans doute aussi efficace, qui suit:
+> 
+>    * pymake suit les #includes qu'il reconna?t, par exemple les formes
+>      <plearn/*> (extensible, car on doit pouvoir faire <apstatlib/*>
+>      aussi, par exemple).
+>    * des options pass?es ? pymake, genre -mpi peuvent ajouter ? la
+>      liste ci-haut au besoin
+>    * pymake ne suit AUCUN AUTRE #include.
+> 
+> ?a ?vite, entre autres, de parcourir les headers des librairies 
+> standard.  Je ne sais pas si pymake ?vite de les parcourir pr?sentement, 
+> mais ?a ?conomise potentiellement du temps d'analyse de d?pendances.
+
+On peut faire ?a, aussi. Je pense qu'il ?vite les librairies syst?me,
+je ne sais pas ce qu'il se passe pour les librairies externes, ? mon
+avis il les reconna?t comme telles puisqu'un "plearn -dependency" les
+affiches comme de gros blocs rouges. Il faut aussi voir ce qu'on fait
+dans le cas #include "../../../../ailleurs/truc_pas_rapport.h". Cela
+dit, le temps d'analyse n'est pas tellement long (quelques secondes),
+surtout par rapport au temps de link.
+
+Mais ?a ne r?sout pas le probl?me de compilation de morceaux de PLearn
+qui ne seront pas utilis?s. Si dans un ex?cutable je veux utiliser
+plerror et rien d'autre (oui, c'est un exemple idiot), pymake va voir
+une d?pendance ? PLMPI, qui d?pend d'un paquet de choses jusqu'? TMat,
+TMat_maths, etc.
+
+On pourrait aussi avoir un jour des fichiers entiers sp?cifiques ?
+certaines architectures, ou ? certains compilateurs, ? l'int?rieur m?me
+de la hi?rarchie <plearn/> ou <apstatsoft/*>... ou d'un autre projet sur
+lequel on voudrait utiliser pymake, qui n'est pas cens? ?tre sp?cifique
+? PLearn.
+
+En plus, si je commente du vieux code avec un #if 0 ... #endif, je ne
+veux pas qu'il essaie de me compiler les fichiers (potentiellement
+obsol?tes) qui sont inclus l?-dedans.
+
+Ce que je veux faire, c'est un truc un minimum intelligent qui puisse
+virer ces #include l? des d?pendances (m?me si les fichiers existent et
+sont dans le r?pertoire plearn), s'il voit que les conditions ne
+d?pendent que de variables connues (ou dont l'existence est connue) au
+moment du lancement de pymake. Si les conditions sont inconnues (des
+variables que le pymake.config.model ne conna?t pas, qui doivent ?tre
+d?finies dans un fichier et pas par le compilateur), alors dans le doute
+on inclut.
+
+En y r?fl?chissant un peu, j'ai m?me une id?e de comment impl?menter ?a
+? la main directement, mais faire une grammaire et en g?n?rer un parseur
+sera probablement plus propre.
+
+J'esp?re que c'est plus clair.
+-- 
+Pascal
+
+
+From jaonary at gmail.com  Mon Jul 10 11:50:34 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 10 Jul 2006 11:50:34 +0200
+Subject: [Plearn-core] Utiliser Plearn en tant que library
+Message-ID: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>
+
+Bonjour,
+Apr?s avoir fait le tour de la documentation actuellement disponible, j'ai
+compris que PLearn est avant tout une
+biblioth?que destiner aux chercheurs en apprentissage statistique (ce qui
+est mon cas). En plus, il y a des outils qui permettent l'utilisation haut
+niveau de PLearn via les script. Une sorte de mini compilateur ou de langage
+utilisateur.
+Je suis surtout int?ress? par l'aspect biblioth?que C++ de PLearn car nous
+utilisons ce langage pour tous nos developpements et expr?riences. Donc, ?
+priori je n'aurai pas besoin de toutes les fonctions qui se trouve dans de
+dossier "commands" et seulement faire le lien avec les fonctions et classes
+qui sont dans "plearn", "plearn_learners" et eventuellement
+"plearn_learners_experimental". Pour cela, j'ai donc quelques question et
+suggestion :
+
+1 - Il y a tellement de fichier dans ces repertoirs et les compiler tous
+prend beaucoup de temps. Je voudrais donc savoir s'il y a de fichiers
+essentiels que l'on doit absolument compiler et des fichiers optionnels.
+J'ai d?j? essay? de faire le tri moi meme mais c'est pas evident de deviner
+ce que l'on doit garder sans parcourir les sources.
+
+2 -  PLearn depend  d'autre biblioth?que comme boost et nspr. Si boost est
+d?j? plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour
+cette biblioth?que (nspr) je sugg?re que l'on n'?crive pas le chemin absolu
+des includes (firefox/nspr/*.h) mais tout de suite <*.h> et specifier le -I
+pendant la compilation.
+
+3 - Est ce que quelqu'un a d?j? r?ussit ? compiler PLearn et lancer
+correctement des test avec visual studio (windows) et xcode (mac os x). Pour
+le premier j'ai des probl?me de compilation purement c++. Par example :
+la class TVec (TVec_decl.h) a un operateur surcharg?
+
+         inline T& operator[](unsigned int i) const
+
+         inline T& operator[](int i) const
+
+Quand le type que l'on passe en parametre n'est pas un "int" ou un "unsigned
+int" le compilateur ne sait plus quoi prendre et on obtient une erreur. En
+plus il trouve 3 surcharges possible de cette fonction et moi j'en vois que
+deux. La solution que j'ai trouv? c'est de faire un cast static. Mais alors,
+pourquoi avoir surcharger cet operateur ?
+
+
+4 - Est ce que le developpent de PLearn est ouvert ? tout ceux qui veulent
+participer et si oui comment faire ?
+
+J'esp?re que mes questions ne sont pas trop ennuieuse :-) Merci,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060710/89983468/attachment.html>
+
+From delallea at iro.umontreal.ca  Mon Jul 10 16:54:13 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 10 Jul 2006 10:54:13 -0400
+Subject: [Plearn-core] Debut avec plearn
+In-Reply-To: <c81af8c30607030512v487f85fepf77dc92b12747526@mail.gmail.com>
+References: <c81af8c30607030512v487f85fepf77dc92b12747526@mail.gmail.com>
+Message-ID: <20060710145412.GA14907@opale.iro.umontreal.ca>
+
+Bonjour,
+
+En effet, le code PLearn est assez touffu et il n'est pas toujours
+evident d'y trouver ce que l'on y cherche.
+Je te conseille de :
+1. Si ce n'est pas deja fait, parcourir la documentation (guides et
+tutoriaux) dispo sur http://plearn.org
+2. Regarder en particulier comment fonctionne un PLearner, vu que tu
+sembles vouloir ecrire des algoritmes d'apprentissage en C++. Tu peux
+par exemple regarder le code des classes suivantes :
+- plearn_learners/classifiers/KNNClassifier.* pour la classification
+- plearn_learners/unsupervised/KMeansClustering.* pour le clustering
+  (NB: ce code est relativement vieux et peut-etre pas parfait, mais je
+   pense que c'est le seul algorithme de clustering reellement present
+   dans PLearn en ce moment).
+Pour creer ton propre PLearner, utilise la commande
+    pyskeleton PLearner MyPLearner
+pour avoir un squelette du code qu'il te "suffira" de remplir.
+
+--
+Olivier
+
+On 03 Jul 2006, Jaonary Rabarisoa wrote:
+> Bonjour,
+> Je viens de d couvrir l'existence de Plearn et je voudrai l'utiliser  pour mes
+> exp riences. Mais je suis  un peu perdu face aux nombreux code qui fond d j  
+> partie de cette biblioth que, meme s'il y a deja une bonne organisation des
+> codes. J'aimarais alors savoir si quelqu'un a quelques examples d'utilisation r
+>  elle de plearn en c++ (probl me de classification, clustering, ...)
+> J'utilise d j  Torch en ce moment mais ayant vu les possibilit s offert par
+> Plearn je voudrai bas  mes codes sur cette derni re.
+> 
+> Merci d'avance;
+> 
+> Jaonary
+
+
+From delallea at iro.umontreal.ca  Mon Jul 10 18:50:57 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 10 Jul 2006 12:50:57 -0400
+Subject: [Plearn-core] Utiliser Plearn en tant que library
+In-Reply-To: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>
+References: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>
+Message-ID: <20060710165057.GC16470@opale.iro.umontreal.ca>
+
+Bonjour,
+
+On 10 Jul 2006, Jaonary Rabarisoa wrote:
+> 1 - Il y a tellement de fichier dans ces repertoirs et les compiler tous prend
+> beaucoup de temps. Je voudrais donc savoir s'il y a de fichiers essentiels que
+> l'on doit absolument compiler et des fichiers optionnels. J'ai d?j? essay? de
+> faire le tri moi meme mais c'est pas evident de deviner ce que l'on doit garder
+> sans parcourir les sources.
+
+Il y a en effet beaucoup de fichiers qu'il n'est pas necessaire de
+compiler, meme si compiler le 'coeur' de PLearn fait quand meme appel a
+beaucoup de fichiers (si tu as acces a des machines en reseau, pymake
+peut compiler en parallele, ce qui fait gagner beaucoup de temps).
+Pour se restreindre au minimum, le mieux est de commencer par editer
+plearn/commands/plearn_inc.h et de tout commenter (ou presque). Il
+suffira ensuite de de-commenter ce dont on a finalement besoin.
+
+> 2 -  PLearn depend  d'autre biblioth?que comme boost et nspr. Si boost est d?j?
+> plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour cette
+> biblioth?que (nspr) je sugg?re que l'on n'?crive pas le chemin absolu des
+> includes (firefox/nspr/*.h) mais tout de suite <*.h> et specifier le -I pendant
+> la compilation.
+
+Je *pense* que si le chemin actuel precise firefox/nspr/, c'est que ce
+chemin est standard, et se retrouve dans la version officielle de la
+librairie (NB: apparemment, firefox est recent, c'etait mozilla
+auparavant). Cela permet aussi a pymake de se rendre compte qu'on
+utilise NSPR grace au 'trigger' nspr.
+
+> 3 - Est ce que quelqu'un a d?j? r?ussit ? compiler PLearn et lancer
+> correctement des test avec visual studio (windows) et xcode (mac os x).
+
+Pas recemment. J'utilise regulierement PLearn sous Windows, mais en
+utilisant Cygwin. Note que la doc d'installation Windows n'est pas
+vraiment a jour (je compte m'en occuper prochainement), si tu desires
+des infos, je peux te dire exactement quoi faire pour compiler sous
+Windows. Quant a compiler sous Visual Studio, cela necessitera sans
+doute quelques modifications non triviales (mais je compte aussi m'y
+atteler un de ces jours). Ca a deja ete fait donc ca devrait pouvoir se
+faire.
+
+> Pour le
+> premier j'ai des probl?me de compilation purement c++. Par example :
+> la class TVec (TVec_decl.h) a un operateur surcharg?
+>         
+>          inline T& operator[](unsigned int i) const
+>         
+>          inline T& operator[](int i) const
+> 
+> Quand le type que l'on passe en parametre n'est pas un "int" ou un "unsigned
+> int" le compilateur ne sait plus quoi prendre et on obtient une erreur. En plus
+> il trouve 3 surcharges possible de cette fonction et moi j'en vois que deux. La
+> solution que j'ai trouv? c'est de faire un cast static. Mais alors, pourquoi
+> avoir surcharger cet operateur ?
+
+Personnellement, je ne sais pas trop. Apparemment, ca a ete rajoute par
+Norman, qui avait justement travaille pour faire compiler sous Visual
+Studio a l'epoque. Peut-etre pour eliminer certains warnings ? En tout
+cas on devrait pouvoir s'en sortir avec un seul operateur (celui qui
+prend un int).
+
+> 4 - Est ce que le developpent de PLearn est ouvert ? tout ceux qui veulent
+> participer et si oui comment faire ?
+
+Il me semble que oui (a confirmer aupres des autres admins du projet).
+Il faut commencer par creer un compte sur : http://developer.berlios.de
+
+--
+Olivier
+
+
+From chrish at apstat.com  Mon Jul 10 18:58:23 2006
+From: chrish at apstat.com (Christian Hudon)
+Date: Mon, 10 Jul 2006 12:58:23 -0400
+Subject: [Plearn-core] Utiliser Plearn en tant que library
+In-Reply-To: <20060710165057.GC16470@opale.iro.umontreal.ca>
+References: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com> <20060710165057.GC16470@opale.iro.umontreal.ca>
+Message-ID: <44B2872F.2070206@apstat.com>
+
+Olivier Delalleau escribi?:
+>> 2 -  PLearn depend  d'autre biblioth?que comme boost et nspr. Si boost est d?j?
+>> plus ou moins standard sur tous les os, nspr, lui , l'est moins. Pour cette
+>> biblioth?que (nspr) je sugg?re que l'on n'?crive pas le chemin absolu des
+>> includes (firefox/nspr/*.h) mais tout de suite <*.h> et specifier le -I pendant
+>> la compilation.
+>>     
+>
+> Je *pense* que si le chemin actuel precise firefox/nspr/, c'est que ce
+> chemin est standard, et se retrouve dans la version officielle de la
+> librairie (NB: apparemment, firefox est recent, c'etait mozilla
+> auparavant). Cela permet aussi a pymake de se rendre compte qu'on
+> utilise NSPR grace au 'trigger' nspr.
+>   
+En effet. La solution recommand?e (si NSPR n'est pas encore ? la version
+plus r?cente, qui s'installe sous firefox/nspr) et de se servir de CPATH
+et/ou de symlinks pour que gcc trouve les fichiers sous firefox/nspr.
+
+  Christian
+
+
+
+From lamblinp at iro.umontreal.ca  Mon Jul 10 19:34:52 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 10 Jul 2006 19:34:52 +0200
+Subject: [Plearn-core] Debut avec plearn
+In-Reply-To: <20060710145412.GA14907@opale.iro.umontreal.ca>
+References: <c81af8c30607030512v487f85fepf77dc92b12747526@mail.gmail.com> <20060710145412.GA14907@opale.iro.umontreal.ca>
+Message-ID: <20060710173452.GA7882@pig.zood.org>
+
+On Mon, Jul 10, 2006, Olivier Delalleau wrote:
+> 2. Regarder en particulier comment fonctionne un PLearner, vu que tu
+> sembles vouloir ecrire des algoritmes d'apprentissage en C++. Tu peux
+> par exemple regarder le code des classes suivantes :
+> - plearn_learners/classifiers/KNNClassifier.* pour la classification
+> - plearn_learners/unsupervised/KMeansClustering.* pour le clustering
+>   (NB: ce code est relativement vieux et peut-etre pas parfait, mais je
+>    pense que c'est le seul algorithme de clustering reellement present
+>    dans PLearn en ce moment).
+> Pour creer ton propre PLearner, utilise la commande
+>     pyskeleton PLearner MyPLearner
+> pour avoir un squelette du code qu'il te "suffira" de remplir.
+
+Pour plus d'informations sur la mani?re de ? remplir ? un PLearner, tu
+peux regarder
+<http://plearn.berlios.de/programmers_guide/node3.html#SECTION00320000000000000000>,
+et si ce n'est pas clair, n'h?site pas ? demander !
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Mon Jul 10 19:45:14 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 10 Jul 2006 13:45:14 -0400
+Subject: [Plearn-core] Utiliser Plearn en tant que library
+In-Reply-To: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>
+References: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>
+Message-ID: <44B2922A.6080602@apstat.com>
+
+Jaonary Rabarisoa wrote:
+> Bonjour,
+> Apr?s avoir fait le tour de la documentation actuellement disponible, 
+> j'ai compris que PLearn est avant tout une
+> biblioth?que destiner aux chercheurs en apprentissage statistique (ce 
+> qui est mon cas). En plus, il y a des outils qui permettent 
+> l'utilisation haut niveau de PLearn via les script. Une sorte de mini 
+> compilateur ou de langage utilisateur.
+> Je suis surtout int?ress? par l'aspect biblioth?que C++ de PLearn car 
+> nous utilisons ce langage pour tous nos developpements et 
+> expr?riences. Donc, ? priori je n'aurai pas besoin de toutes les 
+> fonctions qui se trouve dans de dossier "commands" et seulement faire 
+> le lien avec les fonctions et classes qui sont dans "plearn", 
+> "plearn_learners" et eventuellement "plearn_learners_experimental". 
+> Pour cela, j'ai donc quelques question et suggestion :
+Bonjour et d?sol? pour la r?ponse tardive. Je vois que tu as d?j? 
+parcouru au moins en partie la documentation, ce qui est un bon d?but. 
+Il faut n?anmoins que je te pr?vienne que jusqu'? pr?sent PLearn est 
+surtout d?velopp? ? deux endroits localis?s par des ?quippes qui ont la 
+possibilit? de se voir ou au moins de se parler fr?quemment. Peu 
+d'efforts ont pour l'instant ?t? consacr?s ? le rendre facilement 
+accessible ? du monde ext?rieur. Et ceci concerne en particulier la 
+documentation qui est en partie out-of -date et largement incompl?te.
+> 1 - Il y a tellement de fichier dans ces repertoirs et les compiler 
+> tous prend beaucoup de temps. Je voudrais donc savoir s'il y a de 
+> fichiers essentiels que l'on doit absolument compiler et des fichiers 
+> optionnels. J'ai d?j? essay? de faire le tri moi meme mais c'est pas 
+> evident de deviner ce que l'on doit garder sans parcourir les sources.
+Pour compiler un ex?cutable plearn, nous utilisons l'utilitaire pymake 
+qui se charge lui-m?me de trouver toutes les d?pendances, recompiler 
+uniquement ce qui est n?cessaire et linker avec ce qui est n?cessaire. 
+Le principe pour ne pas avoir ? tout compiler/linker, est de faire un 
+ex?cutable sur le mod?le de PLearn/commands/plearn.cc en ne faisant  des 
+includes que pour les  classes dont on veut se servir, et de compiler 
+ledit ex?cutable avec pymake. (Note: nous sommes conscients que m?me 
+ainsi, il y aurait un grand m?nage ? faire dans les d?pendances, et 
+c'est assez haut sur notre liste de priorit?). Si tu veux utiliser un 
+autre syst?me de compilation, libre ? toi, mais peut-?tre que tu peux au 
+moins utiliser pymake pour lister les d?pendances. Nous n'avons pas 
+beaucoup tendance ? utiliser plearn comme une librairie (.so) qui serait 
+ensuite link?e avec un autre ex?cutable, mais rien ne l'emp?che.
+
+> 2 -  PLearn depend  d'autre biblioth?que comme boost et nspr. Si boost 
+> est d?j? plus ou moins standard sur tous les os, nspr, lui , l'est 
+> moins. Pour cette biblioth?que (nspr) je sugg?re que l'on n'?crive pas 
+> le chemin absolu des includes (firefox/nspr/*.h) mais tout de suite 
+> <*.h> et specifier le -I pendant la compilation.
+Oui, nous avons d?j? rencontr? ce probl?me entre nos diverses 
+installations. Pour l'instant il a ?t? r?gl? en faisant quelques 
+symlinks. Mais je pense effectivement qu'il vaudrait mieux en partie le 
+r?gler au niveau des includes. Par contre je n'aime pas les includes 
+<*.h> tout seuls, mais pr?conise plut?t <nspr/*.h>. Ceci ferait-il 
+l'affaire dans ton installation?
+>
+> 3 - Est ce que quelqu'un a d?j? r?ussit ? compiler PLearn et lancer 
+> correctement des test avec visual studio (windows) et xcode (mac os x). 
+Nous d?veloppons presque exclusivement sous linux avec gcc (et icc). 
+Nous avons d?j? ? plusieurs reprises fait des "ports" windows et Mac OS 
+X, pour certains projets particuliers, mais la plupart du temps ceci a 
+?t? fait avec des versions de gcc pour ces OS. Je sais que quelqu'un 
+avait d?j? entrepris de compiler le tout avec Visual Studio avec un 
+certain succ?s (apr?s avoir rajout? quelques #ifdef sp?cifiques ? des 
+endroits strat?giques) mais je ne sais pas jusqu'o? il s'est rendu. Et 
+comme nous d?veloppons sous linux/gcc, les choses que d'autres compilos 
+n'aiment pas, on ne s'en rend pas compte tant qu'on a pas a faire un 
+port vers ledit compilo... Ah vivement le jour o? tout le monde aura la 
+m?me compr?hension de ce qu'est le "C++ standard"...
+> Pour le premier j'ai des probl?me de compilation purement c++. Par 
+> example :
+> la class TVec (TVec_decl.h) a un operateur surcharg?
+>         
+>          inline T& operator[](unsigned int i) const
+>         
+>          inline T& operator[](int i) const
+>
+> Quand le type que l'on passe en parametre n'est pas un "int" ou un 
+> "unsigned int" le compilateur ne sait plus quoi prendre et on obtient 
+> une erreur. En plus il trouve 3 surcharges possible de cette fonction 
+> et moi j'en vois que deux. La solution que j'ai trouv? c'est de faire 
+> un cast static. Mais alors, pourquoi avoir surcharger cet operateur ?
+Sans doute quelqu'un a-t-il un jour ?t? fatigu? de devoir faire des cast 
+de unsigned int en int et a rajout? cette surcharge. Dans tous les cas, 
+si l'index est autre chose qu'un entier, je pense plus sage de devoir 
+faire explicitement le cast. Quel est le code qui pose probl?me?
+
+> 4 - Est ce que le developpent de PLearn est ouvert ? tout ceux qui 
+> veulent participer et si oui comment faire ?
+Comme je disais plus haut, le d?veloppement s'est jusqu'? pr?sent fait 
+surtout dans deux groupes localis?s. Comme nous n'avons pas l'habitude 
+de travailler de mani?re d?localis?e, je suis un peu frileux ? l'id?e de 
+donner aussi rapidement des droits d'?criture sur le repository ? 
+quelqu'un d'ext?rieur.  Mais  tu peux bien entendu participer au 
+d?veloppement: si tu trouves et r?pares des bugs, fais des 
+am?liorations, ou cr?e de nouvelles classes utiles, envoie-les nous et 
+on les incorporera. Quand tu seras suffisamment familier avec la 
+librairie, le mode de d?veloppement et qu'on aura  pris l'habitude de 
+travailler ensemble on pourra alors te donner un acc?s direct en 
+?critutre sur le r?pository.
+
+Au fait, par curiosit?, peux-tu nous en dire un peu plus sur toi et les 
+projets pour lesquels tu envisages d'utiliser PLearn? Et comment tu en 
+as entendu parler??
+
+-- 
+Pascal Vincent
+
+
+
+
+From delallea at iro.umontreal.ca  Mon Jul 10 20:36:28 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 10 Jul 2006 14:36:28 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060706230043.GA9904@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org> <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org> <20060706230043.GA9904@pig.zood.org>
+Message-ID: <20060710183627.GA19218@opale.iro.umontreal.ca>
+
+On 07 Jul 2006, Pascal Lamblin wrote:
+> On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+> > > Pascal L: pourrais-tu me r?-expliquer en 3 phrases POURQUOI il est 
+> > > n?cessaire d'inclure cette fonctionnalit? dans pymake?
+> > 
+> > Oui.
+> > 
+> > Je veux pouvoir faire
+> > #ifdef WIN32
+> > # include <header_win_32.h>
+> > #else
+> > # include <other_header.h>
+> > #endif
+> > sans que pymake ne tente d'inclure les deux et se plaigne que l'un
+> > n'existe pas.
+> 
+> Mauvais exemple, puisque dans ce cas il n'a pas l'air de se plaindre
+> (pourtant il me semble que ?a avait pos? probl?me ? Olivier).
+
+Oui, c'etait mon probleme. Ce qui se passait, plus precisement, c'etait
+que <header_win_32.h> et <other_header.h> etaient des triggers pour deux
+librairies differentes, chacune n'existant que sur la bonne plate-forme,
+et donc le link plantait puisque pymake 'activait' les deux librairies
+simultanement.
+Pour l'instant je me contente de hacker mon pymake.config.model sous
+Windows...
+
+--
+Olivier
+
+
+From pascal at apstat.com  Mon Jul 10 22:13:45 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 10 Jul 2006 16:13:45 -0400
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+References: <20060630011228.GD29560@pig.zood.org>	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>	 <20060630225703.GB2241@pig.zood.org>	 <20060706154807.GB7712@pig.zood.org>	 <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+Message-ID: <44B2B4F9.4070300@apstat.com>
+
+Dan Popovici wrote:
+>
+> Hi All,
+>
+> The link below contains a requirements document for the Distributed 
+> Launcher, a layer that will allow executing jobs without having to 
+> worry about which system we use(condor, cluster, ssh)
+>
+> http://www-etud.iro.umontreal.ca/~popovicd/distributed_launcher.pdf 
+> <http://www-etud.iro.umontreal.ca/%7Epopovicd/distributed_launcher.pdf>
+>
+> If you have any comments on this, please share them, so that we can 
+> get to the text step.
+>
+> Dan
+Hello Dan,
+
+A few additional requirements for the distributed launcher:
+   * It should be possible to "query" the availability of ressources, 
+such as a subcommand returning an answer to the question: how many 
+computation units are currently available
+   * When requesting to launch a command, and it fails, it should be 
+possible to easily know if this is because there are no more 
+computational ressources available (which is very different than failing 
+because of a bug in the command).
+   * Most importantly, it should be possible for the process calling the 
+distributed launcher (whether it be a C++ process or a python script) to 
+access i/o streams of the launched command (i.e. its 
+stdin/stdout/stderr) for communication purpose. This should at least be 
+possible when launching a single command (the i/o of the remotely 
+launched command should be redirected to the caller).
+   * I suggest using a single python command (ex: distrlaunch) with 
+several possible subcommands or options and online help.
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Mon Jul 10 23:08:31 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 10 Jul 2006 23:08:31 +0200
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <44B2B4F9.4070300@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2B4F9.4070300@apstat.com>
+Message-ID: <20060710210831.GA11658@pig.zood.org>
+
+On Mon, Jul 10, 2006, Pascal Vincent wrote:
+> A few additional requirements for the distributed launcher:
+>   * It should be possible to "query" the availability of ressources, 
+> such as a subcommand returning an answer to the question: how many 
+> computation units are currently available
+
+It might be useful, but in my opinion, the calling program shouldn't
+worry about that, since the queuing of jobs is done by the cluster
+managing system (or the "dispatching-by-ssh module").
+
+For instance, on the mammouth, we don't have a way to know on which
+sub-cluster the next batch of jobs we submit will be launched, so we
+don't really know the number of "available" computation units... but we
+don't care, because even if we submit a large batch, the remaining jobs
+will be queued and executed when machines are free.
+
+If we add the support for another "cluster" system that has no support
+for queuing, then we should implement it inside the module.
+
+>   * When requesting to launch a command, and it fails, it should be 
+> possible to easily know if this is because there are no more 
+> computational ressources available (which is very different than failing 
+> because of a bug in the command).
+
+I think "no more resources available" should not produce an error, but
+"queue full" should. That being said, we should make a difference
+between the following cases:
+  - the command line is ill-formed (syntax error in calling distrlaunch)
+  - distrlaunch did not manage to launch the jobs (queue full, the
+    "cluster" command failed, ...)
+  - the job was launched and failed
+In the last case, we should not produce an error, it would be the job of
+the program (or programmer) who wanted to execute these jobs to check
+their output and return value in the logs.
+
+>   * Most importantly, it should be possible for the process calling the 
+> distributed launcher (whether it be a C++ process or a python script) to 
+> access i/o streams of the launched command (i.e. its 
+> stdin/stdout/stderr) for communication purpose. This should at least be 
+> possible when launching a single command (the i/o of the remotely 
+> launched command should be redirected to the caller).
+
+I totally agree that it should be possible to easily redirect i/o
+from/to files, but I'm a bit skeptical about redirecting to a tty.
+I don't even know if bqtools allows to do that.
+
+>   * I suggest using a single python command (ex: distrlaunch) with 
+> several possible subcommands or options and online help.
+
+I think that specifying a batch of commands to run on the command line
+is not really easy... I would rather export a python function, one
+argument of which would be a list of strings: the commands to execute.
+
+The execution of jobs from the command-line should go through another
+script, such as apdispatch.
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Mon Jul 10 23:10:27 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 10 Jul 2006 17:10:27 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+References: <20060630011228.GD29560@pig.zood.org>	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>	 <20060630225703.GB2241@pig.zood.org>	 <20060706154807.GB7712@pig.zood.org>	 <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+Message-ID: <44B2C243.8060409@apstat.com>
+
+Some time ago Christian Hudon wrote a simple ssh-based launcher called 
+cldispatch with a very simple semantic:
+cldispatch mycommand myarg1 myarg2
+launches mycommand with the given args on some available remote machine 
+redirecting its stdin/stdout/stderr as if it had been launched locally 
+(also does a cd in the current directory).
+This, I feel is a very simple and basic operation that Dan's launcher 
+should also allow (which does not mean it may not allow also more 
+complex things).
+
+I think Dan might look at it as a starting point. However Christian 
+Dorion refactored the code into some set of python modules, part of the 
+apstat namespace, so I can't just send you a simple script.
+
+Hence my request: Christian D., would you mind transferring the 
+necessary modules to the plearn. namespace before Dan rewrites yet 
+another incompatible parallel launching system from scratch., since he 
+might find some inspiration in the way this was done. Also as a 
+secondary note in the wishlist, some things appear broken:
+
+cldispatch -n
+Traceback (most recent call last):
+  File "/home/pascal/apstatsoft/scripts/cldispatch", line 30, in ?
+    main()
+  File "/home/pascal/apstatsoft/scripts/cldispatch", line 25, in main
+    print Task.n_available_machines()
+AttributeError: 'NoneType' object has no attribute 'n_available_machines'
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From pascal at apstat.com  Mon Jul 10 23:21:56 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 10 Jul 2006 17:21:56 -0400
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <20060710210831.GA11658@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2B4F9.4070300@apstat.com> <20060710210831.GA11658@pig.zood.org>
+Message-ID: <44B2C4F4.4010107@apstat.com>
+
+Pascal Lamblin wrote:
+
+It seems that we have a different focus here. You seam really focused on 
+a batch job queue of independent jobs, while my focus is more on 
+launching parallel processing jobs which may need to communicate: so 
+they have to run together, not one after the other... Hence it's 
+important to know how many I may expect to launch together at the same 
+time (the "query" operation),  and to get some initial i/o communication 
+channel to them.
+
+These is really a different focus, and maybe we should indeed consider 2 
+different sub-systems, but both should be adressed somehow.
+
+> On Mon, Jul 10, 2006, Pascal Vincent wrote:
+>   
+>> A few additional requirements for the distributed launcher:
+>>   * It should be possible to "query" the availability of ressources, 
+>> such as a subcommand returning an answer to the question: how many 
+>> computation units are currently available
+>>     
+>
+> It might be useful, but in my opinion, the calling program shouldn't
+> worry about that, since the queuing of jobs is done by the cluster
+> managing system (or the "dispatching-by-ssh module").
+>
+> For instance, on the mammouth, we don't have a way to know on which
+> sub-cluster the next batch of jobs we submit will be launched, so we
+> don't really know the number of "available" computation units... but we
+> don't care, because even if we submit a large batch, the remaining jobs
+> will be queued and executed when machines are free.
+>
+> If we add the support for another "cluster" system that has no support
+> for queuing, then we should implement it inside the module.
+>
+>   
+>>   * When requesting to launch a command, and it fails, it should be 
+>> possible to easily know if this is because there are no more 
+>> computational ressources available (which is very different than failing 
+>> because of a bug in the command).
+>>     
+>
+> I think "no more resources available" should not produce an error, but
+> "queue full" should. That being said, we should make a difference
+> between the following cases:
+>   - the command line is ill-formed (syntax error in calling distrlaunch)
+>   - distrlaunch did not manage to launch the jobs (queue full, the
+>     "cluster" command failed, ...)
+>   - the job was launched and failed
+> In the last case, we should not produce an error, it would be the job of
+> the program (or programmer) who wanted to execute these jobs to check
+> their output and return value in the logs.
+>
+>   
+>>   * Most importantly, it should be possible for the process calling the 
+>> distributed launcher (whether it be a C++ process or a python script) to 
+>> access i/o streams of the launched command (i.e. its 
+>> stdin/stdout/stderr) for communication purpose. This should at least be 
+>> possible when launching a single command (the i/o of the remotely 
+>> launched command should be redirected to the caller).
+>>     
+>
+> I totally agree that it should be possible to easily redirect i/o
+> from/to files, but I'm a bit skeptical about redirecting to a tty.
+> I don't even know if bqtools allows to do that.
+>
+>   
+>>   * I suggest using a single python command (ex: distrlaunch) with 
+>> several possible subcommands or options and online help.
+>>     
+>
+> I think that specifying a batch of commands to run on the command line
+> is not really easy... I would rather export a python function, one
+> argument of which would be a list of strings: the commands to execute.
+>
+> The execution of jobs from the command-line should go through another
+> script, such as apdispatch.
+>
+>   
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 11 00:33:20 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 11 Jul 2006 00:33:20 +0200
+Subject: [Plearn-core] Re: Wishlist PLearn
+In-Reply-To: <44B2C4F4.4010107@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2B4F9.4070300@apstat.com> <20060710210831.GA11658@pig.zood.org> <44B2C4F4.4010107@apstat.com>
+Message-ID: <20060710223320.GA11889@pig.zood.org>
+
+On Mon, Jul 10, 2006, Pascal Vincent wrote:
+> It seems that we have a different focus here. You seam really focused
+> on a batch job queue of independent jobs,
+
+Yes, since that is what seems to be needed for pymake, pytest and
+apdispatch/msdispatch...
+
+> while my focus is more on launching parallel processing jobs which may
+> need to communicate: so they have to run together, not one after the
+> other...
+
+OK, I didn't think about that. What would that system be used for?
+Launching several plearn servers and communicating with them from a
+central task manager?
+
+Would unix pipes be enough for the communication of these processes ?
+
+> Hence it's important to know how many I may expect to launch together
+> at the same time (the "query" operation), and to get some initial i/o
+> communication channel to them.
+
+I'm not sure you can do that on the mammouth (I really have to check the
+documentation), or with condor (I don't know if it is possible to
+specify that a group of jobs must be running at the same time on
+different machines).
+
+> These is really a different focus, and maybe we should indeed consider
+> 2 different sub-systems, but both should be adressed somehow.
+
+Since I'm not sure I see what you really expect from that system, I
+don't know how we can combine both.
+
+I would be in favor of putting the two functionalities into two
+different systems, but we might take advantage of reusing some
+components.
+
+-- 
+Pascal
+
+
+From pascal at apstat.com  Tue Jul 11 00:43:41 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 10 Jul 2006 18:43:41 -0400
+Subject: [Plearn-core] Re: plugin interface for learners
+In-Reply-To: <20060709125531.GB8468@loggerhead>
+References: <20060704145614.GB27756@loggerhead> <44AA885C.4040104@iro.umontreal.ca> <20060704165736.GB28533@loggerhead> <44AAB19F.7010602@iro.UMontreal.CA> <44AAE9E2.9080001@apstat.com> <44AD6071.6030105@apstat.com> <44AD79E1.1040209@apstat.com> <20060709125531.GB8468@loggerhead>
+Message-ID: <44B2D81D.1030200@apstat.com>
+
+James Bergstra wrote:
+> On Thu, Jul 06, 2006 at 05:00:17PM -0400, Pascal Vincent wrote:
+>   
+>> The Advisor framework is in several ways a real improvement over the 
+>> PLearner framework, but it is not (yet) the answer to the widest 
+>> possible range of learning data and problems, as it was designed 
+>> specifically for  the type of problems encountered with financial time 
+>> series.
+>>
+>> I think at some point we should meet to try and redesign first a truly 
+>> general TrainingSet abstraction, suitable for the wide variety of kinds 
+>> of training sets we have already encountered or can think of.
+>>     
+>
+> Do you believe that we could design a truly general TrainingSet
+> abstraction, that people who write algorithms would actually want to
+> use?  Surely we can't foresee all the learning problems that will arise!
+>   
+Well, I at least believe it could be useful to take the time to think 
+about it. I also believe a good dataset abstraction is a prerequisite 
+before attempting designing class interfaces that are to process 
+datates. Also this comes form seeing how the VMatrix abstraction has 
+been extended beyond its limits.
+>> This, I believe, is a prerequisite before attempting any serious generic 
+>> learner redesign.
+>>     
+>
+> What I have been proposing is a strategy for refactoring the code such
+> that the learners, splitting algorithms, testing methods, and data
+> sources can be implemented as independently as possible, and we can
+> build the class hierarchy *last*, without needing to recode any of the
+> implementations.  If our first hierarchy doesn't work for a particular
+> new problem, we can just as easily make another one that is more
+> suitable.
+>   
+Independent implementations will always use some specific (and 
+potentially large) language/framework/runtime (ex: matlab). So I really 
+see what you propose as a way  to define another basic framework (made 
+of dlls) which would *hopefully* make it easier to build 2-way bridges 
+between other frameworks or codes. A good reality check would then be 
+whether this would make it easy to use a learner written in matlab 
+inside a boosting algorithm written in Java with a data source object 
+from Torch, using a python Splitter inside a PLearn HyperLearner???? In 
+any case you or somebody will have to build the bridges for each of the 
+target frameworks to export a dll interface according to your 
+specifications. Without this, the dll interface will be either a mostly 
+empty shell, or the start of yet another new independant framework from 
+scratch. Building these bridges is a huge undertaking in itself, and 
+you'll find out that each framework will have slightly different 
+abstractions that will not exactly match yours or easily fit with the 
+way you intended to use them. The Devil *really* is in the details, but 
+unfortunately you might not know how much this is true until you broke a 
+few teeth over it on your own...
+
+Anyway, I don't want to carry on this discussion over email, as it is 
+eating up too much of my time (I'm a terribly slow email writer). I feel 
+I already did share what I could as constructive (or destructive? OK, 
+let's say re-structive) comments. But if you still want to write your 
+own framework the way you envision it, go ahead, it certainly is a very 
+instructive (although time-consuming) undertaking, and it's natural to 
+want to attempt doing it better than what exists.
+
+-- Pascal
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Tue Jul 11 04:20:30 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 10 Jul 2006 22:20:30 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <44B2C243.8060409@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com>
+Message-ID: <20060711022026.GA3057@opale.iro.umontreal.ca>
+
+> Some time ago Christian Hudon wrote a simple ssh-based launcher called 
+> cldispatch with a very simple semantic:
+> cldispatch mycommand myarg1 myarg2
+> launches mycommand with the given args on some available remote machine 
+> redirecting its stdin/stdout/stderr as if it had been launched locally 
+> (also does a cd in the current directory).
+> This, I feel is a very simple and basic operation that Dan's launcher 
+> should also allow (which does not mean it may not allow also more 
+> complex things).
+
+But it may not be possible on all clusters. As Pascal L. said, I don't
+think you can do this on the Mammouth (the output probably needs to be
+redirected to a file).
+If you want communication between different processes, it seems to me
+that using MPI would be the logical choice.
+
+--
+Olivier
+
+
+From pascal at apstat.com  Tue Jul 11 20:05:16 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 11 Jul 2006 14:05:16 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <20060711022026.GA3057@opale.iro.umontreal.ca>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com> <20060711022026.GA3057@opale.iro.umontreal.ca>
+Message-ID: <44B3E85C.2070004@apstat.com>
+
+Pascal Lamblin wrote:
+> On Mon, Jul 10, 2006, Pascal Vincent wrote:
+>   
+>> It seems that we have a different focus here. You seam really focused
+>> on a batch job queue of independent jobs,
+>>     
+>
+> Yes, since that is what seems to be needed for pymake, pytest and
+> apdispatch/msdispatch...
+>   
+Indeed. However it's important for some of these tasks (ex: parallel 
+compilation) to not append a job to a batch queue that might be executed 
+in, say, 3 days... In that case it's better to compile the file locally. 
+It seems we really want to use the computation ressources available now 
+or very soon, or else would rather find another way. So it's not exactly 
+a typical batch setting.
+
+>   
+>> while my focus is more on launching parallel processing jobs which may
+>> need to communicate: so they have to run together, not one after the
+>> other...
+>>     
+>
+> OK, I didn't think about that. What would that system be used for?
+> Launching several plearn servers and communicating with them from a
+> central task manager?
+>   
+Yes that's the idea.
+> Would unix pipes be enough for the communication of these processes ?
+>   
+Well, they would at least be enough to report back for ex. an IP adress 
+and a port number of a socket to which to connect. Of course, this could 
+always be worked around by having the plearn server write this stuff to 
+some file, and the caller retrieve this info from file (?).
+
+By the way, the issue of file-system access is another thing to consider 
+in the launch system: do the different parallel ressources see the same 
+file system for read/write or not. If not how do we handle the 
+putting/retrieving of necessary files in the right locations. Have you 
+already thought about this issue and come to some conclusions?
+
+>   
+>> Hence it's important to know how many I may expect to launch together
+>> at the same time (the "query" operation), and to get some initial i/o
+>> communication channel to them.
+>>     
+>
+> I'm not sure you can do that on the mammouth (I really have to check the
+> documentation), or with condor (I don't know if it is possible to
+> specify that a group of jobs must be running at the same time on
+> different machines).
+>   
+I'd expect it's at least possible to launch some sort of parallel job 
+(maybe based on MPI), otherwise these systems are seriously limiting the 
+possible uses of a computation cluster.
+>   
+>> These is really a different focus, and maybe we should indeed consider
+>> 2 different sub-systems, but both should be adressed somehow.
+>>     
+>
+> Since I'm not sure I see what you really expect from that system, I
+> don't know how we can combine both.
+>
+> I would be in favor of putting the two functionalities into two
+> different systems, but we might take advantage of reusing some
+> components.
+>   
+Whatever works best, I trust your judgment.
+
+
+Olivier Delalleau wrote:
+>> Some time ago Christian Hudon wrote a simple ssh-based launcher called 
+>> cldispatch with a very simple semantic:
+>> cldispatch mycommand myarg1 myarg2
+>> launches mycommand with the given args on some available remote machine 
+>> redirecting its stdin/stdout/stderr as if it had been launched locally 
+>> (also does a cd in the current directory).
+>> This, I feel is a very simple and basic operation that Dan's launcher 
+>> should also allow (which does not mean it may not allow also more 
+>> complex things).
+>>     
+>
+> But it may not be possible on all clusters. As Pascal L. said, I don't
+> think you can do this on the Mammouth (the output probably needs to be
+> redirected to a file).
+>   
+> If you want communication between different processes, it seems to me
+> that using MPI would be the logical choice.
+>   
+Yes MPI is one way (it should be very easy to write a MPI based 
+PStreamBuf for this), but if the communication is to happen through TCP 
+links anyway, MPI appears to be just another unnecessary additional 
+layer and dependency. But if MPI is the only way to go, then it should 
+be properly installed and configured on all potential computation nodes.
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Tue Jul 11 20:18:46 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 11 Jul 2006 14:18:46 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <44B3E85C.2070004@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com> <20060711022026.GA3057@opale.iro.umontreal.ca> <44B3E85C.2070004@apstat.com>
+Message-ID: <20060711181844.GA16845@opale.iro.umontreal.ca>
+
+> >If you want communication between different processes, it seems to me
+> >that using MPI would be the logical choice.
+> >  
+> Yes MPI is one way (it should be very easy to write a MPI based 
+> PStreamBuf for this), but if the communication is to happen through TCP 
+> links anyway, MPI appears to be just another unnecessary additional 
+> layer and dependency.
+
+However, as you said, it should be easier than writing the communication
+code by yourself.
+
+> But if MPI is the only way to go, then it should 
+> be properly installed and configured on all potential computation nodes.
+
+I must admit I have lost a bit the original focus of this discussion,
+but I think we would like to use specific resources (MPI, cluster queue
+system) when they are available, while 'emulating' them otherwise (maybe
+in a simpler form) using lower-level commands, in order to achieve the
+same kind of functionalities.
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Tue Jul 11 20:49:47 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 11 Jul 2006 20:49:47 +0200
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <44B3E85C.2070004@apstat.com>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com> <20060711022026.GA3057@opale.iro.umontreal.ca> <44B3E85C.2070004@apstat.com>
+Message-ID: <20060711184947.GA17520@pig.zood.org>
+
+[I re-added Dan in the list, otherwise there would be no point in
+writing in English...]
+
+On Tue, Jul 11, 2006, Pascal Vincent wrote:
+> >>It seems that we have a different focus here. You seam really focused
+> >>on a batch job queue of independent jobs,
+> >
+> >Yes, since that is what seems to be needed for pymake, pytest and
+> >apdispatch/msdispatch...
+>
+> Indeed. However it's important for some of these tasks (ex: parallel 
+> compilation) to not append a job to a batch queue that might be executed 
+> in, say, 3 days... In that case it's better to compile the file locally. 
+> It seems we really want to use the computation ressources available now 
+> or very soon, or else would rather find another way. So it's not exactly 
+> a typical batch setting.
+
+OK, there should be an option telling to launch the tasks locally if no
+other resources are available. This option should typically be used for
+tasks like pymake and pytest, but not for apdispatch on long tasks. But
+I still believe this is the job of the launcher, not of the calling
+program.
+
+> Well, they would at least be enough to report back for ex. an IP
+> adress. and a port number of a socket to which to connect. Of course,
+> this could. always be worked around by having the plearn server write
+> this stuff to. some file, and the caller retrieve this info from file
+> (?).
+
+I'm not sure that direct network communication (like TCP/IP sockets) is
+allowed on the mammouth. Olivier, do you know more about that?
+
+> By the way, the issue of file-system access is another thing to consider 
+> in the launch system: do the different parallel ressources see the same 
+> file system for read/write or not. If not how do we handle the 
+> putting/retrieving of necessary files in the right locations. Have you 
+> already thought about this issue and come to some conclusions?
+
+Dan and I talked a bit about that, and decided the system would only
+work with a shared filesystem (typically NFS).
+
+> I'd expect it's at least possible to launch some sort of parallel job 
+> (maybe based on MPI), otherwise these systems are seriously limiting the 
+> possible uses of a computation cluster.
+
+They have a second cluster, made especially for parallel jobs. But on
+the "serial" cluster, all you know is that the jobs will begin in
+the order in wich you submitted them. Of course, you could ask the first
+job to wait for all the other ones to be launched, or to use the new
+ones as soon as they arrive.
+
+But in some pathological cases, it could form a sort of deadlock on the
+cluster: no job in the queue is going to be launched before a running
+job finishes, and no running (actually, waiting) job is going to finish
+before all the jobs he's waiting for are launched...
+
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Tue Jul 11 20:55:58 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 11 Jul 2006 14:55:58 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <20060711184947.GA17520@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com> <20060711022026.GA3057@opale.iro.umontreal.ca> <44B3E85C.2070004@apstat.com> <20060711184947.GA17520@pig.zood.org>
+Message-ID: <20060711185557.GA17409@opale.iro.umontreal.ca>
+
+> > Well, they would at least be enough to report back for ex. an IP
+> > adress. and a port number of a socket to which to connect. Of course,
+> > this could. always be worked around by having the plearn server write
+> > this stuff to. some file, and the caller retrieve this info from file
+> > (?).
+> 
+> I'm not sure that direct network communication (like TCP/IP sockets) is
+> allowed on the mammouth. Olivier, do you know more about that?
+
+No (I don't know).
+
+--
+Olivier
+
+
+From dan.popovici at gmail.com  Tue Jul 11 21:25:07 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Tue, 11 Jul 2006 15:25:07 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <20060711181844.GA16845@opale.iro.umontreal.ca>
+References: <20060630011228.GD29560@pig.zood.org>
+	 <6ea25c9ba934a6fd4db878054fa99453@apstat.com>
+	 <20060630225703.GB2241@pig.zood.org>
+	 <20060706154807.GB7712@pig.zood.org>
+	 <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com>
+	 <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com>
+	 <44B2C243.8060409@apstat.com>
+	 <20060711022026.GA3057@opale.iro.umontreal.ca>
+	 <44B3E85C.2070004@apstat.com>
+	 <20060711181844.GA16845@opale.iro.umontreal.ca>
+Message-ID: <22777a450607111225j1d9d93b2yadf002ef0109c686@mail.gmail.com>
+
+I believe we are losing a bit the focus of the initial(very simple) purpose
+of this interface.
+
+The main purpose was to provide a common interface to the job processing
+systems like condor, bqtools, cluster. After this, the idea of using this
+interface in pymake was introduced, which makes things a bit more
+complicated, because now we need to implement the ssh based command launcher
+as part of this interface.
+
+Things like checking which resources are available, and so on, need to
+handled in the job processing system, not in this interface.
+
+I think a different tool should be created for dealing with jobs that  can
+communicate between each other, or other fancy things like this.
+
+Dan
+
+On 7/11/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> > >If you want communication between different processes, it seems to me
+> > >that using MPI would be the logical choice.
+> > >
+> > Yes MPI is one way (it should be very easy to write a MPI based
+> > PStreamBuf for this), but if the communication is to happen through TCP
+> > links anyway, MPI appears to be just another unnecessary additional
+> > layer and dependency.
+>
+> However, as you said, it should be easier than writing the communication
+> code by yourself.
+>
+> > But if MPI is the only way to go, then it should
+> > be properly installed and configured on all potential computation nodes.
+>
+> I must admit I have lost a bit the original focus of this discussion,
+> but I think we would like to use specific resources (MPI, cluster queue
+> system) when they are available, while 'emulating' them otherwise (maybe
+> in a simpler form) using lower-level commands, in order to achieve the
+> same kind of functionalities.
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> http://lists.berlios.de/mailman/listinfo/plearn-core
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060711/f3ecd75e/attachment.html>
+
+From pascal at apstat.com  Tue Jul 11 22:09:53 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 11 Jul 2006 16:09:53 -0400
+Subject: [Plearn-core] Distributed Launcher
+In-Reply-To: <20060711184947.GA17520@pig.zood.org>
+References: <20060630011228.GD29560@pig.zood.org> <6ea25c9ba934a6fd4db878054fa99453@apstat.com> <20060630225703.GB2241@pig.zood.org> <20060706154807.GB7712@pig.zood.org> <22777a450607060952h5138f375jf4cdc1dcce4f12b2@mail.gmail.com> <22777a450607061255tb215d40kb82a737b6ac0803@mail.gmail.com> <44B2C243.8060409@apstat.com> <20060711022026.GA3057@opale.iro.umontreal.ca> <44B3E85C.2070004@apstat.com> <20060711184947.GA17520@pig.zood.org>
+Message-ID: <44B40591.5090902@apstat.com>
+
+OK, forget about the parallel process communication; for now I'll assume 
+MPI is available. So you can ignore this issue in the distributed launcher.
+
+> OK, there should be an option telling to launch the tasks locally if no
+> other resources are available. This option should typically be used for
+> tasks like pymake and pytest, but not for apdispatch on long tasks. But
+> I still believe this is the job of the launcher, not of the calling
+> program.
+>   
+I agree, we are trying to abstract an intelligent launcher. But 
+intelligent may also mean the capacity to detect it's stupid to launch a 
+compilation/test on a clogged batch system, and be smart enough to 
+schedule the launches such as to occupy currently unused ressources.
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From pascal at apstat.com  Tue Jul 11 22:49:23 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Tue, 11 Jul 2006 16:49:23 -0400
+Subject: [Plearn-core] Utiliser Plearn en tant que library
+In-Reply-To: <c81af8c30607110722m2bd76ba6jae887f84571949f6@mail.gmail.com>
+References: <c81af8c30607100250v75b20bf6x68faefdb6af2cee2@mail.gmail.com>	 <44B2922A.6080602@apstat.com> <c81af8c30607110722m2bd76ba6jae887f84571949f6@mail.gmail.com>
+Message-ID: <44B40ED3.6000008@apstat.com>
+
+> Dans debian, les include concernant nspr sont install?s dans 
+> /usr/include/mozilla/nspr/*
+> si on utilise apt. Donc je pense que <nspr/*.h> fera l'affaire.
+J'ai commit? le changement sous SVN. On fait d?sormais des #include 
+<nspr/...>.
+
+> La solution que j'ai trouver c'est le cast :
+> FILE* f = txtfiles[(int)fileno];
+J'ai aussi commit? ce changement sous SVN. Merci.
+>
+> Le code qui pose le plus problem sous visual  c'est la methode
+>
+> void Object::declareMethods(RemoteMethodMap& rmm)
+OK ?a c'est de la magie-noire de template de Nicolas Chapados, je lui 
+fais une issue pour qu'il arrange ?a (si c'est possible).
+
+De toute fa?on pour l'instant, ? moins que tu veuilles appeler plearn 
+depuis python, ou utiliser des remote methods sur un serveur plearn ou 
+le parall?lisme, les declareMethods ne t'apportent rien.
+
+> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces 
+> lignes. Mais je ne sais pas trop les conc?quences de cela. J'ai tout 
+> de meme r?ussi ? compiler tout plearn en librairy static (win xp + 
+> visual 2005 et fedora + gcc 4) et ? faire quelques testes sur les VMat 
+> (les testes du tutorial).
+OK, cool.
+>
+> Mon prochaine ?tape est maintenant d'utiliser les Plearner. Par 
+> contre, j'aimerai vous demander comment utiliser les donn?es ? Je 
+> pense que l'utilisation des PLearners est assez claire pour moi 
+> maintenant. Par contre les donn?es, je ne sais pas trop. Tout ce que 
+> je sais c'est que c'est bas? sur les VMat. Mais concretement je ne 
+> sais pas trop comment faire. Par example, si j'ai un probl?me 
+> d'apprentissage suppervis? avec des donn?es (X_i;Y_i), comment je les 
+> charge ? comment je les ?cris dans un fichier, dans quel format ?
+VMat est essentiellement un smart pointer sur VMatrix, qui est une 
+classe de base au d?part tr?s simple (qui s'est malheureusement quelque 
+peu complexifi? ? force de l'?tendre). L'id?e est qu'on peut facilement 
+?crire des sous-classes de VMatrix (ou plus souvent de 
+RowBufferredVMatrix) pour acc?der ? toutes sortes de matrices de donn?es 
+d'entra?nement, m?me si elles sont trop grosses pour rentrer en m?moire, 
+ou sont le r?sultat d'un calcul fait au vol, ou sont une vue  "matrice" 
+d'un format de donn?e compliqu?.
+
+PLearn a des classes de vecteurs et matrice compacte en m?moire pour des 
+op?rations ? la matlab (manipulations simples efficaces et alg?bre 
+lin?are): les Vec et les Mat.
+Mais les VMatrix sont une hi?rarche de classe diff?rente  qui permettent 
+l'acc?s aux ensembles de donn?es vus comme des matrices, mais avec en 
+plus de la m?tainformation qui peut ?tre utile pour les algos 
+d'apprentissage, notamment inputsize et targetsize qui donne la taille 
+de la partie input et de la partie target dans la matrice de donn?es.
+
+Si tes donn?es sont d?j? en m?moire sous la forme d'une Mat m, tu peux 
+faire une VMat vm = new MemoryVMatrix(m); Mais il reste ensuite ? 
+pr?ciser les tailles du probl?me avec vm->defineSizes(inputsize, 
+targetsize).
+
+Pour obtenir une VMat depuis un des formats de donn?es sur disque 
+reconnus par PLearn, tu peux appeler la fonction getDataSet(path) qui se 
+trouve dans PLearn/plearn/db/getDataSet.h  (le path peut ?tre une simple 
+string contenant le path du fichier).
+
+Le format le plus simple pour commencer est le format .amat  (ASCII) 
+dont un exemple est donn? dans le user's guide ( 
+http://plearn.berlios.de/users_guide/index.html ) ? la fin de la section 
+3.2, et les sp?cificit?s du format expliqu? bri?vement ? la section 5.5
+
+Bonne chance!
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From chapados at apstat.com  Tue Jul 11 23:17:46 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Tue, 11 Jul 2006 17:17:46 -0400
+Subject: [Plearn-core] Re: [issue234] Portability problem with declareMethods wizardry
+In-Reply-To: <1152651441.67.0.506442715525.issue234@apstat.com>
+References: <1152651441.67.0.506442715525.issue234@apstat.com>
+Message-ID: <44B4157A.8070904@apstat.com>
+
+Bonjour Jaonary,
+
+Je n'ai pas acc?s ? Visual C++ pour tester, mais je te sugg?re les tests 
+suivants:
+
+1) Prendre les deux classes locales (ObjectTrampolineGetOption et 
+ObjectTrampolineGetObject) et les sortir de la fonction 
+Object::declareMethods.  Il est suffisant de les d?placer imm?diatement 
+avant Object::declareMethods (sans rien mettre dans le .h).
+
+2) Si ?a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+
+namespace {
+
+struct ObjectTrampolineGetOption { ... };
+struct ObjectTrampolineGetObject { ... };
+
+}
+
+et si ?a fonctionne, je vais incorporer le changement ? PLearn.
+
+    + Nicolas
+
+
+Pascal Vincent wrote:
+> New submission from Pascal Vincent <pascal at apstat.com>:
+>
+> Probl?me de compilation avec Visual C++ (visual 2005 je crois) rapport? par
+> "Jaonary Rabarisoa" <jaonary at gmail.com>
+>
+> Voici l'extrait pertinent de son message:
+>
+> Le code qui pose le plus problem sous visual  c'est la methode
+>
+> void Object::declareMethods(RemoteMethodMap& rmm)
+>
+> de la class Object.
+>
+> Dans cette methode, il y a deux classes internes. Et ces classes ont une methode
+> qui prend en argument, entre autre, un Objet PStream et utilise l'operateur <<
+> de cet objet.
+> Et l?, visual debloque et me dit que la fonction ne peut pas acceder ?
+> l'op?rateur << et >> :
+>
+> struct ObjectTrampolineGetOption : public RemoteTrampoline
+>     {
+>         ObjectTrampolineGetOption(const string& methodname, const
+> RemoteMethodDoc& doc)
+>             : RemoteTrampoline(methodname, doc)
+>         { }
+>
+>         virtual void call(Object* instance, int nargs, PStream& io) const
+>         {
+>             checkNargs(nargs, 1);
+>             string optionname;
+>             io >> optionname;   // on ne peut pas acceder a l'operateur >> . Je
+> pense qu'il est hors de porte ici (pour visual)
+>           
+> ...
+>         }
+>     };
+>
+>
+> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces lignes. Mais
+> je ne sais pas trop les conc?quences de cela. J'ai tout de meme r?ussi ?
+> compiler tout plearn en librairy static (win xp + visual 2005 et fedora + gcc 4)
+> et ? faire quelques testes sur les VMat (les testes du tutorial).
+>
+> ----------
+> assignedto: chapados
+> messages: 725
+> nosy: chapados, pascal
+> priority: bug
+> status: unread
+> title: Portability problem with declareMethods wizardry
+> topic: PLearn
+>
+> ________________________________________________
+> Roundup issue tracker <issue_tracker at apstat.com>
+> <https://intranet.apstat.com/roundup/issue234>
+> ________________________________________________
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu Jul 13 16:36:57 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 13 Jul 2006 10:36:57 -0400
+Subject: [Plearn-core] [issue234] Portability problem with
+	declareMethods wizardry
+In-Reply-To: <44B4157A.8070904@apstat.com>
+References: <1152651441.67.0.506442715525.issue234@apstat.com>
+	<44B4157A.8070904@apstat.com>
+Message-ID: <20060713143655.GA10438@opale.iro.umontreal.ca>
+
+Salut,
+
+Il se trouve que je me suis decide a m'occuper de la compatibilite
+Visual Studio (ici nous avons Visual Studio .Net 2003).
+Je suis bien sur tombe sur le meme probleme que Jaonary, mais les deux
+fix suggeres par Nicolas ci-dessous fonctionnent.
+Je vais donc les incorporer dans PLearn sous peu. Nicolas, est-ce que tu
+peux juste confirmer que je peux mettre le namespace anonyme a
+l'interieur du namespace PLearn { ... } englobant tout le code de
+Object.cc (i.e. le mettre juste avant Object::declareMethods), ou est-ce
+que je dois le sortir et le mettre avant ? (j'imagine que non, car ca ne
+compile pas, mais je ne sais pas trop ce que ce namespace anonyme est
+cense faire...).
+
+--
+Olivier
+
+On 11 Jul 2006, Nicolas Chapados wrote:
+> Bonjour Jaonary,
+> 
+> Je n'ai pas acc?s ? Visual C++ pour tester, mais je te sugg?re les tests 
+> suivants:
+> 
+> 1) Prendre les deux classes locales (ObjectTrampolineGetOption et 
+> ObjectTrampolineGetObject) et les sortir de la fonction 
+> Object::declareMethods.  Il est suffisant de les d?placer imm?diatement 
+> avant Object::declareMethods (sans rien mettre dans le .h).
+> 
+> 2) Si ?a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+> 
+> namespace {
+> 
+> struct ObjectTrampolineGetOption { ... };
+> struct ObjectTrampolineGetObject { ... };
+> 
+> }
+> 
+> et si ?a fonctionne, je vais incorporer le changement ? PLearn.
+> 
+>    + Nicolas
+> 
+> 
+> Pascal Vincent wrote:
+> >New submission from Pascal Vincent <pascal at apstat.com>:
+> >
+> >Probl?me de compilation avec Visual C++ (visual 2005 je crois) rapport? 
+> >par
+> >"Jaonary Rabarisoa" <jaonary at gmail.com>
+> >
+> >Voici l'extrait pertinent de son message:
+> >
+> >Le code qui pose le plus problem sous visual  c'est la methode
+> >
+> >void Object::declareMethods(RemoteMethodMap& rmm)
+> >
+> >de la class Object.
+> >
+> >Dans cette methode, il y a deux classes internes. Et ces classes ont une 
+> >methode
+> >qui prend en argument, entre autre, un Objet PStream et utilise 
+> >l'operateur <<
+> >de cet objet.
+> >Et l?, visual debloque et me dit que la fonction ne peut pas acceder ?
+> >l'op?rateur << et >> :
+> >
+> >struct ObjectTrampolineGetOption : public RemoteTrampoline
+> >    {
+> >        ObjectTrampolineGetOption(const string& methodname, const
+> >RemoteMethodDoc& doc)
+> >            : RemoteTrampoline(methodname, doc)
+> >        { }
+> >
+> >        virtual void call(Object* instance, int nargs, PStream& io) const
+> >        {
+> >            checkNargs(nargs, 1);
+> >            string optionname;
+> >            io >> optionname;   // on ne peut pas acceder a l'operateur >> 
+> >            . Je
+> >pense qu'il est hors de porte ici (pour visual)
+> >          
+> >...
+> >        }
+> >    };
+> >
+> >
+> >Le hack que j'ai fais pour l'instant c'est de commenter toutes ces lignes. 
+> >Mais
+> >je ne sais pas trop les conc?quences de cela. J'ai tout de meme r?ussi ?
+> >compiler tout plearn en librairy static (win xp + visual 2005 et fedora + 
+> >gcc 4)
+> >et ? faire quelques testes sur les VMat (les testes du tutorial).
+> >
+> >----------
+> >assignedto: chapados
+> >messages: 725
+> >nosy: chapados, pascal
+> >priority: bug
+> >status: unread
+> >title: Portability problem with declareMethods wizardry
+> >topic: PLearn
+> >
+> >________________________________________________
+> >Roundup issue tracker <issue_tracker at apstat.com>
+> ><https://intranet.apstat.com/roundup/issue234>
+> >________________________________________________
+> >  
+> 
+
+
+From delallea at iro.umontreal.ca  Thu Jul 13 20:17:04 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 13 Jul 2006 14:17:04 -0400
+Subject: [Plearn-core] Changement a HyperLearner
+Message-ID: <20060713181703.GA14519@opale.iro.umontreal.ca>
+
+Salut,
+
+Le changement suivant a HyperLearner me semble poser probleme :
+    http://svn.berlios.de/wsvn/plearn/trunk/plearn_learners/hyper/HyperLearner.cc?op=diff&rev=5960&sc=1
+
+J'ai deja ecrit des scripts ou j'avais besoin d'avoir en sortie les
+resultats de l'optimisation (et je sais que je ne suis pas le seul),
+pour avoir en train cost du HyperLearner les couts de la derniere
+strategy est tres utile.
+Ce changement semble compeletement modifier la semantique des train
+costs du HyperLearner, et je me demande meme si ca ne devrait pas
+planter puisque dans HyperLearner::train il update toujours les
+train_stats avec les resultats de la derniere strategie (train_stats est
+donc 'partage' par deux learners qui font des choses differentes).
+
+Si on veut un traincost du learner sous-jacent, j'imagine qu'il devrait
+etre possible de s'arranger pour le mettre comme cout dans la derniere
+strategie, afin de pouvoir y acceder aussi dans ceux du HyperLearner.
+
+--
+Olivier
+
+PS: Je comptais juste envoyer a plearn-core, mais avec BerliOS qui a l'air a
+la rue, je prefere t'en parler directement, ca ira plus vite ;)
+
+
+From dan.popovici at gmail.com  Thu Jul 13 23:09:26 2006
+From: dan.popovici at gmail.com (Dan Popovici)
+Date: Thu, 13 Jul 2006 17:09:26 -0400
+Subject: [Plearn-core] location distributed launcher
+Message-ID: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+
+I will soon have a working version of the distributed launcher using the
+cluster --execute  command. Where would be the best place to commit it ?
+PLearn/python_modules and PLearn/scripts are possible locations
+
+
+Dan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060713/a1f6e132/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Fri Jul 14 00:58:52 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 14 Jul 2006 00:58:52 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060706224831.GA9773@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+Message-ID: <20060713225852.GA30858@pig.zood.org>
+
+On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+> > Autre point: il existe bon nombre de grammaires du preprocessor C; 
+> > probablement pas n?cessaire de r?inventer la roue.
+> 
+> OK, je vais regarder ?a sur google. Yapps est limit? aux grammaires
+> LL(1), mais je suppose que ?a va suffire.
+
+?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+s'il est l?g?rement plus lent pour calculer les d?pendances que la
+version actuelle (genre 6 secondes de plus). En plus, il g?re certains
+cas sur lesquels la version pr?c?dente butait (genre un espace entre #
+et include...).
+
+? votre avis, est-ce que j'ai int?r?t ? rajouter la grammaire et le
+parseur dans PLearn/scripts avec pymake, o? ailleurs (python_modules) ?
+
+
+Dans le m?me genre d'id?e : o? mettre le module charg? de lancer des
+t?ches sur le cluster/le mammouth/une liste de machines/autre chose ?
+
+
+Enfin, je suis en train de hacker pymake pour pouvoir g?rer les
+variables pr?processeur en tant que telles, et pas juste une string
+ajout?e ? "compiler_options". Il se peut que j'en profite pour
+proprifier des choses dans pymake qui ne devraient pas d?pendre du
+pymake.config.model, par exemple.
+
+Donc si vous vous rappelez de certaines craderies, et de ce ? quoi
+c'?tait cens? servir, et de pourquoi vous avez fait ?a comme ?a, ?a
+m'int?resse (et ?a pourrait m'?viter de tout p?ter).
+
+Merci d'avance,
+-- 
+Pascal
+
+
+From chapados at apstat.com  Thu Jul 13 17:05:27 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 13 Jul 2006 11:05:27 -0400
+Subject: [Plearn-core] [issue234] Portability problem with
+ declareMethods wizardry
+In-Reply-To: <20060713143655.GA10438@opale.iro.umontreal.ca>
+References: <1152651441.67.0.506442715525.issue234@apstat.com>
+	<44B4157A.8070904@apstat.com>
+	<20060713143655.GA10438@opale.iro.umontreal.ca>
+Message-ID: <44B66137.9030507@apstat.com>
+
+Tu peux mettre le namespace anonyme ? l'int?rieur du namespace PLearn.  
+Je te sugg?re de mettre uniquement les classes trampoline ? l'int?rieur 
+de ce namespace (quelque part dans Object.cc).  Le but du namespace 
+anonyme est de faire comme une d?claration statique pour les fonctions: 
+de garder ces classes "locales" ? la translation-unit courante.  Mais 
+comme on ne peut d?clarer une classe comme ?tant statique (s'applique 
+seulement aux fonctions ou aux variables), on doit recourir au namespace 
+anonyme pour obtenir le m?me effet.
+
+Olivier Delalleau wrote:
+> Salut,
+>
+> Il se trouve que je me suis decide a m'occuper de la compatibilite
+> Visual Studio (ici nous avons Visual Studio .Net 2003).
+> Je suis bien sur tombe sur le meme probleme que Jaonary, mais les deux
+> fix suggeres par Nicolas ci-dessous fonctionnent.
+> Je vais donc les incorporer dans PLearn sous peu. Nicolas, est-ce que tu
+> peux juste confirmer que je peux mettre le namespace anonyme a
+> l'interieur du namespace PLearn { ... } englobant tout le code de
+> Object.cc (i.e. le mettre juste avant Object::declareMethods), ou est-ce
+> que je dois le sortir et le mettre avant ? (j'imagine que non, car ca ne
+> compile pas, mais je ne sais pas trop ce que ce namespace anonyme est
+> cense faire...).
+>
+> --
+> Olivier
+>
+> On 11 Jul 2006, Nicolas Chapados wrote:
+>   
+>> Bonjour Jaonary,
+>>
+>> Je n'ai pas acc?s ? Visual C++ pour tester, mais je te sugg?re les tests 
+>> suivants:
+>>
+>> 1) Prendre les deux classes locales (ObjectTrampolineGetOption et 
+>> ObjectTrampolineGetObject) et les sortir de la fonction 
+>> Object::declareMethods.  Il est suffisant de les d?placer imm?diatement 
+>> avant Object::declareMethods (sans rien mettre dans le .h).
+>>
+>> 2) Si ?a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+>>
+>> namespace {
+>>
+>> struct ObjectTrampolineGetOption { ... };
+>> struct ObjectTrampolineGetObject { ... };
+>>
+>> }
+>>
+>> et si ?a fonctionne, je vais incorporer le changement ? PLearn.
+>>
+>>    + Nicolas
+>>
+>>
+>> Pascal Vincent wrote:
+>>     
+>>> New submission from Pascal Vincent <pascal at apstat.com>:
+>>>
+>>> Probl?me de compilation avec Visual C++ (visual 2005 je crois) rapport? 
+>>> par
+>>> "Jaonary Rabarisoa" <jaonary at gmail.com>
+>>>
+>>> Voici l'extrait pertinent de son message:
+>>>
+>>> Le code qui pose le plus problem sous visual  c'est la methode
+>>>
+>>> void Object::declareMethods(RemoteMethodMap& rmm)
+>>>
+>>> de la class Object.
+>>>
+>>> Dans cette methode, il y a deux classes internes. Et ces classes ont une 
+>>> methode
+>>> qui prend en argument, entre autre, un Objet PStream et utilise 
+>>> l'operateur <<
+>>> de cet objet.
+>>> Et l?, visual debloque et me dit que la fonction ne peut pas acceder ?
+>>> l'op?rateur << et >> :
+>>>
+>>> struct ObjectTrampolineGetOption : public RemoteTrampoline
+>>>    {
+>>>        ObjectTrampolineGetOption(const string& methodname, const
+>>> RemoteMethodDoc& doc)
+>>>            : RemoteTrampoline(methodname, doc)
+>>>        { }
+>>>
+>>>        virtual void call(Object* instance, int nargs, PStream& io) const
+>>>        {
+>>>            checkNargs(nargs, 1);
+>>>            string optionname;
+>>>            io >> optionname;   // on ne peut pas acceder a l'operateur >> 
+>>>            . Je
+>>> pense qu'il est hors de porte ici (pour visual)
+>>>          
+>>> ...
+>>>        }
+>>>    };
+>>>
+>>>
+>>> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces lignes. 
+>>> Mais
+>>> je ne sais pas trop les conc?quences de cela. J'ai tout de meme r?ussi ?
+>>> compiler tout plearn en librairy static (win xp + visual 2005 et fedora + 
+>>> gcc 4)
+>>> et ? faire quelques testes sur les VMat (les testes du tutorial).
+>>>
+>>> ----------
+>>> assignedto: chapados
+>>> messages: 725
+>>> nosy: chapados, pascal
+>>> priority: bug
+>>> status: unread
+>>> title: Portability problem with declareMethods wizardry
+>>> topic: PLearn
+>>>
+>>> ________________________________________________
+>>> Roundup issue tracker <issue_tracker at apstat.com>
+>>> <https://intranet.apstat.com/roundup/issue234>
+>>> ________________________________________________
+>>>  
+>>>       
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Fri Jul 14 15:19:02 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 14 Jul 2006 09:19:02 -0400
+Subject: [Plearn-core] location distributed launcher
+In-Reply-To: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+References: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+Message-ID: <20060714131900.GA29121@opale.iro.umontreal.ca>
+
+On 13 Jul 2006, Dan Popovici wrote:
+> 
+> I will soon have a working version of the distributed launcher using the
+> cluster --execute  command. Where would be the best place to commit it ?
+> PLearn/python_modules and PLearn/scripts are possible locations
+
+Given the current organization of scripts, I would say PLearn/scripts.
+
+--
+Olivier
+
+
+From dorionc at apstat.com  Fri Jul 14 15:32:20 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Fri, 14 Jul 2006 09:32:20 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060713225852.GA30858@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>	<20060705220652.GA3604@pig.zood.org>
+	<44AD1D9A.1040300@apstat.com>	<20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com>	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+Message-ID: <44B79CE4.1030509@apstat.com>
+
+
+Bonjour ? tous,
+Pascal Lamblin escribi?:
+> On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+>   
+>>> Autre point: il existe bon nombre de grammaires du preprocessor C; 
+>>> probablement pas n?cessaire de r?inventer la roue.
+>>>       
+>> OK, je vais regarder ?a sur google. Yapps est limit? aux grammaires
+>> LL(1), mais je suppose que ?a va suffire.
+>>     
+>
+> ?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+> s'il est l?g?rement plus lent pour calculer les d?pendances que la
+> version actuelle (genre 6 secondes de plus). En plus, il g?re certains
+>   
+6 secondes.... Des vrais secondes l??
+> cas sur lesquels la version pr?c?dente butait (genre un espace entre #
+> et include...).
+>
+> ? votre avis, est-ce que j'ai int?r?t ? rajouter la grammaire et le
+> parseur dans PLearn/scripts avec pymake, o? ailleurs (python_modules) ?
+>
+>
+>   
+Je sais que certain se font avocats de la 
+"pymake-devrait-?tre-full-self-contained" mentalit?, mais comme:
+ 1) PyMake d?pend d?j? un peu des python_modules (toolkit) et
+ 2) Le code de PyMake est d?j? suffisamment indigeste
+
+je suis pour la cr?ation de PLearn/python_module/plearn/pymake dans 
+lequel tu pourrais mettre de module de parsing. ?ventuellement, on 
+pourrait y modulariser PyMake... Pour les int?ress?s, j'aimerais un jour 
+voir PLearn/scripts/pymake ressembler ? PLearn/script/pytest. Il suffit 
+d'un coup d'oeil pour comprendre pourquoi je n'ai jamais attaqu? ce 
+projet...
+
+Enfin, longue r?ponse pour dire que je suis "tr?s pas pour" l'ajout de 
+code dans script/pymake ou m?me dans PLearn/scripts tout court.
+> Dans le m?me genre d'id?e : o? mettre le module charg? de lancer des
+> t?ches sur le cluster/le mammouth/une liste de machines/autre chose ?
+>
+>   
+J'imagine que le paragraphe pr?c?dent laisse pressentir ma r?ponse ici: 
+PLearn/python_modules/plearn/{taskutils ou parallel} ou qqc du genre
+> Enfin, je suis en train de hacker pymake pour pouvoir g?rer les
+> variables pr?processeur en tant que telles, et pas juste une string
+> ajout?e ? "compiler_options". Il se peut que j'en profite pour
+> proprifier des choses dans pymake qui ne devraient pas d?pendre du
+> pymake.config.model, par exemple.
+>   
+Propifier!!! Oh oui, propifie, propifie... l?che-toi lousse ;)
+> Donc si vous vous rappelez de certaines craderies, et de ce ? quoi
+> c'?tait cens? servir, et de pourquoi vous avez fait ?a comme ?a, ?a
+> m'int?resse (et ?a pourrait m'?viter de tout p?ter).
+>
+> Merci d'avance,
+>   
+Ciao
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/eb4ff689/attachment.html>
+
+From pascal at apstat.com  Fri Jul 14 19:36:52 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 14 Jul 2006 13:36:52 -0400
+Subject: [Plearn-core] location distributed launcher
+In-Reply-To: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+References: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+Message-ID: <44B7D634.1060609@apstat.com>
+
+Dan Popovici wrote:
+> I will soon have a working version of the distributed launcher using 
+> the cluster --execute  command. Where would be the best place to 
+> commit it ?
+> PLearn/python_modules and PLearn/scripts are possible locations
+Pascal Lamblin wrote:
+> ? votre avis, est-ce que j'ai int?r?t ? rajouter la grammaire et le
+> parseur dans PLearn/scripts avec pymake, o? ailleurs (python_modules) ?
+>
+>
+> Dans le m?me genre d'id?e : o? mettre le module charg? de lancer des
+> t?ches sur le cluster/le mammouth/une liste de machines/autre chose ?
+>   
+Well, reusable modules should go for ex. in 
+PLearn/python_modules/.../... while executable scripts that may or may 
+not import some of these modules should go in PLearn/scripts.
+A script might be something quite minimalistic such as parsing command 
+line options and then just calling the appropriate functions from an 
+imported module (or outputting some help message).
+
+Christian Dorion wrote:
+> Je sais que certain se font avocats de la 
+> "pymake-devrait-?tre-full-self-contained" mentalit?, mais comme:
+>  1) PyMake d?pend d?j? un peu des python_modules (toolkit) et
+>  2) Le code de PyMake est d?j? suffisamment indigeste
+Je me fais plut?t avocat de la mentalit? "limiter les d?pendances non 
+indispensables" pour ?viter que pymake (ou tout autre script/prg) ne 
+finisse pas par d?pendre de la terre enti?re! Ceci afin qu'on puisse, si 
+on le souhaite, facilement "l'extraire" de PLearn, et en faire un outil 
++-g?n?rique ind?pendant (ce pour quoi il avait ?t? pens? au d?part). 
+C'est ainsi que j'entends "relatively self contained". Quand tout est 
+dans un script, c'est facle: il n'y a qu'? d?placer le script. Mais 
+quand le code se met ? d?pendre de 3 modules maison sp?cifiques, chacun 
+d?pendant de 4 autres, eux m?me d?pendant d'autres affaires qui 
+finissent par ?tre plearn-sp?cifiques, et de librairies externes 
+exotiques, le tout se mordant la queue, ?a devient pas mal plus 
+compliqu? ? "extraire"... Je ne dis pas que c'est le cas avec pymake 
+actuellement, je dis que c'est ce qu'on veut ?viter. Notez aussi que 
+c'est essentiellement ce qui s'est pass? avec les diff?rentes parties de 
+plearn :-(. Cela dit je suis tout ? fait *pour* modulariser les choses, 
+tant que ?a reste bien compartiment?, et ne se m?tamorphose pas en une 
+pieuvre tentaculaire sans fin.
+\begin{rant}
+Se casser la t?te ? faire des modules vraiment g?n?riques n'est 
+profitable que si l'on *va r?ellement* s'en servir dans *plus d'un* 
+programme. Le plus souvent la bonne fa?on de "g?n?riciser" n'appara?t 
+clairement que quand on a plusieurs instances de cas concr?ts ? 
+r?aliser, alors que les designs g?n?riques faits sur la base d'une 
+unique instance concr?te et de r?flexions abstraites sur des cas 
+hypoth?tiques finissent souvent par ?tre trop g?n?riques et compliqu?es 
+l? o? ce n'?tait pas n?cessaire, et trop limit?es et inflexibles l? o? 
+elles auraient d? ?tre plus g?n?rique, et ceci parce qu'on n'y avait pas 
+song? ? la lumi?re d'autres cas concr?ts pouss?s jusqu'au bout dans les 
+moindres d?tails).
+\end{rant}
+> je suis pour la cr?ation de PLearn/python_module/plearn/pymake dans 
+> lequel tu pourrais mettre de module de parsing. ?ventuellement, on 
+> pourrait y modulariser PyMake...
+J'appuie ? 100% cette organisation des choses!
+
+Christian, dans le m?me ordre d'id?e de ce qui pr?c?de, pourrais-tu s'il 
+te plait "extraire" cldispatch et les modules correspondants de 
+apstatsoft/... et les d?placer dans PLearn/... (et possiblement au 
+passage r?parer l'option "cldispatch -n" qui semble  s'?tre bris?e au 
+cours de la modularisation/proprification). Ce code pourrait en effet 
+?tre utile aux personnes du LISA qui travaillent au lancement de t?ches 
+concurrentes et ? l'am?lioration et modularisation de pymake.
+
+-- Pascal
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From dorionc at apstat.com  Fri Jul 14 20:09:22 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Fri, 14 Jul 2006 14:09:22 -0400
+Subject: [Plearn-core] location distributed launcher
+In-Reply-To: <44B7D634.1060609@apstat.com>
+References: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>
+	<44B7D634.1060609@apstat.com>
+Message-ID: <44B7DDD2.1040006@apstat.com>
+
+Bonjour groupe,
+
+Pascal Vincent escribi?:
+> J'appuie ? 100% cette organisation des choses!
+>
+> Christian, dans le m?me ordre d'id?e de ce qui pr?c?de, pourrais-tu 
+> s'il te plait "extraire" cldispatch et les modules correspondants de 
+> apstatsoft/... et les d?placer dans PLearn/... (et possiblement au 
+> passage r?parer l'option "cldispatch -n" qui semble  s'?tre bris?e au 
+> cours de la modularisation/proprification). Ce code pourrait en effet 
+> ?tre utile aux personnes du LISA qui travaillent au lancement de 
+> t?ches concurrentes et ? l'am?lioration et modularisation de pymake.
+>
+Je viens de cr?er PLearn/python_modules/plearn/parralel. Pour l'instant 
+c'est vide; j'avise juste pour pas qu'on cr?e 20 r?pertoires pour la 
+m?me choucroute. Je vais migrer mes modules ? temps perdu ;)
+
+A+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/3dc8b6cb/attachment.html>
+
+From chapados at apstat.com  Fri Jul 14 20:20:28 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 14 Jul 2006 14:20:28 -0400
+Subject: [Plearn-core] location distributed launcher
+In-Reply-To: <44B7DDD2.1040006@apstat.com>
+References: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>	<44B7D634.1060609@apstat.com>
+	<44B7DDD2.1040006@apstat.com>
+Message-ID: <44B7E06C.70004@apstat.com>
+
+Cela devrait s'?crire "parallel".
+
+
+Christian Dorion wrote:
+> Bonjour groupe,
+>
+> Pascal Vincent escribi?:
+>> J'appuie ? 100% cette organisation des choses!
+>>
+>> Christian, dans le m?me ordre d'id?e de ce qui pr?c?de, pourrais-tu 
+>> s'il te plait "extraire" cldispatch et les modules correspondants de 
+>> apstatsoft/... et les d?placer dans PLearn/... (et possiblement au 
+>> passage r?parer l'option "cldispatch -n" qui semble  s'?tre bris?e au 
+>> cours de la modularisation/proprification). Ce code pourrait en effet 
+>> ?tre utile aux personnes du LISA qui travaillent au lancement de 
+>> t?ches concurrentes et ? l'am?lioration et modularisation de pymake.
+>>
+> Je viens de cr?er PLearn/python_modules/plearn/parralel. Pour 
+> l'instant c'est vide; j'avise juste pour pas qu'on cr?e 20 r?pertoires 
+> pour la m?me choucroute. Je vais migrer mes modules ? temps perdu ;)
+>
+> A+
+> -- 
+> *Christian Dorion*/
+> Doctorant en Finance (Desautels Faculty of Management -- McGill)
+> M.Sc. Informatique et Recherche Op?rationnelle//
+> ApStat Technologies Inc./
+> http://www.apstat.com
+> T?l : (514) 343-9119, ext. 237
+>
+> "Soyons r?alistes, exigeons l'impossible",
+> Ernesto "Che" Guevara, 1928-1967
+>
+> "Love is a Temple, Love the higher Law",
+> One, U2
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at bat.berlios.de
+> http://bat.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/b72b6020/attachment.html>
+
+From dorionc at apstat.com  Fri Jul 14 20:51:48 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Fri, 14 Jul 2006 14:51:48 -0400
+Subject: [Plearn-core] location distributed launcher
+In-Reply-To: <44B7E06C.70004@apstat.com>
+References: <22777a450607131409s2b5fc14fmf47706aafc00314c@mail.gmail.com>	<44B7D634.1060609@apstat.com>
+	<44B7DDD2.1040006@apstat.com> <44B7E06C.70004@apstat.com>
+Message-ID: <44B7E7C4.2000505@apstat.com>
+
+En effet ;) Et c'est ce que j'avais fait sous PLearn... Semblerait que 
+je n'arrive pas ? l'?crire correctement deux fois en ligne ;)
+
+D'autre part, ce n'est plus vide!  Un bon point de d?part: lire 
+~/PLearn/python_modules/plearn/parallel/example et 
+~/PLearn/scripts/cldispatch.
+
+Bonne chance,
+Chris.
+
+Nicolas Chapados escribi?:
+> Cela devrait s'?crire "parallel".
+>
+>
+> Christian Dorion wrote:
+>> Bonjour groupe,
+>>
+>> Pascal Vincent escribi?:
+>>> J'appuie ? 100% cette organisation des choses!
+>>>
+>>> Christian, dans le m?me ordre d'id?e de ce qui pr?c?de, pourrais-tu 
+>>> s'il te plait "extraire" cldispatch et les modules correspondants de 
+>>> apstatsoft/... et les d?placer dans PLearn/... (et possiblement au 
+>>> passage r?parer l'option "cldispatch -n" qui semble  s'?tre bris?e 
+>>> au cours de la modularisation/proprification). Ce code pourrait en 
+>>> effet ?tre utile aux personnes du LISA qui travaillent au lancement 
+>>> de t?ches concurrentes et ? l'am?lioration et modularisation de pymake.
+>>>
+>> Je viens de cr?er PLearn/python_modules/plearn/parralel. Pour 
+>> l'instant c'est vide; j'avise juste pour pas qu'on cr?e 20 
+>> r?pertoires pour la m?me choucroute. Je vais migrer mes modules ? 
+>> temps perdu ;)
+>>
+>> A+
+>> -- 
+>> *Christian Dorion*/
+>> Doctorant en Finance (Desautels Faculty of Management -- McGill)
+>> M.Sc. Informatique et Recherche Op?rationnelle//
+>> ApStat Technologies Inc./
+>> http://www.apstat.com
+>> T?l : (514) 343-9119, ext. 237
+>>
+>> "Soyons r?alistes, exigeons l'impossible",
+>> Ernesto "Che" Guevara, 1928-1967
+>>
+>> "Love is a Temple, Love the higher Law",
+>> One, U2
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at bat.berlios.de
+>> http://bat.berlios.de/mailman/listinfo/plearn-core
+>>   
+>
+> -- 
+> Nicolas Chapados, M.Sc.
+> ApSTAT Technologies Inc.
+> www.apstat.com
+>   
+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/3d955f2b/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Fri Jul 14 21:09:20 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 14 Jul 2006 21:09:20 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44B79CE4.1030509@apstat.com>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org> <44B79CE4.1030509@apstat.com>
+Message-ID: <20060714190920.GA3213@pig.zood.org>
+
+On Fri, Jul 14, 2006, Christian Dorion wrote:
+> >?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+> >s'il est l?g?rement plus lent pour calculer les d?pendances que la
+> >version actuelle (genre 6 secondes de plus). En plus, il g?re certains
+> 
+> 6 secondes.... Des vrais secondes l??
+
+Ben des secondes qui valent chacune la dur?e de 9 192 631 770 p?riodes
+de la radiation correspondant ? la transition entre les deux niveaux
+hyperfins de l'?tat fondamental de l'atome de c?sium 133.
+
+?a a plut?t l'air d'?tre 6 secondes et demie en fait :
+
+lamblinp at quartz ~/code/PLearn/commands% time pymake_ plearn
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software distributed under a BSD type license. Report problems to vincentp at iro.umontreal.ca ]
+*** Current platform is: linux-x86_64
+
+*** Parallel compilation using list of hosts from file(s): /u/lamblinp/.pymake/linux-x86_64.hosts
+*** Running pymake on plearn using configuration file: /u/lamblinp/code/PLearn/.pymake/config
+*** Running pymake on plearn using options: -g++ -dbg -double -throwerrors -blas
+++++ Computing dependencies of plearn ...
+Target plearn is up to date.
+++++ Compiling...
+pymake_ plearn  9.85s user 0.53s system 94% cpu 10.973 total
+
+lamblinp at quartz ~/code/PLearn/commands% time pymake plearn
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software distributed under a BSD type license. Report problems to vincentp at iro.umontreal.ca ]
+*** Current platform is: linux-x86_64
+
+*** Parallel compilation using list of hosts from file(s): /u/lamblinp/.pymake/linux-x86_64.hosts
+*** Running pymake on plearn using configuration file: /u/lamblinp/code/PLearn/.pymake/config
+*** Running pymake on plearn using options: -g++ -dbg -double -throwerrors -blas
+++++ Computing dependencies of plearn ...
+Target plearn is up to date.
+++++ Compiling...
+pymake plearn  3.40s user 0.49s system 88% cpu 4.417 total
+
+lamblinp at quartz ~/code/PLearn/commands% echo '10.973-4.417' | bc
+6.556
+
+Sachant que cette version explore encore tous les includes (la liste des
+d?finitions n'est pas encore faite), ?a vous para?t d?mesur? ?
+
+> Je sais que certain se font avocats de la 
+> "pymake-devrait-?tre-full-self-contained" mentalit?, mais comme:
+> 1) PyMake d?pend d?j? un peu des python_modules (toolkit) et
+> 2) Le code de PyMake est d?j? suffisamment indigeste
+> 
+> je suis pour la cr?ation de PLearn/python_module/plearn/pymake dans 
+> lequel tu pourrais mettre de module de parsing. ?ventuellement, on 
+> pourrait y modulariser PyMake... Pour les int?ress?s, j'aimerais un jour 
+> voir PLearn/scripts/pymake ressembler ? PLearn/script/pytest. Il suffit 
+> d'un coup d'oeil pour comprendre pourquoi je n'ai jamais attaqu? ce 
+> projet...
+
+Je vais jeter un coup d'oeil alors :)
+
+> >Enfin, je suis en train de hacker pymake pour pouvoir g?rer les
+> >variables pr?processeur en tant que telles, et pas juste une string
+> >ajout?e ? "compiler_options". Il se peut que j'en profite pour
+> >proprifier des choses dans pymake qui ne devraient pas d?pendre du
+> >pymake.config.model, par exemple.
+>
+> Propifier!!! Oh oui, propifie, propifie... l?che-toi lousse ;)
+
+D'accord, mais attendez-vous ? avoir ? recradifier derri?re si vous
+voulez que ?a continue ? marcher ;)
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Fri Jul 14 21:13:57 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 14 Jul 2006 15:13:57 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060714190920.GA3213@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org> <44B79CE4.1030509@apstat.com>
+	<20060714190920.GA3213@pig.zood.org>
+Message-ID: <20060714191356.GA8619@opale.iro.umontreal.ca>
+
+> Sachant que cette version explore encore tous les includes (la liste des
+> d?finitions n'est pas encore faite), ?a vous para?t d?mesur? ?
+
+Ca ne devrait pas etre trop complique de ne parser que s'il y a des #if
+autour des includes, non ? Ca devrait permettre de limiter serieusement
+les cas ou le parsing est necessaire.
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Fri Jul 14 21:34:37 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 14 Jul 2006 15:34:37 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060714191356.GA8619@opale.iro.umontreal.ca>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org> <44B79CE4.1030509@apstat.com>
+	<20060714190920.GA3213@pig.zood.org>
+	<20060714191356.GA8619@opale.iro.umontreal.ca>
+Message-ID: <20060714193435.GA9696@opale.iro.umontreal.ca>
+
+On 14 Jul 2006, Olivier Delalleau wrote:
+> > Sachant que cette version explore encore tous les includes (la liste des
+> > d?finitions n'est pas encore faite), ?a vous para?t d?mesur? ?
+> 
+> Ca ne devrait pas etre trop complique de ne parser que s'il y a des #if
+> autour des includes, non ? Ca devrait permettre de limiter serieusement
+> les cas ou le parsing est necessaire.
+
+Bon, d'accord, ca ne voulait pas dire grand-chose j'avoue, je n'avais
+pas bien compris ce que 'parser' englobait en fait.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Tue Jul 18 15:25:13 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 18 Jul 2006 15:25:13 +0200
+Subject: [Plearn-core] [issue234] Portability problem with
+	declareMethods wizardry
+In-Reply-To: <44B4157A.8070904@apstat.com>
+References: <1152651441.67.0.506442715525.issue234@apstat.com>
+	<44B4157A.8070904@apstat.com>
+Message-ID: <c81af8c30607180625i4dc568beh9cf13622ab3d7635@mail.gmail.com>
+
+Bonjour Nicolas,
+Excuse moi, j'ai pris un peu de temps avant de te repondre. J'ai effectu?
+les testes que tu as sugger?s et tout a l'air de marche. En tout cas je
+n'obtiens pas d'erreur de compilation. Par contre je n'ai pas fait de test
+d'execution:
+
+
+
+> 1) Prendre les deux classes locales (ObjectTrampolineGetOption et
+> ObjectTrampolineGetObject) et les sortir de la fonction
+> Object::declareMethods.  Il est suffisant de les d?placer imm?diatement
+> avant Object::declareMethods (sans rien mettre dans le .h).
+
+
+Oki
+
+
+2) Si ?a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+>
+> namespace {
+>
+> struct ObjectTrampolineGetOption { ... };
+> struct ObjectTrampolineGetObject { ... };
+>
+> }
+
+
+
+Oki
+
+
+A+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060718/ad04358d/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Wed Jul 19 10:15:43 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 19 Jul 2006 10:15:43 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060713225852.GA30858@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+Message-ID: <20060719081543.GA8433@pig.zood.org>
+
+On Fri, Jul 14, 2006, Pascal Lamblin wrote:
+> ?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+> s'il est l?g?rement plus lent pour calculer les d?pendances que la
+> version actuelle (genre 6 secondes de plus).
+
+Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+(quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+
+Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+
+Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+liste des includes par fichier (si un fichier ne change pas, sa liste
+d'include ne changera pas non plus) ?
+
+Ou alors il vaudrait mieux que je consacre mon temps ? autre chose ?
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed Jul 19 14:58:11 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 19 Jul 2006 08:58:11 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719081543.GA8433@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org>
+Message-ID: <20060719125810.GA498@opale.iro.umontreal.ca>
+
+On 19 Jul 2006, Pascal Lamblin wrote:
+> On Fri, Jul 14, 2006, Pascal Lamblin wrote:
+> > ?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+> > s'il est l?g?rement plus lent pour calculer les d?pendances que la
+> > version actuelle (genre 6 secondes de plus).
+> 
+> Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+> (quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+> 
+> Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+
+En ce qui me concerne, je ne trouve pas ca trop genant. Il pourrait
+toujours y avoir une option pour utiliser l'ancien systeme, si ca en
+gene certains ?
+
+> 
+> Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+> liste des includes par fichier (si un fichier ne change pas, sa liste
+> d'include ne changera pas non plus) ?
+
+Pourquoi pas, mais...
+
+> Ou alors il vaudrait mieux que je consacre mon temps ? autre chose ?
+
+... oui, je pense ;)
+
+--
+Olivier
+
+
+From pascal at apstat.com  Wed Jul 19 15:56:32 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 19 Jul 2006 09:56:32 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719081543.GA8433@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>	<20060705220652.GA3604@pig.zood.org>
+	<44AD1D9A.1040300@apstat.com>	<20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com>	<20060706224831.GA9773@pig.zood.org>	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org>
+Message-ID: <44BE3A10.3010700@apstat.com>
+
+Pascal Lamblin wrote:
+> Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+> (quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+>
+> Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+>   
+Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+parce que le nouveau parseur parse le fichier au complet. As-tu essay?, 
+pour voir, d'utiliser l'ancien "parseur" (rudimentaire mais efficace) 
+pour extraire rapidement les directives pr?processeur non comment?es, et 
+utiliser le nouveau parseur pour "interpr?ter" juste le petit bout de 
+code r?sultant?
+> Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+> liste des includes par fichier (si un fichier ne change pas, sa liste
+> d'include ne changera pas non plus) ?
+>   
+C'est une possibilit? int?ressante, qui a le potentiel de ramener le 
+temps ? presque 0 en moyenne, mais il faut faire attention ? deux choses:
+a) les fichiers de cache devront ?videmment ?tre s?par?s par option de 
+compilation (ou par "define") pouvant influencer le pr?processing et les 
+d?pendances
+b) il y a essentiellement 2 fa?ons d'envisager le caching: ou bien 
+associer un fichier de cache ? chaque .cc et .h, ou bien maintenir un 
+fichier de cache global contenant tout l'arbre de d?pendance. Il est 
+probable qu'une part non n?gligeable du temps pris par pymake consiste 
+en l'ouverture de nombreux fichiers, et il est fort possible que 
+d'ouvrir un seul fichier pour d?s?rialiser un gros arbre de d?pendance, 
+en ne faisant par la suite que v?rifier les dates des .h et .cc 
+concern?s par la compilation pour voir si l'information d'un noeud a 
+besoin d'?tre mise ? jour, soit pas mal plus efficace.
+> Ou alors il vaudrait mieux que je consacre mon temps ? autre chose ?
+>   
+Ah ben oui, ?a aussi. Ah. la difficile gestion des priorit?s... ;-)
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Jul 19 16:15:34 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 19 Jul 2006 16:15:34 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44BE3A10.3010700@apstat.com>
+References: <20060705001959.GB29466@pig.zood.org>
+	<20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org> <44BE3A10.3010700@apstat.com>
+Message-ID: <20060719141534.GA10827@pig.zood.org>
+
+On Wed, Jul 19, 2006, Pascal Vincent wrote:
+> Pascal Lamblin wrote:
+> > Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+> > (quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+> > de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+> >
+> > Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+> >   
+> Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+> parce que le nouveau parseur parse le fichier au complet. As-tu essay?, 
+> pour voir, d'utiliser l'ancien "parseur" (rudimentaire mais efficace) 
+> pour extraire rapidement les directives pr?processeur non comment?es, et 
+> utiliser le nouveau parseur pour "interpr?ter" juste le petit bout de 
+> code r?sultant?
+
+C'est effectivement quelque chose qu'il faudrait que je fasse. Le
+probl?me que je vois venir, c'est les directives pr?processeur qui ne
+tiennent pas sur une ligne:
+# if 1 \
+  && 0
+#   include <truc.h> // oui mais justement on veut pas l'inclure
+# endif
+
+D'ailleurs, j'ai aussi modifi? le parseur de commentaires pour qu'il
+prenne correctement en compte le cas suivants :
+pas_comment?
+/*
+comment?
+// */
+pas_comment?
+
+sans affecter le cas :
+pas_comment?
+//*
+pas_comment?
+// */
+pas_comment?
+
+
+> > Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+> > liste des includes par fichier (si un fichier ne change pas, sa liste
+> > d'include ne changera pas non plus) ?
+>
+> C'est une possibilit? int?ressante, qui a le potentiel de ramener le 
+> temps ? presque 0 en moyenne, mais il faut faire attention ? deux choses:
+> a) les fichiers de cache devront ?videmment ?tre s?par?s par option de 
+> compilation (ou par "define") pouvant influencer le pr?processing et les 
+> d?pendances
+
+Tout ? fait.
+
+> b) il y a essentiellement 2 fa?ons d'envisager le caching: ou bien 
+> associer un fichier de cache ? chaque .cc et .h, ou bien maintenir un 
+> fichier de cache global contenant tout l'arbre de d?pendance. Il est 
+> probable qu'une part non n?gligeable du temps pris par pymake consiste 
+> en l'ouverture de nombreux fichiers, et il est fort possible que 
+> d'ouvrir un seul fichier pour d?s?rialiser un gros arbre de d?pendance, 
+> en ne faisant par la suite que v?rifier les dates des .h et .cc 
+> concern?s par la compilation pour voir si l'information d'un noeud a 
+> besoin d'?tre mise ? jour, soit pas mal plus efficace.
+
+Un seul fichier par target, tu veux dire ? Il me semble qu'on pourrait
+partager de l'information entre la compilation de plearn et de
+plearn_full, par exemple.
+
+Je ne sais pas laquelle des solutions est la plus efficace, il faudrait
+tester. Peut-?tre qu'un bon compromis serait un fichier par r?pertoire
+(et par option).
+
+> > Ou alors il vaudrait mieux que je consacre mon temps ? autre chose ?
+>
+> Ah ben oui, ?a aussi. Ah. la difficile gestion des priorit?s... ;-)
+
+;^)
+
+-- 
+Pascal
+
+
+From dorionc at apstat.com  Wed Jul 19 16:39:20 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Wed, 19 Jul 2006 10:39:20 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719125810.GA498@opale.iro.umontreal.ca>
+References: <20060705001959.GB29466@pig.zood.org>	<20060705220652.GA3604@pig.zood.org>
+	<44AD1D9A.1040300@apstat.com>	<20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com>	<20060706224831.GA9773@pig.zood.org>	<20060713225852.GA30858@pig.zood.org>	<20060719081543.GA8433@pig.zood.org>
+	<20060719125810.GA498@opale.iro.umontreal.ca>
+Message-ID: <44BE4418.8040301@apstat.com>
+
+
+Olivier Delalleau escribi?:
+> On 19 Jul 2006, Pascal Lamblin wrote:
+>   
+>> On Fri, Jul 14, 2006, Pascal Lamblin wrote:
+>>     
+>>> ?a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m?me
+>>> s'il est l?g?rement plus lent pour calculer les d?pendances que la
+>>> version actuelle (genre 6 secondes de plus).
+>>>       
+>> Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+>> (quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+>> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+>>
+>> Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+>>     
+>
+> En ce qui me concerne, je ne trouve pas ca trop genant. Il pourrait
+> toujours y avoir une option pour utiliser l'ancien systeme, si ca en
+> gene certains ?
+>
+>   
+J'avoue que, personnellement, j'aimerais bien qu'une telle option soit 
+disponible...
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060719/c7835c0b/attachment.html>
+
+From pascal at apstat.com  Wed Jul 19 17:06:11 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 19 Jul 2006 11:06:11 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719141534.GA10827@pig.zood.org>
+References: <20060705001959.GB29466@pig.zood.org>	<20060705220652.GA3604@pig.zood.org>
+	<44AD1D9A.1040300@apstat.com>	<20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com>	<20060706224831.GA9773@pig.zood.org>	<20060713225852.GA30858@pig.zood.org>	<20060719081543.GA8433@pig.zood.org>
+	<44BE3A10.3010700@apstat.com> <20060719141534.GA10827@pig.zood.org>
+Message-ID: <44BE4A63.4080701@apstat.com>
+
+Pascal Lamblin wrote:
+> On Wed, Jul 19, 2006, Pascal Vincent wrote:
+>   
+>> Pascal Lamblin wrote:
+>>     
+>>> Je viens de finir (j'esp?re) de le d?p?ter. Soyons francs, il met 4
+>>> (quatre) fois plus de temps ? parser que la version de base (22 s au lieu
+>>> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+>>>
+>>> Honn?tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+>>>   
+>>>       
+>> Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+>> parce que le nouveau parseur parse le fichier au complet. As-tu essay?, 
+>> pour voir, d'utiliser l'ancien "parseur" (rudimentaire mais efficace) 
+>> pour extraire rapidement les directives pr?processeur non comment?es, et 
+>> utiliser le nouveau parseur pour "interpr?ter" juste le petit bout de 
+>> code r?sultant?
+>>     
+>
+> C'est effectivement quelque chose qu'il faudrait que je fasse. Le
+> probl?me que je vois venir, c'est les directives pr?processeur qui ne
+> tiennent pas sur une ligne:
+> # if 1 \
+>   && 0
+> #   include <truc.h> // oui mais justement on veut pas l'inclure
+> # endif
+>
+>   
+Du point de vue du C c'est une ligne! ;-)   un newline pr?c?d? du'un \ 
+ne devrait jamais ?tre consid?r? comme le commencement d'une nouvelle 
+ligne...
+Il faut consid?rer que DEFINITION: fin-de-ligne === s?quence de \n et/ou 
+\r non pr?c?d?e d'un \
+
+> D'ailleurs, j'ai aussi modifi? le parseur de commentaires pour qu'il
+> prenne correctement en compte le cas suivants :
+> pas_comment?
+> /*
+> comment?
+> // */
+> pas_comment?
+>
+> sans affecter le cas :
+> pas_comment?
+> //*
+> pas_comment?
+> // */
+> pas_comment?
+>   
+Bien s?r le parseur rudimentaire qui "extrait les directives 
+pr?processeurs non comment?es" se doit d'?tre un minimum intelligent, et 
+?tre capable de distinguer les contextes diff?rents ? savoir si il se 
+dtrouve
+a ) dans une string (ex terrible:
+" salut /* blah \" foo bar\
+// bouh" )
+
+b) dans un char ex: '"'
+
+c) dans un commentaire /* ... */   ( ex terrible: inclure la string 
+pr?c?dente dans un tel commentaire )
+
+d) dans un commentaire // ... fin-de-ligne
+
+e) dans une directive pr?processeur  # .... fin-de-ligne
+
+Et le parseur rudimentaire que j'avais ?crit ? la va-vite n'est sans 
+aucun doute pas correct ? 100%.
+
+>>> Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+>>> liste des includes par fichier (si un fichier ne change pas, sa liste
+>>> d'include ne changera pas non plus) ?
+>>>       
+>> C'est une possibilit? int?ressante, qui a le potentiel de ramener le 
+>> temps ? presque 0 en moyenne, mais il faut faire attention ? deux choses:
+>> a) les fichiers de cache devront ?videmment ?tre s?par?s par option de 
+>> compilation (ou par "define") pouvant influencer le pr?processing et les 
+>> d?pendances
+>>     
+>
+> Tout ? fait.
+>
+>   
+>> b) il y a essentiellement 2 fa?ons d'envisager le caching: ou bien 
+>> associer un fichier de cache ? chaque .cc et .h, ou bien maintenir un 
+>> fichier de cache global contenant tout l'arbre de d?pendance. Il est 
+>> probable qu'une part non n?gligeable du temps pris par pymake consiste 
+>> en l'ouverture de nombreux fichiers, et il est fort possible que 
+>> d'ouvrir un seul fichier pour d?s?rialiser un gros arbre de d?pendance, 
+>> en ne faisant par la suite que v?rifier les dates des .h et .cc 
+>> concern?s par la compilation pour voir si l'information d'un noeud a 
+>> besoin d'?tre mise ? jour, soit pas mal plus efficace.
+>>     
+>
+> Un seul fichier par target, tu veux dire ? Il me semble qu'on pourrait
+> partager de l'information entre la compilation de plearn et de
+> plearn_full, par exemple.
+>   
+Pour partager le maximum d'information je ferais un seul fichier (par 
+option) associ? au .pymake/config utilis?, contenant l'arbre de 
+d?pendance s?rialis? (avec le module cpickle).
+L'arbre n'a pas besoin d'?tre syst?matiquement complet (contenir tout 
+plearn), mais peut simplement fonctionner comme une cache qu'on peut 
+compl?ter avec les d?pendances manquantes ou out-of-date de la 
+compilation en cours (plearn, plearn_full, ...).
+> Je ne sais pas laquelle des solutions est la plus efficace, il faudrait
+> tester. Peut-?tre qu'un bon compromis serait un fichier par r?pertoire
+> (et par option).
+>   
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Jul 19 18:37:10 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 19 Jul 2006 18:37:10 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44BE4A63.4080701@apstat.com>
+References: <20060705220652.GA3604@pig.zood.org> <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org> <44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org> <44BE3A10.3010700@apstat.com>
+	<20060719141534.GA10827@pig.zood.org> <44BE4A63.4080701@apstat.com>
+Message-ID: <20060719163710.GA11353@pig.zood.org>
+
+On Wed, Jul 19, 2006, Pascal Vincent wrote:
+> >> Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+> >> parce que le nouveau parseur parse le fichier au complet. As-tu essay?, 
+> >> pour voir, d'utiliser l'ancien "parseur" (rudimentaire mais efficace) 
+> >> pour extraire rapidement les directives pr?processeur non comment?es, et 
+> >> utiliser le nouveau parseur pour "interpr?ter" juste le petit bout de 
+> >> code r?sultant?
+
+Juste pour clarifier : je supprime les commentaires avant de parser. Je
+vais voir ce que ?a donne si je supprime aussi les lignes de C++.
+
+> > C'est effectivement quelque chose qu'il faudrait que je fasse. Le
+> > probl?me que je vois venir, c'est les directives pr?processeur qui ne
+> > tiennent pas sur une ligne:
+> > # if 1 \
+> >   && 0
+> > #   include <truc.h> // oui mais justement on veut pas l'inclure
+> > # endif
+>
+> Du point de vue du C c'est une ligne! ;-)   un newline pr?c?d? du'un \ 
+> ne devrait jamais ?tre consid?r? comme le commencement d'une nouvelle 
+> ligne...
+> Il faut consid?rer que DEFINITION: fin-de-ligne === s?quence de \n et/ou 
+> \r non pr?c?d?e d'un \
+
+Oui OK, il faut juste que je voie comment faire comprendre ?a ? re.
+
+> Bien s?r le parseur rudimentaire qui "extrait les directives 
+> pr?processeurs non comment?es" se doit d'?tre un minimum intelligent, et 
+> ?tre capable de distinguer les contextes diff?rents ? savoir si il se 
+> dtrouve
+> a ) dans une string (ex terrible:
+> " salut /* blah \" foo bar\
+> // bouh" )
+
+?a, c'est certain qu'on ne supporte pas pour le moment;
+
+> b) dans un char ex: '"'
+> 
+> c) dans un commentaire /* ... */   ( ex terrible: inclure la string 
+> pr?c?dente dans un tel commentaire )
+
+Je pense que la string pr?c?dente marcherait tr?s bien dans ce
+commentaire, mais "*/" ferait des ravages :)
+
+> d) dans un commentaire // ... fin-de-ligne
+
+?a marche
+
+> e) dans une directive pr?processeur  # .... fin-de-ligne
+
+?a marche avec mon parseur, et approximativement avec le code existant.
+
+> Et le parseur rudimentaire que j'avais ?crit ? la va-vite n'est sans 
+> aucun doute pas correct ? 100%.
+
+Pour r?capituler, le parseur tel qu'il est dans le code committ? pour le
+moment fait les choses suivantes, dans cet ordre :
+  - remplacer // ... \n par \n
+  - remplacer /* ... */ par rien
+  - chercher #include (<|")quelquechose("|>) et retourner la liste des
+    "quelquechose" ? l'aide d'une regexp.
+
+? mon avis, si on veut un parseur ? rudimentaire ? qui soit capable de
+g?rer tous les cas ci-dessus correctement (m?me sans le support des
+strings), le temps de parsing va ?tre encore multipli? par 3 ou 4, et on
+approchera du point o? il vaudrait mieux utiliser cpp lui-m?me, surtout
+si on cache le r?sultat (je n'exclus pas cette solution, d'ailleurs).
+
+> Pour partager le maximum d'information je ferais un seul fichier (par 
+> option) associ? au .pymake/config utilis?, contenant l'arbre de 
+> d?pendance s?rialis? (avec le module cpickle).
+
+OK, donc ?a voudrait dire cr?er un vrai arbre ?
+J'imaginais juste un dictionnaire contenant les paires
+"nom_de_fichier":["liste", "des", "fichiers", "directement", "inclus"]
+
+En fait, il faudrait aussi stocker la date de la mise ? jour pour chaque
+fichier, ce qui ?tait ?vit? dans le cas d'un cache par fichier...
+
+> L'arbre n'a pas besoin d'?tre syst?matiquement complet (contenir tout 
+> plearn), mais peut simplement fonctionner comme une cache qu'on peut 
+> compl?ter avec les d?pendances manquantes ou out-of-date de la 
+> compilation en cours (plearn, plearn_full, ...).
+
+C'est comme ?a que je le vois : s'il y a une liste dans le cache et que
+le fichier n'a pas ?t? modifi? depuis que la liste y a ?t? mise, alors
+on utilise l'info, sinon on parse le fichier et on update la liste.
+
+Je vais faire des tests de performance et je vous reviens.
+-- 
+Pascal
+
+
+From pascal at apstat.com  Wed Jul 19 19:00:15 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 19 Jul 2006 13:00:15 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719163710.GA11353@pig.zood.org>
+References: <20060705220652.GA3604@pig.zood.org>
+	<44AD1D9A.1040300@apstat.com>	<20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com>	<20060706224831.GA9773@pig.zood.org>	<20060713225852.GA30858@pig.zood.org>	<20060719081543.GA8433@pig.zood.org>
+	<44BE3A10.3010700@apstat.com>	<20060719141534.GA10827@pig.zood.org>
+	<44BE4A63.4080701@apstat.com> <20060719163710.GA11353@pig.zood.org>
+Message-ID: <44BE651F.7030700@apstat.com>
+
+Pascal Lamblin wrote:
+>> Pour partager le maximum d'information je ferais un seul fichier (par 
+>> option) associ? au .pymake/config utilis?, contenant l'arbre de 
+>> d?pendance s?rialis? (avec le module cpickle).
+>>     
+>
+> OK, donc ?a voudrait dire cr?er un vrai arbre ?
+>   
+Oui. Note que pymake construit *d?j?* essentiellement un tel arbre des 
+d?pendances en m?moire... C'EST L? L'ESSENTIEL DE SA JOB! (cela dit cet 
+arbre contient possiblement davantage d'info que ce qu'on voudrait 
+sauver, ? voir...).
+> J'imaginais juste un dictionnaire contenant les paires
+> "nom_de_fichier":["liste", "des", "fichiers", "directement", "inclus"]
+>
+> En fait, il faudrait aussi stocker la date de la mise ? jour pour chaque
+> fichier, ce qui ?tait ?vit? dans le cas d'un cache par fichier...
+>   
+Note que dans les deux cas (1 fichier ou plein de fichiers), il s'agit 
+fondamentalement du m?me arbre de d?pendances. La seule diff?rence est 
+que dans un cas tous les noeuds et les dates de derni?re modif sont 
+stock?es dans un m?me fichier (qui peut ?tre vu essentiellement comme un 
+dump de l'arbre en m?moire), alors que dans l'autre cas le contenu de 
+chaque noeud est un fichier diff?rent et la date de derni?re modif est 
+la date de modif dudit fichier (c.a.d. une m?tadonn?e du fichier)...
+La question est donc bien: vaut-il mieux mettre n noeuds dans un m?me 
+fichier ou dans n fichiers? ...
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Jul 19 23:48:59 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 19 Jul 2006 23:48:59 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719163710.GA11353@pig.zood.org>
+References: <44AD1D9A.1040300@apstat.com> <20060706153434.GA7712@pig.zood.org>
+	<44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org> <44BE3A10.3010700@apstat.com>
+	<20060719141534.GA10827@pig.zood.org> <44BE4A63.4080701@apstat.com>
+	<20060719163710.GA11353@pig.zood.org>
+Message-ID: <20060719214859.GA12616@pig.zood.org>
+
+On Wed, Jul 19, 2006, Pascal Lamblin wrote:
+> On Wed, Jul 19, 2006, Pascal Vincent wrote:
+> > >> Je suis surpris que ce soit tellement plus long. Je suspecte
+> > >> que c'est parce que le nouveau parseur parse le fichier au
+> > >> complet. As-tu essay?, pour voir, d'utiliser l'ancien "parseur"
+> > >> (rudimentaire mais efficace) pour extraire rapidement les
+> > >> directives pr?processeur non comment?es, et utiliser le nouveau
+> > >> parseur pour "interpr?ter" juste le petit bout de code r?sultant?
+>
+> Juste pour clarifier : je supprime les commentaires avant de parser.
+> Je vais voir ce que ?a donne si je supprime aussi les lignes de C++.
+
+J'ai fait ?a : j'ai rajout? une regexp qui ne garde que les directives
+pr?processeur que je sais parser facilement, et je parse seulement ?a.
+Les r?sultats sont impressionnants : le temps d'ex?cution est seulement
+15 % de plus que le pymake de base.
+
+> > Du point de vue du C c'est une ligne! ;-)   un newline pr?c?d? du'un \ 
+> > ne devrait jamais ?tre consid?r? comme le commencement d'une nouvelle 
+> > ligne...
+> > Il faut consid?rer que DEFINITION: fin-de-ligne === s?quence de \n et/ou 
+> > \r non pr?c?d?e d'un \
+> 
+> Oui OK, il faut juste que je voie comment faire comprendre ?a ? re.
+
+J'ai c?d? ? la facilit? : je remplace d'abord tous les '\\\n' par ' '.
+
+> ? mon avis, si on veut un parseur ? rudimentaire ? qui soit capable de
+> g?rer tous les cas ci-dessus correctement (m?me sans le support des
+> strings), le temps de parsing va ?tre encore multipli? par 3 ou 4, et on
+> approchera du point o? il vaudrait mieux utiliser cpp lui-m?me, surtout
+> si on cache le r?sultat (je n'exclus pas cette solution, d'ailleurs).
+
+Je pense que la solution avec parseur est acceptable telle quelle (sauf
+si 15 % de pertes de performances vous g?nent), donc je vais laisser
+tomber le caching, m?me si ? mon avis la seule solution vraiment clean
+serait d'utiliser cpp et de cacher le r?sultat. Je le ferai peut-?tre un
+jour si j'ai vraiment rien ? foutre.
+
+Merci de votre attention, et n'h?sitez pas si vous avez d'autres
+commentaires.
+-- 
+Pascal
+
+
+From pascal at apstat.com  Thu Jul 20 00:15:52 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 19 Jul 2006 18:15:52 -0400
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <20060719214859.GA12616@pig.zood.org>
+References: <44AD1D9A.1040300@apstat.com>
+	<20060706153434.GA7712@pig.zood.org>	<44AD9136.4010107@apstat.com>
+	<20060706224831.GA9773@pig.zood.org>	<20060713225852.GA30858@pig.zood.org>	<20060719081543.GA8433@pig.zood.org>
+	<44BE3A10.3010700@apstat.com>	<20060719141534.GA10827@pig.zood.org>
+	<44BE4A63.4080701@apstat.com>	<20060719163710.GA11353@pig.zood.org>
+	<20060719214859.GA12616@pig.zood.org>
+Message-ID: <44BEAF18.8060500@apstat.com>
+
+
+> J'ai fait ?a : j'ai rajout? une regexp qui ne garde que les directives
+> pr?processeur que je sais parser facilement, et je parse seulement ?a.
+> Les r?sultats sont impressionnants : le temps d'ex?cution est seulement
+> 15 % de plus que le pymake de base.
+>   
+C'est bien ce que je suspectais. Cool!
+
+>>> Du point de vue du C c'est une ligne! ;-)   un newline pr?c?d? du'un \ 
+>>> ne devrait jamais ?tre consid?r? comme le commencement d'une nouvelle 
+>>> ligne...
+>>> Il faut consid?rer que DEFINITION: fin-de-ligne === s?quence de \n et/ou 
+>>> \r non pr?c?d?e d'un \
+>>>       
+>> Oui OK, il faut juste que je voie comment faire comprendre ?a ? re.
+>>     
+>
+> J'ai c?d? ? la facilit? : je remplace d'abord tous les '\\\n' par ' '.
+>   
+Il serait bon de supporter les retour ? la ligne windows et mac 
+?galement. Donc je sugg?rerais de matcher plutot qqch comme
+\\[\n\r]+
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Thu Jul 20 05:45:31 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 20 Jul 2006 05:45:31 +0200
+Subject: [Plearn-core] pymake et #if, le retour
+In-Reply-To: <44BEAF18.8060500@apstat.com>
+References: <44AD9136.4010107@apstat.com> <20060706224831.GA9773@pig.zood.org>
+	<20060713225852.GA30858@pig.zood.org>
+	<20060719081543.GA8433@pig.zood.org> <44BE3A10.3010700@apstat.com>
+	<20060719141534.GA10827@pig.zood.org> <44BE4A63.4080701@apstat.com>
+	<20060719163710.GA11353@pig.zood.org>
+	<20060719214859.GA12616@pig.zood.org> <44BEAF18.8060500@apstat.com>
+Message-ID: <20060720034531.GA13436@pig.zood.org>
+
+On Wed, Jul 19, 2006, Pascal Vincent wrote:
+> > J'ai fait ?a : j'ai rajout? une regexp qui ne garde que les directives
+> > pr?processeur que je sais parser facilement, et je parse seulement ?a.
+> > Les r?sultats sont impressionnants : le temps d'ex?cution est seulement
+> > 15 % de plus que le pymake de base.
+>
+> C'est bien ce que je suspectais. Cool!
+
+Merci pour la suggestion :)
+
+> > J'ai c?d? ? la facilit? : je remplace d'abord tous les '\\\n' par ' '.
+>
+> Il serait bon de supporter les retour ? la ligne windows et mac 
+> ?galement. Donc je sugg?rerais de matcher plutot qqch comme
+> \\[\n\r]+
+
+Vu qu'il me semble qu'on ne veut pas matcher '\\\n\n\n' par exemple,
+j'ai chang? pour '\\(\r\n|\n|\r)'.
+
+? plus,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Fri Jul 21 07:23:29 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 21 Jul 2006 07:23:29 +0200
+Subject: [Plearn-core] PPath et PStream
+Message-ID: <20060721052329.GA19548@pig.zood.org>
+
+Salut encore,
+
+En modifiant databases.cc, je me suis rendu compte qu'il y avait encore
+pas mal de fonctions d?finies dans plearn/io/... qui utilisaient des
+ifstream/ofstream, et m?me des FILE* pour manipuler les fichiers. Les
+noms de fichiers, eux, ?taient fr?quemment des string ou des char*.
+
+Est-ce que ?a vaudrait le coup de passer partout ? des PPath et des
+PStream ? Est-ce qu'il y a des pi?ges avec les PStream, ou des
+limitations qui font qu'il ne font pas tout ce que les ifstream/ofstream
+peuvent faire ?
+
+Ou alors ?a ressemble surtout ? une perte de temps ?
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Fri Jul 21 15:22:43 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 21 Jul 2006 09:22:43 -0400
+Subject: [Plearn-core] PPath et PStream
+In-Reply-To: <20060721052329.GA19548@pig.zood.org>
+References: <20060721052329.GA19548@pig.zood.org>
+Message-ID: <20060721132241.GA6048@opale.iro.umontreal.ca>
+
+On 21 Jul 2006, Pascal Lamblin wrote:
+> Salut encore,
+> 
+> En modifiant databases.cc, je me suis rendu compte qu'il y avait encore
+> pas mal de fonctions d?finies dans plearn/io/... qui utilisaient des
+> ifstream/ofstream, et m?me des FILE* pour manipuler les fichiers. Les
+> noms de fichiers, eux, ?taient fr?quemment des string ou des char*.
+> 
+> Est-ce que ?a vaudrait le coup de passer partout ? des PPath et des
+> PStream ?
+
+Oui.
+
+> Est-ce qu'il y a des pi?ges avec les PStream, ou des
+> limitations qui font qu'il ne font pas tout ce que les ifstream/ofstream
+> peuvent faire ?
+
+Les seek (pour se deplacer directement a un endroit d'un fichier) je
+pense.
+
+--
+Olivier
+
+
+From pascal at apstat.com  Fri Jul 21 20:53:45 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 21 Jul 2006 14:53:45 -0400
+Subject: [Plearn-core] PPath et PStream
+In-Reply-To: <20060721052329.GA19548@pig.zood.org>
+References: <20060721052329.GA19548@pig.zood.org>
+Message-ID: <44C122B9.6040907@apstat.com>
+
+Pascal Lamblin wrote:
+> Est-ce que ?a vaudrait le coup de passer partout ? des PPath et des
+> PStream ? Est-ce qu'il y a des pi?ges avec les PStream, ou des
+> limitations qui font qu'il ne font pas tout ce que les ifstream/ofstream
+> peuvent faire ?
+>   
+Les PStream ont ?t? avant tout con?u pour la 
+s?rialisation/d?s?rialisation d'objets PLearn et la possibilit? de 
+d?finir facilement des nouvelles sources de stream.
+Les op?rations de seek, qui sont sp?cifiques ? des streams de type 
+fichier (elles n'ont gu?re de sens pour les pipe et les sockets par 
+ex.), ne sont pas pour le moment support?es. (notamment car c'est assez 
+d?licat ? implanter sans faire de gaffes quand on a des buffers d'entr?e 
+sortie).
+
+La politique actuelle est la suivante:
+
+Pour les acc?s bas niveau de fichiers, n?cessitant des seek et/ou des 
+lectures de formats binaires sp?cifiques, je pr?conise l'utilisation des 
+fonctions NSPR permettant des acc?s 64 bits ? des gros fichiers (>2 
+Gig). NSPR ?tant notre principale couche d'abstraction d'OS, je 
+conseille aussi l'utilisation de NSPR pour toutes les autres op?rations 
+d'OS (metainfo sur les fichiers, parcours du file system, etc...). NSPR 
+devrait ?tre utilis? de pr?f?rence plut?t que les FILE* de stdio.h 
+(notamment ? cause des acc?s 64 bits), mais si il y a des implantations 
+historiques qui utilisent encore FILE* et qui fonctionnent, ce n'est 
+vraiment pas une urgence de les r??crire ("If it ain't broken, don't fix 
+it..."), car stdio.h est tr?s standard, stable et lightweight (on ne 
+peut pas en dire autant de std::stream).
+
+Pour les acc?s n?cessitant la lecture ?criture d'objets s?rialis?s 
+PLearn, et/ou le logging c'est ?videmment PStream. J'aimerais id?alement 
+voir dispara?tre toute utilisation des std::stream, y compris les cin, 
+cout et cerr (qui devraient ?tre remplac?s par pin, pout, perr).
+
+Note: les op?rations de formattage ascii fancy de std::stream ne sont 
+pas support?es pas PStream.
+
+Les avantages de Pstream:
+  * s?rialisation d'objets PLearn (deep, comporte une map indispensable 
+pour g?rer les r?f?rences circulaires)
+  * putback pas limit? ? un caract?re (tr?s utile pour le lookahead de 
+parsing)
+  * ce sont des smart pointers faciles ? partager et ? copier
+  * facile d'?crire de nouvelles classes de PStreamBuf pour utiliser 
+d'autres channels de communication (ex: MPI).
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From chapados at apstat.com  Sun Jul 23 00:54:25 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Sat, 22 Jul 2006 18:54:25 -0400
+Subject: [Plearn-core] PPath et PStream
+In-Reply-To: <44C122B9.6040907@apstat.com>
+References: <20060721052329.GA19548@pig.zood.org> <44C122B9.6040907@apstat.com>
+Message-ID: <44C2ACA1.8000901@apstat.com>
+
+Quelques remarques suppl?mentaires suppl?mentaires p/r ? NSPR.
+> Pour les acc?s bas niveau de fichiers, n?cessitant des seek et/ou des 
+> lectures de formats binaires sp?cifiques, je pr?conise l'utilisation des 
+> fonctions NSPR permettant des acc?s 64 bits ? des gros fichiers (>2 
+> Gig). NSPR ?tant notre principale couche d'abstraction d'OS, je 
+> conseille aussi l'utilisation de NSPR pour toutes les autres op?rations 
+> d'OS (metainfo sur les fichiers, parcours du file system, etc...). NSPR 
+> devrait ?tre utilis? de pr?f?rence plut?t que les FILE* de stdio.h 
+> (notamment ? cause des acc?s 64 bits), mais si il y a des implantations 
+> historiques qui utilisent encore FILE* et qui fonctionnent, ce n'est 
+> vraiment pas une urgence de les r??crire ("If it ain't broken, don't fix 
+> it..."), car stdio.h est tr?s standard, stable et lightweight (on ne 
+> peut pas en dire autant de std::stream).
+>   
+J'ai personnellement suivi les conseils de Docteur Vincent il y a 
+quelques semaines, et NSPR est hyper-facile ? apprendre (pour l'API de 
+fichiers).  Il est ?galement tr?s bien document?.  Donc ce n'est pas du 
+tout un obstacle que de l'utiliser pour faire de la gestion de fichiers.
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Jul 26 04:11:32 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 26 Jul 2006 04:11:32 +0200
+Subject: [Plearn-core] PPath et PStream
+In-Reply-To: <44C122B9.6040907@apstat.com>
+References: <20060721052329.GA19548@pig.zood.org> <44C122B9.6040907@apstat.com>
+Message-ID: <20060726021132.GB19034@pig.zood.org>
+
+On Fri, Jul 21, 2006, Pascal Vincent wrote:
+> > Est-ce que ?a vaudrait le coup de passer partout ? des PPath et des
+> > PStream ?
+>
+> NSPR devrait ?tre utilis? de pr?f?rence plut?t que les FILE* de
+> stdio.h (notamment ? cause des acc?s 64 bits), mais si il y a
+> des implantations historiques qui utilisent encore FILE* et qui
+> fonctionnent, ce n'est vraiment pas une urgence de les r??crire ("If
+> it ain't broken, don't fix it...")
+
+Je prends ?a pour un ? non ?, alors :)
+
+-- 
+Pascal,
+qui va faire autre chose
+
+
+From lamblinp at iro.umontreal.ca  Wed Jul 26 04:30:35 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 26 Jul 2006 04:30:35 +0200
+Subject: [Plearn-core] Le pymake nouveau boira le cadavre exquis (ou
+	l'inverse, je sais plus)
+Message-ID: <20060726023035.GC19034@pig.zood.org>
+
+Salut encore les gens,
+
+Ce soir, un nouvel ?pisode de l'?mission ? c'est du propre ?
+<http://www.m6.fr/html/emissions/cest_du_propre/index.shtml> !
+
+J'ai cr?? python_modules/plearn/pymake, avec dedans :
+  - le mini-parseur cpp, minicpreproc.py ;
+  - la grammaire minicpreproc.g et le script yapps.py qui l'ont g?n?r? ;
+  - pymake.py qui reprend tout ce que faisait pymake (je vais y revenir) ;
+  - __init__.py parce qu'il faut.
+
+J'ai r?organis? pymake.py en trois sections :
+  - les petites/moyennes fonctions ;
+  - la classe FileInfo ;
+  - une fonction main(), qui fait tout ce qui ?tait fait au niveau
+    global.
+
+?a me semblait plus propre d'encapsuler ?a dans une fonction, maintenant
+appel?e depuis le nouveau scripts/pymake, plut?t que de laisser ?a
+? global ?, mais je me suis rendu compte que plein de variables avaient
+besoin d'?tre globales :
+  - certaines variables sont utilis?es dans ls fonctions auxiliaires, ou
+    dans la classe FileInfo (pour celles-l?, il y a probablement une
+    meilleure solution) ;
+  - mais surtout, l'appel ? execfile sur le fichier de configuration ne
+    peut pas modifier l'environnement de la fonction qui appelle
+    execfile, seulement l'environnement global.
+
+Du coup, j'ai d?clar? "global" tout plein de variables dans la fonction
+main(), et je passe explicitement le dictionnaire retourn? par globals()
+? execfile pour pouvoir r?cup?rer les valeurs d?finies dedans.
+
+Je sais que c'est crade, mais j'ai l'impression que c'est au moins un
+peu plus rang? qu'avant, et au moins maintenant on a une liste des
+variables globales utilis?es.
+
+Vu que je n'ai pas d'exp?rience en modules python, si l'un des gens
+exp?riment?s parmi vous veut bien repasser derri?re ou me donner des
+conseils sur ce qu'il y faudrait faire ou comment le faire, ?a serait
+appr?ci?.
+
+En attendant, l'ancien pymake est renomm? en pymake.old, ? la m?me
+place, si jamais il y a des probl?mes.
+
+Merci d'avance,
+-- 
+Pascal
+
+
+From dorionc at apstat.com  Wed Jul 26 15:41:40 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Wed, 26 Jul 2006 09:41:40 -0400
+Subject: [Plearn-core] Le pymake nouveau boira le cadavre exquis
+ (ou	l'inverse, je sais plus)
+In-Reply-To: <20060726023035.GC19034@pig.zood.org>
+References: <20060726023035.GC19034@pig.zood.org>
+Message-ID: <44C77114.7040209@apstat.com>
+
+Bonjour groupe!  :-)
+
+Pascal Lamblin escribi?:
+> Salut encore les gens,
+>
+> Ce soir, un nouvel ?pisode de l'?mission ? c'est du propre ?
+> <http://www.m6.fr/html/emissions/cest_du_propre/index.shtml> !
+>   
+Et quel ?pisode... ;-)
+> Du coup, j'ai d?clar? "global" tout plein de variables dans la fonction
+> main(), et je passe explicitement le dictionnaire retourn? par globals()
+> ? execfile pour pouvoir r?cup?rer les valeurs d?finies dedans.
+>
+> Je sais que c'est crade, mais j'ai l'impression que c'est au moins un
+> peu plus rang? qu'avant, et au moins maintenant on a une liste des
+> variables globales utilis?es.
+>
+>   
+... en effet, c'est d?j? 1000 fois plus lisible! J'ai jet? un oeil ? 
+l'organisation sous scripts/pymake et python_modules/plearn/pymake et je 
+dois dire que je suis bien heureux de voir pymake un tantinet plus 
+propre...
+
+Merci Pascal pour ton d?vouement ? la cause PLearnesque ;-)
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060726/37c62544/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Jul 28 22:22:09 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 28 Jul 2006 16:22:09 -0400
+Subject: [Plearn-core] Visual C++ portability of PLearn
+In-Reply-To: <44BE84D7.10005@apstat.com>
+References: <1152651441.67.0.506442715525.issue234@apstat.com>
+	<44B4157A.8070904@apstat.com>
+	<c81af8c30607180625i4dc568beh9cf13622ab3d7635@mail.gmail.com>
+	<44BE84D7.10005@apstat.com>
+Message-ID: <20060728202207.GA546@opale.iro.umontreal.ca>
+
+Hello,
+
+Just to let you know I got PLearn to compile with Visual Studio. About
+everything should compile fine, only the link part still requires some
+dirty tricks and tweaks, which I plan to detail in a Windows guide in
+the documentation sometime this summer.
+
+HOWEVER, a first try of the PLearn test suite shows about 15 tests
+failing at the moment, so some things may not be really working yet (I
+suspect some of them are just display log issues, but there may be more
+severe problems, I'm going to look into it).
+
+When everything works (almost) flawlessly, I'll tell you!
+
+--
+Olivier
+
+
+From chapados at apstat.com  Sun Jul 30 18:40:03 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Sun, 30 Jul 2006 12:40:03 -0400
+Subject: [Plearn-core] PLearn svn is back
+Message-ID: <804003D8-8B6A-4210-B247-EEA070B268E8@apstat.com>
+
+Dudes and Dudettes,
+
+It's now official: let's have a big PLearn Commit Party!
+
+	+ Nicolas
+
+
+
+From lamblinp at iro.umontreal.ca  Mon Jul 31 16:23:28 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 31 Jul 2006 16:23:28 +0200
+Subject: [Plearn-core] PLearn svn is back
+In-Reply-To: <804003D8-8B6A-4210-B247-EEA070B268E8@apstat.com>
+References: <804003D8-8B6A-4210-B247-EEA070B268E8@apstat.com>
+Message-ID: <20060731142328.GA32492@pig.zood.org>
+
+On Sun, Jul 30, 2006, Nicolas Chapados wrote:
+> Dudes and Dudettes,
+
+C'est toi qui r?ves ?veill?, ou c'est l'un d'entre nous qui n'aurait pas
+d? porter cette robe ? fleurs l'autre jour ?
+
+> It's now official: let's have a big PLearn Commit Party!
+
+Oui, mais non, le disque est ? nouveau plein...
+
+-- 
+Pascal
+? Rha mais berlios, sa race ! ?
+
+

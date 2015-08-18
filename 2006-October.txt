@@ -1,0 +1,3637 @@
+From jaonary at gmail.com  Mon Oct  2 16:10:42 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 2 Oct 2006 16:10:42 +0200
+Subject: [Plearn-core] Dataset et VMatrix
+Message-ID: <c81af8c30610020710o6d9de887g79c70d07761f7e70@mail.gmail.com>
+
+Boujour tout le monde,
+J'ai un petit probl?me concernant l'utilisation des VMatrix avec un
+PLearner.
+Avant de faire un 'train()' on doit g?n?ralement donner un ensemble
+d'apprentissage au PLearner. Si j'ai bien
+compris cet ensemble d'apprentissage est stock? dans une VMatrix et ce
+dernier ressemble ? un gigantesque tableau
+de la forme (X,Y,W,O) o?
+X = input
+Y = target
+W = poids
+O = autres donn?
+Ma question b?te est la suivante :
+Si j'ai d?j? les matrices X et Y (?ventuellement W et O) en m?moir, obtenues
+d'une fa?on ou d'une autre, comment dois-je
+faire pour cr?er ma VMatrix d'ensemble d'apprentissage sans cr?er une
+nouvelle VMatrix et recopier X et Y (W,O) ?
+J'ai d?j? vu qu'il y peut ?tres des sous classe de VMatrix qui peuvent
+m'aider, comme ConcatColsVMatrix, mais je ne sais pas trop comment
+les utiliser :-(
+
+Cordialement,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061002/8c3da549/attachment.html>
+
+From delallea at iro.umontreal.ca  Mon Oct  2 16:31:05 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 2 Oct 2006 10:31:05 -0400
+Subject: [Plearn-core] Dataset et VMatrix
+In-Reply-To: <c81af8c30610020710o6d9de887g79c70d07761f7e70@mail.gmail.com>
+References: <c81af8c30610020710o6d9de887g79c70d07761f7e70@mail.gmail.com>
+Message-ID: <20061002143104.GA9397@opale.iro.umontreal.ca>
+
+Salut,
+
+Ca d?pend de ce que tu veux dire par "en m?moire". Si tu es en train
+d'?crire un programme C++ et que tes donn?es sont stock?es dans une Mat
+PLearn (i.e. un TMat<real>, c'est la m?me chose), c'est facile :
+
+    Mat X, Y;
+    (... Fill X and Y here ...)
+    VMat train = new ConcatColumnsVMatrix(VMat(X), VMat(Y));
+    train->defineSizes(X.width(), Y.width()); // Set inputsize and
+                                              // targetsize.
+    learner->setTrainingSet(train);
+    learner->train();
+
+Si c'est dans un script et que tu as deux VMat X et Y qui chargent des
+donn?es en m?moire, ca donnerait quelque chose du genre
+
+    PTester(
+        ...
+        dataset =
+            ConcatColumnsVMatrix(
+                sources = [
+                    X
+                    Y
+                ]
+                inputsize = ... # (X's width)
+                targetsize = ... # (Y's width)
+                weightsize = 0
+            )
+        ...
+    )
+
+Et si c'est un script Python tu peux faire le meme genre de construction
+de VMats.
+
+--
+Olivier
+
+On 02 Oct 2006, Jaonary Rabarisoa wrote:
+> Boujour tout le monde,
+> J'ai un petit probl?me concernant l'utilisation des VMatrix avec un PLearner.
+> Avant de faire un 'train()' on doit g?n?ralement donner un ensemble
+> d'apprentissage au PLearner. Si j'ai bien
+> compris cet ensemble d'apprentissage est stock? dans une VMatrix et ce dernier
+> ressemble ? un gigantesque tableau
+> de la forme (X,Y,W,O) o?
+> X = input
+> Y = target
+> W = poids
+> O = autres donn?
+> Ma question b?te est la suivante :
+> Si j'ai d?j? les matrices X et Y (?ventuellement W et O) en m?moir, obtenues
+> d'une fa?on ou d'une autre, comment dois-je
+> faire pour cr?er ma VMatrix d'ensemble d'apprentissage sans cr?er une nouvelle
+> VMatrix et recopier X et Y (W,O) ?
+> J'ai d?j? vu qu'il y peut ?tres des sous classe de VMatrix qui peuvent m'aider,
+> comme ConcatColsVMatrix, mais je ne sais pas trop comment
+> les utiliser :-(
+> 
+> Cordialement,
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From jaonary at gmail.com  Mon Oct  2 16:41:44 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 2 Oct 2006 16:41:44 +0200
+Subject: [Plearn-core] Dataset et VMatrix
+In-Reply-To: <20061002143104.GA9397@opale.iro.umontreal.ca>
+References: <c81af8c30610020710o6d9de887g79c70d07761f7e70@mail.gmail.com>
+	<20061002143104.GA9397@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610020741x4105f2al61113b8409b9d03a@mail.gmail.com>
+
+Merci de ta r?ponse rapide. C'est effectivement ce que j'ai commenc? ? faire
+mais j'avais oubli?
+de changer les sizes avec
+train->defineSizes(X.width(), Y.width()); // Set inputsize and
+                                              // targetsize.
+
+On 10/2/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> Salut,
+>
+> Ca d?pend de ce que tu veux dire par "en m?moire". Si tu es en train
+> d'?crire un programme C++ et que tes donn?es sont stock?es dans une Mat
+> PLearn (i.e. un TMat<real>, c'est la m?me chose), c'est facile :
+>
+>     Mat X, Y;
+>     (... Fill X and Y here ...)
+>     VMat train = new ConcatColumnsVMatrix(VMat(X), VMat(Y));
+>     train->defineSizes(X.width(), Y.width()); // Set inputsize and
+>                                               // targetsize.
+>     learner->setTrainingSet(train);
+>     learner->train();
+>
+> Si c'est dans un script et que tu as deux VMat X et Y qui chargent des
+> donn?es en m?moire, ca donnerait quelque chose du genre
+>
+>     PTester(
+>         ...
+>         dataset =
+>             ConcatColumnsVMatrix(
+>                 sources = [
+>                     X
+>                     Y
+>                 ]
+>                 inputsize = ... # (X's width)
+>                 targetsize = ... # (Y's width)
+>                 weightsize = 0
+>             )
+>         ...
+>     )
+>
+> Et si c'est un script Python tu peux faire le meme genre de construction
+> de VMats.
+>
+> --
+> Olivier
+>
+> On 02 Oct 2006, Jaonary Rabarisoa wrote:
+> > Boujour tout le monde,
+> > J'ai un petit probl?me concernant l'utilisation des VMatrix avec un
+> PLearner.
+> > Avant de faire un 'train()' on doit g?n?ralement donner un ensemble
+> > d'apprentissage au PLearner. Si j'ai bien
+> > compris cet ensemble d'apprentissage est stock? dans une VMatrix et ce
+> dernier
+> > ressemble ? un gigantesque tableau
+> > de la forme (X,Y,W,O) o?
+> > X = input
+> > Y = target
+> > W = poids
+> > O = autres donn?
+> > Ma question b?te est la suivante :
+> > Si j'ai d?j? les matrices X et Y (?ventuellement W et O) en m?moir,
+> obtenues
+> > d'une fa?on ou d'une autre, comment dois-je
+> > faire pour cr?er ma VMatrix d'ensemble d'apprentissage sans cr?er une
+> nouvelle
+> > VMatrix et recopier X et Y (W,O) ?
+> > J'ai d?j? vu qu'il y peut ?tres des sous classe de VMatrix qui peuvent
+> m'aider,
+> > comme ConcatColsVMatrix, mais je ne sais pas trop comment
+> > les utiliser :-(
+> >
+> > Cordialement,
+> >
+> > Jaonary
+>
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061002/1641dd29/attachment.html>
+
+From jaonary at gmail.com  Wed Oct  4 15:01:54 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 4 Oct 2006 15:01:54 +0200
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <20060928132910.GA4226@opale.iro.umontreal.ca>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+
+J'aurai peut-?tre besoin d'un peu plus d'explication pour les calculs et
+cout et les ?valuation de PLearner.
+Dans toute la suite je vais "parler en C++" car c'est ce que j'utilise. Le
+probl?me que je veux r?soudre est un classique dans l'apprentissage
+statistique (supervis?), pour faire simple disons une classification binaire
+(0 ou 1).
+
+Donc, j'ai des donn?es d'apprentissage  que je noterai (X_train,Y_train),
+des donn?es pour evaluer mon 'Learner' (X_test,Y_test) et je voudrai faire
+les choses suivante:
+1 - Entrainer mon PLearner sur l'ensemble train et l'evaluer sur l'ensemble
+test.
+2 - Etant donner que mon PLearner a des parametres que je dois ajuster (ex
+le C pour la SVM lineaire ou le k pour KNN). Faire une proc?dure comme la
+cross-validation par exemple pour choisir le meilleur parametre.
+
+D'apres l'explication d'olivier, je pourrai r?soudre ces probl?me en
+utilisant les classes
+StatCollector
+VecStatCollector
+PTester
+
+Seulement, je n'arrive pas encore ? comprendre les subtilit?s qui relient
+ces classes entre elles et avec mon PLearner.
+
+Pour l'instant, tout ce que je comprends c'est que StatCollector est un
+objet qui sais calculer les cout qui m'interesse (parmi ceux cit?s dans la
+liste E;LIFT; ... ). VecStatCollector devrait faire pareil mais je n'ai pas
+encore saisi la difference entre les deux;
+PTester quant ? lui et si j'ai bien compris permet de faire une s?rie
+d'apprentissage et de test du type cross-validation. Mais au moment
+d'appliquer tout ?a, j'ai un petit blocage.
+
+Voici par exemple les bout de code que j'ai commenc? ? ?crire en utilisant
+un KNN comme PLearner :
+
+   VMat data_train ; // training set
+   VMat data_test; // testing set
+
+              KNNClassifier knn;
+              knn.nclasses = 2;
+              knn.setTrainingSet(&data_train);
+              knn.build();
+              knn.train();
+ // l'apprentissage est fini mais comment utiliser les StatCollector avec
+data_test et knn ?
+
+
+// ici je voudrai par exemple faire un petit cross-validation en gardant
+comme cout le LIFT(0.1)
+// et en utilisant seulement data_train
+              PTester tester;
+
+              tester.splitter = new KFoldSplitter;
+              tester.learner  = &knn;
+              tester.dataset  = &data_train;
+              tester.train    = 1;
+              tester.stanames =  ??? // heuuu
+              tester.build();
+              tester.perform();  // ici j'obtiens une erreur lors de
+l'execution
+
+
+Une dernierre interogation sur la m?thode build() des objets : ? quel moment
+les appeler ? C'est correcte ce que j'ai ?crit ?
+
+
+Merci ? vous;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061004/bae149b1/attachment.html>
+
+From delallea at iro.umontreal.ca  Wed Oct  4 15:53:52 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 4 Oct 2006 09:53:52 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+Message-ID: <20061004135345.GA10107@opale.iro.umontreal.ca>
+
+Salut,
+
+Tout d'abord, as-tu une bonne raison pour coder en C++ plut?t que
+d'utiliser un script ? (le script a l'avantage de ne pas n?cessiter de
+compilation, et est plus simple ? ?crire).
+
+Commen?ons par la fin : quand appeler build() ? Apr?s avoir donn?s des
+valeurs aux options qui nous int?ressent. Dans le cas de ton
+KNNClassifier par exemple, tu devrais appeler build() juste avant
+setTtrainingSet(data_train) (pas &data_train au fait, une VMat est d?j?
+un pointeur vers une VMatrix, c'est en fait 'presque' la m?me chose
+qu'un PP<VMatrix>). Typiquement :
+    MonObjet mon_objet;
+    mon_objet.option1 = val1;
+    mon_objet.option2 = val2;
+    (...)
+    mon_objet.optionN = valN;
+    mon_objet.build();
+
+Pour ce qui est de ton probl?me, je vais l'?crire sous forme de script,
+?a sera plus simple. Tu peux le transposer en C++ en consid?rant que
+tout ce que fait un script, c'est lire les options de chaque objet,
+faire un build() dessus, et appeler la m?thode run() de l'objet
+principal (ici un PTester). Donc tu peux le faire ? la main toi-m?me en
+C++. Mais c'est plus inutilement plus complique.
+
+Tout d'abord, sans cross-validation (+ simple) et en utilisant juste
+l'erreur de classification (encore + simple). Il te faudra avoir des
+fichiers train.vmat et test.vmat, par exemple train.vmat pourrait
+contenir simplement
+    ConcatColumnsVMatrix(
+        sources = [
+            AutoVMatrix(filename = "x_part.amat") # Ascii file.
+            AutoVMatrix(filename = "y_part.amat") # Ascii file.
+        ]   
+        inputsize = 50 # X's width
+        targetsize = 1 # Y's width
+        weightsize = 0
+    )
+Ou, tu pourrais mettre ce code directement dans le script ci-dessous au
+lieu d'avoir des fichiers train.vmat et test.vmat separes. En tout cas,
+le script serait :
+
+PTester( 
+    # PPath: Path of this tester's directory in which to save all tester results.
+    # The directory will be created if it does not already exist.
+    # If this is an empty string, no directory is created and no output file is generated.
+    expdir = "my_expdir-${DATETIME}"
+    # VMat: The dataset to use to generate splits. 
+    # (This is ignored if your splitter is an ExplicitSplitter)
+    # Data-sets are seen as matrices whose columns or fields are layed out as 
+    # follows: a number of input fields, followed by (optional) target fields, 
+    # followed by a (optional) weight field (to weigh each example).
+    # The sizes of those areas are given by the VMatrix options 
+    # inputsize targetsize, and weightsize, which are typically used by the 
+    # learner upon building
+    dataset = *0 # NULL pointer.
+    # PP< Splitter >: The splitter to use to generate one or several train/test tuples from the dataset.
+    splitter = 
+        ExplicitSplitter( 
+            # TMat< VMat >: This is a matrix of VMat giving explicitly the datasets for each split.
+            splitsets = 1  3  [ 
+                *1-> AutoVMatrix(filename = "train.vmat")  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = "test.vmat")
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    # TVec< string >: A list of global statistics we are interested in.
+    # These are strings of the form S1[dataset.S2[cost_name]] where:
+    #   - dataset is train or test1 or test2 ... (train being 
+    #     the first dataset in a split, test1 the second, ...) 
+    #   - cost_name is one of the training or test cost names (depending on dataset) understood 
+    #     by the underlying learner (see its getTrainCostNames and getTestCostNames methods) 
+    #   - S1 and S2 are a statistic, i.e. one of: E (expectation), V(variance), MIN, MAX, STDDEV, ... 
+    #     S2 is computed over the samples of a given dataset split. S1 is over the splits. 
+    # They can also be strings of the form S1[dataset.perf_evaluator_name.cost_name] 
+    # (see option perf_evaluators) 
+    statnames = [ "E[test1.E[class_error]]" "E[test2.E[class_error]]" ]
+    # PP< PLearner >: The learner to train/test.
+    learner =
+        KNNClassifier( 
+            # int: Number of classes in the problem.  MUST be specified.
+            nclasses = 2
+        )
+    # bool: If true, each learner to be trained will have its experiment directory set to Split#k/LearnerExpdir/
+    provide_learner_expdir = 1
+)
+
+Il se peut que j'ai fait une typo, je n'ai pas essaye, mais normalement
+ca devrait marcher.
+
+Si tu veux le lift a 10%, ca va donner (toujours sans cross-validation):
+
+PTester( 
+    expdir = "my_expdir-${DATETIME}"
+    dataset = *0 # NULL pointer.
+    splitter = 
+        ExplicitSplitter( 
+            splitsets = 1  3  [ 
+                *1-> AutoVMatrix(filename = "train.vmat")  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = "test.vmat")
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    statnames = [ "E[test1.LIFT(0.1)[lift_output]]" "E[test2.LIFT(0.1)[lift_output]]" ]
+    learner =
+        AddCostToLearner( 
+            # TVec< string >: The costs to be added:
+            #  - 'class_error': 1 if (t != o), 0 otherwise
+            #  - 'binary_class_error': same as class error with output = (o > 0.5)
+            #  - 'lift_output': to compute the lift cost (for the positive class)
+            #  - 'opposite_lift_output': to compute the lift cost (for the negative) class
+            #  - 'cross_entropy': t*log(o) + (1-t)*log(1-o)
+            #  - 'mse': the mean squared error (o - t)^2
+            #  - 'squared_norm_reconstruction_error': | ||i||^2 - ||o||^2 |
+            costs = [ "lift_output" ]
+            learner =
+                KNNClassifier( 
+                    nclasses = 2
+                )
+        )
+    # PP< VecStatsCollector >: If provided, this instance of a subclass of VecStatsCollector will be used as a template
+    # to build all the stats collector used during training and testing of the learner
+    template_stats_collector =
+        VecStatsCollector( 
+            # int: Maximum number of different values to keep track of for each element.
+            # If -1, we will keep track of all different values.
+            # If 0, we will only keep track of global statistics.
+            maxnvalues = -1 # Needed to compute lift, we need to remember all values!
+        )
+)
+
+Et, finalement, il va falloir introduire un HyperLearner pour faire de
+la cross-validation. Essentiellement, l'HyperLearner va suivre une
+strategie d'optimisation (ici optimiser le lift), en essayant
+differentes valeurs d'hyper-parametres (ici le nombre de voisins et le
+sigma du kernel Gaussien), et garder le meilleur resultat (ici la meilleure
+moyenne du lift sur les splits de cross-validation).
+
+PTester( 
+    expdir = "my_expdir-${DATETIME}"
+    dataset = *0 # NULL pointer.
+    splitter = 
+        ExplicitSplitter( 
+            splitsets = 1  3  [ 
+                *1-> AutoVMatrix(filename = "train.vmat")  # Declare as pointer 1 to reuse later.
+                AutoVMatrix(filename = "test.vmat")
+                *1 # Repeat train to compute costs on it after training.
+            ]
+        );
+    statnames = [ "E[test1.LIFT(0.1)[lift_output]]" "E[test2.LIFT(0.1)[lift_output]]" ]
+    learner =
+        HyperLearner( 
+            # PP< PTester >: A model for the kind of train/test to be performed for each 
+            # combination of hyper-parameters considered. 
+            # The tester's options are used as follows: 
+            #   - You don't need to provide tester.learner, it will be set from 
+            #     the HyperLearner's learner.
+            #   - tester.statnames is the list of cost stats to be computed, 
+            #     reported in the results table, and used as criteria for the hyper-optimization 
+            #   - tester.splitter is the default splitter to use for validation (although this may be 
+            #     overridden locally in HyperOptimize, see help on HyperOptimize) 
+            #   - Similarly, no need to provide tester.learner tester.expdir, 
+            #     and tester.provide_learner_expdir. 
+            #     They will be set by HyperOptimize as it deems appropriate
+            #     for each hyper-parameter combination it tries. 
+            #   - *If* HyperOptimize does set a non-empty expdir, then the kind of
+            #     report and result files to be generated is taken from the remaining 
+            #     report_stats and save_... options of the tester 
+            tester =
+                PTester( 
+                    # PP< Splitter >: The splitter to use to generate one or several train/test tuples from the dataset.
+                    splitter =
+                        KFoldSplitter( 
+                            # int: Split dataset in K parts (you can use K = -1 to perform leave-one-out CV).
+                            K = 10 # Here, 10-fold cross-validation.
+                        )
+                    statnames = [ "E[test.LIFT(0.1)[lift_output]]" ] # test is the same as test1.
+                    provide_learner_expdir = 1
+                    template_stats_collector = VecStatsCollector( maxnvalues = -1 )
+                )
+            # TVec< string >: learner option names to be reported in results table
+            option_fields = [ "learner.kmin" "learner.knn.distance_kernel.sigma" ]
+            # TVec< PP< HyperCommand > >: The strategy to follow to optimize the hyper-parameters.
+            # It's a list of hyper-optimization commands to call sequentially,
+            # (mostly HyperOptimize, HyperSetOption and HyperRetrain commands).
+            strategy = [
+                HyperOptimize( 
+                    # string: An index or a name in the tester's statnames to be used as the objective cost to minimize
+                    which_cost = "0" # 0 is the same as E[test.LIFT(0.1)[lift_output]] in the above PTester's statnames.
+                    # PP< OptionsOracle >: Oracle to interrogate to get hyper-parameter values to try.
+                    oracle =
+                        CartesianProductOracle( 
+                            # TVec< string >: name of each of the options to optimize
+                            option_names = [ "learner.kmin" "learner.knn.distance_kernel.sigma" ] # 'learner.' is because we added an AddCostToLearner on top of the KNNClassifier.
+                            # TVec< TVec< string > >: A list of lists of options: the top list must have as many elements as there areoptions in the option_names field. Each sub-list contains the values to be triedfor the corresponding option.
+                            option_values = [ [ 1 2 3 4 5 10 ] [ 0.1 1 10 ] ] # Values of 'kmin' and 'sigma' to try.
+                        )
+                )
+            ]
+            # PP< PLearner >: The embedded learner
+            learner =
+                AddCostToLearner( 
+                    costs = [ "lift_output" ]
+                    learner =
+                        KNNClassifier( 
+                            nclasses = 2
+                        )
+                )
+        )
+
+    template_stats_collector =
+        VecStatsCollector( 
+            maxnvalues = -1
+        )
+)
+
+Ca a l'air complique a premiere vue, mais quand on comprend comment ca
+fonctionne, ca ne l'est pas tant que ca... Si tu as des questions,
+n'hesite pas !
+
+--
+Olivier
+    
+
+On 04 Oct 2006, Jaonary Rabarisoa wrote:
+> J'aurai peut-?tre besoin d'un peu plus d'explication pour les calculs et cout
+> et les ?valuation de PLearner.
+> Dans toute la suite je vais "parler en C++" car c'est ce que j'utilise. Le
+> probl?me que je veux r?soudre est un classique dans l'apprentissage statistique
+> (supervis?), pour faire simple disons une classification binaire (0 ou 1).
+> 
+> Donc, j'ai des donn?es d'apprentissage  que je noterai (X_train,Y_train), des
+> donn?es pour evaluer mon 'Learner' (X_test,Y_test) et je voudrai faire les
+> choses suivante:
+> 1 - Entrainer mon PLearner sur l'ensemble train et l'evaluer sur l'ensemble
+> test.
+> 2 - Etant donner que mon PLearner a des parametres que je dois ajuster (ex le C
+> pour la SVM lineaire ou le k pour KNN). Faire une proc?dure comme la
+> cross-validation par exemple pour choisir le meilleur parametre.
+> 
+> D'apres l'explication d'olivier, je pourrai r?soudre ces probl?me en utilisant
+> les classes
+> StatCollector
+> VecStatCollector
+> PTester
+> 
+> Seulement, je n'arrive pas encore ? comprendre les subtilit?s qui relient ces
+> classes entre elles et avec mon PLearner.
+> 
+> Pour l'instant, tout ce que je comprends c'est que StatCollector est un objet
+> qui sais calculer les cout qui m'interesse (parmi ceux cit?s dans la liste E;
+> LIFT; ... ). VecStatCollector devrait faire pareil mais je n'ai pas encore
+> saisi la difference entre les deux;
+> PTester quant ? lui et si j'ai bien compris permet de faire une s?rie
+> d'apprentissage et de test du type cross-validation. Mais au moment d'appliquer
+> tout ?a, j'ai un petit blocage.
+> 
+> Voici par exemple les bout de code que j'ai commenc? ? ?crire en utilisant un
+> KNN comme PLearner :
+> 
+>    VMat data_train ; // training set
+>    VMat data_test; // testing set
+> 
+>               KNNClassifier knn;
+>               knn.nclasses = 2;
+>               knn.setTrainingSet(&data_train);
+>               knn.build();
+>               knn.train();
+>  // l'apprentissage est fini mais comment utiliser les StatCollector avec
+> data_test et knn ?
+>     
+> 
+> // ici je voudrai par exemple faire un petit cross-validation en gardant comme
+> cout le LIFT(0.1)
+> // et en utilisant seulement data_train
+>               PTester tester;
+>  
+>               tester.splitter = new KFoldSplitter;
+>               tester.learner  = &knn;
+>               tester.dataset  = &data_train;
+>               tester.train    = 1;
+>               tester.stanames =  ??? // heuuu
+>               tester.build();
+>               tester.perform();  // ici j'obtiens une erreur lors de
+> l'execution
+> 
+> 
+> Une dernierre interogation sur la m?thode build() des objets : ? quel moment
+> les appeler ? C'est correcte ce que j'ai ?crit ?
+> 
+> 
+> Merci ? vous;
+> 
+> Jaonary
+
+
+
+From jaonary at gmail.com  Thu Oct  5 14:39:48 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 5 Oct 2006 14:39:48 +0200
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <20061004135345.GA10107@opale.iro.umontreal.ca>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+
+> Tout d'abord, as-tu une bonne raison pour coder en C++ plut?t que
+> d'utiliser un script ? (le script a l'avantage de ne pas n?cessiter de
+> compilation, et est plus simple ? ?crire).
+
+
+
+C'est une bonne question,  et effectivement je me  rend-compte de la
+difficult? que j'ai
+en codant en c++ avec PLearn. Le fait est que dans notre labo  tout le monde
+travail
+en c++ et  dans mes codes j'utilise aussi des librairies de traitement
+d'image  cod?s en C++.
+Donc, par souci de partager mon code avec les autres et de pouvoir utiliser
+PLearn avec  le  libs
+que nous avons je pensais que tout faire en C++ etait la meilleure des
+solutions. J'en ai donc fait un .so avec PLearn et je link mes exe avec. En
+plus je commence ? m'habituer aux classes TVec et TMat, que je trouve
+agr?able ? utiliser et tres efficaces.
+La deuxieme solution ? la quelle j'ai pens? c'est de faire seulement mes
+algo de traitement d'image en C++ et enregistrer les donn?es qui m'int?resse
+pour l'apprentissage dans un fichier et apres utiliser PLearn.
+L'inconv?niant c'est le fait d'?crire un matrice dans un fichier et a
+nouveau le recharger en memoir avec PLearn. Il faudra aussi installer PLearn
+sur la machine des autres personnes qui sont suceptible d'utiliser mes codes
+et les apprendres ? ?crire des script, ce qui n'est pas gagn?.
+Je vais peut-?tre m'orient? vers python mais il faut encore que fasse des
+warpper pour mes algo de traitement d'image.
+
+En attendant, j'insiste encore un peu ave C++ :-) et emmene de nouvelles
+questions.
+J'ai commenc? ? 'traduire' le script qu'Olivier a ?crit mais je me heurte ?
+quelques petites difficult? :
+
+     27         AutoVMatrix data(data_file);
+     28         cout << data.getOption("inputsize") << endl;
+     29         cout << data.getOption("targetsize") << endl;
+     30
+     31         // the spliter
+     32         ExplicitSplitter splitter;
+     33         splitter.splitsets = TMat<VMat>(1,2,(VMat&)data);
+     34         splitter.build();
+     35
+     36         KNNClassifier knn;
+     37         knn.nclasses = 3;
+     38         knn.build();
+
+     43         PTester tester;
+     44         tester.splitter  = &splitter;
+     45         tester.learner  = &knn;
+     46         tester.dataset = (VMat&)data; // je suis oblige de faire le
+cast ici car l'operateur= attend un VMat non  pas un  AutoVMatrix, c'est
+bizzard
+     47
+     48         //string learner = tester.getOption("learner");
+     49         //cout << "Learner : " << learner << endl;
+
+// statnames est declare private donc je ne peux pas y acceder directement
+// j'ai pense alors qu'avec la methode getOption tout se fait tout
+simplement
+// mais il attend 2 string en argument et ce que j'ecris la n'a pas l'air de
+tres
+// bien marcher
+     52         tester.setOption("statnames","[E[test1.E[class_error]]]");
+     53         string statnames = tester.getOption("statnames");
+     54         cout << "Statnames " << statnames << endl;
+
+     58         tester.build();
+
+
+l'appel au methode run() entraine un seg fault mais je pense que c'est parce
+que je pas encore fini de bien creer mon tester.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061005/cbadd465/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct  5 15:28:55 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 5 Oct 2006 09:28:55 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+Message-ID: <20061005132854.GA29004@opale.iro.umontreal.ca>
+
+On 05 Oct 2006, Jaonary Rabarisoa wrote:
+> 
+>     Tout d'abord, as-tu une bonne raison pour coder en C++ plut?t que
+>     d'utiliser un script ? (le script a l'avantage de ne pas n?cessiter de
+>     compilation, et est plus simple ? ?crire).
+> 
+> 
+> C'est une bonne question,  et effectivement je me  rend-compte de la difficult?
+> que j'ai
+> en codant en c++ avec PLearn. Le fait est que dans notre labo  tout le monde
+> travail
+> en c++ et  dans mes codes j'utilise aussi des librairies de traitement d'image 
+> cod?s en C++.
+> Donc, par souci de partager mon code avec les autres et de pouvoir utiliser
+> PLearn avec  le  libs
+> que nous avons je pensais que tout faire en C++ etait la meilleure des
+> solutions. J'en ai donc fait un .so avec PLearn et je link mes exe avec. En
+> plus je commence ? m'habituer aux classes TVec et TMat, que je trouve agr?able
+> ? utiliser et tres efficaces.
+> La deuxieme solution ? la quelle j'ai pens? c'est de faire seulement mes algo
+> de traitement d'image en C++ et enregistrer les donn?es qui m'int?resse pour
+> l'apprentissage dans un fichier et apres utiliser PLearn. L'inconv?niant c'est
+> le fait d'?crire un matrice dans un fichier et a nouveau le recharger en memoir
+> avec PLearn. Il faudra aussi installer PLearn sur la machine des autres
+> personnes qui sont suceptible d'utiliser mes codes et les apprendres ? ?crire
+> des script, ce qui n'est pas gagn?.
+
+Ok, je comprends. Note que rien ne t'empeche de faire quelque chose du
+genre :
+    #include <plearn/io/load_and_save.h>
+    PP<PLearner> my_learner;
+    PLearn::load("learner_file", my_learner);
+o? 'learner_file' est un fichier script qui d?crit ton learner, par ex.
+    KNNClassifier( nclasses = 2 )
+
+Tu peux aussi le faire directement dans une string :
+    string learner_descr = "KNNClassifier( nclasses = 2 )";
+    PP<PLearner> my_learner;
+    PStream in = openString(learner_descr, PStream::plearn_ascii);
+    in >> my_learner;
+
+Donc tu peux utiliser les scripts directement en C++. Apprendre ? ?crire
+un script est tr?s simple. Id?alement, tu as un ex?cutable plearn
+install?, et tu fais plearn help SomeClass o? SomeClass est l'objet que
+tu veux mettre dans le script; tu copies l'output dans ton script et tu
+ne gardes que les options qui t'int?ressent.
+
+Dans ton cas, la seule difficult? r?side dans les matrices, car en effet
+il n'est pas ?vident de faire passer au script des donn?es que tu as
+d?j? en m?moire (?a devrait ?tre possible en jouant avec les pointeurs
+dans les scripts, mais ce n'est pas imm?diat). Tu peux malgr? tout
+construire tous les objets qui ne sont pas ton PTester par des scripts
+(possiblement directement dans le code C++, comme ci-dessus).
+
+
+> En attendant, j'insiste encore un peu ave C++ :-) et emmene de nouvelles
+> questions.
+> J'ai commenc? ? 'traduire' le script qu'Olivier a ?crit mais je me heurte ?
+> quelques petites difficult? :
+> 
+>      27         AutoVMatrix data(data_file);
+>      28         cout << data.getOption("inputsize") << endl;
+>      29         cout << data.getOption("targetsize") << endl;
+>      30
+>      31         // the spliter
+>      32         ExplicitSplitter splitter;
+>      33         splitter.splitsets = TMat<VMat>(1,2,(VMat&)data);
+>      34         splitter.build();
+>      35
+>      36         KNNClassifier knn;
+>      37         knn.nclasses = 3;
+>      38         knn.build();
+>     
+>      43         PTester tester;
+>      44         tester.splitter  = &splitter;
+>      45         tester.learner   = &knn;
+>      46         tester.dataset = (VMat&)data; // je suis oblige de faire le
+> cast ici car l'operateur= attend un VMat non  pas un  AutoVMatrix, c'est
+> bizzard
+
+Deux trucs :
+
+- G?n?ralement, en PLearn on utilise plus les (smart) pointeurs que les
+r?f?rences, en tout cas c'est comme ?a dans l'essentiel du code. Ca
+permet d'?viter d'avoir ? mettre des &splitter ou &knn. Mais tu peux
+faire comme tu pr?f?res.
+
+- Que ce soit avec les r?f?rences ou les (smart) pointeurs, des fois tu
+auras en effet des probl?mes de cast. Ici par ex tu pourrais faire :
+VMat data = new AutoVMatrix(data_file);
+(...)
+tester.dataset = data;
+C'est pratique tant que tu n'as pas ? acc?der ? un champ de data
+sp?cifique aux AutoVMatrix.
+
+Par ex. si tu fais
+    PP<KNNClassifier> knn = new KNNClassifier();
+    knn->nclasses = 3;
+    knn->build();
+    PP<PTester> tester = new PTester();
+    tester->learner = knn;
+il va *peut-?tre* (? v?rifier...) ne pas compiler car knn n'est pas un
+PP<PLearner>. Dans ce cas tu peux faire
+    tester->learner = (KNNClassifier*) knn;
+
+>      47
+>      48         //string learner = tester.getOption("learner");
+>      49         //cout << "Learner : " << learner << endl;
+>     
+> // statnames est declare private donc je ne peux pas y acceder directement
+> // j'ai pense alors qu'avec la methode getOption tout se fait tout simplement
+> // mais il attend 2 string en argument et ce que j'ecris la n'a pas l'air de
+> tres
+> // bien marcher
+>      52         tester.setOption ("statnames","[E[test1.E[class_error]]]");
+
+A premi?re vue ?a devrait marcher. Peut-?tre qu'il faut que tu rajoutes
+des guillements DANS la string (c'est un TVec<string>).
+
+>      53         string statnames = tester.getOption("statnames");
+>      54         cout << "Statnames " << statnames << endl;
+>             
+>      58         tester.build();
+> 
+> 
+> l'appel au methode run() entraine un seg fault mais je pense que c'est parce
+> que je pas encore fini de bien creer mon tester.
+
+Si un PLERROR fait un segfault, regarde dans plearn_main.cc le try /
+catch et rajoute le m?me dans ton main(). Ca donnera des messages
+d'erreur plus lisibles parfois (id?alement, tu as une version debug et
+une version opt de la librairie, la version debug a des messages
+d'erreur parfois plus utiles).
+
+--
+Olivier
+
+
+
+From pascal at apstat.com  Thu Oct  5 15:45:00 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 5 Oct 2006 09:45:00 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+Message-ID: <38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+
+>
+> Tout d'abord, as-tu une bonne raison pour coder en C++ plut?t que
+> d'utiliser un script ? (le script a l'avantage de ne pas n?cessiter de
+> compilation, et est plus simple ? ?crire).
+>
+>
+> C'est une bonne question,  et effectivement je me  rend-compte de  
+> la difficult? que j'ai
+> en codant en c++ avec PLearn. Le fait est que dans notre labo  tout  
+> le monde travail
+> en c++ et  dans mes codes j'utilise aussi des librairies de  
+> traitement d'image  cod?s en C++.
+> Donc, par souci de partager mon code avec les autres et de pouvoir  
+> utiliser PLearn avec  le  libs
+> que nous avons je pensais que tout faire en C++ etait la meilleure  
+> des solutions. J'en ai donc fait un .so avec PLearn et je link mes  
+> exe avec. En plus je commence ? m'habituer aux classes TVec et  
+> TMat, que je trouve agr?able ? utiliser et tres efficaces.
+> La deuxieme solution ? la quelle j'ai pens? c'est de faire  
+> seulement mes algo de traitement d'image en C++ et enregistrer les  
+> donn?es qui m'int?resse pour l'apprentissage dans un fichier et  
+> apres utiliser PLearn. L'inconv?niant c'est le fait d'?crire un  
+> matrice dans un fichier et a nouveau le recharger en memoir avec  
+> PLearn. Il faudra aussi installer PLearn sur la machine des autres  
+> personnes qui sont suceptible d'utiliser mes codes et les  
+> apprendres ? ?crire des script, ce qui n'est pas gagn?.
+> Je vais peut-?tre m'orient? vers python mais il faut encore que  
+> fasse des warpper pour mes algo de traitement d'image.
+
+C'est correct de tout vouloir faire en C++, c'est juste que ?a fait  
+un peu plus de code ? ?crire/compiler/etc... et donc que c'est plus  
+long d'y faire des modifs.
+
+>
+> En attendant, j'insiste encore un peu ave C++ :-) et emmene de  
+> nouvelles questions.
+> J'ai commenc? ? 'traduire' le script qu'Olivier a ?crit mais je me  
+> heurte ? quelques petites difficult? :
+>
+
+Plusieurs suggestions si tu ?cris du C++.
+
+1) Pour tout ce qui d?rive de Object (c.a.d. presque toutes les  
+classes PLearn suf les Mat et Vec), je te recommande de faire des  
+allocations dynamiques qui seront affect?es ? des smart pointeurs.  
+Note que VMat est essentiellement un smart pointeur vers la classe de  
+base de VMatrix dont d?rivent toutes les autres VMatrix. Aussi la  
+quasi-totalit? des *options* de type objet sont d?clar?es comme des  
+smart-pointeurs ( PP<...> ou VMat). Comme un smart pointeur s'occuppe  
+de d?sallouer la m?moire quand il a fini, ce n'est pas une bonne id?e  
+de lui passer un &splitter d'un splitter qui a ?t? allou? sur la pile  
+(un delete d'un objet allou? sur la pile fait en g?n?ral boum!). En  
+fait il est tr?s rare d'avoir besoin d'utiliser & dans du code PLearn  
+de haut niveau.
+
+Par ailleurs la plupart des options sont accessibles directement  
+comme des champs ou des m?thodes de l'objet en C++, donc pas besoin  
+de toujours utiliser getOption.
+
+Bref, voici ce que je veux dire:
+
+>      27         AutoVMatrix data(data_file);
+VMat data = new AutoVMatrix(data_file);
+>      28         cout << data.getOption("inputsize") << endl;
+Autres possibilit?s:
+cout << data->inputsize() << endl;
+pout << data->inputsize() << endl;
+Note pout est un PStream, et permet de s?rialiser ? peu pr?s  
+n'importe quel type utilis? dans PLearn.
+>      29         cout << data.getOption("targetsize") << endl;
+>      30
+>      31         // the spliter
+>      32         ExplicitSplitter splitter;
+ExplicitSplitter* splitter = new ExplicitSplitter();
+>      33         splitter.splitsets = TMat<VMat>(1,2,(VMat&)data);
+TMat<VMat> splitsets(1,2);
+splitsets(0,0) = data;
+splitsets(0,1) = data;   // ou bien test_data le jour ou tu auras un  
+ensemble de test diff?rent du train
+splitter->splitsets = splitsets;
+>      34         splitter.build();
+splitter->build();
+>      35
+>      36         KNNClassifier knn;
+KNNClassifier* knn = new KNNClassifier();
+knn->nclasses = 3;
+knn->build();
+>      37         knn.nclasses = 3;
+>      38         knn.build();
+>
+>      43         PTester tester;
+PP<PTester> tester = new PTester();
+>      44         tester.splitter  = &splitter;
+tester->splitter = splitter;
+>      45         tester.learner   = &knn;
+tester->learner = knn;
+>      46         tester.dataset = (VMat&)data; // je suis oblige de  
+> faire le cast ici car l'operateur= attend un VMat non  pas un   
+> AutoVMatrix, c'est bizzard
+tester->dataset = data;
+>      47
+>      48         //string learner = tester.getOption("learner");
+>      49         //cout << "Learner : " << learner << endl;
+Alternative:
+pout << tester->learner << endl;
+
+>
+> // statnames est declare private donc je ne peux pas y acceder  
+> directement
+C'est une erreur, il n'y a pas de bonne raison pour que ce soit private.
+
+> // j'ai pense alors qu'avec la methode getOption tout se fait tout  
+> simplement
+> // mais il attend 2 string en argument et ce que j'ecris la n'a pas  
+> l'air de tres
+> // bien marcher
+>      52         tester.setOption ("statnames","[E[test1.E 
+> [class_error]]]");
+?a devrait marcher en effet.
+
+Evidemment, utiliser des "->" plutot que des "." pour acc?der aux  
+m?thodes de tester.
+
+>      53         string statnames = tester.getOption("statnames");
+>      54         cout << "Statnames " << statnames << endl;
+>
+>      58         tester.build();
+>
+>
+> l'appel au methode run() entraine un seg fault mais je pense que  
+> c'est parce que je pas encore fini de bien creer mon tester.
+Tu devrais aussi appeler la m?thode tester->setExperimentDirectory 
+("ton_directory_dexperience")  (ou bien definier l'option expdir, ce  
+qui revient au m?me).
+
+Si ?a te donne toujours un segfault, je te conseillerais de v?rifier  
+d'abord si au moins ?a marche en mode script sur un cas simple avec  
+l'ex?cutable plearn...
+
+Bonne chance!
+
+
+-- Pascal
+
+
+
+
+
+From jaonary at gmail.com  Thu Oct  5 15:54:10 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 5 Oct 2006 15:54:10 +0200
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+	<38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+Message-ID: <c81af8c30610050654i19acf3ccs9754158d87759989@mail.gmail.com>
+
+Merci pour cette explication bien detaill?e . Je crois que je suis arm? pour
+resoudre ce probleme. Je rendrai compte de la suite de mon aventure dans le
+monde de PLearn :-)
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061005/65665799/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct  5 17:43:19 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 5 Oct 2006 11:43:19 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+	<38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+Message-ID: <20061005154317.GA30764@opale.iro.umontreal.ca>
+
+On 05 Oct 2006, Pascal Vincent wrote:
+> ExplicitSplitter* splitter = new ExplicitSplitter();
+> KNNClassifier* knn = new KNNClassifier();
+
+Personnellement j'eviterais de mettre des pointeurs normaux,
+j'utiliserais plutot des PP<..>. Ca peut mener a devoir utiliser des
+casts pour les utiliser comme options, mais sinon, je ne suis pas sur
+que ca soit tres safe...
+
+--
+Olivier
+
+
+
+From pascal at apstat.com  Thu Oct  5 20:21:04 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 5 Oct 2006 14:21:04 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <20061005154317.GA30764@opale.iro.umontreal.ca>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+	<38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+	<20061005154317.GA30764@opale.iro.umontreal.ca>
+Message-ID: <068D3BBC-9340-46EC-96B3-055A81FB3289@apstat.com>
+
+
+Le 06-10-05 ? 11:43, Olivier Delalleau a ?crit :
+
+> On 05 Oct 2006, Pascal Vincent wrote:
+>> ExplicitSplitter* splitter = new ExplicitSplitter();
+>> KNNClassifier* knn = new KNNClassifier();
+>
+> Personnellement j'eviterais de mettre des pointeurs normaux,
+> j'utiliserais plutot des PP<..>. Ca peut mener a devoir utiliser des
+> casts pour les utiliser comme options, mais sinon, je ne suis pas sur
+> que ca soit tres safe...
+
+C'est safe dans les cas o? je l'ai ?crit: j'ai toujours allou? des  
+pointeurs normaux, avant de les affecter ? des PP<...> (les options),  
+et ?a ?vite de faire des casts laids et compliqu?s. Le pattern  
+utilis? est:
+XXX*  xxx = new XXX();
+obj->option_xxx = xxx;
+o? option_xxx est de type PP<class de base de XXX>
+
+Le seul "risque" est celui d'un memory leak si une exception non  
+attrap?e est lanc?e ENTRE le moment o? on fait le new XXX() ET le  
+moment o? on l'affecte ? obj->option_xxx qui est un smart pointeur.   
+Le risque est donc nul si on ne fait rien entre les deux (par exemple  
+on peut faire toutes les operations sur xxx et en particulier son xxx- 
+ >build() APRES l'avoir affect? ? l'option).
+
+Pour vraiment se pr?munir contre les memory leak en cas d'exception,  
+sans pour autant avoir ? faire de casts, une autre possibilit? est la  
+suivante:
+XXX* xxx = new XXX(); PP<XXX> smart_xxx = xxx;
+Puis on peut continuer ? travailler sur xxx comme pr?c?demment (sans  
+se pr?occuper de smart_xxx) sans avoir ? craindre de memory leak en  
+cas d'exceptions, et en pouvant l'affecter ? des  
+PP<classe_de_base_de_xxx> sans avoir ? faire de cast.
+
+Mais bon ce sont des alternatives, les casts ?a marche aussi bien.
+
+-- Pascal
+
+
+
+From delallea at iro.umontreal.ca  Thu Oct  5 21:06:55 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 5 Oct 2006 15:06:55 -0400
+Subject: [Plearn-core] Des classe qui calcule la ROC ou le
+	Precision-Recall curve
+In-Reply-To: <068D3BBC-9340-46EC-96B3-055A81FB3289@apstat.com>
+References: <c81af8c30609280138w2439b33sbaad85fbb1655a96@mail.gmail.com>
+	<20060928132557.GA3988@opale.iro.umontreal.ca>
+	<20060928132910.GA4226@opale.iro.umontreal.ca>
+	<c81af8c30610040601m69d69091t308a18794e2ae0c0@mail.gmail.com>
+	<20061004135345.GA10107@opale.iro.umontreal.ca>
+	<c81af8c30610050539y5009f129pc1b63d3f8ff6a34c@mail.gmail.com>
+	<38462911-230E-438D-B72C-5669106D38A6@apstat.com>
+	<20061005154317.GA30764@opale.iro.umontreal.ca>
+	<068D3BBC-9340-46EC-96B3-055A81FB3289@apstat.com>
+Message-ID: <20061005190652.GA2338@opale.iro.umontreal.ca>
+
+On 05 Oct 2006, Pascal Vincent wrote:
+> 
+> Le 06-10-05 ? 11:43, Olivier Delalleau a ?crit :
+> 
+> > On 05 Oct 2006, Pascal Vincent wrote:
+> >> ExplicitSplitter* splitter = new ExplicitSplitter();
+> >> KNNClassifier* knn = new KNNClassifier();
+> >
+> > Personnellement j'eviterais de mettre des pointeurs normaux,
+> > j'utiliserais plutot des PP<..>. Ca peut mener a devoir utiliser des
+> > casts pour les utiliser comme options, mais sinon, je ne suis pas sur
+> > que ca soit tres safe...
+> 
+> C'est safe dans les cas o? je l'ai ?crit: j'ai toujours allou? des  
+> pointeurs normaux, avant de les affecter ? des PP<...> (les options),  
+> et ?a ?vite de faire des casts laids et compliqu?s. Le pattern  
+> utilis? est:
+> XXX*  xxx = new XXX();
+> obj->option_xxx = xxx;
+> o? option_xxx est de type PP<class de base de XXX>
+> 
+> Le seul "risque" est celui d'un memory leak si une exception non  
+> attrap?e est lanc?e ENTRE le moment o? on fait le new XXX() ET le  
+> moment o? on l'affecte ? obj->option_xxx qui est un smart pointeur.   
+
+Corrige-moi si je me trompe, mais il me semble qu'il y a d'autres
+risques :
+- on pourrait oublier d'affecter xxx comme option a obj => memory leak.
+- on pourrait detruire obj (et par consequent xxx) et vouloir reutiliser
+  xxx sans savoir qu'il n'est plus valide.
+
+Je suis d'accord que dans ton exemple il n'y a pas vraiment de probleme,
+mais pour un debutant PLearn qui ne maitrise pas comme toi toutes les
+subtilites des PP<..>, je suggererais plutot d'eviter les pointeurs *.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Fri Oct  6 12:56:00 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 6 Oct 2006 12:56:00 +0200
+Subject: [Plearn-core] Un debut de code en C++ qui marche :-)
+Message-ID: <c81af8c30610060356n47a9dba8j4d21b976949aadc8@mail.gmail.com>
+
+Bonjour;
+
+Suite ? notre longue discussion, voici donc un petit debut qui marche ? peu
+pr?s. Dans ce code j'utilise un KNNClassifier pour r?soudre un probl?me de
+classification avec des donn?es artificielles. Ici je suis donc sens? faire
+l'apprentissage avec data et apr?s tester avec data! Pas tr?s malin mais je
+sais que je peux facilement changer d'ensemble de test en le specifiant dans
+mon ExpliciteSplitter.
+Ce code compile et s'execute sans probl?me, mais je ne comprends pas trop
+les sorties. D?j?, je suis surpris qu'en faisant
+knn->verbosity = 2;
+je n'ai pas plus d'affichage durant la phase d'apprentissage. J'ai
+l'impression qu'il ne se passe rien. Comme seule sortie ? la console j'ai en
+plus du
+
+pout << tester << endl;
+
+un
+
+[-------------------------------------- Testing learner (400)
+---------------------------------------]
+[....................................................................................................]
+
+Je suppose qu'il veut dire qu'il est entrain de faire le test sur un
+ensemble contenant 400 ?chantillons. Mais il ne me dit rien sur
+l'apprentissage. Une chose ?tonant aussi c'est que le "stage" du  knn reste
+? 0, n'est il pas sens? se mettre ? nstage apr?s l'apprentissage ?
+
+Ensuite, le PTester ?crit plein de chose dans le "expdir" mais c'est
+difficile de s'y retrouver. Je pense que ce qui m'interesse
+"E[test1.E[class_error]]"
+doit ?tre dans l'un de ces fichier :
+
+global_stats.pmat ou split_stats.pmat
+
+En outre, est-ce qu'on peut les ecrire en ascii et dans quelle variable ils
+sont stock?s si je veux les utilis? directement ?
+
+Une chose ?tonnante aussi, c'est que dans mon splitter j'ai que deux
+ensemble. Pourtant en m'amusant ? faire un truc comme
+"E[test3.E[class_error]]"   // stats sur le 3eme ensemble teste!
+Le code tourne sans probl?me.
+
+Une derni?re remarque, en regardant de plus pr?s la source de
+PTester.ccj'ai vu qu'un Learner a en fait une m?thode test. Est-ce que
+je peux
+l'utliser directement au lieux de passer par un PTester ?
+
+
+     15 int main(int argc,char* argv[])
+     16 {
+     17         string data_file = "../data/gauss_mixture_3.amat";
+     18         VMat data = new AutoVMatrix(data_file);
+     19         //cout << data->getOption("inputsize") << endl;
+     20         //pout << data->getOption("targetsize") << endl;
+     21
+     22
+     23         // the spliter
+     24         PP<ExplicitSplitter> splitter = new ExplicitSplitter();
+     25         TMat<VMat> splitsets(1,2);
+     26         splitsets(0,0) = data; // training set
+     27         splitsets(0,1) = data; // first testing set : test1
+     28         splitter->splitsets = splitsets;
+     29         splitter->build();
+     30
+     31         // the learner
+     32         PP<KNNClassifier> knn = new KNNClassifier();
+     33         knn->nclasses = 3;
+     34         knn->verbosity = 2;
+     35         knn->build();
+     36
+     37         //knn->setTrainingSet(data);
+     38         //knn->train();
+     39
+     40         //TVec<string> costName = knn->getTestCostNames();
+     41         //pout << costName << endl;
+     42
+     43         // the PTester
+     44         PP<PTester> tester = new PTester();
+     45         tester->splitter = splitter;
+     46         tester->learner  = knn;
+     47         tester->statnames = TVec<string>(2,"E[test3.E
+[class_error]]");
+     48         tester->setExperimentDirectory("../exp");
+     49         tester->train = true;
+     50         tester->build();
+     51
+     52         pout << tester << endl;
+     53         tester->run();
+     54
+     55         return 0;
+     56 }
+
+Bien ? vous;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061006/cdf9a2bd/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct  6 15:48:23 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 6 Oct 2006 09:48:23 -0400
+Subject: [Plearn-core] Un debut de code en C++ qui marche :-)
+In-Reply-To: <c81af8c30610060356n47a9dba8j4d21b976949aadc8@mail.gmail.com>
+References: <c81af8c30610060356n47a9dba8j4d21b976949aadc8@mail.gmail.com>
+Message-ID: <20061006134821.GA12064@opale.iro.umontreal.ca>
+
+> Ce code compile et s'execute sans probl?me, mais je ne comprends pas trop les
+> sorties. D?j?, je suis surpris qu'en faisant
+> knn->verbosity = 2;
+> je n'ai pas plus d'affichage durant la phase d'apprentissage. J'ai l'impression
+> qu'il ne se passe rien.
+
+Ce n'est pas si surprenant. Tous les PLearner ont une option verbosity,
+mais tous ne l'utilisent pas. La r?gle est essentiellement que si
+verbosity = 0, ils ne devraient rien afficher, ? part des barres de
+progr?s (qui elles sont activ?es / d?sactiv?es avec l'option
+report_progress). La possibilit? d'afficher des informations
+suppl?mentaires est facultative.
+
+> Je suppose qu'il veut dire qu'il est entrain de faire le test sur un ensemble
+> contenant 400 ?chantillons. Mais il ne me dit rien sur l'apprentissage. Une
+> chose ?tonant aussi c'est que le "stage" du  knn reste ? 0, n'est il pas sens?
+> se mettre ? nstage apr?s l'apprentissage ?
+
+Si, th?oriquement. Seulement, dans le cas d'un KNN, il n'y a pas
+d'apprentissage proprement dit, ici la m?thode train n'est m?me pas
+impl?ment?e, et donc stage n'est pas mis ? jour. Je ne sais pas si c'est
+une tr?s bonne chose, personnellement je pense que ?a serait bien
+d'avoir la convention que tout learner pr?t ? ?tre utilis? ait stage>0,
+mais ce n'est pas, autant que je sache, une recommandation officielle
+dans PLearn.
+
+> Ensuite, le PTester ?crit plein de chose dans le "expdir" mais c'est difficile
+> de s'y retrouver. Je pense que ce qui m'interesse "E[test1.E[class_error]]"
+> doit ?tre dans l'un de ces fichier :
+> 
+> global_stats.pmat ou split_stats.pmat
+
+Note que tu peux contr?ler la quantit? de choses sauvegard?es avec
+certaines options du PTester. C'est particuli?rement important quand tu
+rajouteras un HyperLearner, car tu peux te retrouver avec beaucoup de
+choses sauvegard?es (par ex. le learner pour chaque combinaison
+d'hyper-param?tres), ce qui peut devenir tr?s gros.
+En particulier, si tu ne donnes pas de "expdir", il ne devrait en
+th?orie rien sauvegarder (? moins qu'il plante, je ne suis pas s?r...).
+
+Et finalement, oui, tes stats devraient ?tre dans global_stats.pmat.
+Le fichier split_stats.pmat contient les stats pour chaque split, ici
+comme il n'y en a qu'un c'est la m?me chose. Par exemple, si tu avais 3
+splits, ?a contiendrait
+    test1.E[class_error] (pour split 0)
+    test1.E[class_error] (pour split 1)
+    test1.E[class_error] (pour split 2)
+et dans global_stats.pmat tu aurais la moyenne des trois pour avoir
+E[test1.E[class_error]].
+
+> En outre, est-ce qu'on peut les ecrire en ascii et dans quelle variable ils
+> sont stock?s si je veux les utilis? directement ?
+
+Tu ne peux pas les ?crire directement en ascii mais tu peux faire un
+    plearn vmat convert global_stats.pmat global_stats.amat
+ou, si tu veux le faire en C++,
+    VMat stats = getDataset("global_stats.pmat");
+    stats->saveAMAT("global_stats.amat");
+et tu pourrais les utiliser direcement par ta VMat stats, ou, pour
+?viter de recharger les donn?es, acc?der au VecStatCollector du PTester,
+mais j'ai peur de me tromper sur la mani?re de faire... Si tu appelles
+toi-m?me PTester->perform(), le mieux est que tu r?cup?res le Vec qui
+est retourn?, qui devrait ?tre la ligne de global_stats.
+
+> Une chose ?tonnante aussi, c'est que dans mon splitter j'ai que deux ensemble.
+> Pourtant en m'amusant ? faire un truc comme
+> "E[test3.E[class_error]]"   // stats sur le 3eme ensemble teste!
+> Le code tourne sans probl?me.
+
+Regarde dans global_stats.pmat. Si tu as un nan pour cette stats, c'est
+bon, sinon en effet il faudrait mettre un message d'erreur quelque part
+;)
+
+> Une derni?re remarque, en regardant de plus pr?s la source de PTester.cc j'ai
+> vu qu'un Learner a en fait une m?thode test. Est-ce que je peux l'utliser
+> directement au lieux de passer par un PTester ?
+
+Oui, mais ?a ne te calculera pas de statistiques sur les co?ts, tu auras
+suelement les outputs (et ?ventuellement les co?ts individuels).
+
+>      17         string data_file = "../data/gauss_mixture_3.amat";
+
+Remplace string par PPath. Un fichier dans PLearn est repr?sent? par un
+PPath, qui est une sous-classe de string.
+
+Sinon, le reste m'a l'air bon.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Wed Oct 11 10:21:42 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 11 Oct 2006 10:21:42 +0200
+Subject: [Plearn-core] AddCostToLearner
+Message-ID: <c81af8c30610110121r7713a5a9sb5eb6e106b93f62b@mail.gmail.com>
+
+Bonjour ? tous,
+En voulant utiliser la class AddCostToLearner, je me suis pos? la question
+suivante :
+Je voudrai utiliser le cout binary_class_error pour evaluer une
+SVMClassifictionTorch. D'ap?s la doc de
+AddCostToLearner on calcule ce cout en seuillant ? 0.5, cependant pour ma
+svm logiquement le seuil est ? 0.
+Donc, je me demande si c'est pas mieux de mettre ce seuil en "build option"
+pour la class AddCostToLearner afin de
+g?n?raliser un peu.
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061011/54bf94ef/attachment.html>
+
+From delallea at iro.umontreal.ca  Wed Oct 11 15:18:52 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 11 Oct 2006 09:18:52 -0400
+Subject: [Plearn-core] AddCostToLearner
+In-Reply-To: <c81af8c30610110121r7713a5a9sb5eb6e106b93f62b@mail.gmail.com>
+References: <c81af8c30610110121r7713a5a9sb5eb6e106b93f62b@mail.gmail.com>
+Message-ID: <20061011131850.GA1564@opale.iro.umontreal.ca>
+
+On 11 Oct 2006, Jaonary Rabarisoa wrote:
+> Bonjour ? tous,
+> En voulant utiliser la class AddCostToLearner, je me suis pos? la question
+> suivante :
+> Je voudrai utiliser le cout binary_class_error pour evaluer une
+> SVMClassifictionTorch. D'ap?s la doc de
+> AddCostToLearner on calcule ce cout en seuillant ? 0.5, cependant pour ma svm
+> logiquement le seuil est ? 0.
+> Donc, je me demande si c'est pas mieux de mettre ce seuil en "build option"
+> pour la class AddCostToLearner afin de
+> g?n?raliser un peu.
+
+Salut,
+
+En effet ca serait une option logique a ajouter.
+Une autre possibilite, sans changer le code actuel, est de mettre
+les options 'target_01' et 'output_the_class' de SVMClassifictionTorch
+(et d'utiliser soit class_error soit binary_class_error dans
+AddCostToLearner).
+Au fait, je ne sais pas si tu l'as deja essaye, mais il se peut que
+SVMClassifictionTorch ne marche pas bien, il me semble qu'on avait des
+problemes chez nous recemment avec l'interface Torch, je ne sais plus
+trop pourquoi. Ca fait partie des choses qu'il faut que je regarde...
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Wed Oct 11 16:07:05 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 11 Oct 2006 16:07:05 +0200
+Subject: [Plearn-core] Comment initialiser option_values de la classe
+	CartesianProductOracle
+Message-ID: <c81af8c30610110707q139f8582g749b6bbefee619b0@mail.gmail.com>
+
+Cette membre de la classe CartesianProductOracle est un TVec< TVec<string>
+>. Donc un vecteur de vecteur de string. Est ce qu'il y a une mani?re simple
+de l'initialiser (en c++) ? part tout faire ? la main comme ci dessous :
+
+TVec<TVec<string>> opt_value(2);
+TVec<string> kmin(10);
+kmin[0] = "1"
+.....
+TVec<string>  sigma(3);
+sigma[0] = "0.5";
+.......
+opt_value[0] = kmin;
+opt_value[1] = sigma;
+
+Ici j'aimarai pouvoir faire passer un real ou un TVec<real> directement.
+
+Pour le option_name (de la class CartesianProductOracle toujours) est-ce
+qu'il y a une signification particuli?re le fait d'?crire
+"learner.knn" et "learner.knn.distance_kernel.sigma" ou je peux mettre
+n'importe quel string ?
+
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061011/c2a2d321/attachment.html>
+
+From delallea at iro.umontreal.ca  Wed Oct 11 16:21:38 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 11 Oct 2006 10:21:38 -0400
+Subject: [Plearn-core] Comment initialiser option_values de la classe
+	CartesianProductOracle
+In-Reply-To: <c81af8c30610110707q139f8582g749b6bbefee619b0@mail.gmail.com>
+References: <c81af8c30610110707q139f8582g749b6bbefee619b0@mail.gmail.com>
+Message-ID: <20061011142137.GA2490@opale.iro.umontreal.ca>
+
+On 11 Oct 2006, Jaonary Rabarisoa wrote:
+> Cette membre de la classe CartesianProductOracle est un TVec< TVec<string> >.
+> Donc un vecteur de vecteur de string. Est ce qu'il y a une mani?re simple de
+> l'initialiser (en c++) ? part tout faire ? la main comme ci dessous :
+> 
+> TVec<TVec<string>> opt_value(2);
+> TVec<string> kmin(10);
+> kmin[0] = "1"
+> .....
+> TVec<string>  sigma(3);
+> sigma[0] = "0.5";
+> .......
+> opt_value[0] = kmin;
+> opt_value[1] = sigma;
+> 
+> Ici j'aimarai pouvoir faire passer un real ou un TVec<real> directement.
+
+Il se peut qu'il y ait un truc special pour les TVec, je ne sais plus
+trop, mais le systeme de serialisation generique peut aussi etre
+utilise normalement :
+
+TVec<TVec<string>> opt_values;
+string str = " [ [ 1 2 3 4 5 ] [ 0.1 0.2 0.3 0.4 0.5 ] ] ";
+PStream in = openString(str, PStream::plearn_ascii);
+in >> opt_values;
+
+devrait marcher.
+ 
+> Pour le option_name (de la class CartesianProductOracle toujours) est-ce qu'il
+> y a une signification particuli?re le fait d'?crire
+> "learner.knn" et "learner.knn.distance_kernel.sigma" ou je peux mettre
+> n'importe quel string ?
+
+Oui, ca indique quelles options sont modifiees (de ton learner L du
+HyperLearner).
+learner.knn signifie l'option knn de l'option learner de L (par
+ex. si L est un AddCostToLearner, dont l'option learner est un
+KNNMachinChose - je suppose que tu voulais dire kmin et pas knn, au
+fait).
+learner.knn.distance_kernel.sigma signifie l'option sigma de l'option
+distance_kernel de l'option knn de l'option learner de L (par ex. si L
+est un AddCostToLearner, dont l'option learner est un KNNMachinChose, dont
+l'option knn est un KNNBidule, dont l'option distance_kernel est un
+GaussianKernel, qui a une option sigma).
+
+--
+Olivier
+
+
+
+From lamblinp at iro.umontreal.ca  Wed Oct 11 17:42:59 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 11 Oct 2006 17:42:59 +0200
+Subject: [Plearn-core] Comment initialiser option_values de la classe
+	CartesianProductOracle
+In-Reply-To: <20061011142137.GA2490@opale.iro.umontreal.ca>
+References: <c81af8c30610110707q139f8582g749b6bbefee619b0@mail.gmail.com>
+	<20061011142137.GA2490@opale.iro.umontreal.ca>
+Message-ID: <20061011154259.GB5012@pig.zood.org>
+
+On Wed, Oct 11, 2006, Olivier Delalleau wrote:
+> Il se peut qu'il y ait un truc special pour les TVec, je ne sais plus
+> trop, mais le systeme de serialisation generique peut aussi etre
+> utilise normalement :
+> 
+> TVec<TVec<string>> opt_values;
+> string str = " [ [ 1 2 3 4 5 ] [ 0.1 0.2 0.3 0.4 0.5 ] ] ";
+> PStream in = openString(str, PStream::plearn_ascii);
+> in >> opt_values;
+
+Il me semble que tu peux utiliser directement la fonction (template)
+lexical_cast, qui est dans <plearn/base/lexical_cast.h> :
+
+TVec< TVec<string> > opt_values = lexical_cast< TVec< TVec<string> > >(
+  "[ [ 1 2 3 4 5 ] [ 0.1 0.2 0.3 0.4 0.5 ] ]" );
+
+-- 
+Pascal
+
+
+From jaonary at gmail.com  Thu Oct 12 10:48:46 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 12 Oct 2006 10:48:46 +0200
+Subject: [Plearn-core] ERROR:
+	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully
+	(correctly) implemented yet!
+Message-ID: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>
+
+Bonjour tout le monde,
+Concernant toujours le probleme d'utilisation de l'interface avec Toch,
+j'obtiens cette errreur disant que le deep copy n'est pas encore
+implementer. Je ne sais pas vraiment ce qui manque et ce qu'il faudrait
+rajouter, si quelqu'un peu m'?clairer la dessus. Et quelle sont les
+r?percussion si je commente ces lignes dans la m?thode
+makeDeepCopyFromShallowCopy ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/7eb5f0e9/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct 12 15:24:35 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 09:24:35 -0400
+Subject: [Plearn-core] ERROR:
+	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully
+	(correctly) implemented yet!
+In-Reply-To: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>
+References: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>
+Message-ID: <20061012132433.GA7955@opale.iro.umontreal.ca>
+
+Ah,
+
+En effet, ?a fait partie des trucs d?licats que je n'ai pas encore
+r?gl?s avec Torch.
+Tu dois avoir ce probl?me car tu utilises un HyperLearner quelque part.
+Le HyperLearner utilise le m?canisme de deep-copy pour sauvegarder le
+meilleur learner obtenu jusqu'? pr?sent, qui est le mod?le r?cup?r? 
+? la fin.
+Si tu commentes ces lignes, ce qui va se passer c'est que ton learner ne
+va ?tre que partiellement sauvegard?, et certains param?tres ou options
+risquent d'?tre alt?r?s par les essais successifs faits par
+l'HyperLearner. Du coup, le "meilleur" learner retourn? pourrait ne pas
+?tre vraiment le bon. Il se pourrait aussi qu'il y ait des probl?mes de
+memory leaks dus ? l'utilisation de pointeurs "pas smart" dans Torch,
+mais je ne suis vraiment pas s?r de ?a. Plus emb?tant, je ne suis pas
+s?r non plus que tu n'auras pas de segfault d? ? la lib?ration de
+m?moire encore utilis?e par d'autres objets.
+Si ?a ne plante pas, ce n'est pas dramatique : tu peux toujours regarder
+quelle combinaison de param?tres a donn? le meilleur r?sultat (qque part
+dans un stratxxx.pmat), et r?entra?ner un learner avec juste cette
+combinaison.
+Une autre possibilit? serait de "hacker" HyperLearner en lui faisant
+utiliser le syst?me de s?rialisation (convertir le meilleur learner en
+une cha?ne ascii) plut?t que la deep-copy afin de sauvegarder le
+meilleur learner.
+
+--
+Olivier
+
+On 12 Oct 2006, Jaonary Rabarisoa wrote:
+> Bonjour tout le monde,
+> Concernant toujours le probleme d'utilisation de l'interface avec Toch,
+> j'obtiens cette errreur disant que le deep copy n'est pas encore implementer.
+> Je ne sais pas vraiment ce qui manque et ce qu'il faudrait rajouter, si
+> quelqu'un peu m'?clairer la dessus. Et quelle sont les r?percussion si je
+> commente ces lignes dans la m?thode makeDeepCopyFromShallowCopy ?
+
+
+From jaonary at gmail.com  Thu Oct 12 17:02:38 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 12 Oct 2006 17:02:38 +0200
+Subject: [Plearn-core] ERROR:
+	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully
+	(correctly) implemented yet!
+In-Reply-To: <20061012132433.GA7955@opale.iro.umontreal.ca>
+References: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>
+	<20061012132433.GA7955@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610120802w660d7780wad08ef86f0c433d5@mail.gmail.com>
+
+Donc, si j'ai bien compris un simple deepCopyField(field,copies) ne
+suffirait pas, il faudrait aussi copier correctement les donn?es allou? par
+les allocator de torch.
+
+Sinon, une question un peu naive : la m?thode train de HyperLerner est en
+fait comme les autres m?thode train; elle d?roule un algo pour regler les
+parametres du learner sous-jacent. Donc, par exemple ici on obtient le
+meilleur learner apr?s cross-validation ?
+Apr?s je peux utiliser ce HyperLearner comme n'import quel PLearner (use,
+computeOutput, ... )
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/fff7784c/attachment.html>
+
+From chapados at apstat.com  Thu Oct 12 17:21:48 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 12 Oct 2006 11:21:48 -0400
+Subject: [Plearn-core]
+ ERROR:	SVMClassificationTorch::makeDeepCopyFromShallowCopy not
+ fully	(correctly) implemented yet!
+In-Reply-To: <c81af8c30610120802w660d7780wad08ef86f0c433d5@mail.gmail.com>
+References: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>	<20061012132433.GA7955@opale.iro.umontreal.ca>
+	<c81af8c30610120802w660d7780wad08ef86f0c433d5@mail.gmail.com>
+Message-ID: <452E5D8C.5000308@apstat.com>
+
+Oui, tu peux utiliser un HyperLearner entra?n? comme n'importe quel 
+learner.  Les appels ? computeOutput etc. sont directement envoy?s au 
+meilleur learner trouv? au cours de l'hyper-optimisation.  C'est l? 
+l'une des magies de HyperLearner (en d?pit de la "learning curve" pour 
+apprendre ? l'utiliser).
+
+    + Nicolas
+
+
+Jaonary Rabarisoa wrote:
+> Donc, si j'ai bien compris un simple deepCopyField(field,copies) ne 
+> suffirait pas, il faudrait aussi copier correctement les donn?es 
+> allou? par les allocator de torch.
+>
+> Sinon, une question un peu naive : la m?thode train de HyperLerner est 
+> en fait comme les autres m?thode train; elle d?roule un algo pour 
+> regler les parametres du learner sous-jacent. Donc, par exemple ici on 
+> obtient le meilleur learner apr?s cross-validation ?
+> Apr?s je peux utiliser ce HyperLearner comme n'import quel PLearner 
+> (use, computeOutput, ... )
+>
+> Jaonary
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/e9a81017/attachment.html>
+
+From chapados at apstat.com  Thu Oct 12 17:29:03 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 12 Oct 2006 11:29:03 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+ =?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+Message-ID: <452E5F3F.3050709@apstat.com>
+
+Salut chers PLearners,
+
+Est-ce que certains d'entre vous d?pendent du fait que l'option "expdir" 
+d'un PLearner est sauvegard?e apr?s un entra?nement de mod?le?  Si ce 
+n'est pas le cas, je proposerais de la d?clarer "nosave".  Voici mon cas 
+d'utilisation:
+
+   1. On entra?ne un mod?le sur le disque local d'une machine puissante
+      (pour des raisons de performance).
+   2. Apr?s entra?nement, ce mod?le est sauvegard?, avec son option
+      "expdir" pointant vers un r?pertoire inaccessible depuis n'importe
+      o? sauf la machine originale ayant servi ? l'entra?nement
+   3. Plus tard, on essaie de recharger le mod?le sur une autre machine,
+      et pouf!  Puisque PLearner::build_() essaie de cr?er le expdir
+      s'il est sp?cifi? dans l'option de l'objet, on a un d?sagr?able
+      warning qui r?primande l'utilisateur d?concert? et impuissant.
+
+Si vous avez ABSOLUMENT BESOIN de sauvegarder le expdir, il faudrait 
+(apr?s explication de la raison) trouver ensemble une autre solution au 
+probl?me ci-haut, qui pose un obstacle significatif ? l'utilisation 
+post-entra?nement de mod?les...
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/d8e80069/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct 12 17:42:44 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 11:42:44 -0400
+Subject: [Plearn-core] ERROR:
+	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully
+	(correctly) implemented yet!
+In-Reply-To: <c81af8c30610120802w660d7780wad08ef86f0c433d5@mail.gmail.com>
+References: <c81af8c30610120148v3110430fra2764a837d3601e4@mail.gmail.com>
+	<20061012132433.GA7955@opale.iro.umontreal.ca>
+	<c81af8c30610120802w660d7780wad08ef86f0c433d5@mail.gmail.com>
+Message-ID: <20061012154242.GA9437@opale.iro.umontreal.ca>
+
+On 12 Oct 2006, Jaonary Rabarisoa wrote:
+> Donc, si j'ai bien compris un simple deepCopyField(field,copies) ne suffirait
+> pas, il faudrait aussi copier correctement les donn?es allou? par les allocator
+> de torch.
+
+Exactement.
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Thu Oct 12 17:43:46 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 12 Oct 2006 17:43:46 +0200
+Subject: [Plearn-core]
+	=?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+	=?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <452E5F3F.3050709@apstat.com>
+References: <452E5F3F.3050709@apstat.com>
+Message-ID: <20061012154346.GA13642@pig.zood.org>
+
+On Thu, Oct 12, 2006, Nicolas Chapados wrote:
+> Si vous avez ABSOLUMENT BESOIN de sauvegarder le expdir, il faudrait 
+> (apr?s explication de la raison) trouver ensemble une autre solution au 
+> probl?me ci-haut, qui pose un obstacle significatif ? l'utilisation 
+> post-entra?nement de mod?les...
+
+Le cas que j'imagine, c'est si toutes les informations apprises par le
+PLearner ne sont pas dans le .psave, mais qu'il en existe qui sont
+sauvegard?es dans des fichiers plac?s dans expdir/ et relues au build().
+? ce moment-l?, l'acc?s au r?pertoire expdir/ lui-m?me serait
+n?cessaire.
+
+Y a-t-il des PLearners (genre ceux qui encapsulent des choses de torch)
+qui font ce genre de choses ?
+-- 
+Pascal
+
+
+From jaonary at gmail.com  Thu Oct 12 17:44:16 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 12 Oct 2006 17:44:16 +0200
+Subject: [Plearn-core] Hack to avoid deepCopy
+Message-ID: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+
+Pour r?soudre le probl?me de deepCopy avec les TorchObject Olivier sugg?rait
+de serialiser les objets et de les recharger ? nouveau. Voici une
+impl?mentation b?te de cette id?e, bien ?videment ne marche pas encore :-(
+Mais ou est l'erreur
+
+Vec HyperOptimize::optimize()
+{
+.............
+  if(!is_missing(objective) &&
+           (objective < best_objective || best_results.length()==0) &&
+(trialnum>=min_n_trials || !option_vals))
+        {
+            best_objective = objective;
+            best_results = results;
+            CopiesMap copies;
+            best_learner = NULL;
+            //best_learner = hlearner->getLearner()->deepCopy(copies); //
+mon changement commence ici
+            PStream best_learner_stream;
+            best_learner_stream << hlearner->getLearner();
+            best_learner_stream >> best_learner;
+            pout << best_learner ;
+        }
+
+.............
+}
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/8848c3c5/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct 12 17:49:41 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 11:49:41 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+	=?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <452E5F3F.3050709@apstat.com>
+References: <452E5F3F.3050709@apstat.com>
+Message-ID: <20061012154941.GB9437@opale.iro.umontreal.ca>
+
+Je n'ai pas en t?te d'utilisation du expdir apr?s entra?nement, m?me si
+j'imagine qu'on pourrait en trouver des cas tordus.
+Ca me semble quand m?me potentiellement utile de savoir o? se trouvent
+les donn?es du PTester. Il pourrait y avoir deux autres solutions ? ce
+probl?me :
+- utiliser les PPath pour s'assurer que le chemin est toujours valide
+  (ce que je fais r?guli?rement)
+- mieux, ? mon avis, changer le code qui essaie de cr?er le expdir dans
+  le build_ du PTester : je ne vois pas pourquoi c'est n?cessaire tant
+  qu'il n'y a rien ? ?crire (c'est-?-dire dans perform).
+
+--
+Olivier
+
+On 12 Oct 2006, Nicolas Chapados wrote:
+> Salut chers PLearners,
+> 
+> Est-ce que certains d'entre vous d?pendent du fait que l'option "expdir" d'un
+> PLearner est sauvegard?e apr?s un entra?nement de mod?le?  Si ce n'est pas le
+> cas, je proposerais de la d?clarer "nosave".  Voici mon cas d'utilisation:
+> 
+>  1. On entra?ne un mod?le sur le disque local d'une machine puissante (pour des
+>     raisons de performance).
+>  2. Apr?s entra?nement, ce mod?le est sauvegard?, avec son option "expdir"
+>     pointant vers un r?pertoire inaccessible depuis n'importe o? sauf la
+>     machine originale ayant servi ? l'entra?nement
+>  3. Plus tard, on essaie de recharger le mod?le sur une autre machine, et pouf!
+>       Puisque PLearner::build_() essaie de cr?er le expdir s'il est sp?cifi?
+>     dans l'option de l'objet, on a un d?sagr?able warning qui r?primande
+>     l'utilisateur d?concert? et impuissant.
+> 
+> Si vous avez ABSOLUMENT BESOIN de sauvegarder le expdir, il faudrait (apr?s
+> explication de la raison) trouver ensemble une autre solution au probl?me
+> ci-haut, qui pose un obstacle significatif ? l'utilisation post-entra?nement de
+> mod?les...
+> 
+>     + Nicolas
+> 
+
+
+
+From delallea at iro.umontreal.ca  Thu Oct 12 17:54:11 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 11:54:11 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+Message-ID: <20061012155410.GA9590@opale.iro.umontreal.ca>
+
+On 12 Oct 2006, Jaonary Rabarisoa wrote:
+> Pour r?soudre le probl?me de deepCopy avec les TorchObject Olivier sugg?rait de
+> serialiser les objets et de les recharger ? nouveau. Voici une impl?mentation
+> b?te de cette id?e, bien ?videment ne marche pas encore :-( Mais ou est
+> l'erreur
+> 
+> Vec HyperOptimize::optimize()
+> {
+> .............
+>   if(!is_missing(objective) &&
+>            (objective < best_objective || best_results.length()==0) &&
+> (trialnum>=min_n_trials || !option_vals))
+>         {
+>             best_objective = objective;
+>             best_results = results;
+>             CopiesMap copies;
+>             best_learner = NULL;
+>             //best_learner = hlearner->getLearner()->deepCopy(copies); // mon
+> changement commence ici
+>             PStream best_learner_stream;
+>             best_learner_stream << hlearner->getLearner();
+>             best_learner_stream >> best_learner;
+>             pout << best_learner ;
+>         }
+> 
+> .............
+> }
+
+Ici ton PStream n'est pas initialise. Regarde dans lexical_cast, d'apres
+Pascal L. il y a des fonctions (que je ne connais pas) qui peuvent p-e
+simplifier les choses, sinon la maniere "a la main" a laquelle je
+pensais est :
+
+    string best_str;
+    PStream best_learner_stream = openString(best_str, PStream::plearn_ascii, "w");
+    hlearner->getLearner() >> best_learner_stream;
+    best_learner_stream = openString(best_str, PStream::plearn_ascii);
+    best_learner << best_learner_stream;
+
+--
+Olivier
+
+
+From chapados at apstat.com  Thu Oct 12 18:12:51 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 12 Oct 2006 12:12:51 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+ =?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <20061012154941.GB9437@opale.iro.umontreal.ca>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+Message-ID: <452E6983.1060708@apstat.com>
+
+Le probl?me est qu'il s'agit d'un changement de s?mantique assez profond 
+que d'?liminer la cr?ation du expdir au build_().  En th?orie je suis 
+d'accord avec toi qu'il ne devrait pas y avoir ce mkdir dans le build_() 
+de PLearner.  En pratique, je n'ai pas envie de passer au peigne fin 
+chaque PLearner pour r?parer ceux qui d?pendent de la supposition que 
+leur expdir est d?j? cr??...
+
+Qu'est-ce que tu veux dire par "potentiellement utile de savoir o? se 
+trouvent les donn?es du PTester"?
+
+Et autres question sur ta premi?re solution: comment crois-tu que les 
+PPath peuvent nous aider ici? 
+
+    + Nicolas
+
+
+Olivier Delalleau wrote:
+> Je n'ai pas en t?te d'utilisation du expdir apr?s entra?nement, m?me si
+> j'imagine qu'on pourrait en trouver des cas tordus.
+> Ca me semble quand m?me potentiellement utile de savoir o? se trouvent
+> les donn?es du PTester. Il pourrait y avoir deux autres solutions ? ce
+> probl?me :
+> - utiliser les PPath pour s'assurer que le chemin est toujours valide
+>   (ce que je fais r?guli?rement)
+> - mieux, ? mon avis, changer le code qui essaie de cr?er le expdir dans
+>   le build_ du PTester : je ne vois pas pourquoi c'est n?cessaire tant
+>   qu'il n'y a rien ? ?crire (c'est-?-dire dans perform).
+>
+> --
+> Olivier
+>   
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From pascal at apstat.com  Thu Oct 12 18:38:02 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 12 Oct 2006 12:38:02 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <20061012155410.GA9590@opale.iro.umontreal.ca>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+Message-ID: <9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+
+
+Le 06-10-12 ? 11:54, Olivier Delalleau a ?crit :
+
+> On 12 Oct 2006, Jaonary Rabarisoa wrote:
+>> Pour r?soudre le probl?me de deepCopy avec les TorchObject Olivier  
+>> sugg?rait de
+>> serialiser les objets et de les recharger ? nouveau. Voici une  
+>> impl?mentation
+>> b?te de cette id?e, bien ?videment ne marche pas encore :-( Mais  
+>> ou est
+>> l'erreur
+
+C'est une bonne id?e, effectivement, ? condition que les TorchLearner  
+sachent effectivement bien se s?rialiser/d?s?rialiser vers un PStream  
+en s?rialisant bien l'objet Torch sous-jacent (Olivier, est-ce le cas?).
+
+Aussi c'est un peu violent de le faire au niveau de  
+HyperOptimize::optimize, il serait plus clean d'?crire la m?thode  
+makeDeepCopyFromShallowCopy de TorchLearner pour qu'elle fasse par ex  
+la s?rialisation/d?s?rialisation.
+
+
+
+
+> Ici ton PStream n'est pas initialise. Regarde dans lexical_cast,  
+> d'apres
+> Pascal L. il y a des fonctions (que je ne connais pas) qui peuvent p-e
+> simplifier les choses, sinon la maniere "a la main" a laquelle je
+> pensais est :
+>
+>     string best_str;
+>     PStream best_learner_stream = openString(best_str,  
+> PStream::plearn_ascii, "w");
+>     hlearner->getLearner() >> best_learner_stream;
+
+Il est recommand? de faire un best_learner_stream.close() ou au moins  
+un flush() pour garantir que tout a bien ?t? ?crit vers la string.
+Un racourci qui fait la m?me chose que le code ci-haut serait:   
+(apres avoir inclus tostring.h )
+string best_str = tostring(hlearner->getLearner(),  
+PStream::plearn_ascii);
+
+>     best_learner_stream = openString(best_str, PStream::plearn_ascii);
+>     best_learner << best_learner_stream;
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From pascal at apstat.com  Thu Oct 12 18:51:17 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Thu, 12 Oct 2006 12:51:17 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Fwd=3A__Option_PLearner=3A=3Aexpdir_?=
+ =?iso-8859-1?q?d=E9clar=E9e_nosave=3F=3F=3F?=
+References: <972B4F9A-FAE4-4881-A2CE-63783DC7A513@apstat.com>
+Message-ID: <1D9DF8BE-49A3-42EA-B4D9-227325A798E1@apstat.com>
+
+
+
+D?but du message r?exp?di? :
+
+> De : Pascal Vincent <pascal at apstat.com>
+> Date : 12 octobre 2006 12:48:16 HAE
+> ? : Nicolas Chapados <chapados at apstat.com>
+> Objet : R?p : [Plearn-core] Option PLearner::expdir d?clar?e nosave???
+>
+>> Olivier Delalleau wrote:
+>>> Je n'ai pas en t?te d'utilisation du expdir apr?s entra?nement,
+>
+> Moi non plus.
+>
+>>> m?me si
+>>> j'imagine qu'on pourrait en trouver des cas tordus.
+>
+> Oui, si un learner veut (comme le mentionnait Pascal L) sauver des  
+> choses (genre grs fichier de donn?e) en dehors du .psave
+> Mais je n'ai pas connaissance de tels learners, et si c'est le cas,  
+> ils peuvent toujours introduire une autre option pour sauvegarder ?a.
+>
+>>> Ca me semble quand m?me potentiellement utile de savoir o? se  
+>>> trouvent
+>>> les donn?es du PTester.
+>
+> Ne serait-ce que pour le log, ?a peut ?tre int?ressant de savoir o?  
+> une exp?rience a ?t? roul?e, mais ce n'est pas n?cessaire en effet  
+> que ce soit dans une saved option (?a pourrait par ex. ?tre dans un  
+> fichier cr?? ? l'int?rieur du expdir).
+>
+>>> Il pourrait y avoir deux autres solutions ? ce
+>>> probl?me :
+>>> - utiliser les PPath pour s'assurer que le chemin est toujours  
+>>> valide
+>>>   (ce que je fais r?guli?rement)
+>>> - mieux, ? mon avis, changer le code qui essaie de cr?er le  
+>>> expdir dans
+>>>   le build_ du PTester : je ne vois pas pourquoi c'est n?cessaire  
+>>> tant
+>>>   qu'il n'y a rien ? ?crire (c'est-?-dire dans perform).
+>>>
+>>> --
+>>> Olivier
+>
+>
+> Le 06-10-12 ? 12:12, Nicolas Chapados a ?crit :
+>
+>> Le probl?me est qu'il s'agit d'un changement de s?mantique assez  
+>> profond
+>> que d'?liminer la cr?ation du expdir au build_().  En th?orie je suis
+>> d'accord avec toi qu'il ne devrait pas y avoir ce mkdir dans le  
+>> build_()
+>> de PLearner.
+>
+> Sur le fond je suis d'accord aussi. Mais ?a me semble un changement  
+> risqu? en effet, surtout que les setExperimentDirectory servent de  
+> message de finalization de construction "top-down" apr?s les build  
+> qui sont appel?s bottom-up. Il faudrait prendre le temps de bien  
+> r?fl?chir aux changements qu'on veut apporter et ? leurs cons?quences.
+>
+>> En pratique, je n'ai pas envie de passer au peigne fin
+>> chaque PLearner pour r?parer ceux qui d?pendent de la supposition que
+>> leur expdir est d?j? cr??...
+>>
+>> Qu'est-ce que tu veux dire par "potentiellement utile de savoir o? se
+>> trouvent les donn?es du PTester"?
+>>
+>> Et autres question sur ta premi?re solution: comment crois-tu que les
+>> PPath peuvent nous aider ici?
+>>
+>>     + Nicolas
+>>
+>>>
+>> -- 
+>> Nicolas Chapados, M.Sc.
+>> ApSTAT Technologies Inc.
+>> www.apstat.com
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+
+From delallea at iro.umontreal.ca  Thu Oct 12 18:51:39 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 12:51:39 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+	=?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <452E6983.1060708@apstat.com>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+	<452E6983.1060708@apstat.com>
+Message-ID: <20061012165137.GA10135@opale.iro.umontreal.ca>
+
+On 12 Oct 2006, Nicolas Chapados wrote:
+> Le probl?me est qu'il s'agit d'un changement de s?mantique assez profond 
+> que d'?liminer la cr?ation du expdir au build_().  En th?orie je suis 
+> d'accord avec toi qu'il ne devrait pas y avoir ce mkdir dans le build_() 
+> de PLearner.  En pratique, je n'ai pas envie de passer au peigne fin 
+> chaque PLearner pour r?parer ceux qui d?pendent de la supposition que 
+> leur expdir est d?j? cr??...
+
+Y en a-t-il vraiment tant que ?a ? J'aurais tendance ? dire que non,
+mais apr?s tout je n'en sais vraiment rien.
+
+> Qu'est-ce que tu veux dire par "potentiellement utile de savoir o? se 
+> trouvent les donn?es du PTester"?
+
+Par ex. si on a sauv? un HyperLearner, qui contient un PTester, il
+pourrait ?tre utile de conna?tre son expdir pour retourner jeter un coup
+d'oeil aux ?tapes de l'optimisation.
+
+> Et autres question sur ta premi?re solution: comment crois-tu que les 
+> PPath peuvent nous aider ici? 
+
+Si par exemple tu lances tes exp?riences localement dans /u/exp/plearn,
+r?pertoire qui n'existe que sur ta machine de calcul, tu peux d?finir
+dans ton ppath.config un r?pertoire EXP_ROOT ?gal ? "/u/exp/plearn", et
+sur ta nouvelle machine (sur laquelle tu charges ton PLearner), tu
+d?finis EXP_ROOT comme par ex. /tmp/exp_root. Comme le PPath est sauv?
+de mani?re canonique (EXP_ROOT:blabla/bloblo/expdir), il ne devrait pas
+planter.
+
+--
+Olivier
+
+> Olivier Delalleau wrote:
+> > Je n'ai pas en t?te d'utilisation du expdir apr?s entra?nement, m?me si
+> > j'imagine qu'on pourrait en trouver des cas tordus.
+> > Ca me semble quand m?me potentiellement utile de savoir o? se trouvent
+> > les donn?es du PTester. Il pourrait y avoir deux autres solutions ? ce
+> > probl?me :
+> > - utiliser les PPath pour s'assurer que le chemin est toujours valide
+> >   (ce que je fais r?guli?rement)
+> > - mieux, ? mon avis, changer le code qui essaie de cr?er le expdir dans
+> >   le build_ du PTester : je ne vois pas pourquoi c'est n?cessaire tant
+> >   qu'il n'y a rien ? ?crire (c'est-?-dire dans perform).
+> >
+> > --
+> > Olivier
+> >   
+
+
+From delallea at iro.umontreal.ca  Thu Oct 12 18:53:43 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 12 Oct 2006 12:53:43 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+Message-ID: <20061012165341.GA10265@opale.iro.umontreal.ca>
+
+> >> Pour r?soudre le probl?me de deepCopy avec les TorchObject Olivier  
+> >> sugg?rait de
+> >> serialiser les objets et de les recharger ? nouveau. Voici une  
+> >> impl?mentation
+> >> b?te de cette id?e, bien ?videment ne marche pas encore :-( Mais  
+> >> ou est
+> >> l'erreur
+> 
+> C'est une bonne id?e, effectivement, ? condition que les TorchLearner  
+> sachent effectivement bien se s?rialiser/d?s?rialiser vers un PStream  
+> en s?rialisant bien l'objet Torch sous-jacent (Olivier, est-ce le cas?).
+
+C'est *cens?* ?tre le cas ;)
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Fri Oct 13 12:54:52 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 13 Oct 2006 12:54:52 +0200
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <20061012165341.GA10265@opale.iro.umontreal.ca>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+
+Pour l'instant j'ai choisi la solution bourine en modifiant
+HyperOptimize::optimize() directement. Je voulais avoir un r?sultat tr?s
+rapidement et je ne comprends par encore tr?s bien le fonctionnement des
+CopiesMap pour  modier le makeDeepCopyFromShallowCopy. Voici donc le bout de
+code qui a l'air de marcher
+
+Vec HyperOptimize::optimize
+{
+......................
+
+        if(!is_missing(objective) &&
+           (objective < best_objective || best_results.length()==0) &&
+(trialnum>=min_n_trials || !option_vals))
+        {
+            best_objective = objective;
+            best_results = results;
+            CopiesMap copies;
+            best_learner = NULL;
+
+            //best_learner = hlearner->getLearner()->deepCopy(copies);
+            string best_str =
+tostring(hlearner->getLearner(),PStream::plearn_ascii);
+            //cout << best_str << endl;
+            PStream best_learner_stream =
+openString(best_str,PStream::plearn_ascii);
+            best_learner_stream >> best_learner;
+            //pout << best_learner << endl;
+
+        }
+
+....................
+
+}
+
+Les r?sultats que j'obtiens semblent correcte sur des donn?es simul?es. Par
+contre je voudrais savoir si j'ai acc?s aux valeurs des statistiques
+utilis?s durant la phase d'optimisation (par exemple class_error pour chaque
+valeur des hyper parameters test?s).
+Sinon quand je fixe l'option "save_final_learner" ? 1 j'obtiens une erreur
+car mon expir=="". Quelle est l'option que j'ai oubli? ?
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/ec06d495/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct 13 13:44:32 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 07:44:32 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+Message-ID: <20061013114431.GA8014@opale.iro.umontreal.ca>
+
+> Les r?sultats que j'obtiens semblent correcte sur des donn?es simul?es. Par
+> contre je voudrais savoir si j'ai acc?s aux valeurs des statistiques utilis?s
+> durant la phase d'optimisation (par exemple class_error pour chaque valeur des
+> hyper parameters test?s).
+
+Oui, mais...
+
+> Sinon quand je fixe l'option "save_final_learner" ? 1 j'obtiens une erreur car
+> mon expir=="". Quelle est l'option que j'ai oubli? ?
+
+... il faut sans doute que tu rajoutes provide_learner_expdir = 1 dans
+ton PTester, pour que ton HyperLearner ait un expdir dans lequel il peut
+sauver le meilleur learner.
+
+Alors, en supposant que ta strat?gie ait aussi un expdir, tu devrais
+avoir une pmat  du genre
+    ptester_expdir/Split0/learner_expdir/Strat0/stra0results.pmat
+o? tu auras un r?sum? des diff?rents hyper param?tres test?s (je donne
+le chemin de m?moire, c'est peut-?tre pas exactement ?a).
+
+--
+Olivier
+
+
+
+From jaonary at gmail.com  Fri Oct 13 14:46:56 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 13 Oct 2006 14:46:56 +0200
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <20061013114431.GA8014@opale.iro.umontreal.ca>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+
+On 10/13/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> > Les r?sultats que j'obtiens semblent correcte sur des donn?es simul?es.
+> Par
+> > contre je voudrais savoir si j'ai acc?s aux valeurs des statistiques
+> utilis?s
+> > durant la phase d'optimisation (par exemple class_error pour chaque
+> valeur des
+> > hyper parameters test?s).
+>
+> Oui, mais...
+
+
+Ta r?ponse me fait un peu peur :) . Il y a une option resultsmat dans le
+HyperOptimize, est-ce que ce qui m'int?resse est dedans ?
+Je voudrai voir ces valeur car j'aimerai etre sur qu'il me calclule bien ce
+que je cherche
+
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/59b9d462/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct 13 15:23:19 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 09:23:19 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+Message-ID: <20061013132318.GA9288@opale.iro.umontreal.ca>
+
+On 13 Oct 2006, Jaonary Rabarisoa wrote:
+> 
+> 
+> On 10/13/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> 
+>     > Les r?sultats que j'obtiens semblent correcte sur des donn?es simul?es.
+>     Par
+>     > contre je voudrais savoir si j'ai acc?s aux valeurs des statistiques
+>     utilis?s
+>     > durant la phase d'optimisation (par exemple class_error pour chaque
+>     valeur des
+>     > hyper parameters test?s).
+> 
+>     Oui, mais...
+> 
+> 
+> Ta r?ponse me fait un peu peur :) . Il y a une option resultsmat dans le
+> HyperOptimize, est-ce que ce qui m'int?resse est dedans ?
+> Je voudrai voir ces valeur car j'aimerai etre sur qu'il me calclule bien ce que
+> je cherche
+
+Ma reponse ne devait pas etre claire, le ... indiquait que la suite
+venait plus tard (tu as acces aux valeurs dans strat0results.pmat, du
+moment que tu as active les bons expdir).
+Je ne sais pas si tu peux y avoir acces directement dans le code C++,
+mais si c'est juste pour verifier ce que ca fait, tu ne devrais pas en
+avoir besoin.
+
+--
+Olivier
+
+
+From chapados at apstat.com  Fri Oct 13 16:54:31 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 13 Oct 2006 10:54:31 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <20061013132318.GA9288@opale.iro.umontreal.ca>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>	<20061012155410.GA9590@opale.iro.umontreal.ca>	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>	<20061012165341.GA10265@opale.iro.umontreal.ca>	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>	<20061013114431.GA8014@opale.iro.umontreal.ca>	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+Message-ID: <452FA8A7.4080407@apstat.com>
+
+Voici un extrait de la documentation de HyperOptimise:
+
+ *  Note that after optimization, the matrix of all trials is available through
+ *  the option 'resultsmat' (which is declared as nosave).  This is available
+ *  even if no expdir has been declared.
+
+Donc oui, l'option resultsmat contient les r?sultats de 
+l'hyperoptimisation, et on peut y acc?der depuis le C++.
+
+
+Olivier Delalleau wrote:
+> On 13 Oct 2006, Jaonary Rabarisoa wrote:
+>   
+>> On 10/13/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>>
+>>     > Les r?sultats que j'obtiens semblent correcte sur des donn?es simul?es.
+>>     Par
+>>     > contre je voudrais savoir si j'ai acc?s aux valeurs des statistiques
+>>     utilis?s
+>>     > durant la phase d'optimisation (par exemple class_error pour chaque
+>>     valeur des
+>>     > hyper parameters test?s).
+>>
+>>     Oui, mais...
+>>
+>>
+>> Ta r?ponse me fait un peu peur :) . Il y a une option resultsmat dans le
+>> HyperOptimize, est-ce que ce qui m'int?resse est dedans ?
+>> Je voudrai voir ces valeur car j'aimerai etre sur qu'il me calclule bien ce que
+>> je cherche
+>>     
+>
+> Ma reponse ne devait pas etre claire, le ... indiquait que la suite
+> venait plus tard (tu as acces aux valeurs dans strat0results.pmat, du
+> moment que tu as active les bons expdir).
+> Je ne sais pas si tu peux y avoir acces directement dans le code C++,
+> mais si c'est juste pour verifier ce que ca fait, tu ne devrais pas en
+> avoir besoin.
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/3df1e8e4/attachment.html>
+
+From jaonary at gmail.com  Fri Oct 13 17:10:05 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 13 Oct 2006 17:10:05 +0200
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <452FA8A7.4080407@apstat.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+	<452FA8A7.4080407@apstat.com>
+Message-ID: <c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+
+On 10/13/06, Nicolas Chapados <chapados at apstat.com> wrote:
+>
+>  Voici un extrait de la documentation de HyperOptimise:
+>
+>  *  Note that after optimization, the matrix of all trials is available through
+>  *  the option 'resultsmat' (which is declared as nosave).  This is available
+>  *  even if no expdir has been declared.
+>
+> Donc oui, l'option resultsmat contient les r?sultats de
+> l'hyperoptimisation, et on peut y acc?der depuis le C++.
+>
+
+ Au fait mon seul petit souci c'est que resultsmat est un membre priv? donc
+je suis oblig? d'utiliser getOption qui lui renvoie un string. Mais du coup
+je dois serialiser et deserialiser ce qui donne le code pas propre ci-dessus
+
+    VMat results;
+    string res_str = hyper_learner->strategy[0]->getOption("resultsmat");
+    PStream res_stream = openString(res_str,PStream::plearn_ascii);
+    res_stream >> results;
+
+Ca marche mais je trouve que c'est pas du tout propre et trop de chose pour
+rien. J'aurais aim? quelque chose du genre
+
+VMat res = hyper_learner->strategy[0]->getOption("resultsmat");
+
+i.e que get option renvoi l'objet non pas le string. Je ne sais pas si c'est
+possible de faire une chose pareille. Peut ?tre surcharg? getOption pour
+qu'il puisse aussi renvoy? un pointeur void ou un PP sur un objet + un coup
+de dynamic cast. Enfin, je suis peut ?tre entrain de me compliquer la vie la
+:)
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/9ddf32d6/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct 13 17:13:48 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 11:13:48 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+	<452FA8A7.4080407@apstat.com>
+	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+Message-ID: <20061013151346.GA13914@opale.iro.umontreal.ca>
+
+> Enfin, je suis peut ?tre entrain de me compliquer la vie la :)
+
+Oui, declare resultsmat public ou (mieux dans ce cas) cree un accesseur
+public.
+
+--
+Olivier
+
+
+From pascal at apstat.com  Fri Oct 13 17:16:18 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 13 Oct 2006 11:16:18 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+	<452FA8A7.4080407@apstat.com>
+	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+Message-ID: <7DFA9666-0080-45D0-8853-C2863789AC47@apstat.com>
+
+
+Le 06-10-13 ? 11:10, Jaonary Rabarisoa a ?crit :
+
+>
+>
+> On 10/13/06, Nicolas Chapados <chapados at apstat.com> wrote:
+> Voici un extrait de la documentation de HyperOptimise:
+> * Note that after optimization, the matrix of all trials is  
+> available through
+> * the option 'resultsmat' (which is declared as nosave). This is  
+> available
+> * even if no expdir has been declared.
+> Donc oui, l'option resultsmat contient les r?sultats de  
+> l'hyperoptimisation, et on peut y acc?der depuis le C++.
+>
+>  Au fait mon seul petit souci c'est que resultsmat est un membre  
+> priv? donc je suis oblig? d'utiliser getOption qui lui renvoie un  
+> string. Mais du coup je dois serialiser et deserialiser ce qui  
+> donne le code pas propre ci-dessus
+>
+>     VMat results;
+>     string res_str = hyper_learner->strategy[0]->getOption 
+> ("resultsmat");
+>     PStream res_stream = openString(res_str,PStream::plearn_ascii);
+>     res_stream >> results;
+>
+> Ca marche mais je trouve que c'est pas du tout propre et trop de  
+> chose pour rien. J'aurais aim? quelque chose du genre
+>
+> VMat res = hyper_learner->strategy[0]->getOption("resultsmat");
+>
+> i.e que get option renvoi l'objet non pas le string. Je ne sais pas  
+> si c'est possible de faire une chose pareille. Peut ?tre surcharg?  
+> getOption pour qu'il puisse aussi renvoy? un pointeur void ou un PP  
+> sur un objet + un coup de dynamic cast. Enfin, je suis peut ?tre  
+> entrain de me compliquer la vie la :)
+
+Beaucoup plus simple et efficace en C++ que les getOption: mettre  
+resultsmat public. (Et si vraiment ?a choque les puristes,  
+possibilit? d'ajouter une b?te m?thode accesseur qui retourne la  
+resultsmat, mais franchement, ?a n'apporte pas grand chose, ? part  
+une m?thode de plus.)
+
+-- Pascal
+
+
+
+
+From delallea at iro.umontreal.ca  Fri Oct 13 17:20:56 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 11:20:56 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <7DFA9666-0080-45D0-8853-C2863789AC47@apstat.com>
+References: <20061012155410.GA9590@opale.iro.umontreal.ca>
+	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>
+	<20061012165341.GA10265@opale.iro.umontreal.ca>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+	<452FA8A7.4080407@apstat.com>
+	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+	<7DFA9666-0080-45D0-8853-C2863789AC47@apstat.com>
+Message-ID: <20061013152054.GA14221@opale.iro.umontreal.ca>
+
+> Beaucoup plus simple et efficace en C++ que les getOption: mettre  
+> resultsmat public. (Et si vraiment ?a choque les puristes,  
+> possibilit? d'ajouter une b?te m?thode accesseur qui retourne la  
+> resultsmat, mais franchement, ?a n'apporte pas grand chose, ? part  
+> une m?thode de plus.)
+
+Je dois etre un puriste ;)
+
+--
+Olivier
+
+
+From chapados at apstat.com  Fri Oct 13 17:24:25 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 13 Oct 2006 11:24:25 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <20061013151346.GA13914@opale.iro.umontreal.ca>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>	<20061012155410.GA9590@opale.iro.umontreal.ca>	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>	<20061012165341.GA10265@opale.iro.umontreal.ca>	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>	<20061013114431.GA8014@opale.iro.umontreal.ca>	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>	<20061013132318.GA9288@opale.iro.umontreal.ca>	<452FA8A7.4080407@apstat.com>	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+	<20061013151346.GA13914@opale.iro.umontreal.ca>
+Message-ID: <452FAFA9.4000104@apstat.com>
+
+J'opte pour l'ajout d'un accesseur public.
+
+
+Olivier Delalleau wrote:
+>> Enfin, je suis peut ?tre entrain de me compliquer la vie la :)
+>>     
+>
+> Oui, declare resultsmat public ou (mieux dans ce cas) cree un accesseur
+> public.
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From jaonary at gmail.com  Fri Oct 13 17:34:56 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 13 Oct 2006 17:34:56 +0200
+Subject: [Plearn-core] PlearnPointer et Heritage
+Message-ID: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+
+Je n'arrete pas d'emmener les problemes :) Apr?s l'?pisode des resultsmats
+voici une autre concernant les PP. Pour illustrer mes propos je vais tout de
+suit ?crire ce qui me passe par la t?te.
+
+class SuperClass
+{
+.....
+}
+
+class SubClass : public SuperClass
+{
+type one_subclass_member;
+
+...
+}
+
+void test()
+{
+PP<SuperClass> an_instance = new SubClass; // ici tout va bien
+an_instance->one_subclass_member = values; // problem one_subclass_member is
+not a member of SuperClass
+}
+
+Alors comment faire pour r?cuperer ce one_subclass_member ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/127d167a/attachment.html>
+
+From pascal at apstat.com  Fri Oct 13 17:37:42 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 13 Oct 2006 11:37:42 -0400
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <452FAFA9.4000104@apstat.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>	<20061012155410.GA9590@opale.iro.umontreal.ca>	<9C6686B9-B9BD-4812-92E0-EECFD2EF7E07@apstat.com>	<20061012165341.GA10265@opale.iro.umontreal.ca>	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>	<20061013114431.GA8014@opale.iro.umontreal.ca>	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>	<20061013132318.GA9288@opale.iro.umontreal.ca>	<452FA8A7.4080407@apstat.com>	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+	<20061013151346.GA13914@opale.iro.umontreal.ca>
+	<452FAFA9.4000104@apstat.com>
+Message-ID: <97D89DB3-F22F-44AA-BB16-71BD6EAE9A54@apstat.com>
+
+
+> J'opte pour l'ajout d'un accesseur public.
+
+Bon ?a fait deux puristes! Je m'avoue vaincu et me plie ? la  
+majorit?. Mais si vous devenez par trop intransigeant je vais vous  
+demander d'?crire des accesseurs (un en lecture et un en ?criture au  
+besoin) pour TOUTES les options de TOUS les objets de PLearn...  
+Histoire d'?tre des puristes consistants tout de m?me! ;-p
+
+-- Pascal
+
+
+
+
+
+From jaonary at gmail.com  Fri Oct 13 17:40:36 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 13 Oct 2006 17:40:36 +0200
+Subject: [Plearn-core] Hack to avoid deepCopy
+In-Reply-To: <97D89DB3-F22F-44AA-BB16-71BD6EAE9A54@apstat.com>
+References: <c81af8c30610120844i4c41eee9yba45b7696c4b5de4@mail.gmail.com>
+	<c81af8c30610130354q2b97b843r6cfa5aa45004a4d@mail.gmail.com>
+	<20061013114431.GA8014@opale.iro.umontreal.ca>
+	<c81af8c30610130546p79c5c223y641d8581d8ec828e@mail.gmail.com>
+	<20061013132318.GA9288@opale.iro.umontreal.ca>
+	<452FA8A7.4080407@apstat.com>
+	<c81af8c30610130810w46e63a3ck3b746f1d39b8df66@mail.gmail.com>
+	<20061013151346.GA13914@opale.iro.umontreal.ca>
+	<452FAFA9.4000104@apstat.com>
+	<97D89DB3-F22F-44AA-BB16-71BD6EAE9A54@apstat.com>
+Message-ID: <c81af8c30610130840l197bf8cckb65401931a3774fe@mail.gmail.com>
+
+C'est le prix de la d?mocratie :-)
+
+On 10/13/06, Pascal Vincent <pascal at apstat.com> wrote:
+>
+>
+> > J'opte pour l'ajout d'un accesseur public.
+>
+> Bon ?a fait deux puristes! Je m'avoue vaincu et me plie ? la
+> majorit?. Mais si vous devenez par trop intransigeant je vais vous
+> demander d'?crire des accesseurs (un en lecture et un en ?criture au
+> besoin) pour TOUTES les options de TOUS les objets de PLearn...
+> Histoire d'?tre des puristes consistants tout de m?me! ;-p
+>
+> -- Pascal
+>
+>
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/bf80026e/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct 13 17:40:28 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 11:40:28 -0400
+Subject: [Plearn-core] PlearnPointer et Heritage
+In-Reply-To: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+References: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+Message-ID: <20061013154026.GA14629@opale.iro.umontreal.ca>
+
+On 13 Oct 2006, Jaonary Rabarisoa wrote:
+> Je n'arrete pas d'emmener les problemes :) Apr?s l'?pisode des resultsmats
+> voici une autre concernant les PP. Pour illustrer mes propos je vais tout de
+> suit ?crire ce qui me passe par la t?te.
+> 
+> class SuperClass
+> {
+> .....
+> }
+> 
+> class SubClass : public SuperClass
+> {
+> type one_subclass_member;
+> 
+> ...
+> }
+> 
+> void test()
+> {
+> PP<SuperClass> an_instance = new SubClass; // ici tout va bien
+> an_instance->one_subclass_member = values; // problem one_subclass_member is
+> not a member of SuperClass
+> }
+> 
+> Alors comment faire pour r?cuperer ce one_subclass_member ?
+
+Soit :
+    PP<SubClass> an_instance = new SubClass;
+et si tu as besoin de le transformer en PP<SuperClass> plus tard, tu
+devrais pouvoir faire un
+    PP<SuperClass> super_ptr = (SubClass*) an_instance;
+(possiblement sans d?clarer super_ptr si c'est juste pour une
+utilisation dans une affectation ou un appel de fonction).
+
+Soit :
+    ((SubClass*) an_instance)->one_subclass_member = values;
+ce qui en fait ne marche p-? pas directement, il te faut p-? un double
+cast :
+    ((SubClass*) (SuperClass*) an_instance)->one_subclass_member = values;
+voir utiliser un static_cast<..> ou un dynamic_cast<..>, mais j'avoue que
+je ne les ma?trise pas assez pour te dire si ?a ferait une diff?rence.
+
+--
+Olivier
+
+
+From pascal at apstat.com  Fri Oct 13 17:42:20 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 13 Oct 2006 11:42:20 -0400
+Subject: [Plearn-core] PlearnPointer et Heritage
+In-Reply-To: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+References: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+Message-ID: <084239B1-5B02-4C37-8545-923107770570@apstat.com>
+
+
+Le 06-10-13 ? 11:34, Jaonary Rabarisoa a ?crit :
+
+> Je n'arrete pas d'emmener les problemes :) Apr?s l'?pisode des  
+> resultsmats voici une autre concernant les PP. Pour illustrer mes  
+> propos je vais tout de suit ?crire ce qui me passe par la t?te.
+>
+> class SuperClass
+> {
+> .....
+> }
+>
+> class SubClass : public SuperClass
+> {
+> type one_subclass_member;
+>
+> ...
+> }
+>
+> void test()
+> {
+> PP<SuperClass> an_instance = new SubClass; // ici tout va bien
+> an_instance->one_subclass_member = values; // problem  
+> one_subclass_member is not a member of SuperClass
+> }
+>
+> Alors comment faire pour r?cuperer ce one_subclass_member ?
+
+Voil? au moins une m?thode qui marche:
+
+dynamic_cast<SubClass*>((SuperClass*)an_instance)->one_subclass_member;
+
+Ah, la laideur des casts!
+
+Sinon quelquechose que j'avais d?j? sugg?r? par le pass?:
+SubClass* p_an_instance = new SubClass;
+PP<SuperClass> an_instance = p_an_instance;
+p_an_instance->one_subclass_member = values;
+
+>
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From pascal at apstat.com  Fri Oct 13 17:44:16 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Fri, 13 Oct 2006 11:44:16 -0400
+Subject: [Plearn-core] PlearnPointer et Heritage
+In-Reply-To: <20061013154026.GA14629@opale.iro.umontreal.ca>
+References: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+	<20061013154026.GA14629@opale.iro.umontreal.ca>
+Message-ID: <1A3655BE-DED2-41AE-B8AE-C5E86A3E4D44@apstat.com>
+
+Bon j'arr?te de r?pondre aux questions PLearn, Olivier est "plus vite  
+que moi sur le piton" :-)
+
+
+Le 06-10-13 ? 11:40, Olivier Delalleau a ?crit :
+
+> On 13 Oct 2006, Jaonary Rabarisoa wrote:
+>> Je n'arrete pas d'emmener les problemes :) Apr?s l'?pisode des  
+>> resultsmats
+>> voici une autre concernant les PP. Pour illustrer mes propos je  
+>> vais tout de
+>> suit ?crire ce qui me passe par la t?te.
+>>
+>> class SuperClass
+>> {
+>> .....
+>> }
+>>
+>> class SubClass : public SuperClass
+>> {
+>> type one_subclass_member;
+>>
+>> ...
+>> }
+>>
+>> void test()
+>> {
+>> PP<SuperClass> an_instance = new SubClass; // ici tout va bien
+>> an_instance->one_subclass_member = values; // problem  
+>> one_subclass_member is
+>> not a member of SuperClass
+>> }
+>>
+>> Alors comment faire pour r?cuperer ce one_subclass_member ?
+>
+> Soit :
+>     PP<SubClass> an_instance = new SubClass;
+> et si tu as besoin de le transformer en PP<SuperClass> plus tard, tu
+> devrais pouvoir faire un
+>     PP<SuperClass> super_ptr = (SubClass*) an_instance;
+> (possiblement sans d?clarer super_ptr si c'est juste pour une
+> utilisation dans une affectation ou un appel de fonction).
+>
+> Soit :
+>     ((SubClass*) an_instance)->one_subclass_member = values;
+> ce qui en fait ne marche p-? pas directement, il te faut p-? un double
+> cast :
+>     ((SubClass*) (SuperClass*) an_instance)->one_subclass_member =  
+> values;
+> voir utiliser un static_cast<..> ou un dynamic_cast<..>, mais  
+> j'avoue que
+> je ne les ma?trise pas assez pour te dire si ?a ferait une diff?rence.
+>
+> --
+> Olivier
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From lamblinp at iro.umontreal.ca  Fri Oct 13 17:56:34 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 13 Oct 2006 17:56:34 +0200
+Subject: [Plearn-core] PlearnPointer et Heritage
+In-Reply-To: <20061013154026.GA14629@opale.iro.umontreal.ca>
+References: <c81af8c30610130834x63e59364hc3bad23c4761f9eb@mail.gmail.com>
+	<20061013154026.GA14629@opale.iro.umontreal.ca>
+Message-ID: <20061013155634.GA21440@pig.zood.org>
+
+On Fri, Oct 13, 2006, Olivier Delalleau wrote:
+> On 13 Oct 2006, Jaonary Rabarisoa wrote:
+> > Alors comment faire pour r?cuperer ce one_subclass_member ?
+> 
+> Soit :
+>     PP<SubClass> an_instance = new SubClass;
+> et si tu as besoin de le transformer en PP<SuperClass> plus tard, tu
+> devrais pouvoir faire un
+>     PP<SuperClass> super_ptr = (SubClass*) an_instance;
+> (possiblement sans d?clarer super_ptr si c'est juste pour une
+> utilisation dans une affectation ou un appel de fonction).
+
+Ou encore :
+    PP<SuperClass> super_ptr = get_pointer(an_instance);
+
+ce qui t'?vite d'avoir ? retrouver le type exact de SubClass.
+get_pointer(...) te permet de r?cup?rer le ? vrai ? pointeur qui est
+dans le PP<...>.
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Fri Oct 13 21:27:30 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 13 Oct 2006 15:27:30 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+ =?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <20061012165137.GA10135@opale.iro.umontreal.ca>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+	<452E6983.1060708@apstat.com>
+	<20061012165137.GA10135@opale.iro.umontreal.ca>
+Message-ID: <452FE8A2.6070008@apstat.com>
+
+
+>> Qu'est-ce que tu veux dire par "potentiellement utile de savoir o? se 
+>> trouvent les donn?es du PTester"?
+>>     
+> Par ex. si on a sauv? un HyperLearner, qui contient un PTester, il
+> pourrait ?tre utile de conna?tre son expdir pour retourner jeter un coup
+> d'oeil aux ?tapes de l'optimisation.
+>   
+Par "jeter un coup d'oeil", tu veux dire par un programme ou plut?t par 
+inspection humaine?  Car si c'est par inspection humaine, je le fais ? 
+chaque jour sans jamais avoir ?t? aller voir dans le .psave. :-)  Et si 
+c'est par programme, tu es probablement mieux d'introspecter directement 
+les HyperOptimiser depuis ton code (ce que je fais aussi -- pratique 
+pour tracer des courbes de performance en fonction des valeurs 
+d'hyperparam?tres).
+
+
+>> Et autres question sur ta premi?re solution: comment crois-tu que les 
+>> PPath peuvent nous aider ici? 
+>>     
+> Si par exemple tu lances tes exp?riences localement dans /u/exp/plearn,
+> r?pertoire qui n'existe que sur ta machine de calcul, tu peux d?finir
+> dans ton ppath.config un r?pertoire EXP_ROOT ?gal ? "/u/exp/plearn", et
+> sur ta nouvelle machine (sur laquelle tu charges ton PLearner), tu
+> d?finis EXP_ROOT comme par ex. /tmp/exp_root. Comme le PPath est sauv?
+> de mani?re canonique (EXP_ROOT:blabla/bloblo/expdir), il ne devrait pas
+> planter.
+>   
+Mon probl?me est qu'il s'agit d'une utilisation "embedded" de PLearn, 
+i.e. ?a fait partie d'une grosse application dont PLearn n'est qu'une 
+petite pi?ce, et les mod?les .psave sont livr?s off-site et doivent ?tre 
+le plus self-contained possible.  Donc pr?f?rablement ne contenir aucune 
+r?f?rence au r?seau ayant servi ? faire l'entra?nement, et ne pas 
+d?pendre de bidules secondaires comme les configurations de ppath (si on 
+peut l'?viter) ...
+
+Bon, apr?s 24 heures de d?lai, puisque personne n'a soulev? d'objection 
+forte (autre que des ?ventualit?s th?oriques et conditionnelles), je 
+vais aller de l'avant et mettre "expdir" comme nosave.  Jusqu'? la 
+prochaine lev?e de boucliers. :-)
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061013/771955b5/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Oct 13 21:36:48 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 15:36:48 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+	=?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <452FE8A2.6070008@apstat.com>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+	<452E6983.1060708@apstat.com>
+	<20061012165137.GA10135@opale.iro.umontreal.ca>
+	<452FE8A2.6070008@apstat.com>
+Message-ID: <20061013193646.GA18825@opale.iro.umontreal.ca>
+
+On 13 Oct 2006, Nicolas Chapados wrote:
+> 
+>         Qu'est-ce que tu veux dire par "potentiellement utile de savoir o? se
+>         trouvent les donn?es du PTester"?
+> 
+> 
+> 
+>     Par ex. si on a sauv? un HyperLearner, qui contient un PTester, il
+>     pourrait ?tre utile de conna?tre son expdir pour retourner jeter un coup
+>     d'oeil aux ?tapes de l'optimisation.
+> 
+> 
+> 
+> Par "jeter un coup d'oeil", tu veux dire par un programme ou plut?t par
+> inspection humaine?  Car si c'est par inspection humaine, je le fais ? chaque
+> jour sans jamais avoir ?t? aller voir dans le .psave. :-)  Et si c'est par
+> programme, tu es probablement mieux d'introspecter directement les
+> HyperOptimiser depuis ton code (ce que je fais aussi -- pratique pour tracer
+> des courbes de performance en fonction des valeurs d'hyperparam?tres).
+
+Bon, ok, je t'avais pr?venu que c'?tait tordu.
+D'ailleurs, je viens de penser ? autre chose. Dans un PTester il y a une
+option du genre 'save_initial_tester', qui (th?oriquement) doit
+permettre de relancer une exp?rience m?me si on n'a plus le script qui
+l'a lanc?e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+pas sauv?e (en tout cas, ne plus fonctionner exactement pareil).
+
+> 
+> 
+> 
+>         Et autres question sur ta premi?re solution: comment crois-tu que les
+>         PPath peuvent nous aider ici?
+> 
+> 
+> 
+>     Si par exemple tu lances tes exp?riences localement dans /u/exp/plearn,
+>     r?pertoire qui n'existe que sur ta machine de calcul, tu peux d?finir
+>     dans ton ppath.config un r?pertoire EXP_ROOT ?gal ? "/u/exp/plearn", et
+>     sur ta nouvelle machine (sur laquelle tu charges ton PLearner), tu
+>     d?finis EXP_ROOT comme par ex. /tmp/exp_root. Comme le PPath est sauv?
+>     de mani?re canonique (EXP_ROOT:blabla/bloblo/expdir), il ne devrait pas
+>     planter.
+> 
+> 
+> 
+> Mon probl?me est qu'il s'agit d'une utilisation "embedded" de PLearn, i.e. ?a
+> fait partie d'une grosse application dont PLearn n'est qu'une petite pi?ce, et
+> les mod?les .psave sont livr?s off-site et doivent ?tre le plus self-contained
+> possible.  Donc pr?f?rablement ne contenir aucune r?f?rence au r?seau ayant
+> servi ? faire l'entra?nement, et ne pas d?pendre de bidules secondaires comme
+> les configurations de ppath (si on peut l'?viter) ...
+
+D'accord... cela dit j'aurais tendance ? dire que tu risques d'avoir
+d'autres probl?mes de PPath si tu n'as pas de configuration PPath locale
+(enfin, je ne sais pas, p-? que tout est d?j? pr?vu pour ?a...).
+
+> Bon, apr?s 24 heures de d?lai, puisque personne n'a soulev? d'objection forte
+> (autre que des ?ventualit?s th?oriques et conditionnelles), je vais aller de
+> l'avant et mettre "expdir" comme nosave.  Jusqu'? la prochaine lev?e de
+> boucliers. :-)
+
+Je ne manquerai pas de te faire savoir quand ?a va poser probl?me :P
+
+--
+Olivier
+
+
+From chapados at apstat.com  Fri Oct 13 22:04:02 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 13 Oct 2006 16:04:02 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+ =?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <20061013193646.GA18825@opale.iro.umontreal.ca>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+	<452E6983.1060708@apstat.com>
+	<20061012165137.GA10135@opale.iro.umontreal.ca>
+	<452FE8A2.6070008@apstat.com>
+	<20061013193646.GA18825@opale.iro.umontreal.ca>
+Message-ID: <452FF132.1000108@apstat.com>
+
+
+> Bon, ok, je t'avais pr?venu que c'?tait tordu.
+> D'ailleurs, je viens de penser ? autre chose. Dans un PTester il y a une
+> option du genre 'save_initial_tester', qui (th?oriquement) doit
+> permettre de relancer une exp?rience m?me si on n'a plus le script qui
+> l'a lanc?e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+> pas sauv?e (en tout cas, ne plus fonctionner exactement pareil).
+>   
+Oui, mais je ne veux pas toucher ? l'option "expdir" de PTester!  
+Seulement celle de PLearner.  Donc dans ce sc?nario, le PTester est 
+sauvegard? convenablement (avec son expdir et tout), et quand on le 
+recharge, la premi?re chose qu'il fait est un setExperimentDirectory sur 
+son PLearner.  Donc tout est OK pour relancer l'exp?rience.
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Sat Oct 14 03:21:35 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Oct 2006 21:21:35 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?Option_PLearner=3A=3Aexpdir_d=E9clar?=
+	=?iso-8859-1?q?=E9e_nosave=3F=3F=3F?=
+In-Reply-To: <452FF132.1000108@apstat.com>
+References: <452E5F3F.3050709@apstat.com>
+	<20061012154941.GB9437@opale.iro.umontreal.ca>
+	<452E6983.1060708@apstat.com>
+	<20061012165137.GA10135@opale.iro.umontreal.ca>
+	<452FE8A2.6070008@apstat.com>
+	<20061013193646.GA18825@opale.iro.umontreal.ca>
+	<452FF132.1000108@apstat.com>
+Message-ID: <20061014012133.GA23887@opale.iro.umontreal.ca>
+
+On 13 Oct 2006, Nicolas Chapados wrote:
+> 
+> > Bon, ok, je t'avais pr?venu que c'?tait tordu.
+> > D'ailleurs, je viens de penser ? autre chose. Dans un PTester il y a une
+> > option du genre 'save_initial_tester', qui (th?oriquement) doit
+> > permettre de relancer une exp?rience m?me si on n'a plus le script qui
+> > l'a lanc?e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+> > pas sauv?e (en tout cas, ne plus fonctionner exactement pareil).
+> >   
+> Oui, mais je ne veux pas toucher ? l'option "expdir" de PTester!  
+> Seulement celle de PLearner.  Donc dans ce sc?nario, le PTester est 
+> sauvegard? convenablement (avec son expdir et tout), et quand on le 
+> recharge, la premi?re chose qu'il fait est un setExperimentDirectory sur 
+> son PLearner.  Donc tout est OK pour relancer l'exp?rience.
+
+Bon, juste pour information, depuis le d?but je parlais de l'expdir du
+PTester, j'avais mal lu le message d'origine, d?sol?.
+J'imagine que ?a peut poser probl?me pour un PLearner qui sauvegarde des
+donn?es dont il a besoin pour ?tre r?utilis?, mais je n'en connais pas
+actuellement qui le fasse. Et au pire on peut toujours red?clarer expdir
+sans nosave s'il y en a besoin. Donc ?a me semble ok.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Tue Oct 24 21:23:25 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Tue, 24 Oct 2006 21:23:25 +0200
+Subject: [Plearn-core] =?utf-8?q?Impl=C3=A9menter_un_Learner?=
+Message-ID: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+
+Bonjour tout le monde,
+Je continue toujours mon aventure dans le monde de PLearn. Ne trouvant pas
+mon bonheur parmis les milliers de PLearner d?j? impl?ment?s dans PLearn, je
+voudrais maintenant impl?menter le mien :) Suis-je un peu fou ?
+Concr?tement, je voudrai r?soudre un probl?me de classification binaire dans
+un espace form? par l'ensemble de liste de taille fini de vecteur dans R^d.
+Ouff. Plus simplement, si X est mon input alors il s'?crira
+
+X = {X_i, i = 1, ..., l(X) et X_i dans R^d}
+
+L'id?e ici c'est d'utiliser des m?thodes d'aggr?gation (boosting). Et pour
+faire simple je commence par adaboost.
+Chouette adaboost est d?j? dans PLearn. Mais ..... Je dois en fait
+impl?menter mon propre weak learner et c'est la que c'est un peu technique.
+Tous les learner de PLearn prends comme entr? un Vec. A moins que j'ai loup?
+quelque chose. Donc 1ere question, il y t-il des exemples de learner qui
+prennent autre chose que les Vec en entr?e ( graphe , liste, ... ) pour que
+je m'en inspire ?
+
+Si c'est pas le cas, est-ce que c'est envisageable et comment pourrais-je
+les impl?ment? pour que ca suive la philosophie de PLearn ? Notamment,
+j'avais l'intension d'utiliser la classe adaboost de PLearn en lui donnant
+tout simplement le weak learner que j'aurai impl?ment?. Au fait, on aurait
+aim? que les inputs sont des smart pointer sur un input g?n?rique. Genre une
+notion de feature space qui me permet de r?soudre un probl?me dans l'espace
+que je veux.
+
+Au point de vue purement impl?mentation, j'aimerai aussi avoir une petite
+pr?cision sur la fonction makeDeepCopyFromShallow(). J'ai bien compris que
+c'est pour copier les smart pointer mais que deviennent les membre qui ne
+sont pas des smart pointer comme real, int, bool, ... Aussi, quel est
+exactement le r?le de MapCopies ?
+
+Bien ? vous,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061024/c6265669/attachment.html>
+
+From delallea at iro.umontreal.ca  Tue Oct 24 21:49:53 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 24 Oct 2006 15:49:53 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Impl=E9menter_un_Learner?=
+In-Reply-To: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+References: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+Message-ID: <20061024194952.GA15213@opale.iro.umontreal.ca>
+
+Salut,
+
+Pas de chance, PLearn est tr?s mal foutu pour les inputs de taille
+variable (c'est un de ses gros d?fauts ? l'heure actuelle).
+Je sais que ceux qui ont travaill? avec de tels inputs ont plus ou moins
+chacun cod? leurs 'hacks' perso pour pouvoir le faire, mais je ne sais
+plus exactement comment.
+Voil? une suggestion relativement facile ? impl?menter pour ton
+probl?me :
+- rajoute une option dans ton learner qui est le fichier correspondant ?
+  ta base de donn?es initiale (ou, si tu travailles en m?moire, un
+  pointeur direct vers tes donn?es)
+- remplace ton jeu de donn?es par une VMat dont l'input est remplac? par
+  l'index de l'exemple dans ta base de donn?es originale, et la target
+  par contre est toujours la m?me
+
+Maintenant, quand ton learner doit faire un calcul ? partir de l'exemple
+dont l'input est juste un seul nombre r?el 'x', r?cup?re les vraies
+donn?es en castant 'x' en int (int x_int = int(round(x)) par s?curit?)
+et en utilisant le r?sultat pour r?cup?rer l'exemple num?ro x_int, de la
+mani?re que tu pr?f?res.
+
+Le makeDeepCopyFromShallowCopy(..) est, comme son nom l'indique, appel?
+apr?s l'op?ration de 'shallow copy', qui va automatiquement copier les
+types simples comme real, int, bool, string (et ? peu pr?s tous les
+trucs std), etc.
+Le r?le de CopiesMap est de se souvenir de quels objets ont d?j? ?t?
+deep-copi?s, afin d'?viter de les deep-copier plusieurs fois. Par
+exemple si A et B ont un champ sub_learner de type PP<PLearner>, et que
+A.sub_learner == B.sub_learner == my_learner, et qu'un objet C a un
+champ qui est un vecteur contenant A et B, la deep-copie de C va
+entra?ner :
+- la deep-copie de A, qui va entra?ner la deep-copie de my_learner
+- la deep-copie de B, qui va vouloir deep-copier my_learner aussi, mais
+  il va se rendre compte qu'il a d?j? ?t? deep-copi?, donc le champ
+  B.sub_learner va plut?t pointer vers cette deep-copie plut?t que de
+  recr?er une nouvelle deep_copy (ce qui assure qu'on aura toujours
+  A.sub_learner == B.sub_learner)
+
+--
+Olivier
+
+On 24 Oct 2006, Jaonary Rabarisoa wrote:
+> Bonjour tout le monde,
+> 
+> Je continue toujours mon aventure dans le monde de PLearn. Ne trouvant pas mon
+> bonheur parmis les milliers de PLearner d?j? impl?ment?s dans PLearn, je
+> voudrais maintenant impl?menter le mien :) Suis-je un peu fou ? 
+> Concr?tement, je voudrai r?soudre un probl?me de classification binaire dans un
+> espace form? par l'ensemble de liste de taille fini de vecteur dans R^d. Ouff.
+> Plus simplement, si X est mon input alors il s'?crira 
+> 
+> X = {X_i, i = 1, ..., l(X) et X_i dans R^d}
+> 
+> L'id?e ici c'est d'utiliser des m?thodes d'aggr?gation (boosting). Et pour
+> faire simple je commence par adaboost. 
+> Chouette adaboost est d?j? dans PLearn. Mais ..... Je dois en fait impl?menter
+> mon propre weak learner et c'est la que c'est un peu technique. Tous les
+> learner de PLearn prends comme entr? un Vec. A moins que j'ai loup? quelque
+> chose. Donc 1ere question, il y t-il des exemples de learner qui prennent autre
+> chose que les Vec en entr?e ( graphe , liste, ... ) pour que je m'en inspire ?
+> 
+> Si c'est pas le cas, est-ce que c'est envisageable et comment pourrais-je les
+> impl?ment? pour que ca suive la philosophie de PLearn ? Notamment, j'avais
+> l'intension d'utiliser la classe adaboost de PLearn en lui donnant tout
+> simplement le weak learner que j'aurai impl?ment?. Au fait, on aurait aim? que
+> les inputs sont des smart pointer sur un input g?n?rique. Genre une notion de
+> feature space qui me permet de r?soudre un probl?me dans l'espace que je veux.
+> 
+> Au point de vue purement impl?mentation, j'aimerai aussi avoir une petite
+> pr?cision sur la fonction makeDeepCopyFromShallow(). J'ai bien compris que
+> c'est pour copier les smart pointer mais que deviennent les membre qui ne sont
+> pas des smart pointer comme real, int, bool, ... Aussi, quel est exactement le
+> r?le de MapCopies ? 
+> 
+> Bien ? vous,
+> 
+> Jaonary
+
+
+From lamblinp at iro.umontreal.ca  Wed Oct 25 04:33:04 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 25 Oct 2006 04:33:04 +0200
+Subject: [Plearn-core] inclusion de plapack.h
+Message-ID: <20061025023304.GA4252@pig.zood.org>
+
+Salut ? vous,
+
+j'ai remarqu? que les fichiers suivants font directement appel ?
+<plearn/math/plapack.h>.
+
+plearn/ker/ReconstructionWeightsKernel.cc
+plearn/vmat/VMat_linalg.cc
+plearn_learners/regressors/PLS.cc
+plearn_learners/unsupervised/KernelProjection.cc
+plearn_learners/unsupervised/PCA.cc
+plearn_learners/distributions/GaussianDistribution.cc
+plearn_learners/distributions/GaussMix.cc
+plearn_learners_experimental/LinearInductiveTransferClassifier.cc
+plearn_learners_experimental/SurfaceTemplate/geometry.cc
+
+
+?a pose des probl?mes au link lorsqu'on compile plearn avec l'option
+-noblas, puisqu'alors il ne va pas linker avec lapack.
+
+Qu'est-ce qu'on fait alors :
+  - une impl?mentation inefficace, sans blas ni lapack, des fonctions en
+    question, pour le cas o? on ne dispose pas de blas ;
+  - on linke quand m?me avec lapack en option -noblas ;
+  - on oublie l'option -noblas ?
+
+Merci de vos r?ponses,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed Oct 25 16:25:31 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 25 Oct 2006 10:25:31 -0400
+Subject: [Plearn-core] inclusion de plapack.h
+In-Reply-To: <20061025023304.GA4252@pig.zood.org>
+References: <20061025023304.GA4252@pig.zood.org>
+Message-ID: <20061025142529.GA31384@opale.iro.umontreal.ca>
+
+Il me semble que Nicolas avait sugg?r? de transformer ?a en optional
+library ?
+
+--
+Olivier
+
+On 25 Oct 2006, Pascal Lamblin wrote:
+> Salut ? vous,
+> 
+> j'ai remarqu? que les fichiers suivants font directement appel ?
+> <plearn/math/plapack.h>.
+> 
+> plearn/ker/ReconstructionWeightsKernel.cc
+> plearn/vmat/VMat_linalg.cc
+> plearn_learners/regressors/PLS.cc
+> plearn_learners/unsupervised/KernelProjection.cc
+> plearn_learners/unsupervised/PCA.cc
+> plearn_learners/distributions/GaussianDistribution.cc
+> plearn_learners/distributions/GaussMix.cc
+> plearn_learners_experimental/LinearInductiveTransferClassifier.cc
+> plearn_learners_experimental/SurfaceTemplate/geometry.cc
+> 
+> 
+> ?a pose des probl?mes au link lorsqu'on compile plearn avec l'option
+> -noblas, puisqu'alors il ne va pas linker avec lapack.
+> 
+> Qu'est-ce qu'on fait alors :
+>   - une impl?mentation inefficace, sans blas ni lapack, des fonctions en
+>     question, pour le cas o? on ne dispose pas de blas ;
+>   - on linke quand m?me avec lapack en option -noblas ;
+>   - on oublie l'option -noblas ?
+> 
+> Merci de vos r?ponses,
+
+
+From jaonary at gmail.com  Thu Oct 26 12:32:54 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 26 Oct 2006 12:32:54 +0200
+Subject: [Plearn-core] =?utf-8?q?Impl=C3=A9menter_un_Learner?=
+In-Reply-To: <20061024194952.GA15213@opale.iro.umontreal.ca>
+References: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+	<20061024194952.GA15213@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610260332v64073384k3a53baf38e1764c2@mail.gmail.com>
+
+On 10/24/06, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+>
+> Salut,
+>
+> Pas de chance, PLearn est tr?s mal foutu pour les inputs de taille
+> variable (c'est un de ses gros d?fauts ? l'heure actuelle).
+> Je sais que ceux qui ont travaill? avec de tels inputs ont plus ou moins
+> chacun cod? leurs 'hacks' perso pour pouvoir le faire, mais je ne sais
+> plus exactement comment.
+> Voil? une suggestion relativement facile ? impl?menter pour ton
+> probl?me :
+> - rajoute une option dans ton learner qui est le fichier correspondant ?
+>   ta base de donn?es initiale (ou, si tu travailles en m?moire, un
+>   pointeur direct vers tes donn?es)
+> - remplace ton jeu de donn?es par une VMat dont l'input est remplac? par
+>   l'index de l'exemple dans ta base de donn?es originale, et la target
+>   par contre est toujours la m?me
+>
+> Maintenant, quand ton learner doit faire un calcul ? partir de l'exemple
+> dont l'input est juste un seul nombre r?el 'x', r?cup?re les vraies
+> donn?es en castant 'x' en int (int x_int = int(round(x)) par s?curit?)
+> et en utilisant le r?sultat pour r?cup?rer l'exemple num?ro x_int, de la
+> mani?re que tu pr?f?res.
+
+
+
+J'ai men? quelque refl?xion sur ton id?e, mais j'ai des difficult?s ? le
+voir concr?tement pour pouvoir l'impl?menter.
+Comme j'ai dit mes donn?s sont form?e par des listes de taille fini de
+vecteur de dimension d (=128). Il y a plusieurs possibilit?s pour
+repr?senter ces donn?es. Soit effictivement une liste de vecteur (
+TVec<Vec>) ou matriciellement (chaque ligne correspond ? un vecteur).
+J'utilise la repr?sentation matricielle car c'est la mani?re la plus simple
+de les  g?rer surtout pour le IO.
+
+Donc, si on note X_i,Y_i les donn?es d'apprentissage
+
+avec Y_i = {0 ou 1} et X_i un matrice avec n_i lignes et d colonnes.
+
+Le nombre de lignes, n_i, des matrices X_i  sont tous diff?rents.
+
+ En suivant, la suggestion ci-dessus, je devrai remplacer mon jeu de donn?e
+(X_i,Y_i) par un autre, notons (Z_i,Y_i). Les Y_i sont les memes, par contre
+les Z_i doivent ?tre un poiteur ou ref sur les X_i qui sont dans mon cas
+soit les Mat ou soit des VMat.  Et la question,  n'est il pas bien de faire
+ce hack au  niveau des VMat  ou lieu de learner ? Genre je cr?e une sous
+classe de VMat avec un Vec<VMat> comme membre.
+Aussi, mes Z_i devraient plutot ?tre des nom de fichier dans ce cas car je
+pense que je dois laisser mes matrices X_i sur le disque ? cause de la
+m?moire. En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En
+plus tout ca devrait se faire de maniere transparente quand je fait un
+getDataSet(...) ou un setTrainigExample(...)
+
+Merci de votre aide :-)
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061026/57f5382d/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct 26 15:49:24 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 26 Oct 2006 09:49:24 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Impl=E9menter_un_Learner?=
+In-Reply-To: <c81af8c30610260332v64073384k3a53baf38e1764c2@mail.gmail.com>
+References: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+	<20061024194952.GA15213@opale.iro.umontreal.ca>
+	<c81af8c30610260332v64073384k3a53baf38e1764c2@mail.gmail.com>
+Message-ID: <20061026134922.GA20594@opale.iro.umontreal.ca>
+
+>  En suivant, la suggestion ci-dessus, je devrai remplacer mon jeu de donn?e
+> (X_i,Y_i) par un autre, notons (Z_i,Y_i). Les Y_i sont les memes, par contre
+> les Z_i doivent ?tre un poiteur ou ref sur les X_i qui sont dans mon cas soit
+> les Mat ou soit des VMat.  Et la question,  n'est il pas bien de faire ce hack
+> au  niveau des VMat  ou lieu de learner ? Genre je cr?e une sous classe de VMat
+> avec un Vec<VMat> comme membre.
+
+Le probl?me c'est que les VMat ne sont pas bien adapt?es pour avoir une
+largeur variable (c'est support? th?oriquement si width() == -1, mais en
+pratique il y a beaucoup de code qui ne fonctionnera pas si c'est le
+cas).
+C'est pourquoi je sugg?re de coder ?a dans le learner. Si tu en as
+besoin ? d'autres endroits tu peux te cr?er une classe qui se charge juste
+de charger tes donn?es, qui serait utilis?e par ton learner et que tu
+pourrais r?utiliser dans d'autres learners utilisant le m?me genre de
+donn?es.
+
+> Aussi, mes Z_i devraient plutot ?tre des nom de fichier dans ce cas car je
+> pense que je dois laisser mes matrices X_i sur le disque ? cause de la m?moire.
+> En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En plus tout ca
+> devrait se faire de maniere transparente quand je fait un getDataSet(...) ou un
+> setTrainigExample(...)
+
+En effet dans ce cas un nom de fichier est une bonne id?e. Il va alors
+falloir que tu utilises les string-mappings des VMats (NB: si tu cr?es
+un fichier .amat avec juste sur chaque ligne le nom de fichier suivi de
+la target, tu devrais ?tre capable de le lire directemnent, fais un vmat
+view dessus pour v?rifier, joue avec la touche s/S pour 'switcher'
+l'affichage des string mappings).
+
+--
+Olivier
+
+
+
+From jaonary at gmail.com  Thu Oct 26 16:01:36 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Thu, 26 Oct 2006 16:01:36 +0200
+Subject: [Plearn-core] =?utf-8?q?Impl=C3=A9menter_un_Learner?=
+In-Reply-To: <20061026134922.GA20594@opale.iro.umontreal.ca>
+References: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+	<20061024194952.GA15213@opale.iro.umontreal.ca>
+	<c81af8c30610260332v64073384k3a53baf38e1764c2@mail.gmail.com>
+	<20061026134922.GA20594@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30610260701r6ef85235qf409bca80677c03@mail.gmail.com>
+
+> > Aussi, mes Z_i devraient plutot ?tre des nom de fichier dans ce cas car
+> je
+> > pense que je dois laisser mes matrices X_i sur le disque ? cause de la
+> m?moire.
+> > En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En plus
+> tout ca
+> > devrait se faire de maniere transparente quand je fait un
+> getDataSet(...) ou un
+> > setTrainigExample(...)
+>
+> En effet dans ce cas un nom de fichier est une bonne id?e. Il va alors
+> falloir que tu utilises les string-mappings des VMats (NB: si tu cr?es
+> un fichier .amat avec juste sur chaque ligne le nom de fichier suivi de
+> la target, tu devrais ?tre capable de le lire directemnent, fais un vmat
+> view dessus pour v?rifier, joue avec la touche s/S pour 'switcher'
+> l'affichage des string mappings).
+
+
+Donc, dans ce cas tout devrait etre plus simple que je ne le pensais  car au
+lieu d'avoir un  VMat  avec des valeurs numerique j'aurais en fait un VMat
+avec comme input des string et des target comme d'hab. Je ne savais pas que
+c'etait possible avec les VMats. Je vais tester ca de suite. Par contre ce
+que tu entendais par string-mapping c'est quoi exactement ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061026/1ab19d6c/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu Oct 26 16:03:28 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 26 Oct 2006 10:03:28 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Impl=E9menter_un_Learner?=
+In-Reply-To: <c81af8c30610260701r6ef85235qf409bca80677c03@mail.gmail.com>
+References: <c81af8c30610241223h289eb284ta18ce976161e0cb0@mail.gmail.com>
+	<20061024194952.GA15213@opale.iro.umontreal.ca>
+	<c81af8c30610260332v64073384k3a53baf38e1764c2@mail.gmail.com>
+	<20061026134922.GA20594@opale.iro.umontreal.ca>
+	<c81af8c30610260701r6ef85235qf409bca80677c03@mail.gmail.com>
+Message-ID: <20061026140325.GA21002@opale.iro.umontreal.ca>
+
+On 26 Oct 2006, Jaonary Rabarisoa wrote:
+> 
+>     > Aussi, mes Z_i devraient plutot ?tre des nom de fichier dans ce cas car
+>     je
+>     > pense que je dois laisser mes matrices X_i sur le disque ? cause de la
+>     m?moire.
+>     > En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En plus
+>     tout ca
+>     > devrait se faire de maniere transparente quand je fait un getDataSet(...)
+>     ou un
+>     > setTrainigExample(...)
+> 
+>     En effet dans ce cas un nom de fichier est une bonne id?e. Il va alors
+>     falloir que tu utilises les string-mappings des VMats (NB: si tu cr?es
+>     un fichier .amat avec juste sur chaque ligne le nom de fichier suivi de
+>     la target, tu devrais ?tre capable de le lire directemnent, fais un vmat
+>     view dessus pour v?rifier, joue avec la touche s/S pour 'switcher'
+>     l'affichage des string mappings).
+> 
+> 
+> Donc, dans ce cas tout devrait etre plus simple que je ne le pensais  car au
+> lieu d'avoir un  VMat  avec des valeurs numerique j'aurais en fait un VMat avec
+> comme input des string et des target comme d'hab. Je ne savais pas que c'etait
+> possible avec les VMats. Je vais tester ca de suite. Par contre ce que tu
+> entendais par string-mapping c'est quoi exactement ?
+
+Justement les inputs sont toujours des nombres flottants, mais la VMat
+garde en memoire un mapping flottant <-> string, que tu peux utiliser
+pour convertir les flottants en strings.
+Fouille un peu dans VMatrix.h pour voir comment ca se gere...
+
+--
+Olivier
+
+

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C452E5F3F.3050709%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000191.html">
+   <LINK REL="Next"  HREF="000192.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C452E5F3F.3050709%40apstat.com%3E"
+       TITLE="[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???">chapados at apstat.com
+       </A><BR>
+    <I>Thu Oct 12 17:29:03 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000191.html">[Plearn-core] ERROR:	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully	(correctly) implemented yet!
+</A></li>
+        <LI>Next message: <A HREF="000192.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#190">[ date ]</a>
+              <a href="thread.html#190">[ thread ]</a>
+              <a href="subject.html#190">[ subject ]</a>
+              <a href="author.html#190">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut chers PLearners,
+
+Est-ce que certains d'entre vous d&#233;pendent du fait que l'option &quot;expdir&quot; 
+d'un PLearner est sauvegard&#233;e apr&#232;s un entra&#238;nement de mod&#232;le?  Si ce 
+n'est pas le cas, je proposerais de la d&#233;clarer &quot;nosave&quot;.  Voici mon cas 
+d'utilisation:
+
+   1. On entra&#238;ne un mod&#232;le sur le disque local d'une machine puissante
+      (pour des raisons de performance).
+   2. Apr&#232;s entra&#238;nement, ce mod&#232;le est sauvegard&#233;, avec son option
+      &quot;expdir&quot; pointant vers un r&#233;pertoire inaccessible depuis n'importe
+      o&#249; sauf la machine originale ayant servi &#224; l'entra&#238;nement
+   3. Plus tard, on essaie de recharger le mod&#232;le sur une autre machine,
+      et pouf!  Puisque PLearner::build_() essaie de cr&#233;er le expdir
+      s'il est sp&#233;cifi&#233; dans l'option de l'objet, on a un d&#233;sagr&#233;able
+      warning qui r&#233;primande l'utilisateur d&#233;concert&#233; et impuissant.
+
+Si vous avez ABSOLUMENT BESOIN de sauvegarder le expdir, il faudrait 
+(apr&#232;s explication de la raison) trouver ensemble une autre solution au 
+probl&#232;me ci-haut, qui pose un obstacle significatif &#224; l'utilisation 
+post-entra&#238;nement de mod&#232;les...
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/d8e80069/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061012/d8e80069/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000191.html">[Plearn-core] ERROR:	SVMClassificationTorch::makeDeepCopyFromShallowCopy not fully	(correctly) implemented yet!
+</A></li>
+	<LI>Next message: <A HREF="000192.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#190">[ date ]</a>
+              <a href="thread.html#190">[ thread ]</a>
+              <a href="subject.html#190">[ subject ]</a>
+              <a href="author.html#190">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

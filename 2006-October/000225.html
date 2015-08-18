@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] inclusion de plapack.h
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20inclusion%20de%20plapack.h&In-Reply-To=%3C20061025142529.GA31384%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000224.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] inclusion de plapack.h</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20inclusion%20de%20plapack.h&In-Reply-To=%3C20061025142529.GA31384%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] inclusion de plapack.h">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Oct 25 16:25:31 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000224.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#225">[ date ]</a>
+              <a href="thread.html#225">[ thread ]</a>
+              <a href="subject.html#225">[ subject ]</a>
+              <a href="author.html#225">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Il me semble que Nicolas avait sugg&#233;r&#233; de transformer &#231;a en optional
+library ?
+
+--
+Olivier
+
+On 25 Oct 2006, Pascal Lamblin wrote:
+&gt;<i> Salut &#224; vous,
+</I>&gt;<i> 
+</I>&gt;<i> j'ai remarqu&#233; que les fichiers suivants font directement appel &#224;
+</I>&gt;<i> &lt;plearn/math/plapack.h&gt;.
+</I>&gt;<i> 
+</I>&gt;<i> plearn/ker/ReconstructionWeightsKernel.cc
+</I>&gt;<i> plearn/vmat/VMat_linalg.cc
+</I>&gt;<i> plearn_learners/regressors/PLS.cc
+</I>&gt;<i> plearn_learners/unsupervised/KernelProjection.cc
+</I>&gt;<i> plearn_learners/unsupervised/PCA.cc
+</I>&gt;<i> plearn_learners/distributions/GaussianDistribution.cc
+</I>&gt;<i> plearn_learners/distributions/GaussMix.cc
+</I>&gt;<i> plearn_learners_experimental/LinearInductiveTransferClassifier.cc
+</I>&gt;<i> plearn_learners_experimental/SurfaceTemplate/geometry.cc
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &#199;a pose des probl&#232;mes au link lorsqu'on compile plearn avec l'option
+</I>&gt;<i> -noblas, puisqu'alors il ne va pas linker avec lapack.
+</I>&gt;<i> 
+</I>&gt;<i> Qu'est-ce qu'on fait alors :
+</I>&gt;<i>   - une impl&#233;mentation inefficace, sans blas ni lapack, des fonctions en
+</I>&gt;<i>     question, pour le cas o&#249; on ne dispose pas de blas ;
+</I>&gt;<i>   - on linke quand m&#234;me avec lapack en option -noblas ;
+</I>&gt;<i>   - on oublie l'option -noblas ?
+</I>&gt;<i> 
+</I>&gt;<i> Merci de vos r&#233;ponses,
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000224.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#225">[ date ]</a>
+              <a href="thread.html#225">[ thread ]</a>
+              <a href="subject.html#225">[ subject ]</a>
+              <a href="author.html#225">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

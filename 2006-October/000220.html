@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%20%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C452FF132.1000108%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000219.html">
+   <LINK REL="Next"  HREF="000221.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%20%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C452FF132.1000108%40apstat.com%3E"
+       TITLE="[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???">chapados at apstat.com
+       </A><BR>
+    <I>Fri Oct 13 22:04:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000219.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+        <LI>Next message: <A HREF="000221.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#220">[ date ]</a>
+              <a href="thread.html#220">[ thread ]</a>
+              <a href="subject.html#220">[ subject ]</a>
+              <a href="author.html#220">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i> Bon, ok, je t'avais pr&#233;venu que c'&#233;tait tordu.
+</I>&gt;<i> D'ailleurs, je viens de penser &#224; autre chose. Dans un PTester il y a une
+</I>&gt;<i> option du genre 'save_initial_tester', qui (th&#233;oriquement) doit
+</I>&gt;<i> permettre de relancer une exp&#233;rience m&#234;me si on n'a plus le script qui
+</I>&gt;<i> l'a lanc&#233;e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+</I>&gt;<i> pas sauv&#233;e (en tout cas, ne plus fonctionner exactement pareil).
+</I>&gt;<i>   
+</I>Oui, mais je ne veux pas toucher &#224; l'option &quot;expdir&quot; de PTester!  
+Seulement celle de PLearner.  Donc dans ce sc&#233;nario, le PTester est 
+sauvegard&#233; convenablement (avec son expdir et tout), et quand on le 
+recharge, la premi&#232;re chose qu'il fait est un setExperimentDirectory sur 
+son PLearner.  Donc tout est OK pour relancer l'exp&#233;rience.
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000219.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+	<LI>Next message: <A HREF="000221.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#220">[ date ]</a>
+              <a href="thread.html#220">[ thread ]</a>
+              <a href="subject.html#220">[ subject ]</a>
+              <a href="author.html#220">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

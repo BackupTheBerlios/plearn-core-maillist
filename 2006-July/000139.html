@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060714190920.GA3213%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000134.html">
+   <LINK REL="Next"  HREF="000140.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060714190920.GA3213%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Jul 14 21:09:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000134.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000140.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#139">[ date ]</a>
+              <a href="thread.html#139">[ thread ]</a>
+              <a href="subject.html#139">[ subject ]</a>
+              <a href="author.html#139">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, Jul 14, 2006, Christian Dorion wrote:
+&gt;<i> &gt;&#199;a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m&#234;me
+</I>&gt;<i> &gt;s'il est l&#233;g&#232;rement plus lent pour calculer les d&#233;pendances que la
+</I>&gt;<i> &gt;version actuelle (genre 6 secondes de plus). En plus, il g&#232;re certains
+</I>&gt;<i> 
+</I>&gt;<i> 6 secondes.... Des vrais secondes l&#224;?
+</I>
+Ben des secondes qui valent chacune la dur&#233;e de 9 192 631 770 p&#233;riodes
+de la radiation correspondant &#224; la transition entre les deux niveaux
+hyperfins de l'&#233;tat fondamental de l'atome de c&#233;sium 133.
+
+&#199;a a plut&#244;t l'air d'&#234;tre 6 secondes et demie en fait :
+
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at quartz</A> ~/code/PLearn/commands% time pymake_ plearn
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software distributed under a BSD type license. Report problems to <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">vincentp at iro.umontreal.ca</A> ]
+*** Current platform is: linux-x86_64
+
+*** Parallel compilation using list of hosts from file(s): /u/lamblinp/.pymake/linux-x86_64.hosts
+*** Running pymake on plearn using configuration file: /u/lamblinp/code/PLearn/.pymake/config
+*** Running pymake on plearn using options: -g++ -dbg -double -throwerrors -blas
+++++ Computing dependencies of plearn ...
+Target plearn is up to date.
+++++ Compiling...
+pymake_ plearn  9.85s user 0.53s system 94% cpu 10.973 total
+
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at quartz</A> ~/code/PLearn/commands% time pymake plearn
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software distributed under a BSD type license. Report problems to <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">vincentp at iro.umontreal.ca</A> ]
+*** Current platform is: linux-x86_64
+
+*** Parallel compilation using list of hosts from file(s): /u/lamblinp/.pymake/linux-x86_64.hosts
+*** Running pymake on plearn using configuration file: /u/lamblinp/code/PLearn/.pymake/config
+*** Running pymake on plearn using options: -g++ -dbg -double -throwerrors -blas
+++++ Computing dependencies of plearn ...
+Target plearn is up to date.
+++++ Compiling...
+pymake plearn  3.40s user 0.49s system 88% cpu 4.417 total
+
+<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">lamblinp at quartz</A> ~/code/PLearn/commands% echo '10.973-4.417' | bc
+6.556
+
+Sachant que cette version explore encore tous les includes (la liste des
+d&#233;finitions n'est pas encore faite), &#231;a vous para&#238;t d&#233;mesur&#233; ?
+
+&gt;<i> Je sais que certain se font avocats de la 
+</I>&gt;<i> &quot;pymake-devrait-&#234;tre-full-self-contained&quot; mentalit&#233;, mais comme:
+</I>&gt;<i> 1) PyMake d&#233;pend d&#233;j&#224; un peu des python_modules (toolkit) et
+</I>&gt;<i> 2) Le code de PyMake est d&#233;j&#224; suffisamment indigeste
+</I>&gt;<i> 
+</I>&gt;<i> je suis pour la cr&#233;ation de PLearn/python_module/plearn/pymake dans 
+</I>&gt;<i> lequel tu pourrais mettre de module de parsing. &#201;ventuellement, on 
+</I>&gt;<i> pourrait y modulariser PyMake... Pour les int&#233;ress&#233;s, j'aimerais un jour 
+</I>&gt;<i> voir PLearn/scripts/pymake ressembler &#224; PLearn/script/pytest. Il suffit 
+</I>&gt;<i> d'un coup d'oeil pour comprendre pourquoi je n'ai jamais attaqu&#233; ce 
+</I>&gt;<i> projet...
+</I>
+Je vais jeter un coup d'oeil alors :)
+
+&gt;<i> &gt;Enfin, je suis en train de hacker pymake pour pouvoir g&#233;rer les
+</I>&gt;<i> &gt;variables pr&#233;processeur en tant que telles, et pas juste une string
+</I>&gt;<i> &gt;ajout&#233;e &#224; &quot;compiler_options&quot;. Il se peut que j'en profite pour
+</I>&gt;<i> &gt;proprifier des choses dans pymake qui ne devraient pas d&#233;pendre du
+</I>&gt;<i> &gt;pymake.config.model, par exemple.
+</I>&gt;<i>
+</I>&gt;<i> Propifier!!! Oh oui, propifie, propifie... l&#226;che-toi lousse ;)
+</I>
+D'accord, mais attendez-vous &#224; avoir &#224; recradifier derri&#232;re si vous
+voulez que &#231;a continue &#224; marcher ;)
+
+&#192; plus,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000134.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000140.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#139">[ date ]</a>
+              <a href="thread.html#139">[ thread ]</a>
+              <a href="subject.html#139">[ subject ]</a>
+              <a href="author.html#139">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

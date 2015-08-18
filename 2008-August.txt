@@ -1,0 +1,28 @@
+From nouiz at nouiz.org  Fri Aug  1 16:28:03 2008
+From: nouiz at nouiz.org (=?ISO-8859-1?Q?Fr=E9d=E9ric_Bastien?=)
+Date: Fri, 1 Aug 2008 10:28:03 -0400
+Subject: [Plearn-core] throw an PLERROR when their is an interrupt signal?
+Message-ID: <2d1d7fe70808010728r4a74e18awdaaf68698dbc5a38@mail.gmail.com>
+
+Hi,
+
+I want plearn to catch the interrupt signal and throw an PLERROR in
+that case. I have the code for it and all pytest succed. My question
+is do you see any reason for me to don't commit this? Should this
+cause trouble at apstat?
+
+The reason of this is when their is the computation of the statistics
+on an VMatrix, we take the lock on the metadatadir. Recently I added
+that if their is an exception when we have the lock(in the case that
+concern me, not all case), we catch it, then remove the lock, then we
+re throw the same exception. I want this when I interrupt the program
+so that I don't have to manually remove the lock.
+
+If I don't have any reason to don't commit it by monday, I will do it
+Monday afternoon.
+
+thanks
+
+Fr?d?ric Bastien
+
+

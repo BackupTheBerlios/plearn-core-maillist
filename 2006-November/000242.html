@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Trigger pour BLAS et LAPACK
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Trigger%20pour%20BLAS%20et%20LAPACK&In-Reply-To=%3C454FB23C.8060200%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000241.html">
+   <LINK REL="Next"  HREF="000243.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Trigger pour BLAS et LAPACK</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Trigger%20pour%20BLAS%20et%20LAPACK&In-Reply-To=%3C454FB23C.8060200%40apstat.com%3E"
+       TITLE="[Plearn-core] Trigger pour BLAS et LAPACK">chapados at apstat.com
+       </A><BR>
+    <I>Mon Nov  6 23:07:56 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000241.html">[Plearn-core] Probleme etrange
+</A></li>
+        <LI>Next message: <A HREF="000243.html">[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>En effet &#231;a &#233;claircit beaucoup.  Merci de cette r&#233;ponse d&#233;taill&#233;e, que 
+je fais suivre sur plearn-core pour le b&#233;n&#233;fice de tous.
+
+Pascal Vincent wrote:
+&gt;<i>
+</I>&gt;&gt;<i> Messieurs,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Pr&#233;sentement dans pymake, toutes les librairies externes sont &#224; 
+</I>&gt;&gt;<i> l'int&#233;rieur d'un trigger qui fait qu'elles ne sont pas incluses si on 
+</I>&gt;&gt;<i> n'en a pas besoin.  TOUTES, pas exactement, car BLAS et LAPACK ne 
+</I>&gt;&gt;<i> font pas partie d'un tel trigger.  Bien s&#251;r il y a option noblas, 
+</I>&gt;&gt;<i> mais pourquoi ne pas mettre un trigger sur, disons, blas_proto.h et 
+</I>&gt;&gt;<i> lapack_proto.h pour &#233;viter de les linker si non-n&#233;cessaire?
+</I>&gt;<i>
+</I>&gt;<i> blas est un cas particulier: Premi&#232;rement, &#224; moins de mettre l'option 
+</I>&gt;<i> noblas, blas est utilis&#233; pour la sp&#233;cialisation (pour float et double) 
+</I>&gt;<i> d'op&#233;rations de vecteurs et matrices de bas niveau d&#233;finies dans  
+</I>&gt;<i> TMat_maths_specialisation.h, qui est inclus par  TMat_maths_impl.h qui 
+</I>&gt;<i> est inclus indirectement par &#224; peu pr&#234;t tout dans PLearn.
+</I>&gt;<i> Ce comportement est contr&#244;l&#233; par un define USE_BLAS_SPECIALISATIONS, 
+</I>&gt;<i> d'o&#249; sa pr&#233;sence dans les options de compilation.
+</I>&gt;<i>
+</I>&gt;<i> Secondo c'est une option au niveau de l'invocation de pymake, car il y 
+</I>&gt;<i> a souvent plusieurs implantation de blas sur une m&#234;me machine qu'on 
+</I>&gt;<i> peut vouloir essayer depuis la ligne de commande de pymake
+</I>&gt;<i>
+</I>&gt;<i> Tertio lapack+blas est utilis&#233; dans pas mal d'algos (l'alg&#232;bre 
+</I>&gt;<i> lin&#233;aire c'est utile...) et j'ai donc tendance &#224; les voir comme une 
+</I>&gt;<i> des trois d&#233;pendances &quot;core&quot; de PLearn (avec NSPR et une partie de 
+</I>&gt;<i> boost), donc on ne gagnerait pas grand chose &#224; en faire une 
+</I>&gt;<i> OptionalLibrary (rarement optionnelle).
+</I>&gt;<i>
+</I>&gt;<i> Je sais que c'est un peu laid, mais &#224; moins d'introduire un nouveau 
+</I>&gt;<i> m&#233;canisme externe de s&#233;lection de &quot;quelle impl&#233;mentation de 
+</I>&gt;<i> blas+lapack je veux utiliser pour ce prg&quot; et laisser de toute fa&#231;on 
+</I>&gt;<i> une option de compilation pour choisir de d&#233;finir ou non le define 
+</I>&gt;<i> USE_BLAS_SPECIALISATIONS, c'est ce qu'on a pour l'instant de mieux 
+</I>&gt;<i> pour permettre de g&#233;rer le bordel de linkage avec blas et lapack.
+</I>&gt;<i>
+</I>&gt;<i> J'esp&#232;re que j'ai pu &#233;claircir quelque peu la question.
+</I>&gt;<i>
+</I>&gt;<i> -- Pascal
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000241.html">[Plearn-core] Probleme etrange
+</A></li>
+	<LI>Next message: <A HREF="000243.html">[Plearn-core] Meilleurs moyens de r&#233;cuperer et de modifier les membre private et protected ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DC9limination_de_OptionBase%3D3A%3D3Adef%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3Faultval%3D5F_et_pytransform_de_declareOption%3F%3D&In-Reply-To=%3C20070329181151.GA4800%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000342.html">
+   <LINK REL="Next"  HREF="000355.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DC9limination_de_OptionBase%3D3A%3D3Adef%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3Faultval%3D5F_et_pytransform_de_declareOption%3F%3D&In-Reply-To=%3C20070329181151.GA4800%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Mar 29 20:11:51 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000342.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+        <LI>Next message: <A HREF="000355.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#354">[ date ]</a>
+              <a href="thread.html#354">[ thread ]</a>
+              <a href="subject.html#354">[ subject ]</a>
+              <a href="author.html#354">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Tout cela est fort bien, mais est-il n&#233;cessaire d'avoir les option
+levels par d&#233;faut quand on fait un plearn help ?
+
+Ca a tendance &#224; &quot;polluer&quot; un peu les scripts quand on fait un
+    plearn help MyClass &gt; myclass.plearn
+
+On pourrait :
+- ne pas afficher les niveaux sauf si une certaine option est donn&#233;e
+  (--showlevel par exemple)
+- ou juste ne pas afficher les niveaux &quot;normaux&quot; (et ne distinguer que
+  les niveaux sp&#233;ciaux)
+
+Qu'en penses-tu ?
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000342.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+	<LI>Next message: <A HREF="000355.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#354">[ date ]</a>
+              <a href="thread.html#354">[ thread ]</a>
+              <a href="subject.html#354">[ subject ]</a>
+              <a href="author.html#354">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

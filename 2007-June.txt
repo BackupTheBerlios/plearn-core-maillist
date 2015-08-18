@@ -1,0 +1,345 @@
+From saintmlx at apstat.com  Mon Jun 11 21:13:54 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Mon, 11 Jun 2007 15:13:54 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_NumPy?=
+Message-ID: <466D9EF2.3070109@apstat.com>
+
+Salut,
+
+Je suis en train de faire la transition de numarray ? numpy.  Puisque 
+numarray est officiellement "deprecated", ?a ne sera plus support? par 
+PLearn apr?s le passage ? numpy (i.e. d'ici quelques semaines).  En 
+particulier, tout code python qui importe numarray va ?tre modifi? pour 
+importer numpy.numarray ? la place (interface "numarray" de numpy, pour 
+simplifier la transition; ? ne pas utiliser dans du nouveau code).
+
+Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+install? partout o? vous utilisez numarray en ce moment?  Il serait 
+pr?f?rable d'avoir la derni?re version (1.0.3); la version 1.0.1 a des 
+bugs qui nous affectent et je n'ai pas essay? 1.0.2.
+
+N.B. numpy.numarray donne essentiellement la m?me interface (syntaxe) 
+que numarray, mais il y a quelques diff?rences et la s?mantique peut 
+?tre diff?rente aussi.  Si vous avez des choses qui d?pendent de 
+numarray, il serait bon d'en faire des pytest:  je ne ferai pas de 
+commit tant les tests ne passeront pas tous.
+
+Xavier
+
+
+
+From lamblinp at iro.umontreal.ca  Mon Jun 11 23:00:00 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 11 Jun 2007 23:00:00 +0200
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_NumPy?=
+In-Reply-To: <466D9EF2.3070109@apstat.com>
+References: <466D9EF2.3070109@apstat.com>
+Message-ID: <20070611210000.GA8648@pig.zood.org>
+
+On Mon, Jun 11, 2007, Xavier Saint-Mleux wrote:
+> En particulier, tout code python qui importe numarray va ?tre modifi?
+> pour importer numpy.numarray ? la place (interface "numarray" de
+> numpy, pour simplifier la transition; ? ne pas utiliser dans du
+> nouveau code).
+
+Que faut-il utiliser dans du nouveau code ?
+
+> Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+> install? partout o? vous utilisez numarray en ce moment?  Il serait 
+> pr?f?rable d'avoir la derni?re version (1.0.3); la version 1.0.1 a des 
+> bugs qui nous affectent et je n'ai pas essay? 1.0.2.
+
+Au Lisa :
+
+>>> numpy.version.version
+'1.0rc1'
+
+Je suppose que c'est encore pire que 1.0.1. Je pense qu'on peut faire la
+mise ? jour.
+
+Je ne crois pas que numpy soit install? sur le mammouth.
+
+Olivier, est-ce que c'?tait dur ? installer ?
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Mon Jun 11 23:24:58 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 11 Jun 2007 17:24:58 -0400
+Subject: [Plearn-core] Passage
+In-Reply-To: <20070611210000.GA8648@pig.zood.org>
+References: <466D9EF2.3070109@apstat.com> <20070611210000.GA8648@pig.zood.org>
+Message-ID: <20070611212456.GA31032@opale.iro.umontreal.ca>
+
+On 11 Jun 2007, Pascal Lamblin wrote:
+> On Mon, Jun 11, 2007, Xavier Saint-Mleux wrote:
+> > En particulier, tout code python qui importe numarray va ?tre modifi?
+> > pour importer numpy.numarray ? la place (interface "numarray" de
+> > numpy, pour simplifier la transition; ? ne pas utiliser dans du
+> > nouveau code).
+> 
+> Que faut-il utiliser dans du nouveau code ?
+> 
+> > Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+> > install? partout o? vous utilisez numarray en ce moment?  Il serait 
+> > pr?f?rable d'avoir la derni?re version (1.0.3); la version 1.0.1 a des 
+> > bugs qui nous affectent et je n'ai pas essay? 1.0.2.
+> 
+> Au Lisa :
+> 
+> >>> numpy.version.version
+> '1.0rc1'
+> 
+> Je suppose que c'est encore pire que 1.0.1. Je pense qu'on peut faire la
+> mise ? jour.
+> 
+> Je ne crois pas que numpy soit install? sur le mammouth.
+> 
+> Olivier, est-ce que c'?tait dur ? installer ?
+
+Non. Cf.
+    ~/LisaPLearn/UserExp/delallea/docs/useful-installation-tricks/useful-installation-tricks.tex
+
+SciPy ?tait plus emb?tant il me semble.
+
+Note : sur le mammouth je compte passer ? un python compil? avec ICC
+pour qu'on puisse lancer nos scripts. Donc attends p-? pour installer
+Numpy.
+
+--
+Olivier
+
+
+From saintmlx at apstat.com  Tue Jun 12 00:32:39 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Mon, 11 Jun 2007 18:32:39 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Passage_=E0_NumPy?=
+In-Reply-To: <20070611210000.GA8648@pig.zood.org>
+References: <466D9EF2.3070109@apstat.com> <20070611210000.GA8648@pig.zood.org>
+Message-ID: <466DCD87.5060403@apstat.com>
+
+Pascal Lamblin wrote:
+> Que faut-il utiliser dans du nouveau code ?
+>
+>   
+Pour l'instant, il faut continuer d'utiliser numarray pour tout ce qui 
+touche au bridge PLearn/python.  Pour le reste, et une fois le passage 
+fait ? NumPy pour PLearn, il faudra utiliser l'interface "native" de 
+NumPy (et non son interface "numarray", qui ne sera utilis?e que pour le 
+code originalement ?crit pour numarray).
+
+Pour plus d'info sur les diff?rences entre numarray et numpy:
+http://www.stsci.edu/resources/software_hardware/numarray/numarray2numpy.pdf
+
+Xavier
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Jun 12 02:08:30 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 12 Jun 2007 02:08:30 +0200
+Subject: [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+Message-ID: <20070612000830.GA9715@pig.zood.org>
+
+Salut ? tous,
+
+Qu'est-ce que vous penseriez de mettre, dans plearn_inc.h, les #include
+de plearn_python_inc.h et de plearn_lapack_inc.h entre des jolis #if qui
+v?rifieraient si on ne serait pas (par hasard) en train de compiler avec
+-noblas ou -nopython ?
+
+?a permettrait de ne pas ?tre oblig?s de changer le nom "plearn", qui
+peut ?tre utilis? dans des scripts ext?rieurs, des alias, etc., tout en
+permettant de compiler un coup avec python et un coup sans, par exemple.
+
+Y a-t-il des raisons de ne pas le faire ?
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue Jun 12 04:49:19 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 12 Jun 2007 04:49:19 +0200
+Subject: [Plearn-core] Passage
+In-Reply-To: <20070611212456.GA31032@opale.iro.umontreal.ca>
+References: <466D9EF2.3070109@apstat.com> <20070611210000.GA8648@pig.zood.org>
+	<20070611212456.GA31032@opale.iro.umontreal.ca>
+Message-ID: <20070612024919.GA10650@pig.zood.org>
+
+On Mon, Jun 11, 2007, Olivier Delalleau wrote:
+> Non. Cf.
+>     ~/LisaPLearn/UserExp/delallea/docs/useful-installation-tricks/useful-installation-tricks.tex
+
+En effet.
+
+J'ai fait les installations (32 et 64 bits), et tout semble rouler.
+
+Pr?venez-moi si quelque chose (SciPy ?) ne marche pas.
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Tue Jun 12 16:38:32 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 12 Jun 2007 10:38:32 -0400
+Subject: [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+In-Reply-To: <20070612000830.GA9715@pig.zood.org>
+References: <20070612000830.GA9715@pig.zood.org>
+Message-ID: <20070612143829.GA28902@opale.iro.umontreal.ca>
+
+Ca me para?t ?tre une bonne id?e.
+Mais dans ce cas on voudrait p-? aussi int?grer plearn_lapack_inc et
+plearn_curses_inc, ce qui pourrait n?cessiter de nouvelles options de
+compilation et/ou de nouvelles d?finitions de variables ?
+
+--
+Olivier
+
+On 12 Jun 2007, Pascal Lamblin wrote:
+> Salut ? tous,
+> 
+> Qu'est-ce que vous penseriez de mettre, dans plearn_inc.h, les #include
+> de plearn_python_inc.h et de plearn_lapack_inc.h entre des jolis #if qui
+> v?rifieraient si on ne serait pas (par hasard) en train de compiler avec
+> -noblas ou -nopython ?
+> 
+> ?a permettrait de ne pas ?tre oblig?s de changer le nom "plearn", qui
+> peut ?tre utilis? dans des scripts ext?rieurs, des alias, etc., tout en
+> permettant de compiler un coup avec python et un coup sans, par exemple.
+> 
+> Y a-t-il des raisons de ne pas le faire ?
+
+
+From nouiz at nouiz.org  Tue Jun 12 18:32:50 2007
+From: nouiz at nouiz.org (=?ISO-8859-1?Q?Fr=E9d=E9ric_Bastien?=)
+Date: Tue, 12 Jun 2007 12:32:50 -0400
+Subject: [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+In-Reply-To: <20070612143829.GA28902@opale.iro.umontreal.ca>
+References: <20070612000830.GA9715@pig.zood.org>
+	<20070612143829.GA28902@opale.iro.umontreal.ca>
+Message-ID: <466ECAB2.5010605@nouiz.org>
+
+Salut,
+
+On n'a pas besoin de nouvelle variable, car on peut utiliser, 
+PL_PYTHON_VERSION et USE_BLAS_SPECIALISATIONS comme variable avec des 
+#ifndef
+
+Je ne vois pas de probleme a le faire.
+
+Fred
+Olivier Delalleau wrote:
+> Ca me para?t ?tre une bonne id?e.
+> Mais dans ce cas on voudrait p-? aussi int?grer plearn_lapack_inc et
+> plearn_curses_inc, ce qui pourrait n?cessiter de nouvelles options de
+> compilation et/ou de nouvelles d?finitions de variables ?
+> 
+> --
+> Olivier
+> 
+> On 12 Jun 2007, Pascal Lamblin wrote:
+> 
+>>Salut ? tous,
+>>
+>>Qu'est-ce que vous penseriez de mettre, dans plearn_inc.h, les #include
+>>de plearn_python_inc.h et de plearn_lapack_inc.h entre des jolis #if qui
+>>v?rifieraient si on ne serait pas (par hasard) en train de compiler avec
+>>-noblas ou -nopython ?
+>>
+>>?a permettrait de ne pas ?tre oblig?s de changer le nom "plearn", qui
+>>peut ?tre utilis? dans des scripts ext?rieurs, des alias, etc., tout en
+>>permettant de compiler un coup avec python et un coup sans, par exemple.
+>>
+>>Y a-t-il des raisons de ne pas le faire ?
+> 
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From delallea at iro.umontreal.ca  Tue Jun 12 19:17:41 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 12 Jun 2007 13:17:41 -0400
+Subject: [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+In-Reply-To: <466ECAB2.5010605@nouiz.org>
+References: <20070612000830.GA9715@pig.zood.org>
+	<20070612143829.GA28902@opale.iro.umontreal.ca>
+	<466ECAB2.5010605@nouiz.org>
+Message-ID: <20070612171739.GA27098@imagine.iro.umontreal.ca>
+
+Oui mais l? je faisais r?f?rence ? lapack / curses.
+
+On 12 Jun 2007, Fr?d?ric Bastien wrote:
+> Salut,
+> 
+> On n'a pas besoin de nouvelle variable, car on peut utiliser, 
+> PL_PYTHON_VERSION et USE_BLAS_SPECIALISATIONS comme variable avec des 
+> #ifndef
+> 
+> Je ne vois pas de probleme a le faire.
+> 
+> Fred
+> Olivier Delalleau wrote:
+> > Ca me para?t ?tre une bonne id?e.
+> > Mais dans ce cas on voudrait p-? aussi int?grer plearn_lapack_inc et
+> > plearn_curses_inc, ce qui pourrait n?cessiter de nouvelles options de
+> > compilation et/ou de nouvelles d?finitions de variables ?
+> > 
+> > --
+> > Olivier
+> > 
+> > On 12 Jun 2007, Pascal Lamblin wrote:
+> > 
+> >>Salut ? tous,
+> >>
+> >>Qu'est-ce que vous penseriez de mettre, dans plearn_inc.h, les #include
+> >>de plearn_python_inc.h et de plearn_lapack_inc.h entre des jolis #if qui
+> >>v?rifieraient si on ne serait pas (par hasard) en train de compiler avec
+> >>-noblas ou -nopython ?
+> >>
+> >>?a permettrait de ne pas ?tre oblig?s de changer le nom "plearn", qui
+> >>peut ?tre utilis? dans des scripts ext?rieurs, des alias, etc., tout en
+> >>permettant de compiler un coup avec python et un coup sans, par exemple.
+> >>
+> >>Y a-t-il des raisons de ne pas le faire ?
+> > 
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From lamblinp at iro.umontreal.ca  Tue Jun 12 21:18:12 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 12 Jun 2007 21:18:12 +0200
+Subject: [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+In-Reply-To: <20070612171739.GA27098@imagine.iro.umontreal.ca>
+References: <20070612000830.GA9715@pig.zood.org>
+	<20070612143829.GA28902@opale.iro.umontreal.ca>
+	<466ECAB2.5010605@nouiz.org>
+	<20070612171739.GA27098@imagine.iro.umontreal.ca>
+Message-ID: <20070612191812.GB16384@pig.zood.org>
+
+On Tue, Jun 12, 2007, Olivier Delalleau wrote:
+> Oui mais l? je faisais r?f?rence ? lapack / curses.
+
+Sachant que pour le moment on ale choix entre plearn_no_blas et
+plearn_lapack, je pense qu'on peut assimiler blas et lapack, et utiliser
+USE_BLAS_SPECIALISATIONS.
+
+Pour curses, on peut rajouter une variable.
+
+-- 
+Pascal
+
+

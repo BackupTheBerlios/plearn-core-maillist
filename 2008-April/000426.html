@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C20080409154531.GA20923%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000425.html">
+   <LINK REL="Next"  HREF="000427.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C20080409154531.GA20923%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Apr  9 17:45:31 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000425.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+        <LI>Next message: <A HREF="000427.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#426">[ date ]</a>
+              <a href="thread.html#426">[ thread ]</a>
+              <a href="subject.html#426">[ subject ]</a>
+              <a href="author.html#426">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> m_woutput1 changes. Regardless of this not being so intuitive, there may
+</I>&gt;<i> be another issue (please correct me if I'm wrong): since the bproppath
+</I>&gt;<i> does not include -m_woutput1, when you do a bprop, you will get some
+</I>&gt;<i> gradient in -m_woutput1 (provided by the product variable), but it will
+</I>&gt;<i> not be forwarded to m_woutput1. Thus you won't be able to update your
+</I>&gt;<i> parameters.
+</I>&gt;<i> I just looked into the fbprop of SumOfVariable and I don't see how it
+</I>&gt;<i> handles this: it basically call func-&gt;fpbrop() on each input sample, but
+</I>&gt;<i> I can't find where the gradient thus accumulated is backpropagated in a
+</I>&gt;<i> possible transformation of the parameters... although it must be done
+</I>&gt;<i> somewhere since I tried changing the following in NNet:
+</I>&gt;<i> 
+</I>&gt;<i>          w1 = Var(1 + the_input-&gt;width(), nhidden, &quot;w1&quot;);
+</I>&gt;<i>          params.append(w1);
+</I>&gt;<i> -        hidden_layer = hiddenLayer(output, w1);
+</I>&gt;<i> +        Var w1_tmp = -w1;
+</I>&gt;<i> +        w1_tmp = -w1_tmp;
+</I>&gt;<i> +        hidden_layer = hiddenLayer(output, w1_tmp);
+</I>&gt;<i>          output = hidden_layer;
+</I>&gt;<i> 
+</I>&gt;<i> and it still gave me the same results. So, I'm going to try to look
+</I>&gt;<i> better, but if you know the answer, tell me :)
+</I>
+Now I understand!
+
+It's the optimizer that does the trick. Basically, the sumOf will indeed
+only accumulate gradients on the transformed parameters. But the
+optimizer takes care of backpropagating it further:
+
+(Somewhere in build)
+    ...
+    proppath = propagationPath(params, cost)
+    ...
+(Main loop in GradientOptimizer)
+    ...
+    proppath.fbprop();
+    ...
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000425.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+	<LI>Next message: <A HREF="000427.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#426">[ date ]</a>
+              <a href="thread.html#426">[ thread ]</a>
+              <a href="subject.html#426">[ subject ]</a>
+              <a href="author.html#426">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

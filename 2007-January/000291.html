@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Interfaces non-vmat dans Kernel?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Interfaces%20non-vmat%20dans%20Kernel%3F&In-Reply-To=%3C57174.207.61.255.171.1168523038.squirrel%40intranet.apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000289.html">
+   <LINK REL="Next"  HREF="000292.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Interfaces non-vmat dans Kernel?</H1>
+    <B>chapados at apstat.com</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Interfaces%20non-vmat%20dans%20Kernel%3F&In-Reply-To=%3C57174.207.61.255.171.1168523038.squirrel%40intranet.apstat.com%3E"
+       TITLE="[Plearn-core] Interfaces non-vmat dans Kernel?">chapados at apstat.com
+       </A><BR>
+    <I>Thu Jan 11 14:43:58 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000289.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+        <LI>Next message: <A HREF="000292.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#291">[ date ]</a>
+              <a href="thread.html#291">[ thread ]</a>
+              <a href="subject.html#291">[ subject ]</a>
+              <a href="author.html#291">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut messieurs,
+
+Je fais une constatation sans doute quelque peu biscornue, mais peut-&#234;tre
+n&#233;anmoins valable &#224; propos de PLearn::Kernel.  Pourquoi laisse-t-on la
+&quot;Data&quot; VMat aussi longtemps sous la forme de VMat, surtout lorsque la
+matrice de Gram est 'cach&#233;e' sous la forme d'une Mat?  Il me semble
+souffrant d'encourir autant d'appels virtuels, surtout lorsqu'il y en a
+d&#233;j&#224; un par 'evaluate' du kernel.
+
+N'y aurait-il pas lieu de supporter explicitement deux use-cases, l'un
+pour &quot;tout tient facilement en m&#233;moire&quot;, et l'autre pour &quot;on laisse tout
+en VMat&quot;?  La plupart des fonctions sont d&#233;finies pour ou bien marcher
+avec des VMat mais pas des Mat (e.g. apply) ou vice-versa (evaluate*, qui
+acceptent des Vec mais c'est inutile car la matrice de donn&#233;es est laiss&#233;e
+sous la forme d'une VMat donc on encoure toujours &#224; l'interne une frappe
+de virtualit&#233;).
+
+Je sais qu'on peut red&#233;finir tout (mais pas apply!) dans les classes
+d&#233;riv&#233;es, mais je crois que l'interface actuelle rend la t&#226;che on&#233;reuse
+pour les auteurs prospectifs de nouveaux kernels...
+
+   + Nicolas
+
+
+P.S. Si on en vient &#224; red&#233;finir l'interface de kernels, on pourrait penser
+aux use-cases algorithmiques en plus des use-cases de donn&#233;es,
+c'est-&#224;-dire les svm classiques, les kmp de Pascal, et les processus
+gaussiens.  Il y a &#233;galement les use-cases au niveau des kernels
+eux-m&#234;mes, i.e. certains kernels se pr&#234;tent bien &#224; des pr&#233;calculs, ce
+qu'essaie de permettre PLearn::Kernel.  Donc, pour r&#233;sumer, les dimensions
+&#224; consid&#233;rer pour revoir l'interface seraient:
+
+1) petit probl&#232;me versus gros probl&#232;me
+2) client algorithmique
+3) forme fonctionnelle du noyau (pour pr&#233;calculs)
+
+Y en a-t-il d'autres?
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000289.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+	<LI>Next message: <A HREF="000292.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#291">[ date ]</a>
+              <a href="thread.html#291">[ thread ]</a>
+              <a href="subject.html#291">[ subject ]</a>
+              <a href="author.html#291">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

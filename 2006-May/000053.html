@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Gradient conjugu&#233; (la suite)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3FQ%3FGradient_%3F%3D%0A%09%3D%3Fiso-8859-1%3FQ%3Fconjugu%3DE9%3F%3D%20%28la%20suite%29&In-Reply-To=%3C20060529212202.GA5771%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000051.html">
+   <LINK REL="Next"  HREF="000054.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Gradient conjugu&#233; (la suite)</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3FQ%3FGradient_%3F%3D%0A%09%3D%3Fiso-8859-1%3FQ%3Fconjugu%3DE9%3F%3D%20%28la%20suite%29&In-Reply-To=%3C20060529212202.GA5771%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Gradient conjugu&#233; (la suite)">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Mon May 29 23:22:02 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000051.html">[Plearn-core] Gradient conjugu&#233; (la suite)
+</A></li>
+        <LI>Next message: <A HREF="000054.html">[Plearn-core] comportement bizarre de VecStatsCollector
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#53">[ date ]</a>
+              <a href="thread.html#53">[ thread ]</a>
+              <a href="subject.html#53">[ subject ]</a>
+              <a href="author.html#53">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, May 29, 2006, Nicolas Chapados wrote:
+&gt;<i> - J'ai r&#233;-ordonn&#233; des membres de la classe qui causaient des bugs
+</I>&gt;<i> d'alignement avec certaines versions de gcc (d'o&#249; peut-&#234;tre mon alerte
+</I>&gt;<i> de tout-&#224;-l'heure). En particulier, c'est mieux de ne pas d&#233;clarer de
+</I>&gt;<i> doubles (real) qui ne soient pas align&#233;s sur une fronti&#232;re de 8 bytes,
+</I>&gt;<i> car le padding introduit par le compilateur cause parfois quelques
+</I>&gt;<i> ennuis (!!!!!!!).
+</I>
+Euh, c'est potentiellement assez effrayant, ce genre de choses. Es-tu
+s&#251;r que &#231;a vient de l&#224; ? Est-ce qu'il y a un moyen de v&#233;rifier si ce
+genre de probl&#232;me arrive dans d'autres classes ?
+
+Parce que j'ai eu des bugs bizarres et peu reproductibles r&#233;cemment, &#231;a
+pourrait venir de ce genre de chose ?
+
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000051.html">[Plearn-core] Gradient conjugu&#233; (la suite)
+</A></li>
+	<LI>Next message: <A HREF="000054.html">[Plearn-core] comportement bizarre de VecStatsCollector
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#53">[ date ]</a>
+              <a href="thread.html#53">[ thread ]</a>
+              <a href="subject.html#53">[ subject ]</a>
+              <a href="author.html#53">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

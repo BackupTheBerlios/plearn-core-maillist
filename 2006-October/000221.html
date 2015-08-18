@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C20061014012133.GA23887%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000220.html">
+   <LINK REL="Next"  HREF="000193.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%0A%09%3D%3Fiso-8859-1%3Fq%3FOption_PLearner%3D3A%3D3Aexpdir_d%3DE9clar%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3F%3DE9e_nosave%3D3F%3D3F%3D3F%3F%3D&In-Reply-To=%3C20061014012133.GA23887%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Sat Oct 14 03:21:35 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000220.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+        <LI>Next message: <A HREF="000193.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#221">[ date ]</a>
+              <a href="thread.html#221">[ thread ]</a>
+              <a href="subject.html#221">[ subject ]</a>
+              <a href="author.html#221">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 13 Oct 2006, Nicolas Chapados wrote:
+&gt;<i> 
+</I>&gt;<i> &gt; Bon, ok, je t'avais pr&#233;venu que c'&#233;tait tordu.
+</I>&gt;<i> &gt; D'ailleurs, je viens de penser &#224; autre chose. Dans un PTester il y a une
+</I>&gt;<i> &gt; option du genre 'save_initial_tester', qui (th&#233;oriquement) doit
+</I>&gt;<i> &gt; permettre de relancer une exp&#233;rience m&#234;me si on n'a plus le script qui
+</I>&gt;<i> &gt; l'a lanc&#233;e. Cela pourrait ne plus fonctionner si l'option d'expdir n'est
+</I>&gt;<i> &gt; pas sauv&#233;e (en tout cas, ne plus fonctionner exactement pareil).
+</I>&gt;<i> &gt;   
+</I>&gt;<i> Oui, mais je ne veux pas toucher &#224; l'option &quot;expdir&quot; de PTester!  
+</I>&gt;<i> Seulement celle de PLearner.  Donc dans ce sc&#233;nario, le PTester est 
+</I>&gt;<i> sauvegard&#233; convenablement (avec son expdir et tout), et quand on le 
+</I>&gt;<i> recharge, la premi&#232;re chose qu'il fait est un setExperimentDirectory sur 
+</I>&gt;<i> son PLearner.  Donc tout est OK pour relancer l'exp&#233;rience.
+</I>
+Bon, juste pour information, depuis le d&#233;but je parlais de l'expdir du
+PTester, j'avais mal lu le message d'origine, d&#233;sol&#233;.
+J'imagine que &#231;a peut poser probl&#232;me pour un PLearner qui sauvegarde des
+donn&#233;es dont il a besoin pour &#234;tre r&#233;utilis&#233;, mais je n'en connais pas
+actuellement qui le fasse. Et au pire on peut toujours red&#233;clarer expdir
+sans nosave s'il y en a besoin. Donc &#231;a me semble ok.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000220.html">[Plearn-core] Option PLearner::expdir d&#233;clar&#233;e nosave???
+</A></li>
+	<LI>Next message: <A HREF="000193.html">[Plearn-core] Hack to avoid deepCopy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#221">[ date ]</a>
+              <a href="thread.html#221">[ thread ]</a>
+              <a href="subject.html#221">[ subject ]</a>
+              <a href="author.html#221">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

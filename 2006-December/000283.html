@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] &#224; propos de TMat_maths_impl
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3CA0D7C114-0037-4655-BFDF-186FD6BEFD48%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000282.html">
+   <LINK REL="Next"  HREF="000286.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] &#224; propos de TMat_maths_impl</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3CA0D7C114-0037-4655-BFDF-186FD6BEFD48%40apstat.com%3E"
+       TITLE="[Plearn-core] &#224; propos de TMat_maths_impl">pascal at apstat.com
+       </A><BR>
+    <I>Mon Dec 18 16:35:38 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000282.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+        <LI>Next message: <A HREF="000286.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#283">[ date ]</a>
+              <a href="thread.html#283">[ thread ]</a>
+              <a href="subject.html#283">[ subject ]</a>
+              <a href="author.html#283">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Yo,
+</I>&gt;<i>
+</I>&gt;<i> Tout en d&#233;buguant du code qui n'a rien &#224; voir, j'ai commenc&#233; &#224;  
+</I>&gt;<i> jeter un
+</I>&gt;<i> coup d'oeil &#224; ce gros me^H^Hbourbier qu'est TMat_maths_impl.h, avec
+</I>&gt;<i> notamment environ 350 fonctions pour 6500 lignes de code.
+</I>&gt;<i>
+</I>&gt;<i> Il y a des choses que l'on peut s&#233;parer simplement (tout ce qui tourne
+</I>&gt;<i> autour de Cholesky, par exemple), d'autres qui sont beaucoup moins
+</I>&gt;<i> &#233;videntes (est-ce qu'on met les op&#233;rations simples, genre addition ou
+</I>&gt;<i> multiplication par un scalaire, avec les autres op&#233;rations d'alg&#232;bre
+</I>&gt;<i> lin&#233;aire ? avec les op&#233;rations &#171; &#233;l&#233;ment par &#233;l&#233;ment &#187; ? avec les
+</I>&gt;<i> op&#233;rateurs + et *, qui font &#231;a ? par exemple).
+</I>
+Je penche pour mettre les op&#233;rations simples genre addition ou  
+multiplication par un scalaire avec les op&#233;rations &#233;l&#233;ment par  
+&#233;l&#233;ment, ou bien alors dans leur propre fichier s&#233;par&#233;. Dans tous les  
+cas, les op&#233;rateurs devraient aller ensemble avec les fonctions qui  
+font des choses similaires.
+Note aussi que comme il y a les + scalaire il y a aussi les +vecteur- 
+ligne ou +vecteur-colonne, qui sont conceptuellement similaires aux  
+op&#233;rations +scalaire dans leur relation aux op&#233;rations &#233;l&#233;ment par  
+&#233;l&#233;ment.
+
+&gt;<i>
+</I>&gt;<i> En ce qui concerne la nomenclature, j'ai jet&#233; un coup d'oeil &#224;
+</I>&gt;<i> boost::MPL qui m'a l'air &#224; c&#244;t&#233; de la plaque,
+</I>
+Pourquoi boost::MPL?? Tu ne voulais pas dire plut&#244;t multi_array?
+
+
+&gt;<i> &#224; boost::uBLAS et &#224;
+</I>&gt;<i> lapack++ qui ont l'air plus int&#233;ressants. Leurs conventions d'appel :
+</I>&gt;<i>
+</I>&gt;<i>   - uBLAS retourne toujours le r&#233;sultat de l'op&#233;ration, avec des
+</I>&gt;<i> mots-cl&#233;s et du vaudou pour ne pas r&#233;assigner de m&#233;moire si
+</I>&gt;<i> l'&#233;l&#233;ment &#224; gauche du signe = est pr&#234;t &#224; recevoir le r&#233;sultat.
+</I>
+Oui, c'est du Vaudou C++ utilisant des expression templates, +-  
+inspir&#233; des techniques de Blitz++ (une autre librairie de matrices/ 
+vecteurs)
+C'est hot, mais &#231;a pose parfois des probl&#232;mes au compilateur, et  
+aussi aux &#234;tres humains qui doivent comprendre/debugger ce genre de  
+code...
+
+Je cite: &quot;&quot;&quot;&quot;
+Compilation times. It is also a well known fact, that expression  
+templates challenge currently available compilers.  &quot;&quot;&quot;
+
+&gt;<i>   - lapack++ ne passe pas toujours les arguments dans le m&#234;me
+</I>&gt;<i> ordre, on peut avoir des choses comme : vecteurs/matrices d'entr&#233;e,
+</I>&gt;<i> vecteur/matrice de r&#233;sultat, param&#232;tres scalaires (avec des valeurs  
+</I>&gt;<i> par
+</I>&gt;<i> d&#233;faut)
+</I>
+Par ailleurs je note que sur la page de lapack++ il est &#233;crit:
+&quot;superseded by the Template Numerical Toolkit (TNT)&quot;
+
+lapack++ semble d&#233;j&#224; deprecated...
+
+
+&gt;<i> Du coup, &#231;a soul&#232;ve &#224; nouveau les questions suivantes :
+</I>&gt;<i>   - o&#249; c'est qu'on met ce param&#232;tre qui est updat&#233; ?
+</I>
+Je r&#233;affirme mon opinion: en premier. C'est clair, c'est simple,  
+c'est invariant. &#199;a permet des valeurs par d&#233;faut pour les arguments  
+&#224; la fin. C'est l'ordre dans lequel on &#233;crirait les &#233;l&#233;ments si on  
+&#233;crivait l'expression avec un signe = (ou +=).
+
+&gt;<i>   - est-ce qu'on essaye de suivre une nomenclature ext&#233;rieure, ou  
+</I>&gt;<i> on se
+</I>&gt;<i>     contente d'&#234;tre coh&#233;rent entre nous ?
+</I>
+Pour l'instant il me semble qu'on n'a pas encore trouv&#233; d'exemple de  
+nomenclature ext&#233;rieure qui soit franchement limpide et ait un  
+potentiel convaincant de &quot;standard&quot; effectuant un appel de blas/lapack.
+
+Note que comme source d'inspiration il y aurait aussi:
+
+Blitz++ (expression template encore davantage vaudou que boost::uBLAS)
+boost::multi_array
+POOMA
+MTL
+TNT
+
+Je pencherais plut&#244;t pour viser une coh&#233;rence interne pour notre  
+nomenclature, en gardant &#224; l'esprit que les appels puissent  
+correspondre &#224; des sp&#233;cialisations blas (appels fortran) possibles.
+
+Note: pour distinguer les fonctions qui prennent l'argument &#224;  
+modifier comme premier argument de celles qui retournent un r&#233;sultat  
+Vec ou Mat, je sugg&#232;re de pr&#233;fixer toutes celles qui retournent leur  
+r&#233;sultat par un pr&#233;fixe explicite (ex: ret_ )
+
+
+-- Pascal
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000282.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+	<LI>Next message: <A HREF="000286.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#283">[ date ]</a>
+              <a href="thread.html#283">[ thread ]</a>
+              <a href="subject.html#283">[ subject ]</a>
+              <a href="author.html#283">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20compilation%20de%20plearn%20avec%20-noblas%2C%20-nopython%20etc.&In-Reply-To=%3C466ECAB2.5010605%40nouiz.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000385.html">
+   <LINK REL="Next"  HREF="000387.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] compilation de plearn avec -noblas, -nopython etc.</H1>
+    <B>Fr&#233;d&#233;ric Bastien</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20compilation%20de%20plearn%20avec%20-noblas%2C%20-nopython%20etc.&In-Reply-To=%3C466ECAB2.5010605%40nouiz.org%3E"
+       TITLE="[Plearn-core] compilation de plearn avec -noblas, -nopython etc.">nouiz at nouiz.org
+       </A><BR>
+    <I>Tue Jun 12 18:32:50 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000385.html">[Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+</A></li>
+        <LI>Next message: <A HREF="000387.html">[Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+On n'a pas besoin de nouvelle variable, car on peut utiliser, 
+PL_PYTHON_VERSION et USE_BLAS_SPECIALISATIONS comme variable avec des 
+#ifndef
+
+Je ne vois pas de probleme a le faire.
+
+Fred
+Olivier Delalleau wrote:
+&gt;<i> Ca me para&#238;t &#234;tre une bonne id&#233;e.
+</I>&gt;<i> Mais dans ce cas on voudrait p-&#234; aussi int&#233;grer plearn_lapack_inc et
+</I>&gt;<i> plearn_curses_inc, ce qui pourrait n&#233;cessiter de nouvelles options de
+</I>&gt;<i> compilation et/ou de nouvelles d&#233;finitions de variables ?
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> Olivier
+</I>&gt;<i> 
+</I>&gt;<i> On 12 Jun 2007, Pascal Lamblin wrote:
+</I>&gt;<i> 
+</I>&gt;&gt;<i>Salut &#224; tous,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>Qu'est-ce que vous penseriez de mettre, dans plearn_inc.h, les #include
+</I>&gt;&gt;<i>de plearn_python_inc.h et de plearn_lapack_inc.h entre des jolis #if qui
+</I>&gt;&gt;<i>v&#233;rifieraient si on ne serait pas (par hasard) en train de compiler avec
+</I>&gt;&gt;<i>-noblas ou -nopython ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>&#199;a permettrait de ne pas &#234;tre oblig&#233;s de changer le nom &quot;plearn&quot;, qui
+</I>&gt;&gt;<i>peut &#234;tre utilis&#233; dans des scripts ext&#233;rieurs, des alias, etc., tout en
+</I>&gt;&gt;<i>permettant de compiler un coup avec python et un coup sans, par exemple.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>Y a-t-il des raisons de ne pas le faire ?
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000385.html">[Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+</A></li>
+	<LI>Next message: <A HREF="000387.html">[Plearn-core] compilation de plearn avec -noblas, -nopython etc.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#386">[ date ]</a>
+              <a href="thread.html#386">[ thread ]</a>
+              <a href="subject.html#386">[ subject ]</a>
+              <a href="author.html#386">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

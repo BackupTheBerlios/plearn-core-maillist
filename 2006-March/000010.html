@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Nouvelle option --no-progress
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Nouvelle%20option%20--no-progress&In-Reply-To=%3C44199376.7030402%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000009.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Nouvelle option --no-progress</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Nouvelle%20option%20--no-progress&In-Reply-To=%3C44199376.7030402%40apstat.com%3E"
+       TITLE="[Plearn-core] Nouvelle option --no-progress">chapados at apstat.com
+       </A><BR>
+    <I>Thu Mar 16 17:33:58 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000009.html">[Plearn-core] Re: un PRandom dans PLearner ?
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut messieurs,
+
+J'ai ajout&#233; une nouvelle option &#224; PLearn: --no-progress, qui disable 
+globalement l'affichage des progress bars.  Christian Dorion va 
+maintenant modifier pytest afin que tout ex&#233;cutable &quot;plearn-like&quot; soit 
+invoqu&#233; avec cette option.  Ainsi, si quelqu'un se pla&#238;t &#224; modifier 
+&#233;sot&#233;riquement les progress bars pour que l'affichage des points d&#233;pende 
+de la couleur de ses sous-v&#234;tements, les tests ne vont pas planter.
+
+(Nous avons plein de tests qui &#233;chouent car ils entrelacent l'affichage 
+des progress bars avec d'autres affichages (logging, etc) en cours de 
+test, donc les modifs de Pascal Lamblin qui affichent les points de la 
+PB dans un ordre diff&#233;rent causent pas mal d'ennui...)
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000009.html">[Plearn-core] Re: un PRandom dans PLearner ?
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

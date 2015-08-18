@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44BE4A63.4080701%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000146.html">
+   <LINK REL="Next"  HREF="000149.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44BE4A63.4080701%40apstat.com%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">pascal at apstat.com
+       </A><BR>
+    <I>Wed Jul 19 17:06:11 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000146.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000149.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#148">[ date ]</a>
+              <a href="thread.html#148">[ thread ]</a>
+              <a href="subject.html#148">[ subject ]</a>
+              <a href="author.html#148">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pascal Lamblin wrote:
+&gt;<i> On Wed, Jul 19, 2006, Pascal Vincent wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Pascal Lamblin wrote:
+</I>&gt;&gt;<i>     
+</I>&gt;&gt;&gt;<i> Je viens de finir (j'esp&#232;re) de le d&#233;p&#233;ter. Soyons francs, il met 4
+</I>&gt;&gt;&gt;<i> (quatre) fois plus de temps &#224; parser que la version de base (22 s au lieu
+</I>&gt;&gt;&gt;<i> de 5.5 sur un gros athlon64, 50 s au lieu de 12.5 sur un petit p4).
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Honn&#234;tement, vous en pensez quoi ? Est-ce que c'est acceptable ?
+</I>&gt;&gt;&gt;<i>   
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> Je suis surpris que ce soit tellement plus long. Je suspecte que c'est 
+</I>&gt;&gt;<i> parce que le nouveau parseur parse le fichier au complet. As-tu essay&#233;, 
+</I>&gt;&gt;<i> pour voir, d'utiliser l'ancien &quot;parseur&quot; (rudimentaire mais efficace) 
+</I>&gt;&gt;<i> pour extraire rapidement les directives pr&#233;processeur non comment&#233;es, et 
+</I>&gt;&gt;<i> utiliser le nouveau parseur pour &quot;interpr&#233;ter&quot; juste le petit bout de 
+</I>&gt;&gt;<i> code r&#233;sultant?
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> C'est effectivement quelque chose qu'il faudrait que je fasse. Le
+</I>&gt;<i> probl&#232;me que je vois venir, c'est les directives pr&#233;processeur qui ne
+</I>&gt;<i> tiennent pas sur une ligne:
+</I>&gt;<i> # if 1 \
+</I>&gt;<i>   &amp;&amp; 0
+</I>&gt;<i> #   include &lt;truc.h&gt; // oui mais justement on veut pas l'inclure
+</I>&gt;<i> # endif
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>Du point de vue du C c'est une ligne! ;-)   un newline pr&#233;c&#233;d&#233; du'un \ 
+ne devrait jamais &#234;tre consid&#233;r&#233; comme le commencement d'une nouvelle 
+ligne...
+Il faut consid&#233;rer que DEFINITION: fin-de-ligne === s&#233;quence de \n et/ou 
+\r non pr&#233;c&#233;d&#233;e d'un \
+
+&gt;<i> D'ailleurs, j'ai aussi modifi&#233; le parseur de commentaires pour qu'il
+</I>&gt;<i> prenne correctement en compte le cas suivants :
+</I>&gt;<i> pas_comment&#233;
+</I>&gt;<i> /*
+</I>&gt;<i> comment&#233;
+</I>&gt;<i> // */
+</I>&gt;<i> pas_comment&#233;
+</I>&gt;<i>
+</I>&gt;<i> sans affecter le cas :
+</I>&gt;<i> pas_comment&#233;
+</I>&gt;<i> //*
+</I>&gt;<i> pas_comment&#233;
+</I>&gt;<i> // */
+</I>&gt;<i> pas_comment&#233;
+</I>&gt;<i>   
+</I>Bien s&#251;r le parseur rudimentaire qui &quot;extrait les directives 
+pr&#233;processeurs non comment&#233;es&quot; se doit d'&#234;tre un minimum intelligent, et 
+&#234;tre capable de distinguer les contextes diff&#233;rents &#224; savoir si il se 
+dtrouve
+a ) dans une string (ex terrible:
+&quot; salut /* blah \&quot; foo bar\
+// bouh&quot; )
+
+b) dans un char ex: '&quot;'
+
+c) dans un commentaire /* ... */   ( ex terrible: inclure la string 
+pr&#233;c&#233;dente dans un tel commentaire )
+
+d) dans un commentaire // ... fin-de-ligne
+
+e) dans une directive pr&#233;processeur  # .... fin-de-ligne
+
+Et le parseur rudimentaire que j'avais &#233;crit &#224; la va-vite n'est sans 
+aucun doute pas correct &#224; 100%.
+
+&gt;&gt;&gt;<i> Si c'est trop long, est-ce qu'on pourrait envisager un caching de la
+</I>&gt;&gt;&gt;<i> liste des includes par fichier (si un fichier ne change pas, sa liste
+</I>&gt;&gt;&gt;<i> d'include ne changera pas non plus) ?
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> C'est une possibilit&#233; int&#233;ressante, qui a le potentiel de ramener le 
+</I>&gt;&gt;<i> temps &#224; presque 0 en moyenne, mais il faut faire attention &#224; deux choses:
+</I>&gt;&gt;<i> a) les fichiers de cache devront &#233;videmment &#234;tre s&#233;par&#233;s par option de 
+</I>&gt;&gt;<i> compilation (ou par &quot;define&quot;) pouvant influencer le pr&#233;processing et les 
+</I>&gt;&gt;<i> d&#233;pendances
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Tout &#224; fait.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i> b) il y a essentiellement 2 fa&#231;ons d'envisager le caching: ou bien 
+</I>&gt;&gt;<i> associer un fichier de cache &#224; chaque .cc et .h, ou bien maintenir un 
+</I>&gt;&gt;<i> fichier de cache global contenant tout l'arbre de d&#233;pendance. Il est 
+</I>&gt;&gt;<i> probable qu'une part non n&#233;gligeable du temps pris par pymake consiste 
+</I>&gt;&gt;<i> en l'ouverture de nombreux fichiers, et il est fort possible que 
+</I>&gt;&gt;<i> d'ouvrir un seul fichier pour d&#233;s&#233;rialiser un gros arbre de d&#233;pendance, 
+</I>&gt;&gt;<i> en ne faisant par la suite que v&#233;rifier les dates des .h et .cc 
+</I>&gt;&gt;<i> concern&#233;s par la compilation pour voir si l'information d'un noeud a 
+</I>&gt;&gt;<i> besoin d'&#234;tre mise &#224; jour, soit pas mal plus efficace.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Un seul fichier par target, tu veux dire ? Il me semble qu'on pourrait
+</I>&gt;<i> partager de l'information entre la compilation de plearn et de
+</I>&gt;<i> plearn_full, par exemple.
+</I>&gt;<i>   
+</I>Pour partager le maximum d'information je ferais un seul fichier (par 
+option) associ&#233; au .pymake/config utilis&#233;, contenant l'arbre de 
+d&#233;pendance s&#233;rialis&#233; (avec le module cpickle).
+L'arbre n'a pas besoin d'&#234;tre syst&#233;matiquement complet (contenir tout 
+plearn), mais peut simplement fonctionner comme une cache qu'on peut 
+compl&#233;ter avec les d&#233;pendances manquantes ou out-of-date de la 
+compilation en cours (plearn, plearn_full, ...).
+&gt;<i> Je ne sais pas laquelle des solutions est la plus efficace, il faudrait
+</I>&gt;<i> tester. Peut-&#234;tre qu'un bon compromis serait un fichier par r&#233;pertoire
+</I>&gt;<i> (et par option).
+</I>&gt;<i>   
+</I>
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000146.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000149.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#148">[ date ]</a>
+              <a href="thread.html#148">[ thread ]</a>
+              <a href="subject.html#148">[ subject ]</a>
+              <a href="author.html#148">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3Cc81af8c30702270700pb5b70b2r405a79d3b8b1852f%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000322.html">
+   <LINK REL="Next"  HREF="000325.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3Cc81af8c30702270700pb5b70b2r405a79d3b8b1852f%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">jaonary at gmail.com
+       </A><BR>
+    <I>Tue Feb 27 16:00:11 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000322.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+        <LI>Next message: <A HREF="000325.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#323">[ date ]</a>
+              <a href="thread.html#323">[ thread ]</a>
+              <a href="subject.html#323">[ subject ]</a>
+              <a href="author.html#323">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> &gt;
+</I>&gt;<i> &gt; Pas n&#233;cessairement.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; La m&#233;thode getExample de VMatrix prend en argument des Vec&amp;, donc
+</I>&gt;<i> &gt; rien n'emp&#234;che que l'appel change leur taille (appel &#224; resize), ou
+</I>&gt;<i> &gt; m&#234;me fasse un input=.
+</I>&gt;<i> &gt; Donc si tu d&#233;finis ta propre classe de VMatrix qui red&#233;finit cette
+</I>&gt;<i> &gt; m&#233;thode getExample qui resize et remplit le vecteur d'input
+</I>&gt;<i> &gt; correctement, tu peux avoir des vecteurs d'input de taille variable.
+</I>
+
+
+Cette solution me parrait d&#233;j&#224; plus abordable mais souleve encore d'autre
+probl&#232;mes :
+- que deviennent les membres inputsize et targetsize ?
+- La fonction toMat() doit elles etre modifier ?
+- En effet tout ce qui est getRow et subRow seront &#224; banir
+- Devrai-je aussi reimpl&#233;menter les fonction lecture et ecriture dans un
+fichier ?
+
+Jaonary
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/c34da3b8/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20070227/c34da3b8/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000322.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+	<LI>Next message: <A HREF="000325.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#323">[ date ]</a>
+              <a href="thread.html#323">[ thread ]</a>
+              <a href="subject.html#323">[ subject ]</a>
+              <a href="author.html#323">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

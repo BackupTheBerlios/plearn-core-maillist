@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PlearnPointer et Heritage
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PlearnPointer%20et%20Heritage&In-Reply-To=%3C084239B1-5B02-4C37-8545-923107770570%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000217.html">
+   <LINK REL="Next"  HREF="000222.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PlearnPointer et Heritage</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PlearnPointer%20et%20Heritage&In-Reply-To=%3C084239B1-5B02-4C37-8545-923107770570%40apstat.com%3E"
+       TITLE="[Plearn-core] PlearnPointer et Heritage">pascal at apstat.com
+       </A><BR>
+    <I>Fri Oct 13 17:42:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000217.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+        <LI>Next message: <A HREF="000222.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#215">[ date ]</a>
+              <a href="thread.html#215">[ thread ]</a>
+              <a href="subject.html#215">[ subject ]</a>
+              <a href="author.html#215">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Le 06-10-13 &#224; 11:34, Jaonary Rabarisoa a &#233;crit :
+
+&gt;<i> Je n'arrete pas d'emmener les problemes :) Apr&#232;s l'&#233;pisode des  
+</I>&gt;<i> resultsmats voici une autre concernant les PP. Pour illustrer mes  
+</I>&gt;<i> propos je vais tout de suit &#233;crire ce qui me passe par la t&#234;te.
+</I>&gt;<i>
+</I>&gt;<i> class SuperClass
+</I>&gt;<i> {
+</I>&gt;<i> .....
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> class SubClass : public SuperClass
+</I>&gt;<i> {
+</I>&gt;<i> type one_subclass_member;
+</I>&gt;<i>
+</I>&gt;<i> ...
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> void test()
+</I>&gt;<i> {
+</I>&gt;<i> PP&lt;SuperClass&gt; an_instance = new SubClass; // ici tout va bien
+</I>&gt;<i> an_instance-&gt;one_subclass_member = values; // problem  
+</I>&gt;<i> one_subclass_member is not a member of SuperClass
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> Alors comment faire pour r&#233;cuperer ce one_subclass_member ?
+</I>
+Voil&#224; au moins une m&#233;thode qui marche:
+
+dynamic_cast&lt;SubClass*&gt;((SuperClass*)an_instance)-&gt;one_subclass_member;
+
+Ah, la laideur des casts!
+
+Sinon quelquechose que j'avais d&#233;j&#224; sugg&#233;r&#233; par le pass&#233;:
+SubClass* p_an_instance = new SubClass;
+PP&lt;SuperClass&gt; an_instance = p_an_instance;
+p_an_instance-&gt;one_subclass_member = values;
+
+&gt;<i>
+</I>&gt;<i> Jaonary
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000217.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+	<LI>Next message: <A HREF="000222.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#215">[ date ]</a>
+              <a href="thread.html#215">[ thread ]</a>
+              <a href="subject.html#215">[ subject ]</a>
+              <a href="author.html#215">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

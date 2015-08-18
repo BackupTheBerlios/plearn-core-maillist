@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615175210.GC25988%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000066.html">
+   <LINK REL="Next"  HREF="000070.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615175210.GC25988%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 19:52:11 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000066.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000070.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#68">[ date ]</a>
+              <a href="thread.html#68">[ thread ]</a>
+              <a href="subject.html#68">[ subject ]</a>
+              <a href="author.html#68">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 15 Jun 2006, Pascal Lamblin wrote:
+&gt;<i> On Thu, Jun 15, 2006, Pascal Vincent wrote:
+</I>&gt;<i> &gt; Par ailleurs, je veux r&#233;p&#233;ter ici ce que j'ai dit &#224; Pascal hier:
+</I>&gt;<i> &gt; Il y a un bout de temps que je crois souhaitable de s&#233;parer l'op&#233;ration 
+</I>&gt;<i> &gt; de construction initiale (pour des options sp&#233;cifi&#233;es par l'utilisateur, 
+</I>&gt;<i> &gt; ou relues d'un objet sauv&#233;) de l'op&#233;ration de &quot;remise en &#233;tat de l'objet 
+</I>&gt;<i> &gt; apr&#232;s qu'on ait *chang&#233;* des options&quot; (qui est quelquechose de bien plus 
+</I>&gt;<i> &gt; mal d&#233;fini), et c'est pourquoi j'avais ajout&#233; la m&#233;thode changeOptions.
+</I>&gt;<i> &gt; Mais &#224; y regarder de plus pr&#232;s, c'est peut-&#234;tre un faux probl&#232;me. Le 
+</I>&gt;<i> &gt; vrai probl&#232;me est que impl&#233;menter du code qui assure la &quot;remise en &#233;tat 
+</I>&gt;<i> &gt; apr&#232;s changement d'options&quot; pour un objet complexe est en g&#233;n&#233;ral prise 
+</I>&gt;<i> &gt; de t&#234;te et compliqu&#233;, et que quand on &#233;crit une classe au d&#233;part, c'est 
+</I>&gt;<i> &gt; souvent le dernier de nos soucis. Le fait de soustraire cette difficult&#233; 
+</I>&gt;<i> &gt; de l'&#233;criture de build ne fera pas n&#233;cessairement qu'il sera plus ais&#233; 
+</I>&gt;<i> &gt; d'impl&#233;menter cette fonctionalit&#233; dans une autre m&#233;thode comme 
+</I>&gt;<i> &gt; changeOptions. De tels changeOptions risquent par ailleurs d'&#234;tre une 
+</I>&gt;<i> &gt; duplication, en plus compliqu&#233;, du code de build, et la duplication de 
+</I>&gt;<i> &gt; code dans ce contexte est &#224; mon avis dangereuse. Donc peut-&#234;tre que 
+</I>&gt;<i> &gt; centraliser cette logique dans build n'est pas si mal que &#231;a. Et 
+</I>&gt;<i> &gt; peut-&#234;tre que si. A m&#233;diter...
+</I>&gt;<i> 
+</I>&gt;<i> J'en profite alors pour r&#233;p&#233;ter ce que j'ai dit &#224; Pascal hier:
+</I>&gt;<i> Ce que je pense, c'est que dans la m&#233;thode qui assure la &#171; remise en
+</I>&gt;<i> &#233;tat apr&#232;s changement d'options &#187;, &#231;a ne peut &#234;tre que plus facile si
+</I>&gt;<i> on conna&#238;t la liste des options qui ont chang&#233; (ou qui n'ont pas chang&#233;,
+</I>&gt;<i> apr&#232;s tout).
+</I>&gt;<i> 
+</I>&gt;<i> Si cela _n&#233;cessite_ le fait de passer par une fonction particuli&#232;re
+</I>&gt;<i> (changeOptions) lorsqu'on veut changer une option, pourquoi pas, mais
+</I>&gt;<i> c'est lourd pour tout le monde. Si on a un moyen plus simple de notifier
+</I>&gt;<i> &#224; l'objet ce qui a chang&#233;, c'est &#224; mon avis mieux.
+</I>&gt;<i> 
+</I>&gt;<i> D'ailleurs, par d&#233;faut, on peut consid&#233;rer que toutes les options ont
+</I>&gt;<i> chang&#233;, c'est ce que fait build() pour le moment. Et on n'est m&#234;me pas
+</I>&gt;<i> oblig&#233; de diff&#233;rencier build et rebuild, on peut simplement faire en
+</I>&gt;<i> sorte que build() appelle build(toutes_les_options) si on veut &#233;viter la
+</I>&gt;<i> duplication de code.
+</I>
+Pascal #1 : je suis d'accord que &quot;le fait de soustraire cette difficult&#233;
+de l'&#233;criture de build ne fera pas n&#233;cessairement qu'il sera plus ais&#233;
+d'impl&#233;menter cette fonctionalit&#233; dans une autre m&#233;thode comme
+changeOptions&quot;. Mais dans le cas ou on veut cette fonctionnalite, je
+pense que c'est mieux de la coder dans une fonction separee que de la
+melanger au build, car ca rend le build inutilement complexe.
+
+Pascal #2 : idealement, passer par une fonction particuliere
+(changeOptions) ou appeler rebuild(options_qui_ont_change) devrait etre
+a peu pres du meme niveau de lourdeur (il me semble). Dans le premier
+cas, tu passes tout dans la fonction, tandis que dans le deuxieme cas tu
+fais toi-meme les affectations avant de passer les noms des options.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000066.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000070.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#68">[ date ]</a>
+              <a href="thread.html#68">[ thread ]</a>
+              <a href="subject.html#68">[ subject ]</a>
+              <a href="author.html#68">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

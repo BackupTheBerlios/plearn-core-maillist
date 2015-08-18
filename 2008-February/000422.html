@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Change in NNet data representation
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Change%20in%20NNet%20data%20representation&In-Reply-To=%3C20080225165720.GA28146%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Change in NNet data representation</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Change%20in%20NNet%20data%20representation&In-Reply-To=%3C20080225165720.GA28146%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Change in NNet data representation">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Feb 25 17:57:22 CET 2008</I>
+    <P><UL>
+        
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#422">[ date ]</a>
+              <a href="thread.html#422">[ thread ]</a>
+              <a href="subject.html#422">[ subject ]</a>
+              <a href="author.html#422">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Just to let everyone know I made some changes in NNet to store the data
+(e.g. input, hidden layer and output layer variables) as row vectors
+rather than column vectors (so that I can more easily use matrices of
+multiple row input vectors).
+Everything should still be working as expected, but if you run into any
+trouble (most likely size mismatchs in Variable / Matrix operations),
+please let me know. NNet should be fine, but maybe sub-classes not
+tested in PLearn could exhibit some issues.
+
+Quick fix if anything really bad happens: update NNet.cc back to r8568.
+
+--
+Olivier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#422">[ date ]</a>
+              <a href="thread.html#422">[ thread ]</a>
+              <a href="subject.html#422">[ subject ]</a>
+              <a href="author.html#422">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

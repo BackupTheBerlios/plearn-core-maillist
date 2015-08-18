@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C20080409152251.GA15642%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000424.html">
+   <LINK REL="Next"  HREF="000426.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C20080409152251.GA15642%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Apr  9 17:22:51 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000424.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+        <LI>Next message: <A HREF="000426.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#425">[ date ]</a>
+              <a href="thread.html#425">[ thread ]</a>
+              <a href="subject.html#425">[ subject ]</a>
+              <a href="author.html#425">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>So, I've been trying to follow this discussion, but I never really
+looked at the propagation paths in the past... I just did and it's not
+so easy to get into ;)
+
+&gt;<i> a) efficiency reason. Ex. when computing a function and gradient on a  
+</I>&gt;<i> batch (as a SumOf can do), you certainly do not want to unnecessarily  
+</I>&gt;<i> recompute possibly very costly transformations of your parameters for  
+</I>&gt;<i> each example you see.
+</I>
+I see that, indeed, something like sumOf systematically does a
+f-&gt;recomputeParents() in a fprop. So it looks like the &quot;correct&quot; way to
+compute a Func when the parameters have changed is to use this method.
+
+&gt;<i> b) correct computation of gradients when using SumOf or similar  
+</I>&gt;<i> operations, and in particular when doing a SumOf inside a SumOf or  
+</I>&gt;<i> similar (ProductOf?). In this case, you want to accumulate gradients  
+</I>&gt;<i> to the immediate parents (transformed parameters) while doing the  
+</I>&gt;<i> SumOf and only *then* backpropagate *once* the resulting total  
+</I>&gt;<i> gradient to the parents of these  parents (the untransformed  
+</I>&gt;<i> parameters).
+</I>
+I'm a bit lost here. Can you give the kind of mathematical formula you
+have in mind?
+
+&gt;<i> &gt; Var output2 = product(processed_input, -m_woutput1);
+</I>&gt;<i> &gt; (...)
+</I>&gt;<i> &gt; The computation for output2 produces the following major bug: the  
+</I>&gt;<i> &gt; NegateElementsVariable (corresponding to the unary minus) is never  
+</I>&gt;<i> &gt; made part of the proppath, since first it's trying to mark  
+</I>&gt;<i> &gt; m_woutput1 (which fails, for the reason given above), yet the whole  
+</I>&gt;<i> &gt; product succeeds since processed_input succeeds.
+</I>
+So, assuming you have f = Func(processed_input, output2) with parameters
+-m_woutput1.
+It looks like you should call f-&gt;recomputeParents() each time
+m_woutput1 changes. Regardless of this not being so intuitive, there may
+be another issue (please correct me if I'm wrong): since the bproppath
+does not include -m_woutput1, when you do a bprop, you will get some
+gradient in -m_woutput1 (provided by the product variable), but it will
+not be forwarded to m_woutput1. Thus you won't be able to update your
+parameters.
+I just looked into the fbprop of SumOfVariable and I don't see how it
+handles this: it basically call func-&gt;fpbrop() on each input sample, but
+I can't find where the gradient thus accumulated is backpropagated in a
+possible transformation of the parameters... although it must be done
+somewhere since I tried changing the following in NNet:
+
+         w1 = Var(1 + the_input-&gt;width(), nhidden, &quot;w1&quot;);
+         params.append(w1);
+-        hidden_layer = hiddenLayer(output, w1);
++        Var w1_tmp = -w1;
++        w1_tmp = -w1_tmp;
++        hidden_layer = hiddenLayer(output, w1_tmp);
+         output = hidden_layer;
+
+and it still gave me the same results. So, I'm going to try to look
+better, but if you know the answer, tell me :)
+
+--
+Olivier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000424.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+	<LI>Next message: <A HREF="000426.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#425">[ date ]</a>
+              <a href="thread.html#425">[ thread ]</a>
+              <a href="subject.html#425">[ subject ]</a>
+              <a href="author.html#425">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

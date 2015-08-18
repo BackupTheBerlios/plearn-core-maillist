@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Destruction des objets avec l'interface Python
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Destruction%20des%20objets%20avec%20l%27interface%20Python&In-Reply-To=%3C20070910155610.GA26436%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000411.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Destruction des objets avec l'interface Python</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Destruction%20des%20objets%20avec%20l%27interface%20Python&In-Reply-To=%3C20070910155610.GA26436%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Destruction des objets avec l'interface Python">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Sep 10 17:56:13 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000411.html">[Plearn-core] Une nouvelle script pour executer des programmes avec	dbidispatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#410">[ date ]</a>
+              <a href="thread.html#410">[ thread ]</a>
+              <a href="subject.html#410">[ subject ]</a>
+              <a href="author.html#410">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+J'ai du code python qui cree et utilise des objets PLearn (avec la
+librairie .so). En l'occurrence je cree un learner, je l'entraine, je le
+teste, et ca finit la. Probleme : j'ai du code important dans le
+destructeur de mon learner, et apparemment il n'est pas appele, ce qui
+empeche la liberation de certaines ressources systeme.
+
+Question : est-ce que c'est normal ? Si ce n'est pas le cas, ou
+devrais-je regarder pour localiser le bug ?
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000411.html">[Plearn-core] Une nouvelle script pour executer des programmes avec	dbidispatch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#410">[ date ]</a>
+              <a href="thread.html#410">[ thread ]</a>
+              <a href="subject.html#410">[ subject ]</a>
+              <a href="author.html#410">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

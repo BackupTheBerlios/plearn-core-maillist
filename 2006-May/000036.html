@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pl_math.cc (5501) - safeexp
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pl_math.cc%20%285501%29%20-%20safeexp&In-Reply-To=%3C20060518193431.GA13239%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000035.html">
+   <LINK REL="Next"  HREF="000038.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pl_math.cc (5501) - safeexp</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pl_math.cc%20%285501%29%20-%20safeexp&In-Reply-To=%3C20060518193431.GA13239%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] pl_math.cc (5501) - safeexp">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu May 18 21:34:33 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000035.html">[Plearn-core] pl_math.cc (5501) - safeexp
+</A></li>
+        <LI>Next message: <A HREF="000038.html">[Plearn-core] pl_math.cc (5501) - safeexp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#36">[ date ]</a>
+              <a href="thread.html#36">[ thread ]</a>
+              <a href="subject.html#36">[ subject ]</a>
+              <a href="author.html#36">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 18 May 2006, Nicolas Chapados wrote:
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Pierre-Antoine Manzagol wrote:
+</I>&gt;<i> &gt;&gt;#include &lt;limits&gt;
+</I>&gt;<i> &gt;&gt;// ...
+</I>&gt;<i> &gt;&gt;if (a &gt; 300)
+</I>&gt;<i> &gt;&gt;    return std::numeric_limits&lt;real&gt;::max();
+</I>&gt;<i> &gt;&gt;    
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Dans ce cas, ma question est pourquoi a-t-on le seuil de '300'?
+</I>&gt;<i> &gt;PA
+</I>&gt;<i> &gt;  
+</I>&gt;<i> Peut-&#234;tre pour &#233;viter les inf?  Pascal/Yoshua, vous avez probablement 
+</I>&gt;<i> une id&#233;e?
+</I>
+Ca doit etre un peu plus subtil, car il y a aussi if (a &lt; -300) return 0.
+Alors que exp(-310), si ca ne retourne pas 0, ca ne devrait pas etre
+bien grand non plus.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000035.html">[Plearn-core] pl_math.cc (5501) - safeexp
+</A></li>
+	<LI>Next message: <A HREF="000038.html">[Plearn-core] pl_math.cc (5501) - safeexp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#36">[ date ]</a>
+              <a href="thread.html#36">[ thread ]</a>
+              <a href="subject.html#36">[ subject ]</a>
+              <a href="author.html#36">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

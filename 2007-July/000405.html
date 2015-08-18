@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PLearn::VMField
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%3A%3AVMField&In-Reply-To=%3C20070730152057.GA8250%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000404.html">
+   <LINK REL="Next"  HREF="000407.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PLearn::VMField</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%3A%3AVMField&In-Reply-To=%3C20070730152057.GA8250%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] PLearn::VMField">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Jul 30 17:20:59 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000404.html">[Plearn-core] PLearn::VMField
+</A></li>
+        <LI>Next message: <A HREF="000407.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#405">[ date ]</a>
+              <a href="thread.html#405">[ thread ]</a>
+              <a href="subject.html#405">[ subject ]</a>
+              <a href="author.html#405">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+First of all, although the VMFields are supposed to give information
+about features, be aware that there may be some code that does not
+process them properly (i.e. in particular if you process some fields
+through other VMatrices, it is possible that you may lose this
+information).
+
+I have little experience using these VMFields myself, but as far as I
+can tell DiscrMonotonic is for discrete values that have a notion of
+order (like 1, 2, 3), while DiscrFloat would be for discrete values that
+take floating point values. In the end it does not matter much, as long
+as your learner has the information it needs.
+
+I don't believe you can give this information directly in a .amat file.
+One way to do it is to create a &quot;file.amat.metadata&quot; directory, then
+edit an ascii file named &quot;fieldnames&quot; in it, and put one line for each
+field in the format:
+name_of_the_field type_of_the_field
+where 'type_of_the_field' is an integer corresponding to the index of
+the type in the 'FieldType' enum defined in VMField.h (starting at 0).
+
+If you want to create this file automatically, you can write a C++
+program that saves the fields by:
+    VMat vm = getDataSet(&quot;file.amat&quot;);
+    Array&lt;VMField&gt;&amp; fields = vm-&gt;getFieldInfos();
+    // Set field types.
+    fields[0].fieldtype = VMField::DiscrFloat; // For instance.
+    // (...)
+    vm-&gt;setFieldInfos(fields);
+    vm-&gt;saveFieldInfos();
+
+--
+Olivier
+
+On 29 Jul 2007, mariusz mariusz wrote:
+&gt;<i> Hello,
+</I>&gt;<i> 
+</I>&gt;<i> i'm trying to write new plearner, but i'm a beginner and have some 
+</I>&gt;<i> problems with it. The main problem i have is, that the learner should 
+</I>&gt;<i> behave differnently depending on column type. Normally i used such 
+</I>&gt;<i> types: nominal, continuous and discrete, but in VMField i found 
+</I>&gt;<i> DiscrGeneral, DiscrMonotonic and DiscrFloat types. What does this types 
+</I>&gt;<i> mean? Maybe i could figure it out by myself, but i thought i'd better 
+</I>&gt;<i> ask.
+</I>&gt;<i> The second question is: how the db should tell plearner that the column 
+</I>&gt;<i> is that type?
+</I>&gt;<i> In especially how to write an .amat file, which would include 
+</I>&gt;<i> information about columns type? is it possible?
+</I>&gt;<i> 
+</I>&gt;<i> thanks in advance
+</I>&gt;<i> 
+</I>&gt;<i> marig
+</I>&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------
+</I>&gt;<i> Tylko od nich zale&#380;y czy prze&#380;yj&#261; t&#281; noc. Jak uciec, gdy 
+</I>&gt;<i> oni widz&#261; wszystko? Kate Beckinsale w mrocznym thrillerze
+</I>&gt;<i> MOTEL - kinach od 3 sierpnia!
+</I>&gt;<i> <A HREF="http://klik.wp.pl/?adr=http%3A%2F%2Fadv.reklama.wp.pl%2Fas%2Fmotel.html&amp;sid=1236">http://klik.wp.pl/?adr=http%3A%2F%2Fadv.reklama.wp.pl%2Fas%2Fmotel.html&amp;sid=1236</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000404.html">[Plearn-core] PLearn::VMField
+</A></li>
+	<LI>Next message: <A HREF="000407.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#405">[ date ]</a>
+              <a href="thread.html#405">[ thread ]</a>
+              <a href="subject.html#405">[ subject ]</a>
+              <a href="author.html#405">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

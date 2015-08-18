@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%20in%0A%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C20070307182048.GA14521%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000333.html">
+   <LINK REL="Next"  HREF="000335.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%20in%0A%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C20070307182048.GA14521%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Mar  7 19:20:51 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000333.html">[Plearn-core] Sous sous classe de Object
+</A></li>
+        <LI>Next message: <A HREF="000335.html">[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+echouent ?
+La modif que j'ai faite est la :
+<A HREF="http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&amp;rev=6720&amp;sc=1">http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&amp;rev=6720&amp;sc=1</A>
+Les tests qui echouent a Apstat passent bien au Lisa (sauf
+test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+
+Je pourrais facilement modifier mon changement ci-haut pour revenir a
+une version plus proche de ce qu'on avait, mais idealement, ca serait
+bien d'avoir un code propre, donc de comprendre exactement ce qui se
+passe.
+
+--
+Olivier
+
+----- Forwarded message from <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">buildbot at apstat.com</A> -----
+
+From: <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">buildbot at apstat.com</A>
+To: <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">tihocan at users.berlios.de</A>
+Date: Wed, 07 Mar 2007 13:09:54 -0500
+Subject: buildbot failure in PLearn_ApSTAT_Linux_i386
+
+The Buildbot has detected a failed build of PLearn_ApSTAT_Linux_i386.
+Full details are available at:
+ <A HREF="http://janus.apstat.com:8010/PLearn_ApSTAT_Linux_i386/builds/1073">http://janus.apstat.com:8010/PLearn_ApSTAT_Linux_i386/builds/1073</A>
+
+Buildbot URL: <A HREF="http://janus.apstat.com:8010/">http://janus.apstat.com:8010/</A>
+
+Build Reason: 
+Build Source Stamp: [branch trunk] HEAD
+Blamelist: tihocan
+
+BUILD FAILED: failed test
+
+sincerely,
+ -The Buildbot
+
+----- End forwarded message -----
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000333.html">[Plearn-core] Sous sous classe de Object
+</A></li>
+	<LI>Next message: <A HREF="000335.html">[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

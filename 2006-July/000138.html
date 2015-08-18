@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] location distributed launcher
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20location%20distributed%20launcher&In-Reply-To=%3C44B7E7C4.2000505%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000137.html">
+   <LINK REL="Next"  HREF="000154.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] location distributed launcher</H1>
+    <B>Christian Dorion</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20location%20distributed%20launcher&In-Reply-To=%3C44B7E7C4.2000505%40apstat.com%3E"
+       TITLE="[Plearn-core] location distributed launcher">dorionc at apstat.com
+       </A><BR>
+    <I>Fri Jul 14 20:51:48 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000137.html">[Plearn-core] location distributed launcher
+</A></li>
+        <LI>Next message: <A HREF="000154.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#138">[ date ]</a>
+              <a href="thread.html#138">[ thread ]</a>
+              <a href="subject.html#138">[ subject ]</a>
+              <a href="author.html#138">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>En effet ;) Et c'est ce que j'avais fait sous PLearn... Semblerait que 
+je n'arrive pas &#224; l'&#233;crire correctement deux fois en ligne ;)
+
+D'autre part, ce n'est plus vide!  Un bon point de d&#233;part: lire 
+~/PLearn/python_modules/plearn/parallel/example et 
+~/PLearn/scripts/cldispatch.
+
+Bonne chance,
+Chris.
+
+Nicolas Chapados escribi&#243;:
+&gt;<i> Cela devrait s'&#233;crire &quot;parallel&quot;.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Christian Dorion wrote:
+</I>&gt;&gt;<i> Bonjour groupe,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Pascal Vincent escribi&#243;:
+</I>&gt;&gt;&gt;<i> J'appuie &#224; 100% cette organisation des choses!
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Christian, dans le m&#234;me ordre d'id&#233;e de ce qui pr&#233;c&#232;de, pourrais-tu 
+</I>&gt;&gt;&gt;<i> s'il te plait &quot;extraire&quot; cldispatch et les modules correspondants de 
+</I>&gt;&gt;&gt;<i> apstatsoft/... et les d&#233;placer dans PLearn/... (et possiblement au 
+</I>&gt;&gt;&gt;<i> passage r&#233;parer l'option &quot;cldispatch -n&quot; qui semble  s'&#234;tre bris&#233;e 
+</I>&gt;&gt;&gt;<i> au cours de la modularisation/proprification). Ce code pourrait en 
+</I>&gt;&gt;&gt;<i> effet &#234;tre utile aux personnes du LISA qui travaillent au lancement 
+</I>&gt;&gt;&gt;<i> de t&#226;ches concurrentes et &#224; l'am&#233;lioration et modularisation de pymake.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i> Je viens de cr&#233;er PLearn/python_modules/plearn/parralel. Pour 
+</I>&gt;&gt;<i> l'instant c'est vide; j'avise juste pour pas qu'on cr&#233;e 20 
+</I>&gt;&gt;<i> r&#233;pertoires pour la m&#234;me choucroute. Je vais migrer mes modules &#224; 
+</I>&gt;&gt;<i> temps perdu ;)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> A+
+</I>&gt;&gt;<i> -- 
+</I>&gt;&gt;<i> *Christian Dorion*/
+</I>&gt;&gt;<i> Doctorant en Finance (Desautels Faculty of Management -- McGill)
+</I>&gt;&gt;<i> M.Sc. Informatique et Recherche Op&#233;rationnelle//
+</I>&gt;&gt;<i> ApStat Technologies Inc./
+</I>&gt;&gt;<i> <A HREF="http://www.apstat.com">http://www.apstat.com</A>
+</I>&gt;&gt;<i> T&#233;l : (514) 343-9119, ext. 237
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> &quot;Soyons r&#233;alistes, exigeons l'impossible&quot;,
+</I>&gt;&gt;<i> Ernesto &quot;Che&quot; Guevara, 1928-1967
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> &quot;Love is a Temple, Love the higher Law&quot;,
+</I>&gt;&gt;<i> One, U2
+</I>&gt;&gt;<i> ------------------------------------------------------------------------
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Plearn-core mailing list
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at bat.berlios.de</A>
+</I>&gt;&gt;<i> <A HREF="http://bat.berlios.de/mailman/listinfo/plearn-core">http://bat.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;&gt;<i>   
+</I>&gt;<i>
+</I>&gt;<i> -- 
+</I>&gt;<i> Nicolas Chapados, M.Sc.
+</I>&gt;<i> ApSTAT Technologies Inc.
+</I>&gt;<i> www.apstat.com
+</I>&gt;<i>   
+</I>
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op&#233;rationnelle//
+ApStat Technologies Inc./
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+T&#233;l : (514) 343-9119, ext. 237
+
+&quot;Soyons r&#233;alistes, exigeons l'impossible&quot;,
+Ernesto &quot;Che&quot; Guevara, 1928-1967
+
+&quot;Love is a Temple, Love the higher Law&quot;,
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/3d955f2b/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/3d955f2b/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000137.html">[Plearn-core] location distributed launcher
+</A></li>
+	<LI>Next message: <A HREF="000154.html">[Plearn-core] PPath et PStream
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#138">[ date ]</a>
+              <a href="thread.html#138">[ thread ]</a>
+              <a href="subject.html#138">[ subject ]</a>
+              <a href="author.html#138">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

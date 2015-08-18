@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: Wishlist PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Wishlist%20PLearn&In-Reply-To=%3C44B2C4F4.4010107%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000114.html">
+   <LINK REL="Next"  HREF="000117.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: Wishlist PLearn</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20Wishlist%20PLearn&In-Reply-To=%3C44B2C4F4.4010107%40apstat.com%3E"
+       TITLE="[Plearn-core] Re: Wishlist PLearn">pascal at apstat.com
+       </A><BR>
+    <I>Mon Jul 10 23:21:56 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000114.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+        <LI>Next message: <A HREF="000117.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#116">[ date ]</a>
+              <a href="thread.html#116">[ thread ]</a>
+              <a href="subject.html#116">[ subject ]</a>
+              <a href="author.html#116">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pascal Lamblin wrote:
+
+It seems that we have a different focus here. You seam really focused on 
+a batch job queue of independent jobs, while my focus is more on 
+launching parallel processing jobs which may need to communicate: so 
+they have to run together, not one after the other... Hence it's 
+important to know how many I may expect to launch together at the same 
+time (the &quot;query&quot; operation),  and to get some initial i/o communication 
+channel to them.
+
+These is really a different focus, and maybe we should indeed consider 2 
+different sub-systems, but both should be adressed somehow.
+
+&gt;<i> On Mon, Jul 10, 2006, Pascal Vincent wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> A few additional requirements for the distributed launcher:
+</I>&gt;&gt;<i>   * It should be possible to &quot;query&quot; the availability of ressources, 
+</I>&gt;&gt;<i> such as a subcommand returning an answer to the question: how many 
+</I>&gt;&gt;<i> computation units are currently available
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> It might be useful, but in my opinion, the calling program shouldn't
+</I>&gt;<i> worry about that, since the queuing of jobs is done by the cluster
+</I>&gt;<i> managing system (or the &quot;dispatching-by-ssh module&quot;).
+</I>&gt;<i>
+</I>&gt;<i> For instance, on the mammouth, we don't have a way to know on which
+</I>&gt;<i> sub-cluster the next batch of jobs we submit will be launched, so we
+</I>&gt;<i> don't really know the number of &quot;available&quot; computation units... but we
+</I>&gt;<i> don't care, because even if we submit a large batch, the remaining jobs
+</I>&gt;<i> will be queued and executed when machines are free.
+</I>&gt;<i>
+</I>&gt;<i> If we add the support for another &quot;cluster&quot; system that has no support
+</I>&gt;<i> for queuing, then we should implement it inside the module.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i>   * When requesting to launch a command, and it fails, it should be 
+</I>&gt;&gt;<i> possible to easily know if this is because there are no more 
+</I>&gt;&gt;<i> computational ressources available (which is very different than failing 
+</I>&gt;&gt;<i> because of a bug in the command).
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> I think &quot;no more resources available&quot; should not produce an error, but
+</I>&gt;<i> &quot;queue full&quot; should. That being said, we should make a difference
+</I>&gt;<i> between the following cases:
+</I>&gt;<i>   - the command line is ill-formed (syntax error in calling distrlaunch)
+</I>&gt;<i>   - distrlaunch did not manage to launch the jobs (queue full, the
+</I>&gt;<i>     &quot;cluster&quot; command failed, ...)
+</I>&gt;<i>   - the job was launched and failed
+</I>&gt;<i> In the last case, we should not produce an error, it would be the job of
+</I>&gt;<i> the program (or programmer) who wanted to execute these jobs to check
+</I>&gt;<i> their output and return value in the logs.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i>   * Most importantly, it should be possible for the process calling the 
+</I>&gt;&gt;<i> distributed launcher (whether it be a C++ process or a python script) to 
+</I>&gt;&gt;<i> access i/o streams of the launched command (i.e. its 
+</I>&gt;&gt;<i> stdin/stdout/stderr) for communication purpose. This should at least be 
+</I>&gt;&gt;<i> possible when launching a single command (the i/o of the remotely 
+</I>&gt;&gt;<i> launched command should be redirected to the caller).
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> I totally agree that it should be possible to easily redirect i/o
+</I>&gt;<i> from/to files, but I'm a bit skeptical about redirecting to a tty.
+</I>&gt;<i> I don't even know if bqtools allows to do that.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i>   * I suggest using a single python command (ex: distrlaunch) with 
+</I>&gt;&gt;<i> several possible subcommands or options and online help.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> I think that specifying a batch of commands to run on the command line
+</I>&gt;<i> is not really easy... I would rather export a python function, one
+</I>&gt;<i> argument of which would be a list of strings: the commands to execute.
+</I>&gt;<i>
+</I>&gt;<i> The execution of jobs from the command-line should go through another
+</I>&gt;<i> script, such as apdispatch.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000114.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+	<LI>Next message: <A HREF="000117.html">[Plearn-core] Re: Wishlist PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#116">[ date ]</a>
+              <a href="thread.html#116">[ thread ]</a>
+              <a href="subject.html#116">[ subject ]</a>
+              <a href="author.html#116">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

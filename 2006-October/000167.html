@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Dataset et VMatrix
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Dataset%20et%20VMatrix&In-Reply-To=%3Cc81af8c30610020710o6d9de887g79c70d07761f7e70%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000168.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Dataset et VMatrix</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Dataset%20et%20VMatrix&In-Reply-To=%3Cc81af8c30610020710o6d9de887g79c70d07761f7e70%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Dataset et VMatrix">jaonary at gmail.com
+       </A><BR>
+    <I>Mon Oct  2 16:10:42 CEST 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000168.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#167">[ date ]</a>
+              <a href="thread.html#167">[ thread ]</a>
+              <a href="subject.html#167">[ subject ]</a>
+              <a href="author.html#167">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Boujour tout le monde,
+J'ai un petit probl&#232;me concernant l'utilisation des VMatrix avec un
+PLearner.
+Avant de faire un 'train()' on doit g&#233;n&#233;ralement donner un ensemble
+d'apprentissage au PLearner. Si j'ai bien
+compris cet ensemble d'apprentissage est stock&#233; dans une VMatrix et ce
+dernier ressemble &#224; un gigantesque tableau
+de la forme (X,Y,W,O) o&#249;
+X = input
+Y = target
+W = poids
+O = autres donn&#233;
+Ma question b&#234;te est la suivante :
+Si j'ai d&#233;j&#224; les matrices X et Y (&#233;ventuellement W et O) en m&#233;moir, obtenues
+d'une fa&#231;on ou d'une autre, comment dois-je
+faire pour cr&#233;er ma VMatrix d'ensemble d'apprentissage sans cr&#233;er une
+nouvelle VMatrix et recopier X et Y (W,O) ?
+J'ai d&#233;j&#224; vu qu'il y peut &#234;tres des sous classe de VMatrix qui peuvent
+m'aider, comme ConcatColsVMatrix, mais je ne sais pas trop comment
+les utiliser :-(
+
+Cordialement,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061002/8c3da549/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061002/8c3da549/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000168.html">[Plearn-core] Dataset et VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#167">[ date ]</a>
+              <a href="thread.html#167">[ thread ]</a>
+              <a href="subject.html#167">[ subject ]</a>
+              <a href="author.html#167">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

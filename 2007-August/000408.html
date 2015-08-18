@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Passage &#224; NumPy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_NumPy%3F%3D&In-Reply-To=%3C46B9F823.70801%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000409.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Passage &#224; NumPy</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_NumPy%3F%3D&In-Reply-To=%3C46B9F823.70801%40apstat.com%3E"
+       TITLE="[Plearn-core] Passage &#224; NumPy">saintmlx at apstat.com
+       </A><BR>
+    <I>Wed Aug  8 19:06:43 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000409.html">[Plearn-core] Passage &#224; numpy: al&#233;as
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#408">[ date ]</a>
+              <a href="thread.html#408">[ thread ]</a>
+              <a href="subject.html#408">[ subject ]</a>
+              <a href="author.html#408">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>C'est fait.  &#192; partir de maintenant, numarray n'existe plus pour PLearn 
+et il faut utiliser numpy.  Si vous avez des questions, faites-moi signe.
+
+Xavier
+
+Xavier Saint-Mleux wrote:
+&gt;<i> Salut,
+</I>&gt;<i>
+</I>&gt;<i> Je vais faire un commit pour le passage &#224; numpy d'ici 24~48 heures.  Il 
+</I>&gt;<i> ne sera plus possible d'utiliser numarray avec PLearn apr&#232;s ce 
+</I>&gt;<i> changement.  Le commit inclut les modifications n&#233;cessaires pour faire 
+</I>&gt;<i> passer tous les pytests (buildbot) avec numpy.  Ce qui n'est pas test&#233; 
+</I>&gt;<i> par le buildbot risque de ne plus marcher.
+</I>&gt;<i>
+</I>&gt;<i> Dans la plupart des cas, pour passer de numarray &#224; numpy, il suffit de 
+</I>&gt;<i> remplacer
+</I>&gt;<i> from numarray import *
+</I>&gt;<i> par
+</I>&gt;<i> from numpy.numarray import *
+</I>&gt;<i>
+</I>&gt;<i> N'h&#233;sitez pas &#224; me contacter si vous avez des questions,
+</I>&gt;<i>
+</I>&gt;<i> Xavier
+</I>&gt;<i>
+</I>&gt;<i> Xavier Saint-Mleux wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Salut,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je suis en train de faire la transition de numarray &#224; numpy.  Puisque 
+</I>&gt;&gt;<i> numarray est officiellement &quot;deprecated&quot;, &#231;a ne sera plus support&#233; par 
+</I>&gt;&gt;<i> PLearn apr&#232;s le passage &#224; numpy (i.e. d'ici quelques semaines).  En 
+</I>&gt;&gt;<i> particulier, tout code python qui importe numarray va &#234;tre modifi&#233; pour 
+</I>&gt;&gt;<i> importer numpy.numarray &#224; la place (interface &quot;numarray&quot; de numpy, pour 
+</I>&gt;&gt;<i> simplifier la transition; &#224; ne pas utiliser dans du nouveau code).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+</I>&gt;&gt;<i> install&#233; partout o&#249; vous utilisez numarray en ce moment?  Il serait 
+</I>&gt;&gt;<i> pr&#233;f&#233;rable d'avoir la derni&#232;re version (1.0.3); la version 1.0.1 a des 
+</I>&gt;&gt;<i> bugs qui nous affectent et je n'ai pas essay&#233; 1.0.2.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> N.B. numpy.numarray donne essentiellement la m&#234;me interface (syntaxe) 
+</I>&gt;&gt;<i> que numarray, mais il y a quelques diff&#233;rences et la s&#233;mantique peut 
+</I>&gt;&gt;<i> &#234;tre diff&#233;rente aussi.  Si vous avez des choses qui d&#233;pendent de 
+</I>&gt;&gt;<i> numarray, il serait bon d'en faire des pytest:  je ne ferai pas de 
+</I>&gt;&gt;<i> commit tant les tests ne passeront pas tous.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Xavier
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Plearn-core mailing list
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;&gt;<i>   
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>   
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000409.html">[Plearn-core] Passage &#224; numpy: al&#233;as
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#408">[ date ]</a>
+              <a href="thread.html#408">[ thread ]</a>
+              <a href="subject.html#408">[ subject ]</a>
+              <a href="author.html#408">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Impl&#233;menter un Learner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FImpl%3DE9menter_un_Learner%3F%3D&In-Reply-To=%3C20061026134922.GA20594%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000226.html">
+   <LINK REL="Next"  HREF="000228.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Impl&#233;menter un Learner</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FImpl%3DE9menter_un_Learner%3F%3D&In-Reply-To=%3C20061026134922.GA20594%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Impl&#233;menter un Learner">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Oct 26 15:49:24 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000226.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+        <LI>Next message: <A HREF="000228.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#227">[ date ]</a>
+              <a href="thread.html#227">[ thread ]</a>
+              <a href="subject.html#227">[ subject ]</a>
+              <a href="author.html#227">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i>  En suivant, la suggestion ci-dessus, je devrai remplacer mon jeu de donn&#233;e
+</I>&gt;<i> (X_i,Y_i) par un autre, notons (Z_i,Y_i). Les Y_i sont les memes, par contre
+</I>&gt;<i> les Z_i doivent &#234;tre un poiteur ou ref sur les X_i qui sont dans mon cas soit
+</I>&gt;<i> les Mat ou soit des VMat.  Et la question,  n'est il pas bien de faire ce hack
+</I>&gt;<i> au  niveau des VMat  ou lieu de learner ? Genre je cr&#233;e une sous classe de VMat
+</I>&gt;<i> avec un Vec&lt;VMat&gt; comme membre.
+</I>
+Le probl&#232;me c'est que les VMat ne sont pas bien adapt&#233;es pour avoir une
+largeur variable (c'est support&#233; th&#233;oriquement si width() == -1, mais en
+pratique il y a beaucoup de code qui ne fonctionnera pas si c'est le
+cas).
+C'est pourquoi je sugg&#232;re de coder &#231;a dans le learner. Si tu en as
+besoin &#224; d'autres endroits tu peux te cr&#233;er une classe qui se charge juste
+de charger tes donn&#233;es, qui serait utilis&#233;e par ton learner et que tu
+pourrais r&#233;utiliser dans d'autres learners utilisant le m&#234;me genre de
+donn&#233;es.
+
+&gt;<i> Aussi, mes Z_i devraient plutot &#234;tre des nom de fichier dans ce cas car je
+</I>&gt;<i> pense que je dois laisser mes matrices X_i sur le disque &#224; cause de la m&#233;moire.
+</I>&gt;<i> En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En plus tout ca
+</I>&gt;<i> devrait se faire de maniere transparente quand je fait un getDataSet(...) ou un
+</I>&gt;<i> setTrainigExample(...)
+</I>
+En effet dans ce cas un nom de fichier est une bonne id&#233;e. Il va alors
+falloir que tu utilises les string-mappings des VMats (NB: si tu cr&#233;es
+un fichier .amat avec juste sur chaque ligne le nom de fichier suivi de
+la target, tu devrais &#234;tre capable de le lire directemnent, fais un vmat
+view dessus pour v&#233;rifier, joue avec la touche s/S pour 'switcher'
+l'affichage des string mappings).
+
+--
+Olivier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000226.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+	<LI>Next message: <A HREF="000228.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#227">[ date ]</a>
+              <a href="thread.html#227">[ thread ]</a>
+              <a href="subject.html#227">[ subject ]</a>
+              <a href="author.html#227">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

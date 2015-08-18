@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] [issue234] Portability problem with declareMethods wizardry
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bissue234%5D%20Portability%20problem%20with%0A%20declareMethods%20wizardry&In-Reply-To=%3C44B66137.9030507%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000128.html">
+   <LINK REL="Next"  HREF="000142.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] [issue234] Portability problem with declareMethods wizardry</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bissue234%5D%20Portability%20problem%20with%0A%20declareMethods%20wizardry&In-Reply-To=%3C44B66137.9030507%40apstat.com%3E"
+       TITLE="[Plearn-core] [issue234] Portability problem with declareMethods wizardry">chapados at apstat.com
+       </A><BR>
+    <I>Thu Jul 13 17:05:27 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000128.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+        <LI>Next message: <A HREF="000142.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Tu peux mettre le namespace anonyme &#224; l'int&#233;rieur du namespace PLearn.  
+Je te sugg&#232;re de mettre uniquement les classes trampoline &#224; l'int&#233;rieur 
+de ce namespace (quelque part dans Object.cc).  Le but du namespace 
+anonyme est de faire comme une d&#233;claration statique pour les fonctions: 
+de garder ces classes &quot;locales&quot; &#224; la translation-unit courante.  Mais 
+comme on ne peut d&#233;clarer une classe comme &#233;tant statique (s'applique 
+seulement aux fonctions ou aux variables), on doit recourir au namespace 
+anonyme pour obtenir le m&#234;me effet.
+
+Olivier Delalleau wrote:
+&gt;<i> Salut,
+</I>&gt;<i>
+</I>&gt;<i> Il se trouve que je me suis decide a m'occuper de la compatibilite
+</I>&gt;<i> Visual Studio (ici nous avons Visual Studio .Net 2003).
+</I>&gt;<i> Je suis bien sur tombe sur le meme probleme que Jaonary, mais les deux
+</I>&gt;<i> fix suggeres par Nicolas ci-dessous fonctionnent.
+</I>&gt;<i> Je vais donc les incorporer dans PLearn sous peu. Nicolas, est-ce que tu
+</I>&gt;<i> peux juste confirmer que je peux mettre le namespace anonyme a
+</I>&gt;<i> l'interieur du namespace PLearn { ... } englobant tout le code de
+</I>&gt;<i> Object.cc (i.e. le mettre juste avant Object::declareMethods), ou est-ce
+</I>&gt;<i> que je dois le sortir et le mettre avant ? (j'imagine que non, car ca ne
+</I>&gt;<i> compile pas, mais je ne sais pas trop ce que ce namespace anonyme est
+</I>&gt;<i> cense faire...).
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Olivier
+</I>&gt;<i>
+</I>&gt;<i> On 11 Jul 2006, Nicolas Chapados wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Bonjour Jaonary,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je n'ai pas acc&#232;s &#224; Visual C++ pour tester, mais je te sugg&#232;re les tests 
+</I>&gt;&gt;<i> suivants:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 1) Prendre les deux classes locales (ObjectTrampolineGetOption et 
+</I>&gt;&gt;<i> ObjectTrampolineGetObject) et les sortir de la fonction 
+</I>&gt;&gt;<i> Object::declareMethods.  Il est suffisant de les d&#233;placer imm&#233;diatement 
+</I>&gt;&gt;<i> avant Object::declareMethods (sans rien mettre dans le .h).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 2) Si &#231;a fonctionne, essaie de les mettre dans un namespace anonyme, ainsi:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> namespace {
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> struct ObjectTrampolineGetOption { ... };
+</I>&gt;&gt;<i> struct ObjectTrampolineGetObject { ... };
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> }
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> et si &#231;a fonctionne, je vais incorporer le changement &#224; PLearn.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>    + Nicolas
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Pascal Vincent wrote:
+</I>&gt;&gt;<i>     
+</I>&gt;&gt;&gt;<i> New submission from Pascal Vincent &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">pascal at apstat.com</A>&gt;:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Probl&#232;me de compilation avec Visual C++ (visual 2005 je crois) rapport&#233; 
+</I>&gt;&gt;&gt;<i> par
+</I>&gt;&gt;&gt;<i> &quot;Jaonary Rabarisoa&quot; &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">jaonary at gmail.com</A>&gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Voici l'extrait pertinent de son message:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Le code qui pose le plus problem sous visual  c'est la methode
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> void Object::declareMethods(RemoteMethodMap&amp; rmm)
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> de la class Object.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Dans cette methode, il y a deux classes internes. Et ces classes ont une 
+</I>&gt;&gt;&gt;<i> methode
+</I>&gt;&gt;&gt;<i> qui prend en argument, entre autre, un Objet PStream et utilise 
+</I>&gt;&gt;&gt;<i> l'operateur &lt;&lt;
+</I>&gt;&gt;&gt;<i> de cet objet.
+</I>&gt;&gt;&gt;<i> Et l&#224;, visual debloque et me dit que la fonction ne peut pas acceder &#224;
+</I>&gt;&gt;&gt;<i> l'op&#233;rateur &lt;&lt; et &gt;&gt; :
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> struct ObjectTrampolineGetOption : public RemoteTrampoline
+</I>&gt;&gt;&gt;<i>    {
+</I>&gt;&gt;&gt;<i>        ObjectTrampolineGetOption(const string&amp; methodname, const
+</I>&gt;&gt;&gt;<i> RemoteMethodDoc&amp; doc)
+</I>&gt;&gt;&gt;<i>            : RemoteTrampoline(methodname, doc)
+</I>&gt;&gt;&gt;<i>        { }
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>        virtual void call(Object* instance, int nargs, PStream&amp; io) const
+</I>&gt;&gt;&gt;<i>        {
+</I>&gt;&gt;&gt;<i>            checkNargs(nargs, 1);
+</I>&gt;&gt;&gt;<i>            string optionname;
+</I>&gt;&gt;&gt;<i>            io &gt;&gt; optionname;   // on ne peut pas acceder a l'operateur &gt;&gt; 
+</I>&gt;&gt;&gt;<i>            . Je
+</I>&gt;&gt;&gt;<i> pense qu'il est hors de porte ici (pour visual)
+</I>&gt;&gt;&gt;<i>          
+</I>&gt;&gt;&gt;<i> ...
+</I>&gt;&gt;&gt;<i>        }
+</I>&gt;&gt;&gt;<i>    };
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Le hack que j'ai fais pour l'instant c'est de commenter toutes ces lignes. 
+</I>&gt;&gt;&gt;<i> Mais
+</I>&gt;&gt;&gt;<i> je ne sais pas trop les conc&#233;quences de cela. J'ai tout de meme r&#233;ussi &#224;
+</I>&gt;&gt;&gt;<i> compiler tout plearn en librairy static (win xp + visual 2005 et fedora + 
+</I>&gt;&gt;&gt;<i> gcc 4)
+</I>&gt;&gt;&gt;<i> et &#224; faire quelques testes sur les VMat (les testes du tutorial).
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> ----------
+</I>&gt;&gt;&gt;<i> assignedto: chapados
+</I>&gt;&gt;&gt;<i> messages: 725
+</I>&gt;&gt;&gt;<i> nosy: chapados, pascal
+</I>&gt;&gt;&gt;<i> priority: bug
+</I>&gt;&gt;&gt;<i> status: unread
+</I>&gt;&gt;&gt;<i> title: Portability problem with declareMethods wizardry
+</I>&gt;&gt;&gt;<i> topic: PLearn
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> ________________________________________________
+</I>&gt;&gt;&gt;<i> Roundup issue tracker &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">issue_tracker at apstat.com</A>&gt;
+</I>&gt;&gt;&gt;<i> &lt;<A HREF="https://intranet.apstat.com/roundup/issue234">https://intranet.apstat.com/roundup/issue234</A>&gt;
+</I>&gt;&gt;&gt;<i> ________________________________________________
+</I>&gt;&gt;&gt;<i>  
+</I>&gt;&gt;&gt;<i>       
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000128.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+	<LI>Next message: <A HREF="000142.html">[Plearn-core] [issue234] Portability problem with	declareMethods wizardry
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#132">[ date ]</a>
+              <a href="thread.html#132">[ thread ]</a>
+              <a href="subject.html#132">[ subject ]</a>
+              <a href="author.html#132">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

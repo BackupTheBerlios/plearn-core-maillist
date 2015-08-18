@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] *URGENT* VarArray question
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C4803DD56.70304%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000428.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] *URGENT* VarArray question</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%2AURGENT%2A%20VarArray%20question&In-Reply-To=%3C4803DD56.70304%40apstat.com%3E"
+       TITLE="[Plearn-core] *URGENT* VarArray question">chapados at apstat.com
+       </A><BR>
+    <I>Tue Apr 15 00:40:22 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000428.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#429">[ date ]</a>
+              <a href="thread.html#429">[ thread ]</a>
+              <a href="subject.html#429">[ subject ]</a>
+              <a href="author.html#429">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>As suggested by Pascal, I included a call to recomputeParents() in 
+Function::build_(), which appears to do the trick.  A commit is soon to 
+come, after a quick run by the test suite.
+
+Thanks to Pascal and Olivier for their help.
+
+    + Nicolas
+&gt;<i> I suggest you read my answer and Olivier's carefully again. A Func's  
+</I>&gt;<i> proppath is created from inputs to outputs only, and I believe for a  
+</I>&gt;<i> number of *good* reasons that I tried to enlist, and that risk being  
+</I>&gt;<i> broken by your fix. That's what a *function* does, it maps changing  
+</I>&gt;<i> inputs to outputs, period. If you want it to take into account  
+</I>&gt;<i> changes to source variables that are not enlisted in the functions  
+</I>&gt;<i> inputs (i.e. your &quot;parameters&quot;) there are 2 possibilities: either  
+</I>&gt;<i> include them in the inputs, or call the Func's recomputeParents().
+</I>&gt;<i>
+</I>&gt;<i> Now it could be argued that all vars (in particular here -m_woutput1)  
+</I>&gt;<i> could do a fprop on themselves upon construction so they are  
+</I>&gt;<i> initialized at a &quot;correct&quot; value, or maybe we should at least call  
+</I>&gt;<i> recomputeParents in the Func's build_ right after the parentspath has  
+</I>&gt;<i> been set (this may fix your problem, supposing the parameters already  
+</I>&gt;<i> have their correct value when building the input output function).  
+</I>&gt;<i> But if your parameters keep changing you would have to recall  
+</I>&gt;<i> recomputeParents anyway.
+</I>&gt;<i>
+</I>&gt;<i> Then again, if you do want the possibility of systematically  
+</I>&gt;<i> including in fproppath the full paths from all source variables (inc.  
+</I>&gt;<i> others than inputs) that your output depends on, but do not want to  
+</I>&gt;<i> enlist them as inputs, you can add an option to this effect as I  
+</I>&gt;<i> suggested in my last email.
+</I>&gt;<i>
+</I>&gt;<i> Hope this helps.
+</I>&gt;<i>
+</I>&gt;<i> -- Pascal
+</I>&gt;<i>   
+</I>-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000428.html">[Plearn-core] *URGENT* VarArray question
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#429">[ date ]</a>
+              <a href="thread.html#429">[ thread ]</a>
+              <a href="subject.html#429">[ subject ]</a>
+              <a href="author.html#429">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

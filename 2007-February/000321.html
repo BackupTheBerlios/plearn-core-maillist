@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C59070CA8-9A2F-4026-8B0B-1E9F2C00CB15%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000318.html">
+   <LINK REL="Next"  HREF="000322.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C59070CA8-9A2F-4026-8B0B-1E9F2C00CB15%40apstat.com%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">pascal at apstat.com
+       </A><BR>
+    <I>Tue Feb 27 15:47:20 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000318.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+        <LI>Next message: <A HREF="000322.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#321">[ date ]</a>
+              <a href="thread.html#321">[ thread ]</a>
+              <a href="subject.html#321">[ subject ]</a>
+              <a href="author.html#321">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i> Bonjour &#224; tous,
+</I>&gt;<i>
+</I>&gt;<i> Je voudrai savoir s'il quelqu'un a une petitie id&#233;e sur l'utilisation
+</I>&gt;<i> d'une VMatrix dont les inputs ont des tailles diff&#233;rents. Je voudrai
+</I>&gt;<i> en effet construire un PLearner dont les inputs seront des listes de
+</I>&gt;<i> vecteur de differente taille, et du coup les VMatrix de base ne sont
+</I>&gt;<i> pas adapt&#233; &#224; mes besoin car les inputs doivent avoir la m&#234;me taille.
+</I>
+Pas n&#233;cessairement.
+
+La m&#233;thode getExample de VMatrix prend en argument des Vec&amp;, donc  
+rien n'emp&#234;che que l'appel change leur taille (appel &#224; resize), ou  
+m&#234;me fasse un input=.
+Donc si tu d&#233;finis ta propre classe de VMatrix qui red&#233;finit cette  
+m&#233;thode getExample qui resize et remplit le vecteur d'input  
+correctement, tu peux avoir des vecteurs d'input de taille variable.
+
+Un probl&#232;me possible, d&#233;pendamment de quel PLearner sous-jacent tu  
+vas utiliser, c'est que les PLearner n'ont pas encore tous &#233;t&#233;  
+modifi&#233;s pour utiliser getExample. Il y en a sans doute plusieurs qui  
+font encore des getRow en allant chercher eux-m&#234;me les parties de la  
+rang&#233;e implicites dans inputsize, targetsize, weightsize.
+
+Mais si tu as des inputs de taille variable, j'imagine que de tote  
+fa&#231;on tu dois les passer &#224; ton propre PLearner pour en faire  
+quelquechose d'intelligent.
+
+Dis-moi si cette suggestion r&#232;glerait ton probl&#232;me...
+
+
+-- Pascal Vincent
+
+
+
+
+
+&gt;<i> La premier approche que j'ai utilis&#233; c'est d'avoir mes vrai donn&#233;e
+</I>&gt;<i> dans un TVec, du style
+</I>&gt;<i>
+</I>&gt;<i> TVec&lt;Vec&gt; real_inputs
+</I>&gt;<i>
+</I>&gt;<i> et dans la VMatrix comme input l'indice du real_input. Et &#224; chaque
+</I>&gt;<i> fois je vais r&#233;cuper le real_input correspondant &#224; mon indice.
+</I>&gt;<i> Probl&#232;me c'est que cette approche ne me permet pas de d'utiliser mon
+</I>&gt;<i> PLerner avec un PTester par exemple sans que je modifie aussi le code
+</I>&gt;<i> du PTester pour qu'il switch en les differents type de base (train,
+</I>&gt;<i> test). De mani&#232;re g&#233;n&#233;ral, &#224; chaquee fois que je fais appelle &#224; la
+</I>&gt;<i> fonction computeOutput(...) il faudrait que je prenne soins de
+</I>&gt;<i> modifier le TVec&lt;Vec&gt; real_inputs. Ce qui devient un peu lourd.
+</I>&gt;<i>
+</I>&gt;<i> L'id&#233;al se serait peut &#234;tre de templ&#233;tiser les VMatrix avec le type
+</I>&gt;<i> d'input et le type de Target, ce qui donne un truc du genre
+</I>&gt;<i> VMatrix&lt;INPUT,TARGET&gt;. Ce serait alors tous chambouler dans PLearn et
+</I>&gt;<i> je ne sais m&#234;me pas si c'est faisable. Et c'est pour &#231;a que je pense
+</I>&gt;<i> aux VMatrices dont les input sont de taille variable. Qu'en pensez
+</I>&gt;<i> vous ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Jaonary
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000318.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+	<LI>Next message: <A HREF="000322.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#321">[ date ]</a>
+              <a href="thread.html#321">[ thread ]</a>
+              <a href="subject.html#321">[ subject ]</a>
+              <a href="author.html#321">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615205625.GA28976%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000079.html">
+   <LINK REL="Next"  HREF="000080.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615205625.GA28976%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 22:56:26 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000079.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000080.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#81">[ date ]</a>
+              <a href="thread.html#81">[ thread ]</a>
+              <a href="subject.html#81">[ subject ]</a>
+              <a href="author.html#81">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 15 Jun 2006, Pascal Lamblin wrote:
+&gt;<i> On Thu, Jun 15, 2006, Olivier Delalleau wrote:
+</I>&gt;<i> &gt; &gt; virtual void rebuild(const set&lt;string&gt;&amp; changed_options)
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; changed_options ne devrait contenir que des noms d'options simples  de 
+</I>&gt;<i> &gt; &gt; l'objet courant (pas des options de sous-objets).
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; A priori ca ne me semble pas trop restrictif, dans la mesure ou lorsque
+</I>&gt;<i> &gt; quelqu'un appelle rebuild, il a fait les updates des options a la main,
+</I>&gt;<i> &gt; donc il est aussi bien d'appeler lui-meme le rebuild d'un sous-objet
+</I>&gt;<i> &gt; dont l'option a ete changee.
+</I>&gt;<i> 
+</I>&gt;<i> Je suis assez d'accord. Ensuite, &#231;a sera au constructeur de voir si
+</I>&gt;<i> la modification qu'il a apport&#233;e au sous-objet est minime, auquel cas il
+</I>&gt;<i> ne mettra pas forc&#233;ment &quot;sous_objet&quot; dans la liste des options chang&#233;es.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Sinon, il devrait etre possible d'avoir un mecanisme dans le rebuild de
+</I>&gt;<i> &gt; Object qui va appeler automatiquement le rebuild d'un sous-objet,
+</I>&gt;<i> &gt; puisque j'imagine que chaque rebuild va commencer par un appel a
+</I>&gt;<i> &gt; inherited::rebuild (comme le mecanisme actuel de build).
+</I>&gt;<i> 
+</I>&gt;<i> Je pensais &#224; &#231;a, aussi. Il faudrait probablement un m&#233;canisme qui
+</I>&gt;<i> permette de v&#233;rifier qu'on ne s'est pas tromp&#233; dans le nom d'option,
+</I>&gt;<i> parce que si on appelle rebuild( { &quot;inputsize_&quot; } ) au lieu de
+</I>&gt;<i> &quot;inputsize&quot;, on ne s'en rendra pas compte.
+</I>&gt;<i> 
+</I>&gt;<i> Dans ce cas-l&#224;, il faudrait appeler inherited::rebuild( intersection
+</I>&gt;<i> entre les options de inherited et les options chang&#233;es ), pour ne pas
+</I>&gt;<i> avoir de fausses alertes.
+</I>&gt;<i> 
+</I>&gt;<i> Est-ce qu'il est facile de r&#233;cup&#233;rer les noms des options d'une classe ?
+</I>
+Une solution qui evite de changer le set&lt;string&gt;&amp; changed_options serait
+de passer le meme a toutes les classes parentes, et de ne faire la
+verification que dans Object (qui peut facilement avoir la liste des
+noms d'options, autant que je sache).
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000079.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000080.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#81">[ date ]</a>
+              <a href="thread.html#81">[ thread ]</a>
+              <a href="subject.html#81">[ subject ]</a>
+              <a href="author.html#81">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

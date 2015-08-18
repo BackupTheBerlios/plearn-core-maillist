@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%0A%09in%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C45EF2784.4050502%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000335.html">
+   <LINK REL="Next"  HREF="000337.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%5Bbuildbot%40apstat.com%5D%20buildbot%20failure%0A%09in%09PLearn_ApSTAT_Linux_i386&In-Reply-To=%3C45EF2784.4050502%40apstat.com%3E"
+       TITLE="[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386">saintmlx at apstat.com
+       </A><BR>
+    <I>Wed Mar  7 21:58:44 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000335.html">[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386
+</A></li>
+        <LI>Next message: <A HREF="000337.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut Olivier,
+
+Je viens de rouler test_FileVMatrix de mon c&#244;t&#233; et &#231;a termine avec ceci:
+FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+the directory.
+
+C'est la seule diff&#233;rence entre expected_results et run_results: une 
+ligne de plus dans RUN.log pour cette erreur.  En passant, j'ai cette 
+erreur pour certaines de mes exp&#233;riences depuis ce matin, si j'essaie 
+d'&#233;craser une FileVMatrix d&#233;j&#224; existante; le 'lsdir' se fait sur le 
+r&#233;pertoire metadata, qui contient 'sizes', mais j'ai quand-m&#234;me cette 
+erreur.  Je n'ai pas eu le temps de regarder plus loin que &#231;a.
+
+Xavier
+
+Olivier Delalleau wrote:
+&gt;<i> Au fait, ne serait-ce que pouvoir acceder aux FAILURE.LOG et RUN.LOG des
+</I>&gt;<i> tests qui echouent serait deja une grande aide.
+</I>&gt;<i>
+</I>&gt;<i> On 07 Mar 2007, Olivier Delalleau wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+</I>&gt;&gt;<i> echouent ?
+</I>&gt;&gt;<i> La modif que j'ai faite est la :
+</I>&gt;&gt;<i> <A HREF="http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&amp;rev=6720&amp;sc=1">http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&amp;rev=6720&amp;sc=1</A>
+</I>&gt;&gt;<i> Les tests qui echouent a Apstat passent bien au Lisa (sauf
+</I>&gt;&gt;<i> test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je pourrais facilement modifier mon changement ci-haut pour revenir a
+</I>&gt;&gt;<i> une version plus proche de ce qu'on avait, mais idealement, ca serait
+</I>&gt;&gt;<i> bien d'avoir un code propre, donc de comprendre exactement ce qui se
+</I>&gt;&gt;<i> passe.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>     
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>   
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000335.html">[Plearn-core] [buildbot at apstat.com] buildbot failure in	PLearn_ApSTAT_Linux_i386
+</A></li>
+	<LI>Next message: <A HREF="000337.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

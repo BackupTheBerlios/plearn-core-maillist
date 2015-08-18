@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Apprentissage transductif dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Apprentissage%20transductif%20dans%20PLearn&In-Reply-To=%3CEE43AACF-40DE-4530-AA53-C7DEF5438CF6%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000295.html">
+   <LINK REL="Next"  HREF="000294.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Apprentissage transductif dans PLearn</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Apprentissage%20transductif%20dans%20PLearn&In-Reply-To=%3CEE43AACF-40DE-4530-AA53-C7DEF5438CF6%40apstat.com%3E"
+       TITLE="[Plearn-core] Apprentissage transductif dans PLearn">pascal at apstat.com
+       </A><BR>
+    <I>Mon Jan 15 20:14:41 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000295.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000294.html">[Plearn-core] undefined reference to PLearn::pl_assert_fail(char	const*, char const*, unsigned int, char const*, char const*)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#299">[ date ]</a>
+              <a href="thread.html#299">[ thread ]</a>
+              <a href="subject.html#299">[ subject ]</a>
+              <a href="author.html#299">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Le 07-01-15 &#224; 10:48, Olivier Delalleau a &#233;crit :
+
+&gt;<i> En ce qui me concerne, je vois l'apprentissage transductif comme
+</I>&gt;<i> simplement un probleme d'apprentissage ou certaines targets sont
+</I>&gt;<i> manquantes (MISSING_VALUE dans PLearn). Ca ne necessite aucun  
+</I>&gt;<i> changement
+</I>&gt;<i> dans l'interface des PLearner il me semble...
+</I>
+Je suis d'accord avec l'interface d'Olivier pour l'apprentissage  
+transductif / semi-supervis&#233;.
+
+Le probl&#232;me li&#233; &#224; hijacker la fonction computeOutputCovMat, qui est  
+fort r&#233;cente, c'est que ce ne serait pas la seule &#224; r&#233;&#233;crire, mais il  
+faudrait aussi en red&#233;finir un paquet d'autres (ex: use). Et pour  
+certaines m&#233;thodes, le comportement souhait&#233; ne serait pas clair. Ex:  
+est-ce que computeOutput devrait oui ou non avoir un comportement  
+&quot;transductif&quot; et r&#233;-entrainer le mod&#232;le...? Si on s'en tient &#224; train  
+avec des targets missing, on a le contr&#244;le complet de quand on veut  
+r&#233;entra&#238;ner ou pas.
+
+-- Pascal
+
+&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Olivier
+</I>&gt;<i>
+</I>&gt;<i> On 15 Jan 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A> wrote:
+</I>&gt;&gt;<i> Salut &#224; tous,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> J'aimerais recueillir votre avis sur les mani&#232;res de faire de
+</I>&gt;&gt;<i> l'apprentissage transductif dans PLearn.  Cette forme  
+</I>&gt;&gt;<i> d'apprentissage est
+</I>&gt;&gt;<i> lorsque nous avons acc&#232;s AUX INPUTS DE TEST au moment de  
+</I>&gt;&gt;<i> l'entra&#238;nement.
+</I>&gt;&gt;<i> En d'autres termes, on a le droit d'entra&#238;ner en connaissant  
+</I>&gt;&gt;<i> d'avance les
+</I>&gt;&gt;<i> points o&#249; la fonction sera interrog&#233;e.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Maintenant la question est: comment faire cela dans le cadre d'un  
+</I>&gt;&gt;<i> PLearner?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> J'imagine deux possibilit&#233;s:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 1) Introduire une classe interm&#233;diaire  
+</I>&gt;&gt;<i> &quot;TransductivePLearner&quot; (d&#233;riv&#233;e de
+</I>&gt;&gt;<i> PLearner) qui ajouterait une fonction &quot;setTestInputs&quot; en plus de
+</I>&gt;&gt;<i> &quot;setTrainingSet&quot;.  La fonction setTestInputs serait appel&#233;e avant  
+</I>&gt;&gt;<i> de faire
+</I>&gt;&gt;<i> train.  L'ennui avec cette approche est de s'assurer qu'on appelle la
+</I>&gt;&gt;<i> fonction au bon moment.  De plus, il est souvent sous-optimal (ou
+</I>&gt;&gt;<i> impossible) de tester sur d'autres points que ceux qu'on a d&#233;clar&#233;s
+</I>&gt;&gt;<i> d'avance, donc il faut que computeOutput surveille ses entr&#233;es...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 2) Laisser PLearner sous sa forme actuelle et &quot;hijacker&quot; la nouvelle
+</I>&gt;&gt;<i> fonction computeOutputCovMat qui accepte d&#233;j&#224; une liste de points  
+</I>&gt;&gt;<i> o&#249; l'on
+</I>&gt;&gt;<i> souhaite tester.  L'id&#233;e serait, pour les learners transductifs, de
+</I>&gt;&gt;<i> retarder l'entra&#238;nement jusqu'au moment o&#249; computeOutputCovMat est  
+</I>&gt;&gt;<i> appel&#233;
+</I>&gt;&gt;<i> (en supposant qu'il l'est), et on refait un entra&#238;nement complet &#224; ce
+</I>&gt;&gt;<i> moment, ayant connaissance des points de test.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je penche pour la seconde approche, qui me semble plus simple et  
+</I>&gt;&gt;<i> entre
+</I>&gt;&gt;<i> d&#233;j&#224; relativement bien dans le cadre actuel.  Mais je ne connais  
+</I>&gt;&gt;<i> pas assez
+</I>&gt;&gt;<i> toutes les vari&#233;t&#233;s d'apprentissage transductif pour dire si la  
+</I>&gt;&gt;<i> premi&#232;re
+</I>&gt;&gt;<i> pourrait &#234;tre plus appropri&#233;e dans certains contextes.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Commentaires et suggestions bienvenus!
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>     + Nicolas
+</I>&gt;&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000295.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000294.html">[Plearn-core] undefined reference to PLearn::pl_assert_fail(char	const*, char const*, unsigned int, char const*, char const*)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#299">[ date ]</a>
+              <a href="thread.html#299">[ thread ]</a>
+              <a href="subject.html#299">[ subject ]</a>
+              <a href="author.html#299">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

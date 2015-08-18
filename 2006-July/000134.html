@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44B79CE4.1030509%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000131.html">
+   <LINK REL="Next"  HREF="000139.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Christian Dorion</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44B79CE4.1030509%40apstat.com%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">dorionc at apstat.com
+       </A><BR>
+    <I>Fri Jul 14 15:32:20 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000131.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000139.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#134">[ date ]</a>
+              <a href="thread.html#134">[ thread ]</a>
+              <a href="subject.html#134">[ subject ]</a>
+              <a href="author.html#134">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Bonjour &#224; tous,
+Pascal Lamblin escribi&#243;:
+&gt;<i> On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;&gt;<i> Autre point: il existe bon nombre de grammaires du preprocessor C; 
+</I>&gt;&gt;&gt;<i> probablement pas n&#233;cessaire de r&#233;inventer la roue.
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> OK, je vais regarder &#231;a sur google. Yapps est limit&#233; aux grammaires
+</I>&gt;&gt;<i> LL(1), mais je suppose que &#231;a va suffire.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> &#199;a y est, j'ai fait mon parseur et il a l'air de bien fonctionner, m&#234;me
+</I>&gt;<i> s'il est l&#233;g&#232;rement plus lent pour calculer les d&#233;pendances que la
+</I>&gt;<i> version actuelle (genre 6 secondes de plus). En plus, il g&#232;re certains
+</I>&gt;<i>   
+</I>6 secondes.... Des vrais secondes l&#224;?
+&gt;<i> cas sur lesquels la version pr&#233;c&#233;dente butait (genre un espace entre #
+</I>&gt;<i> et include...).
+</I>&gt;<i>
+</I>&gt;<i> &#192; votre avis, est-ce que j'ai int&#233;r&#234;t &#224; rajouter la grammaire et le
+</I>&gt;<i> parseur dans PLearn/scripts avec pymake, o&#249; ailleurs (python_modules) ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>Je sais que certain se font avocats de la 
+&quot;pymake-devrait-&#234;tre-full-self-contained&quot; mentalit&#233;, mais comme:
+ 1) PyMake d&#233;pend d&#233;j&#224; un peu des python_modules (toolkit) et
+ 2) Le code de PyMake est d&#233;j&#224; suffisamment indigeste
+
+je suis pour la cr&#233;ation de PLearn/python_module/plearn/pymake dans 
+lequel tu pourrais mettre de module de parsing. &#201;ventuellement, on 
+pourrait y modulariser PyMake... Pour les int&#233;ress&#233;s, j'aimerais un jour 
+voir PLearn/scripts/pymake ressembler &#224; PLearn/script/pytest. Il suffit 
+d'un coup d'oeil pour comprendre pourquoi je n'ai jamais attaqu&#233; ce 
+projet...
+
+Enfin, longue r&#233;ponse pour dire que je suis &quot;tr&#232;s pas pour&quot; l'ajout de 
+code dans script/pymake ou m&#234;me dans PLearn/scripts tout court.
+&gt;<i> Dans le m&#234;me genre d'id&#233;e : o&#249; mettre le module charg&#233; de lancer des
+</I>&gt;<i> t&#226;ches sur le cluster/le mammouth/une liste de machines/autre chose ?
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>J'imagine que le paragraphe pr&#233;c&#233;dent laisse pressentir ma r&#233;ponse ici: 
+PLearn/python_modules/plearn/{taskutils ou parallel} ou qqc du genre
+&gt;<i> Enfin, je suis en train de hacker pymake pour pouvoir g&#233;rer les
+</I>&gt;<i> variables pr&#233;processeur en tant que telles, et pas juste une string
+</I>&gt;<i> ajout&#233;e &#224; &quot;compiler_options&quot;. Il se peut que j'en profite pour
+</I>&gt;<i> proprifier des choses dans pymake qui ne devraient pas d&#233;pendre du
+</I>&gt;<i> pymake.config.model, par exemple.
+</I>&gt;<i>   
+</I>Propifier!!! Oh oui, propifie, propifie... l&#226;che-toi lousse ;)
+&gt;<i> Donc si vous vous rappelez de certaines craderies, et de ce &#224; quoi
+</I>&gt;<i> c'&#233;tait cens&#233; servir, et de pourquoi vous avez fait &#231;a comme &#231;a, &#231;a
+</I>&gt;<i> m'int&#233;resse (et &#231;a pourrait m'&#233;viter de tout p&#233;ter).
+</I>&gt;<i>
+</I>&gt;<i> Merci d'avance,
+</I>&gt;<i>   
+</I>Ciao
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op&#233;rationnelle//
+ApStat Technologies Inc./
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+T&#233;l : (514) 343-9119, ext. 237
+
+&quot;Soyons r&#233;alistes, exigeons l'impossible&quot;,
+Ernesto &quot;Che&quot; Guevara, 1928-1967
+
+&quot;Love is a Temple, Love the higher Law&quot;,
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/eb4ff689/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060714/eb4ff689/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000131.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000139.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#134">[ date ]</a>
+              <a href="thread.html#134">[ thread ]</a>
+              <a href="subject.html#134">[ subject ]</a>
+              <a href="author.html#134">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

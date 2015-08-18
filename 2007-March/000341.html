@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PLearner::test maintenant en parall&#232;le
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPLearner%3D3A%3D3Atest_maintenant_en_par%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3Fall%3DE8le%3F%3D&In-Reply-To=%3C45F0B621.1040507%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000340.html">
+   <LINK REL="Next"  HREF="000342.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PLearner::test maintenant en parall&#232;le</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPLearner%3D3A%3D3Atest_maintenant_en_par%3F%3D%0A%09%3D%3Fiso-8859-1%3Fq%3Fall%3DE8le%3F%3D&In-Reply-To=%3C45F0B621.1040507%40apstat.com%3E"
+       TITLE="[Plearn-core] PLearner::test maintenant en parall&#232;le">saintmlx at apstat.com
+       </A><BR>
+    <I>Fri Mar  9 02:19:29 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000340.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+        <LI>Next message: <A HREF="000342.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#341">[ date ]</a>
+              <a href="thread.html#341">[ thread ]</a>
+              <a href="subject.html#341">[ subject ]</a>
+              <a href="author.html#341">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut &#224; tous,
+
+Avez-vous des exp&#233;riences avec des gros test sets longs &#224; traiter?  Les 
+tests peuvent maintenant se faire en parall&#232;le sur plusieurs 
+PLearnServers, de la m&#234;me mani&#232;re que pour PTester::perform (voir 
+&quot;PTester en parall&#232;le avec cluster ou ssh [28/02/07 02:45 PM]&quot;).  Par 
+exemple, au lieu de faire:
+
+~&gt; plearn_full learner test learner_complexe.psave gros_testset.vmat 
+cost.stats outputs.pmat costs.pmat
+
+il suffit de faire:
+
+~&gt; xdispatch -s4 -- plearn_full learner test learner_complexe.psave 
+gros_testset.vmat cost.stats outputs.pmat costs.pmat
+
+pour rouler la m&#234;me chose avec quatre serveurs esclaves.  Si vous 
+utilisez un PTester, le parall&#233;lisme va se faire par d&#233;faut au niveau 
+des splits (PTester::perform) au lieu des tests (PLearner::test), sauf 
+s'il n'y a qu'un seul split ou si vous mettez l'option parallelize_here 
+de PTester &#224; false.
+
+Xavier
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000340.html">[Plearn-core] [buildbot at apstat.com] buildbot failure	in	PLearn_ApSTAT_Linux_i386
+</A></li>
+	<LI>Next message: <A HREF="000342.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#341">[ date ]</a>
+              <a href="thread.html#341">[ thread ]</a>
+              <a href="subject.html#341">[ subject ]</a>
+              <a href="author.html#341">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-September/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20060928132557.GA3988%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000164.html">
+   <LINK REL="Next"  HREF="000166.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20060928132557.GA3988%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Sep 28 15:25:58 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000164.html">[Plearn-core] Des classe qui calcule la ROC ou le Precision-Recall	curve
+</A></li>
+        <LI>Next message: <A HREF="000166.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#165">[ date ]</a>
+              <a href="thread.html#165">[ thread ]</a>
+              <a href="subject.html#165">[ subject ]</a>
+              <a href="author.html#165">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour,
+
+Voila ce qui est disponible actuellement dans ce domaine :
+- La statistique NIPS_LIFT dans StatsCollector est une sorte d'aire sous
+  la courbe ROC (voir 'plearn help StatsCollector')
+- La statistique LIFT(f) permet d'avoir la valeur du lift a une fraction
+  f, ie. un point de la courbe ROC (encore 'plearn help StatsCollector')
+- La statistique PRBP donne la valeur de Precision et Recall lorsqu'ils
+  sont egaux (voir encore 'plearn help StatsCollector')
+- La classe LiftStatsCollector (deprecated) permettait de faire des
+  courbes ROC, et devrait encore fonctionner (elle est deprecated car on
+  voudrait que StatsCollector puisse le faire, mais ce n'est pas encore
+  le cas)
+
+Pour utiliser les 3 premiers, il te faut un PLearner qui ait un cout qui
+soit, pour un exemple, le 'score' de l'algorithme pour cette exemple,
+avec un signe qui indique la valeur de la vraie target (+ pour classe
+positive, - pour classe negative, faire attention a ne pas avoir 0).
+Typiquement, dans PLearn, ce cout s'appelle 'lift_output', certains
+PLearner l'ont deja, sinon on peut leur rajouter par dessus un
+AddCostToLearner pour rajouter 'lift_output' comme cost.
+
+Dans ton PTester, il te suffit alors de rajouter dans les statnames un
+cout du genre &quot;E[test1.LIFT(0.1)[lift_output]]&quot; pour par ex. calculer
+le lift a 0.1 sur le premier ensemble de test.
+
+Pour utiliser LiftStatsCollector, je ne suis plus sur, donc cf. l'aide.
+
+Si tu as besoin de plus, n'hesite pas a les implementer :)
+
+--
+Olivier
+
+On 28 Sep 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Bonjour a tous,
+</I>&gt;<i> 
+</I>&gt;<i> Apr&#232;s un petit moment de break sur cette liste, me revoici avec quelques
+</I>&gt;<i> questions relatives
+</I>&gt;<i> &#224; l'utilisation de PLearn. Je voudrai savoir s'il existe d&#233;j&#224; des classes ou
+</I>&gt;<i> des fonctions qui
+</I>&gt;<i> permettent de construire les courbes ROC et precision-recall ou s'il faudra les
+</I>&gt;<i> coder. J'ai d&#233;j&#224;
+</I>&gt;<i> essayer de fouiller dans la foret des sources de PLearn mais il n'y a pas de
+</I>&gt;<i> nom de fichier
+</I>&gt;<i> qui m'&#233;voque ce que je cherche.
+</I>&gt;<i> 
+</I>&gt;<i> Merci &#224; vous,
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000164.html">[Plearn-core] Des classe qui calcule la ROC ou le Precision-Recall	curve
+</A></li>
+	<LI>Next message: <A HREF="000166.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#165">[ date ]</a>
+              <a href="thread.html#165">[ thread ]</a>
+              <a href="subject.html#165">[ subject ]</a>
+              <a href="author.html#165">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

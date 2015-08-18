@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Initialisation des statnames dans PTester
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Initialisation%20des%20statnames%20dans%20PTester&In-Reply-To=%3Cc81af8c30703261242x520c704buf3cd122e55816a4b%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000348.html">
+   <LINK REL="Next"  HREF="000347.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Initialisation des statnames dans PTester</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Initialisation%20des%20statnames%20dans%20PTester&In-Reply-To=%3Cc81af8c30703261242x520c704buf3cd122e55816a4b%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Initialisation des statnames dans PTester">jaonary at gmail.com
+       </A><BR>
+    <I>Mon Mar 26 21:42:17 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000348.html">[Plearn-core] Initialisation des statnames dans PTester
+</A></li>
+        <LI>Next message: <A HREF="000347.html">[Plearn-core] Comportement &#233;trange de PLERROR
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#351">[ date ]</a>
+              <a href="thread.html#351">[ thread ]</a>
+              <a href="subject.html#351">[ subject ]</a>
+              <a href="author.html#351">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Ca te permet de composer des operations (le * recupere le resultat de
+</I>&gt;<i> l'operation precedente).
+</I>&gt;<i> Par ex. dans l'exemple donne par &quot;plearn help PTester&quot; :
+</I>&gt;<i>    statnames = [ &quot;NLL&quot; &quot;mse&quot; ]
+</I>&gt;<i>    statmask  = [ [ &quot;E[*]&quot; ] [ &quot;test#1-2#.*&quot; ] [ &quot;E[*]&quot; &quot;STDERROR[*]&quot; ] ]
+</I>&gt;<i> il va partir de
+</I>&gt;<i>     [ NLL mse ]
+</I>&gt;<i> puis appliquer E[*] pour donner
+</I>&gt;<i>     [ E[NLL] E[mse] ]
+</I>&gt;<i> puis appliquer test#1-2#.* pour donner
+</I>&gt;<i>     [ test1.E[NLL] test2.E[NLL] test1.E[mse] test2.E[mse] ]
+</I>&gt;<i> puis appliquer E[*] STDERROR[*] pour donner le resultat final :
+</I>&gt;<i>     [  E[test1.E[NLL]]  STDERROR[test1.E[NLL]]  E[test2.E[NLL]]
+</I>&gt;<i>        STDERROR[test2.E[NLL]]
+</I>&gt;<i>        E[test1.E[mse]]  STDERROR[test1.E[mse]]  E[test2.E[mse]]
+</I>&gt;<i>        STDERROR[test2.E[mse]] ]
+</I>&gt;<i>
+</I>Merci pour cette explication bien pr&#233;cise. Maintenant je vois mieux la
+logique de ces statmask.
+
+Jaonary
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000348.html">[Plearn-core] Initialisation des statnames dans PTester
+</A></li>
+	<LI>Next message: <A HREF="000347.html">[Plearn-core] Comportement &#233;trange de PLERROR
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#351">[ date ]</a>
+              <a href="thread.html#351">[ thread ]</a>
+              <a href="subject.html#351">[ subject ]</a>
+              <a href="author.html#351">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

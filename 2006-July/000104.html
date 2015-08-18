@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44AE7A48.7070101%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000103.html">
+   <LINK REL="Next"  HREF="000105.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C44AE7A48.7070101%40apstat.com%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">chapados at apstat.com
+       </A><BR>
+    <I>Fri Jul  7 17:14:16 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000103.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000105.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#104">[ date ]</a>
+              <a href="thread.html#104">[ thread ]</a>
+              <a href="subject.html#104">[ subject ]</a>
+              <a href="author.html#104">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Au lieu de r&#233;&#233;crire un pr&#233;processeur complet, ne pourrait-on pas adopter 
+la mani&#232;re indirecte, mais sans doute aussi efficace, qui suit:
+
+    * pymake suit les #includes qu'il reconna&#238;t, par exemple les formes
+      &lt;plearn/*&gt; (extensible, car on doit pouvoir faire &lt;apstatlib/*&gt;
+      aussi, par exemple).
+    * des options pass&#233;es &#224; pymake, genre -mpi peuvent ajouter &#224; la
+      liste ci-haut au besoin
+    * pymake ne suit AUCUN AUTRE #include.
+
+&#199;a &#233;vite, entre autres, de parcourir les headers des librairies 
+standard.  Je ne sais pas si pymake &#233;vite de les parcourir pr&#233;sentement, 
+mais &#231;a &#233;conomise potentiellement du temps d'analyse de d&#233;pendances.
+
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+&gt;<i> On Fri, Jul 07, 2006, Pascal Lamblin wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;&gt;<i> Pascal L: pourrais-tu me r&#233;-expliquer en 3 phrases POURQUOI il est 
+</I>&gt;&gt;&gt;<i> n&#233;cessaire d'inclure cette fonctionnalit&#233; dans pymake?
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> Oui.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Je veux pouvoir faire
+</I>&gt;&gt;<i> #ifdef WIN32
+</I>&gt;&gt;<i> # include &lt;header_win_32.h&gt;
+</I>&gt;&gt;<i> #else
+</I>&gt;&gt;<i> # include &lt;other_header.h&gt;
+</I>&gt;&gt;<i> #endif
+</I>&gt;&gt;<i> sans que pymake ne tente d'inclure les deux et se plaigne que l'un
+</I>&gt;&gt;<i> n'existe pas.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Mauvais exemple, puisque dans ce cas il n'a pas l'air de se plaindre
+</I>&gt;<i> (pourtant il me semble que &#231;a avait pos&#233; probl&#232;me &#224; Olivier).
+</I>&gt;<i>
+</I>&gt;<i> Mais par exemple, pymake essaie toujours de compiler PLMPI, que l'on aie
+</I>&gt;<i> USE_MPI=0 ou USE_MPI=1, ce qui d&#233;clenche un paquet de d&#233;pendances dont
+</I>&gt;<i> on n'a pas toujours besoin.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060707/9852fe57/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060707/9852fe57/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000103.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000105.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#104">[ date ]</a>
+              <a href="thread.html#104">[ thread ]</a>
+              <a href="subject.html#104">[ subject ]</a>
+              <a href="author.html#104">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

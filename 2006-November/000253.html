@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Moi pas comprendres :-)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Moi%20pas%20comprendres%20%3A-%29&In-Reply-To=%3C4552636C.50409%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000252.html">
+   <LINK REL="Next"  HREF="000254.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Moi pas comprendres :-)</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Moi%20pas%20comprendres%20%3A-%29&In-Reply-To=%3C4552636C.50409%40apstat.com%3E"
+       TITLE="[Plearn-core] Moi pas comprendres :-)">chapados at apstat.com
+       </A><BR>
+    <I>Thu Nov  9 00:08:28 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000252.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+        <LI>Next message: <A HREF="000254.html">[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot; is	not registered in type map.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Tu n'as qu'&#224; utiliser lexical cast:
+
+#include &lt;plearn/base/lexical_cast.h&gt;
+
+...
+
+Vec v = lexical_cast&lt;Vec&gt;(&quot;[1 2 3 4]&quot;);
+
+C'est un m&#233;canisme enti&#232;rement g&#233;n&#233;rique qui passe par les PStream pour 
+te permettre d'initialiser n'importe quel type support&#233; par PStream 
+depuis une string.  Bien s&#251;r, Vec, Mat, etc. sont support&#233;s.
+
+    + Nicolas
+
+
+Jaonary Rabarisoa wrote:
+&gt;<i> Je suis entrain de faire quelque chose de relativement facile mais qui
+</I>&gt;<i> me bloque pourtant.
+</I>&gt;<i> Je voudrai tout simplement initialiser un Vec &#224; partir d'un string,
+</I>&gt;<i> exactement comme dans l'exemple du programer's guide:
+</I>&gt;<i>
+</I>&gt;<i> Vec v(4)
+</I>&gt;<i> v &lt;&lt; &quot;1 2 3 4&quot;
+</I>&gt;<i>
+</I>&gt;<i> et la quand j'execute j'obtients:
+</I>&gt;<i>
+</I>&gt;<i>  ERROR: In TVec::input error encountered while reading vector
+</I>&gt;<i>
+</I>&gt;<i> donc je change un peu en faisant
+</I>&gt;<i>
+</I>&gt;<i> Vec v(3)
+</I>&gt;<i> v &lt;&lt; &quot;1,2,3,4&quot;
+</I>&gt;<i>
+</I>&gt;<i> et la j'obtients en faisant cout &lt;&lt; v :
+</I>&gt;<i>
+</I>&gt;<i> 1 2 3
+</I>&gt;<i>
+</I>&gt;<i> En gros, quand je lui donne le bon nombre d'&#233;l&#233;ment j'ai une erreur
+</I>&gt;<i>
+</I>&gt;<i> Une petite id&#233;e ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Jaonary
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000252.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+	<LI>Next message: <A HREF="000254.html">[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot; is	not registered in type map.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

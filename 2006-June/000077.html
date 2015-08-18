@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C4491B977.8040006%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000076.html">
+   <LINK REL="Next"  HREF="000078.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C4491B977.8040006%40apstat.com%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">pascal at apstat.com
+       </A><BR>
+    <I>Thu Jun 15 21:48:07 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000076.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000078.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pour r&#233;sumer l&#224; o&#249; on en est pour l'instant sur la question des 
+changements d'option:
+
+1) On pense faire un
+
+virtual void rebuild(const set&lt;string&gt;&amp; changed_options)
+
+changed_options ne devrait contenir que des noms d'options simples  de 
+l'objet courant (pas des options de sous-objets).
+
+2) On aura potentiellement plusieurs m&#233;thodes de type changeOptions(...) 
+prenant une map de noms d'options potentiellement complexes (faisant par 
+ex. ref. &#224; des options de sous-objets), et qui devra s'assurer 
+d'effectuer les choses suivantes:
+   * setter les valeurs de toutes les options sp&#233;cifi&#233;es
+   * appeler rebuild() de fa&#231;on bottom-up sur tous les objets affect&#233;s, 
+en passant la liste de noms d'options simples affect&#233;es.
+
+On peut consid&#233;rer des variantes, selon que l'on d&#233;cide de d&#233;l&#233;guer 
+certaines de ces responsabilit&#233;s &#224; rebuild() (par ex. comme le sugg&#233;rait 
+Nicolas, ce pourrait aussi &#234;tre la reponsabilit&#233; optionelle de rebuild 
+d'appeler les rebuild de ses sous-objets dans l'ordre qui lui chante; 
+rebuild pourrait aussi parser des noms d'options complexes, au cas o&#249; ce 
+serait utile pour lui de conna&#238;tre quelles options de ses sous-objets 
+ont chang&#233;es).
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000076.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000078.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#77">[ date ]</a>
+              <a href="thread.html#77">[ thread ]</a>
+              <a href="subject.html#77">[ subject ]</a>
+              <a href="author.html#77">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

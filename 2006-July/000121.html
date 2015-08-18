@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Distributed Launcher
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Distributed%20Launcher&In-Reply-To=%3C20060711181844.GA16845%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000120.html">
+   <LINK REL="Next"  HREF="000124.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Distributed Launcher</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Distributed%20Launcher&In-Reply-To=%3C20060711181844.GA16845%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Distributed Launcher">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Jul 11 20:18:46 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000120.html">[Plearn-core] Distributed Launcher
+</A></li>
+        <LI>Next message: <A HREF="000124.html">[Plearn-core] Distributed Launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#121">[ date ]</a>
+              <a href="thread.html#121">[ thread ]</a>
+              <a href="subject.html#121">[ subject ]</a>
+              <a href="author.html#121">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> &gt;If you want communication between different processes, it seems to me
+</I>&gt;<i> &gt;that using MPI would be the logical choice.
+</I>&gt;<i> &gt;  
+</I>&gt;<i> Yes MPI is one way (it should be very easy to write a MPI based 
+</I>&gt;<i> PStreamBuf for this), but if the communication is to happen through TCP 
+</I>&gt;<i> links anyway, MPI appears to be just another unnecessary additional 
+</I>&gt;<i> layer and dependency.
+</I>
+However, as you said, it should be easier than writing the communication
+code by yourself.
+
+&gt;<i> But if MPI is the only way to go, then it should 
+</I>&gt;<i> be properly installed and configured on all potential computation nodes.
+</I>
+I must admit I have lost a bit the original focus of this discussion,
+but I think we would like to use specific resources (MPI, cluster queue
+system) when they are available, while 'emulating' them otherwise (maybe
+in a simpler form) using lower-level commands, in order to achieve the
+same kind of functionalities.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000120.html">[Plearn-core] Distributed Launcher
+</A></li>
+	<LI>Next message: <A HREF="000124.html">[Plearn-core] Distributed Launcher
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#121">[ date ]</a>
+              <a href="thread.html#121">[ thread ]</a>
+              <a href="subject.html#121">[ subject ]</a>
+              <a href="author.html#121">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

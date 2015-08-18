@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] changements dans pymake
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C20060630011228.GD29560%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000089.html">
+   <LINK REL="Next"  HREF="000091.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] changements dans pymake</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20changements%20dans%20pymake&In-Reply-To=%3C20060630011228.GD29560%40pig.zood.org%3E"
+       TITLE="[Plearn-core] changements dans pymake">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Jun 30 03:12:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000089.html">[Plearn-core] pymake et optimisation
+</A></li>
+        <LI>Next message: <A HREF="000091.html">[Plearn-core] changements dans pymake
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#90">[ date ]</a>
+              <a href="thread.html#90">[ thread ]</a>
+              <a href="subject.html#90">[ subject ]</a>
+              <a href="author.html#90">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Comme je viens de le dire dans plearn-developers, j'ai fait quelques
+changements dans pymake pour r&#233;gler le cas (qui arrive souvent au lisa)
+o&#249; une machine arr&#234;te de r&#233;pondre au ssh inopin&#233;ment, pour ne pas avoir
+&#224; trop s'emb&#234;ter &#224; updater son .pymake/linux-...hosts tous les jours.
+
+Tant que j'y &#233;tais, j'ai vu qu'il y avait d&#233;j&#224; de quoi g&#233;rer des valeurs
+de &quot;nice&quot; pour la compilation, mais je n'ai rien vu qui y faisait appel.
+Est-ce que &#231;a vous semblerait raisonnable de g&#233;rer un format de fichiers
+.hosts un peu plus compliqu&#233;, de la forme :
+machine1  10
+machine2  19
+machine3 0
+machine4
+machine5 # 19
+machine6 -20
+
+avec un deuxi&#232;me champ (facultatif et pouvant &#234;tre en commentaire)
+contenant la valeur de nice sur cette machine ?
+
+&#199;a permettrait de compiler sur les postes de travail sans g&#234;ner les
+utilisateurs, et de donner la priorit&#233; &#224; la compilation sur les t&#226;ches
+du cluster par exemple.
+
+
+Dans un autre registre, je voudrais aussi adapter pymake pour qu'on
+puisse parall&#233;liser la compilation sur le mammouth, o&#249; on n'a aucun
+acc&#232;s direct aux machines : il faut passer par le syst&#232;me de gestion du
+cluster, on ne peut pas faire &quot;ssh machine commande...&quot;.
+
+Je ne sais pas exactement comment je vais m'y prendre, mais est-ce que
+je peux modifier le pymake existant (par exemple en rajoutant une option
+et des fonctions particuli&#232;res), ou est-ce qu'il vaudrait mieux que je
+fasse un autre script ? Et est-ce que vous auriez des conseils
+particuliers ?
+
+&#192; bient&#244;t,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000089.html">[Plearn-core] pymake et optimisation
+</A></li>
+	<LI>Next message: <A HREF="000091.html">[Plearn-core] changements dans pymake
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#90">[ date ]</a>
+              <a href="thread.html#90">[ thread ]</a>
+              <a href="subject.html#90">[ subject ]</a>
+              <a href="author.html#90">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

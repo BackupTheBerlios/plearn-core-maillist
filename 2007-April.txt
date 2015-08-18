@@ -1,0 +1,737 @@
+From pierre-antoine.manzagol at polymtl.ca  Mon Apr  2 19:21:38 2007
+From: pierre-antoine.manzagol at polymtl.ca (Pierre-Antoine Manzagol)
+Date: Mon, 02 Apr 2007 13:21:38 -0400
+Subject: [Plearn-core] PLearner::makeDeepCopyFromShallowCopy and train_set
+Message-ID: <1175534498.46113ba2c4a5a@www.imp.polymtl.ca>
+
+Hello,
+
+Would it be a good idea to add an option determining if we need to deep copy
+train_set in PLearner? I doesn't seem necessary for my basic needs. Is that
+what the comment in the code is hinting at?
+
+PA
+
+
+
+
+From delallea at iro.umontreal.ca  Mon Apr  2 19:58:23 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 2 Apr 2007 13:58:23 -0400
+Subject: [Plearn-core] PLearner::makeDeepCopyFromShallowCopy and
+	train_set
+In-Reply-To: <1175534498.46113ba2c4a5a@www.imp.polymtl.ca>
+References: <1175534498.46113ba2c4a5a@www.imp.polymtl.ca>
+Message-ID: <20070402175818.GA11377@opale.iro.umontreal.ca>
+
+On 02 Apr 2007, Pierre-Antoine Manzagol wrote:
+> Hello,
+> 
+> Would it be a good idea to add an option determining if we need to deep copy
+> train_set in PLearner? I doesn't seem necessary for my basic needs. Is that
+> what the comment in the code is hinting at?
+
+I added this comment because the deep copy used to be commented out, and
+I didn't know why.
+I think I know why now: if your training set is stored in memory, you
+may get out of memory when deep-copying it. Is that your problem?
+
+I'm not really sure what's the best solution to this issue. I don't like
+the idea of an option to say not to deep copy it as it sounds like a
+hack, and also another option that makes the class more complex to use.
+
+Maybe you could write a VMatrix that does not do a deep-copy ? It's
+still a bit of a hack, but it has the advantage of being explicit and
+outside of the standard classes.
+It could also make the process safer, by ensuring the data is not
+modified.
+
+--
+Olivier
+
+
+
+From pierre-antoine.manzagol at polymtl.ca  Mon Apr  2 20:04:13 2007
+From: pierre-antoine.manzagol at polymtl.ca (Pierre-Antoine Manzagol)
+Date: Mon, 02 Apr 2007 14:04:13 -0400
+Subject: [Plearn-core] PLearner::makeDeepCopyFromShallowCopy and
+	train_set
+In-Reply-To: <20070402175818.GA11377@opale.iro.umontreal.ca>
+References: <1175534498.46113ba2c4a5a@www.imp.polymtl.ca>
+	<20070402175818.GA11377@opale.iro.umontreal.ca>
+Message-ID: <1175537053.4611459d7e961@www.imp.polymtl.ca>
+
+> I added this comment because the deep copy used to be commented out, and
+> I didn't know why.
+> I think I know why now: if your training set is stored in memory, you
+> may get out of memory when deep-copying it. Is that your problem?
+
+Well I don't run out of memory, but when I'm using a HyperLearner with a dataset
+of 400mbs, copying the learner takes a while, and having 2 learners in memory
+means twice as much space usage.
+
+PA
+
+
+
+
+
+
+From delallea at iro.umontreal.ca  Mon Apr  2 21:28:37 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 2 Apr 2007 15:28:37 -0400
+Subject: [Plearn-core] Question BaggingLearner
+In-Reply-To: <48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+References: <20070402184316.GA17587@opale.iro.umontreal.ca>
+	<48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+Message-ID: <20070402192835.GA20873@opale.iro.umontreal.ca>
+
+Je mets plearn-core en cc puisque c'est un probl?me assez g?n?rique, et
+que l'avis d'autres personnes pourrait ?tre utile.
+
+Le probl?me avec cette approche c'est que pour moi ?a contredit un
+principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+quoi que ce soit, on doit d'abord appeler son build(). Si on commence ?
+faire des exceptions dans certaines parties du code, ?a devient
+compliqu? ? suivre.
+
+Il me semble que la question s'?tait d?j? pos?e ailleurs... (je fouille
+un peu...). Ah, j'ai trouv? : cf. StackedLearner::build_, le commentaire
+par Nicolas :
+  *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call build
+  *  inside build for no reason, since the inner objects HAVE ALREADY
+  *  been built.  You should uncomment the following code only FOR GOOD
+  *  REASON.
+
+Disons qu'en g?n?ral, ?a ne devrait pas ?tre un gros probl?me que de
+faire un peu trop de builds (il pourrait arriver que ?a ralentisse
+significativement du code, mais ?a devrait ?tre rare). Mais
+personnellement je pense qu'il vaut mieux ?viter des cas particuliers o?
+parfois appeler un seul build suffit, alors que dans d'autres situations
+similaires il faut appeler soi-m?me le build de tous les objets.
+
+Si on voulait modifier le m?canisme de build() pour appeler un seul
+build() et laisser la hi?rarchie tout faire, j'imagine que ?a marcherait
+aussi, mais il faudrait r??crire toutes les classes actuelles de PLearn.
+
+--
+Olivier
+
+On 02 Apr 2007, saintmlx at apstat.com wrote:
+> Salut Olivier,
+> 
+> Mon id?e d'un build est que ?a devrait garantir que l'objet est
+> compl?tement construit.  C'est certain que si cet objet vient d'un
+> Object::newread, le travail va ?tre fait en double pour le splitter et le
+> template_learner.  Par contre, si tout est instanci? au niveau C++ (ce qui
+> n'est pas fr?quent, j'en conviens), je voudrais qu'un simple build de
+> l'objet "parent" qui contient tous les autres suffise.
+> 
+> Une solution "propre" serait de ne pas faire build dans newread quand on
+> sait qu'on est en train de lire une option d'un objet qui sera "build?"
+> plus tard; comme ?a, ?a fait un seul build ? la fin de tout pour toute la
+> hi?rarchie.
+> 
+> Qu'en penses-tu?  Sinon, est-ce un gros probl?me que de faire un peu trop
+> de builds?
+> 
+> Xavier
+> 
+> > Salut,
+> >
+> > Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+> > Question : pourquoi appeler le build() du splitter et du
+> > template_learner dans le build_() de BaggingLearner ? Normalement ces
+> > objets seraient cens?s ?tre correctement construits, et le build ne
+> > devrait pas ?tre n?cessaire il me semble.
+> >
+> > --
+> > Olivier
+> >
+> 
+
+
+From saintmlx at apstat.com  Mon Apr  2 21:38:41 2007
+From: saintmlx at apstat.com (saintmlx at apstat.com)
+Date: Mon, 2 Apr 2007 15:38:41 -0400 (EDT)
+Subject: [Plearn-core] Question BaggingLearner
+In-Reply-To: <20070402192835.GA20873@opale.iro.umontreal.ca>
+References: <20070402184316.GA17587@opale.iro.umontreal.ca>
+	<48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+	<20070402192835.GA20873@opale.iro.umontreal.ca>
+Message-ID: <48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+
+C'est justement ce que j'essaie d'?viter, les exceptions...  Je vais
+parler ? Pascal car de la mani?re dont les choses sont faites en ce
+moment, il faut conna?tre la structure interne d'une classe pour s'assurer
+de faire les builds correctement, ce qui me semble ?tre un probl?me.  Et
+si la classe change? tout ce qui l'utilise doit changer aussi?
+
+Xavier
+
+
+> Je mets plearn-core en cc puisque c'est un probl?me assez g?n?rique, et
+> que l'avis d'autres personnes pourrait ?tre utile.
+>
+> Le probl?me avec cette approche c'est que pour moi ?a contredit un
+> principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+> quoi que ce soit, on doit d'abord appeler son build(). Si on commence ?
+> faire des exceptions dans certaines parties du code, ?a devient
+> compliqu? ? suivre.
+>
+> Il me semble que la question s'?tait d?j? pos?e ailleurs... (je fouille
+> un peu...). Ah, j'ai trouv? : cf. StackedLearner::build_, le commentaire
+> par Nicolas :
+>   *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call build
+>   *  inside build for no reason, since the inner objects HAVE ALREADY
+>   *  been built.  You should uncomment the following code only FOR GOOD
+>   *  REASON.
+>
+> Disons qu'en g?n?ral, ?a ne devrait pas ?tre un gros probl?me que de
+> faire un peu trop de builds (il pourrait arriver que ?a ralentisse
+> significativement du code, mais ?a devrait ?tre rare). Mais
+> personnellement je pense qu'il vaut mieux ?viter des cas particuliers o?
+> parfois appeler un seul build suffit, alors que dans d'autres situations
+> similaires il faut appeler soi-m?me le build de tous les objets.
+>
+> Si on voulait modifier le m?canisme de build() pour appeler un seul
+> build() et laisser la hi?rarchie tout faire, j'imagine que ?a marcherait
+> aussi, mais il faudrait r??crire toutes les classes actuelles de PLearn.
+>
+> --
+> Olivier
+>
+> On 02 Apr 2007, saintmlx at apstat.com wrote:
+>> Salut Olivier,
+>>
+>> Mon id?e d'un build est que ?a devrait garantir que l'objet est
+>> compl?tement construit.  C'est certain que si cet objet vient d'un
+>> Object::newread, le travail va ?tre fait en double pour le splitter et
+>> le
+>> template_learner.  Par contre, si tout est instanci? au niveau C++ (ce
+>> qui
+>> n'est pas fr?quent, j'en conviens), je voudrais qu'un simple build de
+>> l'objet "parent" qui contient tous les autres suffise.
+>>
+>> Une solution "propre" serait de ne pas faire build dans newread quand on
+>> sait qu'on est en train de lire une option d'un objet qui sera "build?"
+>> plus tard; comme ?a, ?a fait un seul build ? la fin de tout pour toute
+>> la
+>> hi?rarchie.
+>>
+>> Qu'en penses-tu?  Sinon, est-ce un gros probl?me que de faire un peu
+>> trop
+>> de builds?
+>>
+>> Xavier
+>>
+>> > Salut,
+>> >
+>> > Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+>> > Question : pourquoi appeler le build() du splitter et du
+>> > template_learner dans le build_() de BaggingLearner ? Normalement ces
+>> > objets seraient cens?s ?tre correctement construits, et le build ne
+>> > devrait pas ?tre n?cessaire il me semble.
+>> >
+>> > --
+>> > Olivier
+>> >
+>>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+
+
+From saintmlx at apstat.com  Mon Apr  2 21:42:45 2007
+From: saintmlx at apstat.com (saintmlx at apstat.com)
+Date: Mon, 2 Apr 2007 15:42:45 -0400 (EDT)
+Subject: [Plearn-core] Question BaggingLearner
+In-Reply-To: <48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+References: <20070402184316.GA17587@opale.iro.umontreal.ca>
+	<48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+	<20070402192835.GA20873@opale.iro.umontreal.ca>
+	<48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+Message-ID: <48618.24.37.169.107.1175542965.squirrel@intranet.apstat.com>
+
+Olivier: J'oubliais: pour BaggingLearner, tu peux changer le build si tu
+veux, ?a ne me cause aucun probl?me pour l'instant.
+
+Xavier
+
+> C'est justement ce que j'essaie d'?viter, les exceptions...  Je vais
+> parler ? Pascal car de la mani?re dont les choses sont faites en ce
+> moment, il faut conna?tre la structure interne d'une classe pour s'assurer
+> de faire les builds correctement, ce qui me semble ?tre un probl?me.  Et
+> si la classe change? tout ce qui l'utilise doit changer aussi?
+>
+> Xavier
+>
+>
+>> Je mets plearn-core en cc puisque c'est un probl?me assez g?n?rique, et
+>> que l'avis d'autres personnes pourrait ?tre utile.
+>>
+>> Le probl?me avec cette approche c'est que pour moi ?a contredit un
+>> principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+>> quoi que ce soit, on doit d'abord appeler son build(). Si on commence ?
+>> faire des exceptions dans certaines parties du code, ?a devient
+>> compliqu? ? suivre.
+>>
+>> Il me semble que la question s'?tait d?j? pos?e ailleurs... (je fouille
+>> un peu...). Ah, j'ai trouv? : cf. StackedLearner::build_, le commentaire
+>> par Nicolas :
+>>   *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call build
+>>   *  inside build for no reason, since the inner objects HAVE ALREADY
+>>   *  been built.  You should uncomment the following code only FOR GOOD
+>>   *  REASON.
+>>
+>> Disons qu'en g?n?ral, ?a ne devrait pas ?tre un gros probl?me que de
+>> faire un peu trop de builds (il pourrait arriver que ?a ralentisse
+>> significativement du code, mais ?a devrait ?tre rare). Mais
+>> personnellement je pense qu'il vaut mieux ?viter des cas particuliers o?
+>> parfois appeler un seul build suffit, alors que dans d'autres situations
+>> similaires il faut appeler soi-m?me le build de tous les objets.
+>>
+>> Si on voulait modifier le m?canisme de build() pour appeler un seul
+>> build() et laisser la hi?rarchie tout faire, j'imagine que ?a marcherait
+>> aussi, mais il faudrait r??crire toutes les classes actuelles de PLearn.
+>>
+>> --
+>> Olivier
+>>
+>> On 02 Apr 2007, saintmlx at apstat.com wrote:
+>>> Salut Olivier,
+>>>
+>>> Mon id?e d'un build est que ?a devrait garantir que l'objet est
+>>> compl?tement construit.  C'est certain que si cet objet vient d'un
+>>> Object::newread, le travail va ?tre fait en double pour le splitter et
+>>> le
+>>> template_learner.  Par contre, si tout est instanci? au niveau C++ (ce
+>>> qui
+>>> n'est pas fr?quent, j'en conviens), je voudrais qu'un simple build de
+>>> l'objet "parent" qui contient tous les autres suffise.
+>>>
+>>> Une solution "propre" serait de ne pas faire build dans newread quand
+>>> on
+>>> sait qu'on est en train de lire une option d'un objet qui sera "build?"
+>>> plus tard; comme ?a, ?a fait un seul build ? la fin de tout pour toute
+>>> la
+>>> hi?rarchie.
+>>>
+>>> Qu'en penses-tu?  Sinon, est-ce un gros probl?me que de faire un peu
+>>> trop
+>>> de builds?
+>>>
+>>> Xavier
+>>>
+>>> > Salut,
+>>> >
+>>> > Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+>>> > Question : pourquoi appeler le build() du splitter et du
+>>> > template_learner dans le build_() de BaggingLearner ? Normalement ces
+>>> > objets seraient cens?s ?tre correctement construits, et le build ne
+>>> > devrait pas ?tre n?cessaire il me semble.
+>>> >
+>>> > --
+>>> > Olivier
+>>> >
+>>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> https://lists.berlios.de/mailman/listinfo/plearn-core
+>>
+>
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+
+
+From delallea at iro.umontreal.ca  Mon Apr  2 21:42:49 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 2 Apr 2007 15:42:49 -0400
+Subject: [Plearn-core] Question BaggingLearner
+In-Reply-To: <48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+References: <20070402184316.GA17587@opale.iro.umontreal.ca>
+	<48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+	<20070402192835.GA20873@opale.iro.umontreal.ca>
+	<48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+Message-ID: <20070402194246.GA26768@opale.iro.umontreal.ca>
+
+Je ne comprends pas trop ce que tu veux dire par l?. Quelle structure
+interne faut-il conna?tre ? Les seuls builds que tu devrais avoir ?
+faire sont ceux des objets que tu fournis ? la classe, donc qui sont
+externes ? la classe.
+Les builds des objets internes devraient effectivement ?tre effectu?s
+par la classe elle-m?me, car c'est elle qui va les cr?er.
+
+--
+Olivier
+
+On 02 Apr 2007, saintmlx at apstat.com wrote:
+> C'est justement ce que j'essaie d'?viter, les exceptions...  Je vais
+> parler ? Pascal car de la mani?re dont les choses sont faites en ce
+> moment, il faut conna?tre la structure interne d'une classe pour s'assurer
+> de faire les builds correctement, ce qui me semble ?tre un probl?me.  Et
+> si la classe change? tout ce qui l'utilise doit changer aussi?
+> 
+> Xavier
+> 
+> 
+> > Je mets plearn-core en cc puisque c'est un probl?me assez g?n?rique, et
+> > que l'avis d'autres personnes pourrait ?tre utile.
+> >
+> > Le probl?me avec cette approche c'est que pour moi ?a contredit un
+> > principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+> > quoi que ce soit, on doit d'abord appeler son build(). Si on commence ?
+> > faire des exceptions dans certaines parties du code, ?a devient
+> > compliqu? ? suivre.
+> >
+> > Il me semble que la question s'?tait d?j? pos?e ailleurs... (je fouille
+> > un peu...). Ah, j'ai trouv? : cf. StackedLearner::build_, le commentaire
+> > par Nicolas :
+> >   *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call build
+> >   *  inside build for no reason, since the inner objects HAVE ALREADY
+> >   *  been built.  You should uncomment the following code only FOR GOOD
+> >   *  REASON.
+> >
+> > Disons qu'en g?n?ral, ?a ne devrait pas ?tre un gros probl?me que de
+> > faire un peu trop de builds (il pourrait arriver que ?a ralentisse
+> > significativement du code, mais ?a devrait ?tre rare). Mais
+> > personnellement je pense qu'il vaut mieux ?viter des cas particuliers o?
+> > parfois appeler un seul build suffit, alors que dans d'autres situations
+> > similaires il faut appeler soi-m?me le build de tous les objets.
+> >
+> > Si on voulait modifier le m?canisme de build() pour appeler un seul
+> > build() et laisser la hi?rarchie tout faire, j'imagine que ?a marcherait
+> > aussi, mais il faudrait r??crire toutes les classes actuelles de PLearn.
+> >
+> > --
+> > Olivier
+> >
+> > On 02 Apr 2007, saintmlx at apstat.com wrote:
+> >> Salut Olivier,
+> >>
+> >> Mon id?e d'un build est que ?a devrait garantir que l'objet est
+> >> compl?tement construit.  C'est certain que si cet objet vient d'un
+> >> Object::newread, le travail va ?tre fait en double pour le splitter et
+> >> le
+> >> template_learner.  Par contre, si tout est instanci? au niveau C++ (ce
+> >> qui
+> >> n'est pas fr?quent, j'en conviens), je voudrais qu'un simple build de
+> >> l'objet "parent" qui contient tous les autres suffise.
+> >>
+> >> Une solution "propre" serait de ne pas faire build dans newread quand on
+> >> sait qu'on est en train de lire une option d'un objet qui sera "build?"
+> >> plus tard; comme ?a, ?a fait un seul build ? la fin de tout pour toute
+> >> la
+> >> hi?rarchie.
+> >>
+> >> Qu'en penses-tu?  Sinon, est-ce un gros probl?me que de faire un peu
+> >> trop
+> >> de builds?
+> >>
+> >> Xavier
+> >>
+> >> > Salut,
+> >> >
+> >> > Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+> >> > Question : pourquoi appeler le build() du splitter et du
+> >> > template_learner dans le build_() de BaggingLearner ? Normalement ces
+> >> > objets seraient cens?s ?tre correctement construits, et le build ne
+> >> > devrait pas ?tre n?cessaire il me semble.
+> >> >
+> >> > --
+> >> > Olivier
+> >> >
+> >>
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+> >
+> 
+> 
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From saintmlx at apstat.com  Mon Apr  2 21:53:37 2007
+From: saintmlx at apstat.com (saintmlx at apstat.com)
+Date: Mon, 2 Apr 2007 15:53:37 -0400 (EDT)
+Subject: [Plearn-core] Question BaggingLearner
+In-Reply-To: <20070402194246.GA26768@opale.iro.umontreal.ca>
+References: <20070402184316.GA17587@opale.iro.umontreal.ca>
+	<48452.24.37.169.107.1175541184.squirrel@intranet.apstat.com>
+	<20070402192835.GA20873@opale.iro.umontreal.ca>
+	<48581.24.37.169.107.1175542721.squirrel@intranet.apstat.com>
+	<20070402194246.GA26768@opale.iro.umontreal.ca>
+Message-ID: <48661.24.37.169.107.1175543617.squirrel@intranet.apstat.com>
+
+J'avoue que c'est un bon point.  Ces objets viennent effectivement de
+l'"ext?rieur".  Je comprends mieux l'id?e pr?sent?e de cette mani?re, et
+?a a du sens.  ?a permet ? un programmeur de mal builder un objet, mais
+disons que c'est son probl?me...
+
+Xavier
+
+> Je ne comprends pas trop ce que tu veux dire par l?. Quelle structure
+> interne faut-il conna?tre ? Les seuls builds que tu devrais avoir ?
+> faire sont ceux des objets que tu fournis ? la classe, donc qui sont
+> externes ? la classe.
+> Les builds des objets internes devraient effectivement ?tre effectu?s
+> par la classe elle-m?me, car c'est elle qui va les cr?er.
+>
+> --
+> Olivier
+>
+> On 02 Apr 2007, saintmlx at apstat.com wrote:
+>> C'est justement ce que j'essaie d'?viter, les exceptions...  Je vais
+>> parler ? Pascal car de la mani?re dont les choses sont faites en ce
+>> moment, il faut conna?tre la structure interne d'une classe pour
+>> s'assurer
+>> de faire les builds correctement, ce qui me semble ?tre un probl?me.  Et
+>> si la classe change? tout ce qui l'utilise doit changer aussi?
+>>
+>> Xavier
+>>
+>>
+>> > Je mets plearn-core en cc puisque c'est un probl?me assez g?n?rique,
+>> et
+>> > que l'avis d'autres personnes pourrait ?tre utile.
+>> >
+>> > Le probl?me avec cette approche c'est que pour moi ?a contredit un
+>> > principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+>> > quoi que ce soit, on doit d'abord appeler son build(). Si on commence
+>> ?
+>> > faire des exceptions dans certaines parties du code, ?a devient
+>> > compliqu? ? suivre.
+>> >
+>> > Il me semble que la question s'?tait d?j? pos?e ailleurs... (je
+>> fouille
+>> > un peu...). Ah, j'ai trouv? : cf. StackedLearner::build_, le
+>> commentaire
+>> > par Nicolas :
+>> >   *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call
+>> build
+>> >   *  inside build for no reason, since the inner objects HAVE ALREADY
+>> >   *  been built.  You should uncomment the following code only FOR
+>> GOOD
+>> >   *  REASON.
+>> >
+>> > Disons qu'en g?n?ral, ?a ne devrait pas ?tre un gros probl?me que de
+>> > faire un peu trop de builds (il pourrait arriver que ?a ralentisse
+>> > significativement du code, mais ?a devrait ?tre rare). Mais
+>> > personnellement je pense qu'il vaut mieux ?viter des cas particuliers
+>> o?
+>> > parfois appeler un seul build suffit, alors que dans d'autres
+>> situations
+>> > similaires il faut appeler soi-m?me le build de tous les objets.
+>> >
+>> > Si on voulait modifier le m?canisme de build() pour appeler un seul
+>> > build() et laisser la hi?rarchie tout faire, j'imagine que ?a
+>> marcherait
+>> > aussi, mais il faudrait r??crire toutes les classes actuelles de
+>> PLearn.
+>> >
+>> > --
+>> > Olivier
+>> >
+>> > On 02 Apr 2007, saintmlx at apstat.com wrote:
+>> >> Salut Olivier,
+>> >>
+>> >> Mon id?e d'un build est que ?a devrait garantir que l'objet est
+>> >> compl?tement construit.  C'est certain que si cet objet vient d'un
+>> >> Object::newread, le travail va ?tre fait en double pour le splitter
+>> et
+>> >> le
+>> >> template_learner.  Par contre, si tout est instanci? au niveau C++
+>> (ce
+>> >> qui
+>> >> n'est pas fr?quent, j'en conviens), je voudrais qu'un simple build de
+>> >> l'objet "parent" qui contient tous les autres suffise.
+>> >>
+>> >> Une solution "propre" serait de ne pas faire build dans newread quand
+>> on
+>> >> sait qu'on est en train de lire une option d'un objet qui sera
+>> "build?"
+>> >> plus tard; comme ?a, ?a fait un seul build ? la fin de tout pour
+>> toute
+>> >> la
+>> >> hi?rarchie.
+>> >>
+>> >> Qu'en penses-tu?  Sinon, est-ce un gros probl?me que de faire un peu
+>> >> trop
+>> >> de builds?
+>> >>
+>> >> Xavier
+>> >>
+>> >> > Salut,
+>> >> >
+>> >> > Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+>> >> > Question : pourquoi appeler le build() du splitter et du
+>> >> > template_learner dans le build_() de BaggingLearner ? Normalement
+>> ces
+>> >> > objets seraient cens?s ?tre correctement construits, et le build ne
+>> >> > devrait pas ?tre n?cessaire il me semble.
+>> >> >
+>> >> > --
+>> >> > Olivier
+>> >> >
+>> >>
+>> > _______________________________________________
+>> > Plearn-core mailing list
+>> > Plearn-core at lists.berlios.de
+>> > https://lists.berlios.de/mailman/listinfo/plearn-core
+>> >
+>>
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> https://lists.berlios.de/mailman/listinfo/plearn-core
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+
+
+
+
+From delallea at iro.umontreal.ca  Fri Apr 13 20:58:14 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 13 Apr 2007 14:58:14 -0400
+Subject: [Plearn-core] Changements a PTester
+In-Reply-To: <42822.24.37.169.107.1176315417.squirrel@intranet.apstat.com>
+References: <20070411153451.GA31632@opale.iro.umontreal.ca>
+	<42822.24.37.169.107.1176315417.squirrel@intranet.apstat.com>
+Message-ID: <20070413185813.GA19935@opale.iro.umontreal.ca>
+
+Merci pour le changement. Mais j'ai peur qu'il pose un autre probl?me.
+Avoir une option 'dataset' dans un Splitter sugg?re de l'utiliser
+lorsqu'on ?crit un script, mais :
+1. Elle est 'nosave', donc sera perdue si on sauve / charge notre objet.
+Quelle est la motivation derri?re ?a ?
+2. Plus probl?matique, elle permet de "bypasser" la m?thode setDataset,
+qui peut ?tre importante pour certains splitters. Je ne sais pas
+vraiment comment r?gler ce probl?me, que j'ai d?j? rencontr? ? d'autres
+occasions pour d'autres classes. On pourrait appeler setDataset(..) dans
+le build de Splitter, mais dans ce cas on risque de l'appeler avant que
+le build de la sous-classe soit compl?t?, ce qui peut aussi ?tre un
+probl?me.
+
+Je pense qu'on en avait discut? il y a un certain temps avec Pascal (de
+ce genre de probl?me)... J'ai retrouv? des vieux mails de mars 2006
+('R?flexions plus ou moins vagues sur setOption')... et aussi une
+discussion reli?e qui pourrait p-? ?tre remise au go?t du jour (d'o? le
+cc ? plearn-core) :
+https://lists.berlios.de/pipermail/plearn-core/2006-June/000055.html
+Si je trouve le temps je vais essayer de me replonger dans ces probl?mes
+puisque c'est un des trucs qui me pose pb avec PLearn...
+
+En attendant, je me demandais : je ne suis pas familier avec les
+fonctions appel?es ? distance, mais serait-il possible que tu appelles
+setDataSet ? distance plut?t que de le passer par une option ?
+
+--
+Olivier
+
+On 11 Apr 2007, saintmlx at apstat.com wrote:
+> Salut,
+> 
+> La motivation ?tait que Splitter n'avait pas de declareOption, et donc
+> aucun moyen de transmettre le dataset aux serveurs distants.  Je viens de
+> l'ajouter pour le dataset, avec flags nosave et remotetransmit (qui
+> n'existait pas encore quand j'ai fait cette modif.)
+> 
+> Merci pour l'info, ?a devrait aller mieux maintenant.
+> 
+> Xavier
+> 
+> 
+> 
+> > Salut,
+> >
+> > Est-ce qu'il y a une motivation dans PTester pour faire
+> >     splitter->setDataSet(dataset);
+> > dans perform1Split plutot que dans perform ?
+> >
+> > Outre que ca pourrait faire des calculs inutiles, il y a au moins un
+> > Splitter (le KFoldSplitter avec K=-1 pour faire de la leave-one-out
+> > cross validation) dont le nombre de splits n'est connu que lorsque le
+> > dataset est fourni => ca plante avec le code actuel.
+> >
+> > --
+> > Olivier
+> >
+> 
+
+
+From nouiz at nouiz.org  Thu Apr 19 19:11:25 2007
+From: nouiz at nouiz.org (=?ISO-8859-1?Q?Fr=E9d=E9ric_Bastien?=)
+Date: Thu, 19 Apr 2007 13:11:25 -0400
+Subject: [Plearn-core] Plearn: fichier qui ne compile pas
+Message-ID: <4627A2BD.6080907@nouiz.org>
+
+Bonjour,
+
+Vincent ma demander la liste des fichiers qui ne compile pas. Elle est a 
+la fin du email. Est-ce que vous avez des objections a ce que ces 
+fichiers soit mis DEPREACATED, car il ne sont pas inclus nulle part et 
+ne compile pas. Si vous avez des raisons de ne pas rendre certain de ces 
+fichiers DEPRECATED, veuillez le dire avant 1 semaine.
+
+merci
+
+Fred
+
+/u/bastienf/Plearn/commands/language/proper_noun_filter.cc
+/u/bastienf/Plearn/commands/language/full_filter.cc
+/u/bastienf/Plearn/commands/language/num_np_tagset_filter.cc
+/u/bastienf/Plearn/commands/language/WordNet/generate_ontology.cc
+/u/bastienf/Plearn/commands/language/WordNet/buildBrown.cc
+/u/bastienf/Plearn/commands/language/WordNet/buildSemCor.cc
+/u/bastienf/Plearn/plearn/ker/LogOfGaussianDensityKernel.cc
+/u/bastienf/Plearn/plearn/ker/SquaredExponentialARDKernel.cc
+/u/bastienf/Plearn/plearn/ker/ConvexBasisKernel.cc
+/u/bastienf/Plearn/plearn/ker/SigmoidPrimitiveKernel.cc
+/u/bastienf/Plearn/plearn/ker/DifferenceKernel.cc
+/u/bastienf/Plearn/plearn/ker/GaussianDensityKernel.cc
+/u/bastienf/Plearn/plearn/db/SimpleDB.cc
+/u/bastienf/Plearn/plearn/db/SDBVMat.cc
+/u/bastienf/Plearn/plearn/db/AutoSDBVMatrix.cc
+/u/bastienf/Plearn/plearn/db/SDBWithStats.cc
+/u/bastienf/Plearn/plearn/var/NllGeneralGaussianVariable.cc
+/u/bastienf/Plearn/plearn/var/NllSemisphericalGaussianVariable.cc
+/u/bastienf/Plearn/plearn/randomvar/RandomVar.cc
+/u/bastienf/Plearn/plearn/math/ProbSparseMatrix.cc
+/u/bastienf/Plearn/plearn/io/MPIPStreamBuf.cc
+/u/bastienf/Plearn/plearn/io/IntStream.cc
+/u/bastienf/Plearn/plearn/vmat/ReIndexedTargetVMatrix.cc
+/u/bastienf/Plearn/plearn/base/test/PMemPool/test_pool.cc
+/u/bastienf/Plearn/plearn_learners_experimental/FeatureSetSequentialCRF.cc
+/u/bastienf/Plearn/plearn_learners_experimental/StructuralLearner.cc
+/u/bastienf/Plearn/plearn_learners_experimental/onlineNNLM/NnlmOnlineLearner.cc
+/u/bastienf/Plearn/plearn_learners/language/TextSenseSequenceVMatrix.cc
+/u/bastienf/Plearn/plearn_learners/language/Bitext/ShellProgressBar.cc
+/u/bastienf/Plearn/plearn_learners/language/Bitext/GraphicalBiText.cc
+/u/bastienf/Plearn/plearn_learners/language/WordNet/WordNetOntology.cc
+/u/bastienf/Plearn/plearn_learners/language/Smoothing/SmoothedProbSparseMatrix.cc
+/u/bastienf/Plearn/plearn_learners/sequential/SequentialLearner.cc
+/u/bastienf/Plearn/plearn_learners/sequential/SequentialModelSelector.cc
+/u/bastienf/Plearn/plearn_learners/sequential/EmbeddedSequentialLearner.cc
+/u/bastienf/Plearn/plearn_learners/generic/EXPERIMENTAL/NatGradItEstimator.cc
+/u/bastienf/Plearn/plearn_learners/unsupervised/GaussianContinuum.cc
+
+

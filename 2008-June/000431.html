@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Installation de plearn: la plupart des	tests	echouent
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Installation%20de%20plearn%3A%20la%20plupart%20des%0A%09tests%09echouent&In-Reply-To=%3C20080618131223.GA30753%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000430.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Installation de plearn: la plupart des	tests	echouent</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Installation%20de%20plearn%3A%20la%20plupart%20des%0A%09tests%09echouent&In-Reply-To=%3C20080618131223.GA30753%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Installation de plearn: la plupart des	tests	echouent">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jun 18 15:12:23 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000430.html">[Plearn-core] Installation de plearn: la plupart des tests	echouent
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#431">[ date ]</a>
+              <a href="thread.html#431">[ thread ]</a>
+              <a href="subject.html#431">[ subject ]</a>
+              <a href="author.html#431">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 17 Jun 2008, Pascal Vincent wrote:
+&gt;<i> Le 08-06-17 &#224; 07:29, Amaury Hazan a &#233;crit :
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Bonjour Vincent,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Je m'appelle Amaury Hazan, &#233;tudiant de doctorat au Groupe de  
+</I>&gt;<i> &gt; Technologie Musicale de l'universit&#233; Pompeu Fabra, Barcelone.
+</I>&gt;<i> &gt; J'envisage de faire des simulation avec les Deep Belief Nets pour  
+</I>&gt;<i> &gt; des taches de classification/clustering sur des signaux audio.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; J'ai install&#233; &#224; deux reprise plearn (sur des systemes ubuntu), et  
+</I>&gt;<i> &gt; j'ai toujours pu compiler le programme (meme plearn_python). Par  
+</I>&gt;<i> &gt; contre si j'execute pytest run --all
+</I>&gt;<i> &gt; la plupart des tests echouent. J'ai ajout&#233; de pytest sur une  
+</I>&gt;<i> &gt; installation sur un systeme ubuntu hardy (8.04).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Quels seraient les pas a suivre/essayer pour faire reussir plus de  
+</I>&gt;<i> &gt; tests?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Prenez un test qui ne passe pas, par ex. PL_SortRowsVMatrix . Vous  
+</I>&gt;<i> pouvez trouver le r&#233;pertoire o&#249; le test est situ&#233; en faisant
+</I>&gt;<i> pyest locate nom_du_test
+</I>&gt;<i> Si vous allez dans ce r&#233;pertoire, vous y trouverez normalement un  
+</I>&gt;<i> sous-r&#233;pertoire .pytest &#224; l'int&#233;rieur duquel il y aura 2 r&#233;petoires:
+</I>&gt;<i>    expected_results contient les r&#233;sultats normalement attendus de  
+</I>&gt;<i> l'ex&#233;cution du test
+</I>&gt;<i>    run_results contient les r&#233;sultats obtenus avec votre version
+</I>&gt;<i> 
+</I>&gt;<i> Vous pouvez ainsi comparer les 2. Aussi il se peut qu'un fichier de  
+</I>&gt;<i> diff indiquant les diff&#233;rences soit produit.
+</I>
+Regardez le fichier FAILURE.log, il explique ce qui a &#233;chou&#233; (m&#234;me si
+parfois il faut &#234;tre un expert PLearn pour le comprendre ;)
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000430.html">[Plearn-core] Installation de plearn: la plupart des tests	echouent
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#431">[ date ]</a>
+              <a href="thread.html#431">[ thread ]</a>
+              <a href="subject.html#431">[ subject ]</a>
+              <a href="author.html#431">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

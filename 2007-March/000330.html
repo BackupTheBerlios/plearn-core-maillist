@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3Cc81af8c30703020706l65da7d08sf52038c7bef98fc1%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000331.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3Cc81af8c30703020706l65da7d08sf52038c7bef98fc1%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">jaonary at gmail.com
+       </A><BR>
+    <I>Fri Mar  2 16:06:56 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000331.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#330">[ date ]</a>
+              <a href="thread.html#330">[ thread ]</a>
+              <a href="subject.html#330">[ subject ]</a>
+              <a href="author.html#330">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Merci Jaonary, de te proposer si spontan&#233;ment! ;-)
+</I>&gt;<i>
+</I>&gt;<i> Mais il nous faut d'abord &#233;claircir une petite question d'ordre
+</I>&gt;<i> l&#233;gal: tes contributions pourront-elles &#234;tre sous la license BSD de
+</I>&gt;<i> PLearn (je ne sais pas d'o&#249; tu travailles, mais ton employeur
+</I>&gt;<i> pourrait avoir son mot &#224; dire sur la question.)
+</I>
+C'est une bonne question, il faudrait que j'en vois un peu plus avec mon
+employeur
+sur ce sujet. Mais je pense que cela devrait etre possible surtout si ce
+sont des codes qui ameliore le core de PLearn.
+
+En attendant, une premi&#232;re chose que tu pourras faire, serait
+&gt;<i> d'examiner les splitters que tu comptes utiliser (quels sont-ils?) et
+</I>&gt;<i> de voir si les VMatrix qu'ils retournent se comportent bien vis &#224; vis
+</I>&gt;<i> du getExample (et sinon corriger / adapter ou troquer pour d'autres
+</I>&gt;<i> les classes impliqu&#233;es)
+</I>
+
+J'ai donc commence par ecrire une nouvelle VMatrix dont le getExample renvoi
+un input de taille variable. Voci comment je l'ai fait, un peu a l'arache,
+
+ class MyBagVMatrix : public VMatrix
+ 66 {
+ 67     typedef VMatrix inherited;
+ 68
+ 69 public:
+ 70     //#####  Public Build Options
+############################################
+ 71
+ 72     //! ### declare public option fields (such as build options) here
+ 73     //! Start your comments with Doxygen-compatible comments such as //!
+ 74     TVec&lt;Mat&gt; inputs_bag;
+ 75     TVec&lt;Vec&gt; targets;
+ 76     TVec&lt;real&gt; weights;
+ 77
+ 78 public:
+ 79     //#####  Public Member Functions
+#########################################
+ 80
+ 81     //! Default constructor
+ 82     MyBagVMatrix();
+ 83
+ 84     //! Another constructor
+ 85     MyBagVMatrix(TVec&lt;Mat&gt;&amp; inputs_,TVec&lt;Vec&gt;&amp; targets_,Vec&amp; weights_);
+
+
+et le getExample correspondant
+
+
+126 void MyBagVMatrix::getExample(int i, Vec&amp; input, Vec&amp; target, real&amp;
+weight)
+127 {
+128    input        = inputs_bag[i].toVec();
+129    target[0]    = targets[i][0];
+130    weight       = weights[i];
+131 }
+
+
+Au niveau des splitters, j'utilise essentiellement le KFoldSplitter et le
+ExpliciteSplitter. C'est le KFoldSplitter qui posse le plus de probleme. Je
+ne suis pas encore rentre dans les details. Par contre, j'ai commence par
+tester ma nouvelle VMatrix avec AdaBoost, un weak classifier que j'ai code
+et qui sait comment manipuler ma VMatrix. Le probleme dans ce cas c'est la
+creation d'une nouvelle donnee pour le weak classifier a chaque etape du
+boosting. Et je pense que le plus simple c'est d'avoir des methodes du type
+getInput,putInput,getTarget,putTarget,getWeight,...
+en plus des get,put pour tous les VMatrix. En effet, je ne vois pas encore
+comment je peux modifer, selectionner une partie de ma MyBagVMatrix dans la
+classe AdaBoost sans la caster (car elle est vue comme une VMat). Qu'en
+pensez vous ?
+
+Jaonary
+
+
+
+
+-- Pascal
+&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20070302/bf24790c/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20070302/bf24790c/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000331.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#330">[ date ]</a>
+              <a href="thread.html#330">[ thread ]</a>
+              <a href="subject.html#330">[ subject ]</a>
+              <a href="author.html#330">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

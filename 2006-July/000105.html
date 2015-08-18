@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] pymake et #if, le retour
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060707154758.GA17407%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000104.html">
+   <LINK REL="Next"  HREF="000112.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] pymake et #if, le retour</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20pymake%20et%20%23if%2C%20le%20retour&In-Reply-To=%3C20060707154758.GA17407%40pig.zood.org%3E"
+       TITLE="[Plearn-core] pymake et #if, le retour">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Jul  7 17:47:58 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000104.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+        <LI>Next message: <A HREF="000112.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#105">[ date ]</a>
+              <a href="thread.html#105">[ thread ]</a>
+              <a href="subject.html#105">[ subject ]</a>
+              <a href="author.html#105">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, Jul 07, 2006, Nicolas Chapados wrote:
+&gt;<i> Au lieu de r&#233;&#233;crire un pr&#233;processeur complet,
+</I>
+Je ne compte pas r&#233;&#233;crire un pr&#233;processeur complet, juste un moyen
+d'&#233;liminer les #include qui sont contenu dans un #if... que l'on sait
+&#233;valuer imm&#233;diatement, sans parser les fichiers inclus pr&#233;c&#233;dents,
+simplement en connaissant la plate-forme et les options -D pass&#233;es au
+compilateur. En particulier, je ne veux pas parcourir les fichiers
+inclus (sinon j'aurais fait appel &#224; cpp lui-m&#234;me).
+
+&gt;<i> ne pourrait-on pas adopter
+</I>&gt;<i> la mani&#232;re indirecte, mais sans doute aussi efficace, qui suit:
+</I>&gt;<i> 
+</I>&gt;<i>    * pymake suit les #includes qu'il reconna&#238;t, par exemple les formes
+</I>&gt;<i>      &lt;plearn/*&gt; (extensible, car on doit pouvoir faire &lt;apstatlib/*&gt;
+</I>&gt;<i>      aussi, par exemple).
+</I>&gt;<i>    * des options pass&#233;es &#224; pymake, genre -mpi peuvent ajouter &#224; la
+</I>&gt;<i>      liste ci-haut au besoin
+</I>&gt;<i>    * pymake ne suit AUCUN AUTRE #include.
+</I>&gt;<i> 
+</I>&gt;<i> &#199;a &#233;vite, entre autres, de parcourir les headers des librairies 
+</I>&gt;<i> standard.  Je ne sais pas si pymake &#233;vite de les parcourir pr&#233;sentement, 
+</I>&gt;<i> mais &#231;a &#233;conomise potentiellement du temps d'analyse de d&#233;pendances.
+</I>
+On peut faire &#231;a, aussi. Je pense qu'il &#233;vite les librairies syst&#232;me,
+je ne sais pas ce qu'il se passe pour les librairies externes, &#224; mon
+avis il les reconna&#238;t comme telles puisqu'un &quot;plearn -dependency&quot; les
+affiches comme de gros blocs rouges. Il faut aussi voir ce qu'on fait
+dans le cas #include &quot;../../../../ailleurs/truc_pas_rapport.h&quot;. Cela
+dit, le temps d'analyse n'est pas tellement long (quelques secondes),
+surtout par rapport au temps de link.
+
+Mais &#231;a ne r&#233;sout pas le probl&#232;me de compilation de morceaux de PLearn
+qui ne seront pas utilis&#233;s. Si dans un ex&#233;cutable je veux utiliser
+plerror et rien d'autre (oui, c'est un exemple idiot), pymake va voir
+une d&#233;pendance &#224; PLMPI, qui d&#233;pend d'un paquet de choses jusqu'&#224; TMat,
+TMat_maths, etc.
+
+On pourrait aussi avoir un jour des fichiers entiers sp&#233;cifiques &#224;
+certaines architectures, ou &#224; certains compilateurs, &#224; l'int&#233;rieur m&#234;me
+de la hi&#233;rarchie &lt;plearn/&gt; ou &lt;apstatsoft/*&gt;... ou d'un autre projet sur
+lequel on voudrait utiliser pymake, qui n'est pas cens&#233; &#234;tre sp&#233;cifique
+&#224; PLearn.
+
+En plus, si je commente du vieux code avec un #if 0 ... #endif, je ne
+veux pas qu'il essaie de me compiler les fichiers (potentiellement
+obsol&#232;tes) qui sont inclus l&#224;-dedans.
+
+Ce que je veux faire, c'est un truc un minimum intelligent qui puisse
+virer ces #include l&#224; des d&#233;pendances (m&#234;me si les fichiers existent et
+sont dans le r&#233;pertoire plearn), s'il voit que les conditions ne
+d&#233;pendent que de variables connues (ou dont l'existence est connue) au
+moment du lancement de pymake. Si les conditions sont inconnues (des
+variables que le pymake.config.model ne conna&#238;t pas, qui doivent &#234;tre
+d&#233;finies dans un fichier et pas par le compilateur), alors dans le doute
+on inclut.
+
+En y r&#233;fl&#233;chissant un peu, j'ai m&#234;me une id&#233;e de comment impl&#233;menter &#231;a
+&#224; la main directement, mais faire une grammaire et en g&#233;n&#233;rer un parseur
+sera probablement plus propre.
+
+J'esp&#232;re que c'est plus clair.
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000104.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+	<LI>Next message: <A HREF="000112.html">[Plearn-core] pymake et #if, le retour
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#105">[ date ]</a>
+              <a href="thread.html#105">[ thread ]</a>
+              <a href="subject.html#105">[ subject ]</a>
+              <a href="author.html#105">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

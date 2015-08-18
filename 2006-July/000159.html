@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Le pymake nouveau boira le cadavre exquis (ou	l'inverse, je sais plus)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Le%20pymake%20nouveau%20boira%20le%20cadavre%20exquis%20%28ou%0A%09l%27inverse%2C%20je%20sais%20plus%29&In-Reply-To=%3C20060726023035.GC19034%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000158.html">
+   <LINK REL="Next"  HREF="000160.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Le pymake nouveau boira le cadavre exquis (ou	l'inverse, je sais plus)</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Le%20pymake%20nouveau%20boira%20le%20cadavre%20exquis%20%28ou%0A%09l%27inverse%2C%20je%20sais%20plus%29&In-Reply-To=%3C20060726023035.GC19034%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Le pymake nouveau boira le cadavre exquis (ou	l'inverse, je sais plus)">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Jul 26 04:30:35 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000158.html">[Plearn-core] PPath et PStream
+</A></li>
+        <LI>Next message: <A HREF="000160.html">[Plearn-core] Le pymake nouveau boira le cadavre exquis (ou	l'inverse, je sais plus)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#159">[ date ]</a>
+              <a href="thread.html#159">[ thread ]</a>
+              <a href="subject.html#159">[ subject ]</a>
+              <a href="author.html#159">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut encore les gens,
+
+Ce soir, un nouvel &#233;pisode de l'&#233;mission &#171; c'est du propre &#187;
+&lt;<A HREF="http://www.m6.fr/html/emissions/cest_du_propre/index.shtml">http://www.m6.fr/html/emissions/cest_du_propre/index.shtml</A>&gt; !
+
+J'ai cr&#233;&#233; python_modules/plearn/pymake, avec dedans :
+  - le mini-parseur cpp, minicpreproc.py ;
+  - la grammaire minicpreproc.g et le script yapps.py qui l'ont g&#233;n&#233;r&#233; ;
+  - pymake.py qui reprend tout ce que faisait pymake (je vais y revenir) ;
+  - __init__.py parce qu'il faut.
+
+J'ai r&#233;organis&#233; pymake.py en trois sections :
+  - les petites/moyennes fonctions ;
+  - la classe FileInfo ;
+  - une fonction main(), qui fait tout ce qui &#233;tait fait au niveau
+    global.
+
+&#199;a me semblait plus propre d'encapsuler &#231;a dans une fonction, maintenant
+appel&#233;e depuis le nouveau scripts/pymake, plut&#244;t que de laisser &#231;a
+&#171; global &#187;, mais je me suis rendu compte que plein de variables avaient
+besoin d'&#234;tre globales :
+  - certaines variables sont utilis&#233;es dans ls fonctions auxiliaires, ou
+    dans la classe FileInfo (pour celles-l&#224;, il y a probablement une
+    meilleure solution) ;
+  - mais surtout, l'appel &#224; execfile sur le fichier de configuration ne
+    peut pas modifier l'environnement de la fonction qui appelle
+    execfile, seulement l'environnement global.
+
+Du coup, j'ai d&#233;clar&#233; &quot;global&quot; tout plein de variables dans la fonction
+main(), et je passe explicitement le dictionnaire retourn&#233; par globals()
+&#224; execfile pour pouvoir r&#233;cup&#233;rer les valeurs d&#233;finies dedans.
+
+Je sais que c'est crade, mais j'ai l'impression que c'est au moins un
+peu plus rang&#233; qu'avant, et au moins maintenant on a une liste des
+variables globales utilis&#233;es.
+
+Vu que je n'ai pas d'exp&#233;rience en modules python, si l'un des gens
+exp&#233;riment&#233;s parmi vous veut bien repasser derri&#232;re ou me donner des
+conseils sur ce qu'il y faudrait faire ou comment le faire, &#231;a serait
+appr&#233;ci&#233;.
+
+En attendant, l'ancien pymake est renomm&#233; en pymake.old, &#224; la m&#234;me
+place, si jamais il y a des probl&#232;mes.
+
+Merci d'avance,
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000158.html">[Plearn-core] PPath et PStream
+</A></li>
+	<LI>Next message: <A HREF="000160.html">[Plearn-core] Le pymake nouveau boira le cadavre exquis (ou	l'inverse, je sais plus)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#159">[ date ]</a>
+              <a href="thread.html#159">[ thread ]</a>
+              <a href="subject.html#159">[ subject ]</a>
+              <a href="author.html#159">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

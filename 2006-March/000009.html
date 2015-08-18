@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: un PRandom dans PLearner ?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20un%20PRandom%20dans%20PLearner%20%3F&In-Reply-To=%3C20060316140312.GA9562%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000008.html">
+   <LINK REL="Next"  HREF="000010.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: un PRandom dans PLearner ?</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Re%3A%20un%20PRandom%20dans%20PLearner%20%3F&In-Reply-To=%3C20060316140312.GA9562%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Re: un PRandom dans PLearner ?">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Mar 16 15:03:13 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000008.html">[Plearn-core] Re: un PRandom dans PLearner ?
+</A></li>
+        <LI>Next message: <A HREF="000010.html">[Plearn-core] Nouvelle option --no-progress
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 16 Mar 2006, Pascal Lamblin wrote:
+&gt;<i> On Wed, Mar 15, 2006, Olivier Delalleau wrote:
+</I>&gt;<i> &gt; J'en ai aussi rajout&#233; un dans PDistribution.
+</I>&gt;<i> &gt; Je serais plut&#244;t pour, il faudrait juste v&#233;rifier quelle taille
+</I>&gt;<i> &gt; m&#233;moire &#231;a prend (&#224; moins qu'on ne l'initialise m&#234;me pas dans le
+</I>&gt;<i> &gt; PLearner, ce qui est aussi une possibilit&#233;).
+</I>&gt;<i> 
+</I>&gt;<i> &#192; mon avis, c'est une mauvaise id&#233;e de ne pas l'initialiser, parce que
+</I>&gt;<i> c'est d&#233;routant pour l'utilisateur d'avoir &#224; explicitement initialiser
+</I>&gt;<i> un PRandom, alors que tout est connu dans la classe parent pour le
+</I>&gt;<i> faire. Enfin on peut aussi mettre un message dans le skeleton.
+</I>&gt;<i> 
+</I>&gt;<i> Un PRandom prend environ 10 ko sur le tas, je ne sais pas trop
+</I>&gt;<i> pourquoi... C'est beaucoup ?
+</I>
+Non, &#231;a ne me para&#238;t pas trop *a priori*. La raison est sans doute que
+le g&#233;n&#233;rateur de Boost doit initialiser son &#233;tat. Je me demandais
+justement quelle &#233;tait sa taille.
+Sinon, une solution est que l'initialisation (= le seed) ne soit fait
+dans le PLearner que si le PRandom existe, et qu'une sous-classe doivent
+le cr&#233;er elle-m&#234;me dans son constructeur si elle en a besoin (ce n'est
+pas trop contraignant, et &#231;a peut &#234;tre facilement rajout&#233; en commentaire
+dans le skeleton).
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000008.html">[Plearn-core] Re: un PRandom dans PLearner ?
+</A></li>
+	<LI>Next message: <A HREF="000010.html">[Plearn-core] Nouvelle option --no-progress
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

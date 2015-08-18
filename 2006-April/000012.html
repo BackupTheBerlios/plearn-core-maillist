@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Aide de PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C444F73D6.2080903%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000011.html">
+   <LINK REL="Next"  HREF="000013.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Aide de PLearn</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Aide%20de%20PLearn&In-Reply-To=%3C444F73D6.2080903%40apstat.com%3E"
+       TITLE="[Plearn-core] Aide de PLearn">chapados at apstat.com
+       </A><BR>
+    <I>Wed Apr 26 15:21:26 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000011.html">[Plearn-core] Aide de PLearn
+</A></li>
+        <LI>Next message: <A HREF="000013.html">[Plearn-core] Aide de PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Pour ton premier point, je ne sais pas.
+
+Pour ton second, je peux expliquer les erreurs suivantes:
+
+   1.
+      Error importing 'plearn.plide.plide': No module named scintilla
+   2.
+      ..
+   3.
+      Error importing 'plearn.plide.plide_tabs': No module named scintilla
+
+qui sont caus&#233;es par une non-installation de scintilla.  Je vais faire 
+sous peu le set-up de cette chose au DIRO pour que vous puissiez y avoir 
+acc&#232;s.
+
+Pour le troisi&#232;me, en effet Plide utilise la commande htmlhelp, mais 
+g&#233;n&#232;re de fa&#231;on interne l'objet HTMLHelpConfig, donc ce dernier n'a pas 
+besoin d'&#234;tre sp&#233;cifi&#233; s&#233;par&#233;ment.  Quant &#224; ton id&#233;e de supprimer la 
+commande pour en faire une classe, c'est une bonne id&#233;e.  Avise-moi si 
+jamais tu le fais car Plide d&#233;pend de ce code.
+
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+&gt;<i> Salut les gens,
+</I>&gt;<i>
+</I>&gt;<i> j'ai deux probl&#232;mes lorsque j'essaie de r&#233;g&#233;n&#233;rer la documentation de
+</I>&gt;<i> PLearn, en tapant simplement &#171; make &#187; dans PLearn/doc/.
+</I>&gt;<i>
+</I>&gt;<i> Le premier, c'est que le make s'arr&#234;te sur une erreur apr&#232;s avoir
+</I>&gt;<i> g&#233;n&#233;rer les &#171; guides &#187; en pdf, mais vu qu'il les g&#233;n&#232;re correctement, je
+</I>&gt;<i> penche pour un probl&#232;me dans le makefile lui-m&#234;me, je jetterai un coup
+</I>&gt;<i> d'oeil.
+</I>&gt;<i>
+</I>&gt;<i> Le deuxi&#232;me arrive apr&#232;s, si je relance &#171; make &#187;, pendant la g&#233;n&#233;ration
+</I>&gt;<i> de la documentation des modules python. J'ai coll&#233; les messages d'erreur
+</I>&gt;<i> qui persistent apr&#232;s plusieurs appels &#224; make ici :
+</I>&gt;<i> <A HREF="http://pastebin.com/682639">http://pastebin.com/682639</A>
+</I>&gt;<i>
+</I>&gt;<i> Autre chose : je ne sais pas si du code (par exemple dans la nouvelle
+</I>&gt;<i> interface graphique) utilise la commande &#171; htmlhelp &#187;, mais sachant que
+</I>&gt;<i> pour l'utiliser il faut un objet HTMLHelpConfig, est-ce que &#231;a ne serait
+</I>&gt;<i> pas plus simple de mettre le code dans cette classe, d'impl&#233;menter
+</I>&gt;<i> HTMLHelpConfig.run(), pour pouvoir lancer &#171; plearn html_config.plearn &#187;
+</I>&gt;<i> au lieu de &#171; plearn htmlhelp html_config.plearn &#187;, et de supprimer cette
+</I>&gt;<i> commande ?
+</I>&gt;<i>
+</I>&gt;<i> Vous en pensez quoi ?
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000011.html">[Plearn-core] Aide de PLearn
+</A></li>
+	<LI>Next message: <A HREF="000013.html">[Plearn-core] Aide de PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

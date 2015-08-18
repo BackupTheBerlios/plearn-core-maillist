@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Passage &#224; NumPy
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_NumPy%3F%3D&In-Reply-To=%3C466D9EF2.3070109%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000380.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Passage &#224; NumPy</H1>
+    <B>Xavier Saint-Mleux</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FPassage_%3DE0_NumPy%3F%3D&In-Reply-To=%3C466D9EF2.3070109%40apstat.com%3E"
+       TITLE="[Plearn-core] Passage &#224; NumPy">saintmlx at apstat.com
+       </A><BR>
+    <I>Mon Jun 11 21:13:54 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000380.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#379">[ date ]</a>
+              <a href="thread.html#379">[ thread ]</a>
+              <a href="subject.html#379">[ subject ]</a>
+              <a href="author.html#379">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+Je suis en train de faire la transition de numarray &#224; numpy.  Puisque 
+numarray est officiellement &quot;deprecated&quot;, &#231;a ne sera plus support&#233; par 
+PLearn apr&#232;s le passage &#224; numpy (i.e. d'ici quelques semaines).  En 
+particulier, tout code python qui importe numarray va &#234;tre modifi&#233; pour 
+importer numpy.numarray &#224; la place (interface &quot;numarray&quot; de numpy, pour 
+simplifier la transition; &#224; ne pas utiliser dans du nouveau code).
+
+Est-ce que quelqu'un du LISA peut s'assurer que numpy est bel et bien 
+install&#233; partout o&#249; vous utilisez numarray en ce moment?  Il serait 
+pr&#233;f&#233;rable d'avoir la derni&#232;re version (1.0.3); la version 1.0.1 a des 
+bugs qui nous affectent et je n'ai pas essay&#233; 1.0.2.
+
+N.B. numpy.numarray donne essentiellement la m&#234;me interface (syntaxe) 
+que numarray, mais il y a quelques diff&#233;rences et la s&#233;mantique peut 
+&#234;tre diff&#233;rente aussi.  Si vous avez des choses qui d&#233;pendent de 
+numarray, il serait bon d'en faire des pytest:  je ne ferai pas de 
+commit tant les tests ne passeront pas tous.
+
+Xavier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000380.html">[Plearn-core] Passage &#224; NumPy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#379">[ date ]</a>
+              <a href="thread.html#379">[ thread ]</a>
+              <a href="subject.html#379">[ subject ]</a>
+              <a href="author.html#379">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

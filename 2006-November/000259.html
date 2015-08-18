@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Early stopping et NNet
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Early%20stopping%20et%20NNet&In-Reply-To=%3C456CDEA1.4010202%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000258.html">
+   <LINK REL="Next"  HREF="000260.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Early stopping et NNet</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Early%20stopping%20et%20NNet&In-Reply-To=%3C456CDEA1.4010202%40apstat.com%3E"
+       TITLE="[Plearn-core] Early stopping et NNet">chapados at apstat.com
+       </A><BR>
+    <I>Wed Nov 29 02:13:05 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000258.html">[Plearn-core] Les fichiers .pmat et espace disque
+</A></li>
+        <LI>Next message: <A HREF="000260.html">[Plearn-core] Early stopping et NNet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#259">[ date ]</a>
+              <a href="thread.html#259">[ thread ]</a>
+              <a href="subject.html#259">[ subject ]</a>
+              <a href="author.html#259">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>[cc &#224; plearn-core d'une discussion entre Pascal/Olivier/Nicolas pour le 
+b&#233;n&#233;fice de tous.]
+
+Pascal Vincent wrote:
+&gt;&gt;<i> Salut Pascal et Olivier,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> La boucle d'entra&#238;nement de NNet ressemble pr&#233;sentement &#224; ceci:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>    bool early_stop=false;
+</I>&gt;&gt;<i>    while(stage&lt;nstages &amp;&amp; !early_stop)
+</I>&gt;&gt;<i>    {
+</I>&gt;&gt;<i>        // ...
+</I>&gt;&gt;<i>        optimizer-&gt;early_stop = false;
+</I>&gt;&gt;<i>        optimizer-&gt;optimizeN(*train_stats);
+</I>&gt;&gt;<i>        // ...
+</I>&gt;&gt;<i>    }
+</I>&gt;<i> Je ne sais plus bien ce que fait cet &quot;early stop&quot; de l'optimiseur. 
+</I>&gt;<i> J'imagine que &#231;a correspond &#224; l'utilisation d'un crit&#232;re pour d&#233;tecter 
+</I>&gt;<i> la convergence des param&#232;tres.
+</I>&gt;<i> Dans ce cas il faut faire attention &#224; ne pas le confondre avec un 
+</I>&gt;<i> &quot;early stopping&quot; bas&#233; sur l'&#233;volution de l'erreur de validation (ce 
+</I>&gt;<i> qui est impl&#233;ment&#233; dans le cadre d'un hyper-learner qui fait varier 
+</I>&gt;<i> nstages).
+</I>En effet, il ne faut pas confondre les deux.  La notion de &quot;early 
+stopping&quot; est employ&#233;e par l'optimiseur (du moins ConjGradientOptimizer 
+fait quelque chose de raisonnable) lorsqu'il a atteint un minimum local. 
+Dans un tel cas, il n'y a aucun gain &#224; poursuivre la descente.
+&gt;&gt;<i> Comme vous le voyez, la variable &quot;early_stop&quot; n'est jamais modifi&#233;e.  
+</I>&gt;&gt;<i> Malheureusement, il arrive parfois qu'on rencontre un plat vaste et 
+</I>&gt;&gt;<i> malencontreux de la fonction de co&#251;t, lequel ralentit &#233;norm&#233;ment 
+</I>&gt;&gt;<i> l'entra&#238;nement; il faudrait que NNet puisse utiliser l'information de 
+</I>&gt;&gt;<i> early-stopping retourn&#233;e par l'Optimizer!
+</I>&gt;<i>
+</I>&gt;<i> De quelle mani&#232;re? Qu'as tu en t&#234;te de faire par rapport aux &quot;plat 
+</I>&gt;<i> vaste et malencontreux&quot;, mis &#224; part t'arr&#234;ter et consid&#233;rer qu'on a 
+</I>&gt;<i> atteint un minimum?
+</I>C'est cela. On s'arr&#234;te. En particulier, NNet doit sortir de sa boucle 
+d'entra&#238;nement!  Nous avons des cas ici o&#249; l'entra&#238;nement prend 2 
+semaines plut&#244;t que 2 jours parce que NNet perd tout son temps &#224; essayer 
+de descendre d'un minimum local avec un ConjGradientOptimizer, qui &#224; 
+r&#233;p&#233;tition, tente d'annoncer son impuissance sans qu'on ne l'&#233;coute.
+
+&gt;&gt;<i>   Y a-t-il une raison pourquoi le code est comme ci-haut, plut&#244;t 
+</I>&gt;&gt;<i> qu'une version plus logique qui serait:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>    bool early_stop=false;
+</I>&gt;&gt;<i>    while(stage&lt;nstages &amp;&amp; !early_stop)
+</I>&gt;&gt;<i>    {
+</I>&gt;&gt;<i>        // ...
+</I>&gt;&gt;<i>        early_stop = optimizer-&gt;optimizeN(*train_stats);
+</I>&gt;&gt;<i>        // ...
+</I>&gt;&gt;<i>    }
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Oui, cela me para&#238;trait logique. Je ne vois pas d'objection. A 
+</I>&gt;<i> condition que l'optimiseur retourne true quand &#231;a a vraiment du bon sens.
+</I>Ce qui est le cas pour ConjGradientOptimizer.
+
+&gt;&gt;<i> En passant, j'utilise une telle forme dans un d&#233;rivatif tr&#232;s partiel 
+</I>&gt;&gt;<i> de NNet (qui s'appelle FinancialNNet, et qui n'h&#233;rite point de NNet), 
+</I>&gt;&gt;<i> et &#231;a fonctionne sans probl&#232;me.  Le seul hic est qu'il faut effectuer
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>    stage = nstages;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> apr&#232;s le while(), au cas o&#249; il y aurait eu du early-stopping.
+</I>&gt;<i>
+</I>&gt;<i> &#199;a, ce n'est pas clair. &#199;a d&#233;pend de la s&#233;mantique qu'on veut donner &#224; 
+</I>&gt;<i> stage. Si on veut que ce soit le nombre de tours d'optimiseur 
+</I>&gt;<i> effectivement effectu&#233;s (ce qui est l'id&#233;e &#224; l'origine), il n'y a pas 
+</I>&gt;<i> de raison de le setter &#224; nstages. Mais il faudrait alors que NNet (ou 
+</I>&gt;<i> bien l'optimiseur) soit assez intelligent pour retourner imm&#233;diatement 
+</I>&gt;<i> si il est appel&#233; &#224; nouveau avec un nstages sup&#233;rieur (dans le cadre 
+</I>&gt;<i> d'un hyperlearner  qui ferait du v&#233;ritable &quot;early stopping&quot;, sur la 
+</I>&gt;<i> base d'une performance de validation, en faisant varier nstages).
+</I>C'est l&#224; le probl&#232;me: si on n'effectue pas cette affectation, le learner 
+ne s'ins&#232;re pas bien dans un learner englobant.  La notion de &quot;nstages&quot; 
+donne au learner un BUGDET de stages.  S'il a r&#233;ussi &#224; s'entra&#238;ner en ne 
+d&#233;pensant pas tout son budget, on n'a pas &#224; forcer le learner &#224; tout le 
+d&#233;penser.  Mais c'est ce qui arrive si on ne met pas &#224; jour nstages: un 
+HyperLearner englobant risque d'&#234;tre pas mal confus, car &#231;a forcerait -- 
+contre nature -- l'optimiseur &#224; essayer de sortir d'un minimum local, ce 
+qui pourrait &#234;tre impossible (p.e. avec un ConjGradientOptimizer).
+
+Consid&#232;re un autre point.  Suppose qu'on veuille d&#233;river de NNet pour 
+faire un entra&#238;nement en deux &#233;tapes: une premi&#232;re passe de &quot;prefitting&quot; 
+selon un premier crit&#232;re, suivie d'une deuxi&#232;me passe selon un autre 
+crit&#232;re (qu'on pr&#233;sume plus difficile &#224; optimiser que le premier, mais 
+qui devrait tirer b&#233;n&#233;fice d'un bon point de d&#233;part r&#233;sultant du 
+prefitting).  Dans ce cas, on veut clairement attribuer deux budgets: un 
+pour le prefitting, et un pour le &quot;fine-tuned fitting&quot;.  S'il y a eu 
+early-stopping apr&#232;s le prefitting, je ne veux pas que augmenter (par un 
+hasard qui r&#233;sulte des al&#233;as du early-stopping) le budget du fine-tuned 
+fitting.  Je veux que ce budget reste constant.
+
+L'id&#233;e d'amener &quot;stage&quot; &#224; &quot;nstages&quot; apr&#232;s l'entra&#238;nement est de dire: 
+&quot;Moi, PLearner, j'ai fini avec succ&#232;s la t&#226;che d'entra&#238;nement &#224; 
+l'int&#233;rieur du budget prescrit&quot;.  On pourrait bien s&#251;r ajouter un 
+train-cost qui produirait des statistiques sur le nombre effectif de 
+stages requis avant le early-stopping, mais &quot;stage&quot; devrait &#234;tre amen&#233; &#224; 
+&quot;nstages&quot; apr&#232;s train (dont c'est la d&#233;finition, faut-il le rappeler).
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000258.html">[Plearn-core] Les fichiers .pmat et espace disque
+</A></li>
+	<LI>Next message: <A HREF="000260.html">[Plearn-core] Early stopping et NNet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#259">[ date ]</a>
+              <a href="thread.html#259">[ thread ]</a>
+              <a href="subject.html#259">[ subject ]</a>
+              <a href="author.html#259">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

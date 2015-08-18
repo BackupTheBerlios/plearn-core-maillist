@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C46931509.3070804%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000392.html">
+   <LINK REL="Next"  HREF="000394.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn</H1>
+    <B>saintmlx</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C46931509.3070804%40apstat.com%3E"
+       TITLE="[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn">saintmlx at apstat.com
+       </A><BR>
+    <I>Tue Jul 10 07:11:37 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000392.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000394.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#393">[ date ]</a>
+              <a href="thread.html#393">[ thread ]</a>
+              <a href="subject.html#393">[ subject ]</a>
+              <a href="author.html#393">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Tout &#231;a a l'air d'&#234;tre un peu pressant pour toi, et, pour une solution 
+rapide et potable, je crois que ton truc va marcher (&#224; r7736 ou 7, 
+&quot;Trial++!+?#@*!!&quot;) ;o)
+
+Je vais quand-m&#234;me essayer de penser &#224; qqch. pour limiter &#231;a &#224; la 
+s&#233;rialisation, m&#234;me si ce n'est vraiment pas trivial.  Pour ce qui est 
+du fait que &quot;long long&quot; est long &#224; taper (sic.), on peut toujours se 
+faire des typedefs &#224; notre go&#251;t, mais (svp!) dont le type C/C++ ne 
+change pas d'une machine &#224; l'autre; personnellement, je crois que c'est 
+bon de forcer les gens &#224; taper &quot;long long&quot; quand ils savent vraiment ce 
+qu'ils veulent, tout comme ma philosophie me dit qu'il est bon 
+d'utiliser les &quot;whatever_cast&lt;type&gt;(val)&quot; de C++ plut&#244;t que les casts &#224; 
+la C &quot;(type)val&quot;, question de rendre les choses explicites et, encore 
+une fois, de forcer les gens &#224; savoir ce qu'ils font.
+
+Si tu penses &#224; qqch. de mieux, fais-moi signe,
+
+Xavier
+
+
+Pascal Lamblin wrote:
+
+&gt;<i>On Mon, Jul 09, 2007, saintmlx wrote:
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;&gt;<i>Pour les tests qui impliquent python, peut-&#234;tre qu'il vaudrait mieux des
+</I>&gt;&gt;&gt;<i>int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+</I>&gt;&gt;&gt;<i>      
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>Python utilise les types entiers C suivants pour la conversion vers des 
+</I>&gt;&gt;<i>'long' python: long, unsigned long, long long, unsigned long long et 
+</I>&gt;&gt;<i>void*; pour les 'int' python, on n'a que long et Py_ssize_t.
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>OK.
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>Si PLearn doit _vraiment_ utiliser des int32_t, uint64_t, etc., alors il 
+</I>&gt;&gt;<i>faut remplacer ConvertFromPyObject&lt;long&gt;, ConvertFromPyObject&lt;unsigned 
+</I>&gt;&gt;<i>long&gt;, ConvertToPyObject&lt;long&gt; et ConvertToPyObject&lt;unsigned long&gt; 
+</I>&gt;&gt;<i>chacune par une version 32 bits et une version 64 bits (et p-&#234; 16 ou 8 
+</I>&gt;&gt;<i>aussi, si on les utilise o&#249; que ce soit dans PLearn).  Ensuite, il faut 
+</I>&gt;&gt;<i>s'arranger pour que la conversion marche dans tous les cas, c'est-&#224;-dire 
+</I>&gt;&gt;<i>que chacune des nouvelles fonctions de conversion doit savoir le lien 
+</I>&gt;&gt;<i>qu'il y a entre les types standard C/C++ et les nouveaux entiers 
+</I>&gt;&gt;<i>PLearn...  une grosse poutine de #ifdef en perspective.
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>J'ai commenc&#233; &#224; regarder &#231;a pour r&#233;parer les tests, justement. On peut
+</I>&gt;<i>toujours s'arranger pour passer par un type interm&#233;diaire qui soit au
+</I>&gt;<i>moins assez grand, non ?
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>Est-ce vraiment n&#233;cessaire pour PLearn de ne pas utiliser de long?  Il 
+</I>&gt;&gt;<i>me semble qu'il peut &#234;tre souhaitable dans certains cas de ne justement 
+</I>&gt;&gt;<i>pas sp&#233;cifier la taille exacte des types entiers qu'on utilise.  
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>&#192; part l'interface avec python, qui utilise des long (whatever that
+</I>&gt;<i>means) comme son type d'entier, tu as des exemples ?
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>*Suggestion* (un peu tardive, je sais): pourquoi ne pas limiter l'usage 
+</I>&gt;&gt;<i>de ces nouveaux types &#224; la s&#233;rialisation seulement?
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>C'est ce que je comptais faire, mais le probl&#232;me c'est que pour les
+</I>&gt;<i>utiliser dans la s&#233;rialisation, il faut d&#233;finir les bons operator&lt;&lt;, et
+</I>&gt;<i>c'est &#231;a qui pose probl&#232;me.
+</I>&gt;<i>
+</I>&gt;<i>En fait, de deux choses l'une : soit on d&#233;cide qu'on ne d&#233;passera jamais
+</I>&gt;<i>jamais 2**32, dans ce cas-l&#224; on n'a m&#234;me pas besoin de long, des int
+</I>&gt;<i>suffisent ; soit on d&#233;cide qu'on se laisse la possibilit&#233; de manipuler
+</I>&gt;<i>des entiers plus grands, et alors &#231;a me para&#238;t aberrant de ne pouvoir le
+</I>&gt;<i>faire que sur une machine &#224; 64 bits.
+</I>&gt;<i>
+</I>&gt;<i>&#192; partir du moment o&#249; on a d&#233;cid&#233; de d&#233;passer 2**32, il nous faut un
+</I>&gt;<i>type pour stocker &#231;a. &#199;a ne peut pas &#234;tre long parce que sur 32 bits
+</I>&gt;<i>c'est comme un int, &#231;a pourrait &#234;tre long long qui a la bonne taille sur
+</I>&gt;<i>les deux plateformes, sauf que c'est pas garanti si une nouvelle
+</I>&gt;<i>plateforme arrive et que c'est p&#233;nible &#224; taper. Pour moi, le choix
+</I>&gt;<i>logique, c'est (u)int64_t.
+</I>&gt;<i>
+</I>&gt;<i>Or, les headers qui d&#233;finissent ce type font :
+</I>&gt;<i># if __WORDSIZE == 64
+</I>&gt;<i>typedef long int int64_t;
+</I>&gt;<i># else
+</I>&gt;<i>__extension__
+</I>&gt;<i>typedef long long int int64_t;
+</I>&gt;<i># endif
+</I>&gt;<i>et pareil pour la version unsigned.
+</I>&gt;<i>
+</I>&gt;<i>Il est donc impossible de d&#233;finir &#224; la fois PStream::operator&lt;&lt;(long x)
+</I>&gt;<i>et PStream::operator&lt;&lt;(int64_t x) sur une machine &#224; 64 bits.
+</I>&gt;<i>
+</I>&gt;<i>Comme l'op&#233;rateur &lt;&lt; est utilis&#233;, en particulier dans les tests de
+</I>&gt;<i>Python, je pense qu'il faut qu'on se d&#233;barrasse de la plupart des long
+</I>&gt;<i>(ou alors les caster avant de les imprimer...).
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>e.g. short et int s&#233;rialis&#233;s en tant que int32,
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>Pour le moment, short est s&#233;rialis&#233; en short, qui correspond &#224; int16 sur
+</I>&gt;<i>toutes les plateformes raisonnables.
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>long &lt;-&gt; int64, long long &lt;-&gt; int128;
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>long long correspond &#224; int64 sur linux i386 et x86_64 au moins.
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>on peut ensuite faire un PLERROR si une valeur lue est trop grande
+</I>&gt;&gt;<i>pour la taille du type entier effectivement utilis&#233;, par exemple si on
+</I>&gt;&gt;<i>lit un long &gt; 2^32 sur une architecture 32 bits.
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>Oui, on pourrait... mais pourquoi ne pas utilier simplement un int64_t &#224;
+</I>&gt;<i>la place ?
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>Que penses-tu de ma suggestion pour la s&#233;rialisation?
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>Si tu as une r&#233;ponse au probl&#232;me de &lt;&lt;, je peux faire &#231;a.
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>&gt;&gt;<i>sinon, peux-tu modifier PythonObjectWrapper? (je peux t'aider au
+</I>&gt;&gt;<i>besoin, si c'est l'option choisie)
+</I>&gt;&gt;<i>    
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>J'avais d&#233;j&#224; commenc&#233; &#224; le faire, c'est presque fini. Je devrais
+</I>&gt;<i>committer une version ce soir (enfin cette nuit), tu me diras demain ce
+</I>&gt;<i>que tu en penses. Si ce n'est pas acceptable, on verra...
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000392.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000394.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#393">[ date ]</a>
+              <a href="thread.html#393">[ thread ]</a>
+              <a href="subject.html#393">[ subject ]</a>
+              <a href="author.html#393">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

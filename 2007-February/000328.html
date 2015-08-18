@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C3E1C3708-FBBD-418D-8C29-6C4075BEF22F%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000327.html">
+   <LINK REL="Next"  HREF="000314.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C3E1C3708-FBBD-418D-8C29-6C4075BEF22F%40apstat.com%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">pascal at apstat.com
+       </A><BR>
+    <I>Tue Feb 27 16:44:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000327.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+        <LI>Next message: <A HREF="000314.html">[Plearn-core] build cass&#233; sur x86_64
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#328">[ date ]</a>
+              <a href="thread.html#328">[ thread ]</a>
+              <a href="subject.html#328">[ subject ]</a>
+              <a href="author.html#328">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On 2/27/07, Pascal Vincent &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">pascal at apstat.com</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i> J'ai un plan pr&#233;cis et m&#251;rement r&#233;fl&#233;chi pour se d&#233;barasser de toutes
+</I>&gt;<i> ces limites fatigantes des VMatrix (pour des bases de donn&#233;es dont
+</I>&gt;<i> les exemples peuvent &#234;tre de n'importe quel type), mais pas de temps
+</I>&gt;<i> pour l'instant pour le mener &#224; bien... Un volontaire pour contribuer
+</I>&gt;<i> &#224; rendre ce grand service &#224; la communaut&#233; PLearn?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Je suis partant pour contribuer et aider &#224; am&#233;liorer PLearn dans ce  
+</I>&gt;<i> sens. Ce serait peut &#234;tre un bon point de d&#233;part pour moi avant  
+</I>&gt;<i> d'impl&#233;menter mon PLearner qui prend des Bags comme input et que  
+</I>&gt;<i> l'on pourrat plugger comme on veux dans un PTester, ...
+</I>&gt;<i>
+</I>&gt;<i> Jaonary
+</I>
+Merci Jaonary, de te proposer si spontan&#233;ment! ;-)
+
+Mais il nous faut d'abord &#233;claircir une petite question d'ordre  
+l&#233;gal: tes contributions pourront-elles &#234;tre sous la license BSD de  
+PLearn (je ne sais pas d'o&#249; tu travailles, mais ton employeur  
+pourrait avoir son mot &#224; dire sur la question.)
+
+Pour ce qui est du plan d'extension de notre type de base de donn&#233;es,  
+c'est un plan en plusieurs &#233;tapes. Je vais essayer de d&#233;marer un peu  
+dessus la semaine prochaine.
+
+En attendant, une premi&#232;re chose que tu pourras faire, serait  
+d'examiner les splitters que tu comptes utiliser (quels sont-ils?) et  
+de voir si les VMatrix qu'ils retournent se comportent bien vis &#224; vis  
+du getExample (et sinon corriger / adapter ou troquer pour d'autres  
+les classes impliqu&#233;es)
+
+-- Pascal
+
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000327.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+	<LI>Next message: <A HREF="000314.html">[Plearn-core] build cass&#233; sur x86_64
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#328">[ date ]</a>
+              <a href="thread.html#328">[ thread ]</a>
+              <a href="subject.html#328">[ subject ]</a>
+              <a href="author.html#328">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

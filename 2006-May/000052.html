@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Noms d'options qui se terminent en _
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-May/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Noms%20d%27options%20qui%20se%20terminent%20en%20_&In-Reply-To=%3C447AF0A2.7050500%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000049.html">
+   <LINK REL="Next"  HREF="000050.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Noms d'options qui se terminent en _</H1>
+    <B>Christian Dorion</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Noms%20d%27options%20qui%20se%20terminent%20en%20_&In-Reply-To=%3C447AF0A2.7050500%40apstat.com%3E"
+       TITLE="[Plearn-core] Noms d'options qui se terminent en _">dorionc at apstat.com
+       </A><BR>
+    <I>Mon May 29 15:01:22 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000049.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+        <LI>Next message: <A HREF="000050.html">[Plearn-core] Gradient Conjugu&#233;
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Pascal Lamblin wrote:
+&gt;<i> On Sun, May 28, 2006, Nicolas Chapados wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> All&#244; les copains,
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Salut !
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>Euh... salut :)
+&gt;&gt;<i> Beaucoup d'endroits dans PLearn (particuli&#232;rement les Var) contiennent 
+</I>&gt;&gt;<i> des options dont les noms se terminent en _ (underscore).  Je trouve 
+</I>&gt;&gt;<i> cela hideux.  Suis-je le seul?
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Tu parles des noms des options, ou des variables derri&#232;re ?
+</I>&gt;<i>
+</I>&gt;<i> Si les variables ont un _ &#224; la fin, genre pour &#233;viter les conflits entre
+</I>&gt;<i> la variable width_ et la m&#233;thode width(), je ne sais pas quel est le
+</I>&gt;<i> pire : avoir le nom d'option (dans un script) correspondant qui se
+</I>&gt;<i> termine en _, ou avoir une diff&#233;rence entre le nom de l'option et le nom
+</I>&gt;<i> de la variable.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>J'imagine qu'on parle &#233;videmment des variables derri&#232;res les options... 
+Parce qu'un &quot;_&quot; dans le nom de l'option... Ouach! L&#224; ce serait m&#233;ga 
+laid... Personnellement, je vis tr&#232;s bien avec une diff&#233;rence entre le 
+nom de l'option et le nom de la variable si cette diff&#233;rence est 
+&quot;standard&quot;, i.e. si on a une convention... Et justement, il y en a une 
+de convention que l'on a timidement tent&#233; d'installer dans PLearn (mais 
+qui est dans toutes les nouvelles classes de FinLearn) et c'est de 
+pr&#233;fixer toutes les variables membres d'une classes par &quot;m_&quot;. &#199;a peut 
+avoir l'air fastidieux &#224; prime abord, mais c'est tr&#232;s sympatique avec 
+l'autocompl&#233;tion et &#231;a clarifie &#233;norm&#233;ment le code.
+
+Pourquoi c'est mieux que de suffix&#233; par &quot;_&quot;? Eh bien tout simplement 
+parce que ce petit suffixe ne saute par toujours aux yeux &#224; la lecture 
+du code apr&#232;s coup... Aussi, je trouve que &#231;a fait pas joli avant 
+l'op&#233;rateur &quot;-&gt;&quot;. Et je crois qu'il y a une affaire vaudoo en C++ avec 
+les &quot;_&quot;...
+
+Enfin, mon point c'est que, pour les nouvelles classes &#224; tout le moins, 
+on devrait passer &#224; la convention de code que Nicolas nous avait pondu 
+il y a pas si longtemps... Et pour les classes au coeur de PLearn, il 
+faudrait peut-&#234;tre faire une passe de m&#233;nage un jour, mais &#231;a j'ai dit 
+&#231;a souvent... bien plus souvent que je ne l'ai fait ;)
+
+A+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (McGill's Faculty of Management)
+M.Sc. Informatique et Recherche Op&#233;rationnelle//
+Apstat Technologies Inc./
+<A HREF="http://www.apstat.com">http://www.apstat.com</A>
+T&#233;l : (514) 343-9119, ext. 237
+
+&quot;Soyons r&#233;alistes, exigeons l'impossible&quot;,
+Ernesto &quot;Che&quot; Guevara, 1928-1967
+
+&quot;Love is a Temple, Love the higher Law&quot;,
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20060529/59c96385/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20060529/59c96385/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000049.html">[Plearn-core] Noms d'options qui se terminent en _
+</A></li>
+	<LI>Next message: <A HREF="000050.html">[Plearn-core] Gradient Conjugu&#233;
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

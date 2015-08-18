@@ -1,0 +1,556 @@
+From delallea at iro.umontreal.ca  Mon May 14 18:33:35 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 14 May 2007 12:33:35 -0400
+Subject: [Plearn-core] Option that would not be compared when doing a diff?
+Message-ID: <20070514163333.GA9103@opale.iro.umontreal.ca>
+
+I had to declare the new 'cumulative_training_time' option in
+DeepBeliefNet as 'nosave', because otherwise tests would fail (since
+training time is platform-dependent).
+
+Would it make sense to add a new 'nodiff' flag instead, that we could
+use for such options that should not be compared when making a diff?
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Tue May 15 01:49:34 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 15 May 2007 01:49:34 +0200
+Subject: [Plearn-core] TMat vide dans un .pyplearn
+Message-ID: <20070514234934.GA16445@pig.zood.org>
+
+Salut ? tous,
+
+J'ai essay? de cr?er une TMat<int> vide dans un script pyplearn, sans
+succ?s. Les deux syntaxes TMat(0,0,[]) et TMat([]) produisent "0 [ ]",
+alors que je voudrais "0 0 [ ]".
+
+Est-ce qu'il y a une syntaxe particuli?re, ou une mani?re d'y rem?dier ?
+
+Merci,
+-- 
+Pascal
+
+
+From dorionc at apstat.com  Tue May 15 17:09:27 2007
+From: dorionc at apstat.com (Christian Dorion)
+Date: Tue, 15 May 2007 11:09:27 -0400
+Subject: [Plearn-core] TMat vide dans un .pyplearn
+In-Reply-To: <20070514234934.GA16445@pig.zood.org>
+References: <20070514234934.GA16445@pig.zood.org>
+Message-ID: <4649CD27.40304@apstat.com>
+
+C'?tait un bug... Il y a maintenant 3 syntaxes qui donnent le m?me r?sultat:
+
+print "Three ways of creating an empty TMat"
+print plearn_repr( TMat() )
+print plearn_repr( TMat([]) )
+print plearn_repr( TMat(0, 0, []) )
+
+    Three ways of creating an empty TMat
+    0 0 [ ]
+    0 0 [ ]
+    0 0 [ ]
+
+J'ai aussi updat? la docstring de la factory function TMat()...
+? bient?t,
+Chris
+
+Pascal Lamblin escribi?:
+> Salut ? tous,
+>
+> J'ai essay? de cr?er une TMat<int> vide dans un script pyplearn, sans
+> succ?s. Les deux syntaxes TMat(0,0,[]) et TMat([]) produisent "0 [ ]",
+> alors que je voudrais "0 0 [ ]".
+>
+> Est-ce qu'il y a une syntaxe particuli?re, ou une mani?re d'y rem?dier ?
+>
+> Merci,
+>   
+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Seamos realistas, pidamos lo imposible!",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070515/42f51165/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri May 18 15:45:56 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 18 May 2007 09:45:56 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Test_PL=5FModuleLearner=5FTwoRBMs_?=
+	=?iso-8859-1?q?=E0_Apstat?=
+Message-ID: <20070518134552.GA17994@opale.iro.umontreal.ca>
+
+Salut,
+
+Est-ce que qqun chez Apstat pourrait m'envoyer le FAILURE.LOG du test
+PL_ModuleLearner_TwoRBMs ? (ainsi que les autres fichiers si le
+FAILURE.LOG n'est pas assez explicite).
+
+Merci,
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Fri May 18 16:32:49 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 18 May 2007 10:32:49 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Ignorez_mon_courriel_pr=E9c=E9dent?=
+Message-ID: <20070518143247.GA19148@opale.iro.umontreal.ca>
+
+Je suis ? peu pr?s s?r que j'ai trouv?...
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Thu May 24 00:04:03 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 24 May 2007 00:04:03 +0200
+Subject: [Plearn-core] PLCHECK
+Message-ID: <20070523220403.GA12617@pig.zood.org>
+
+Salut,
+
+J'ai rajout? il y a quelques jours deux macros PLCHECK et PLCHECK_MSG,
+qui font la m?me chose que PLASSERT et PLASSERT_MSG, mais qui le font
+tout le temps, m?me quand on compile en -opt.
+
+L'id?e, c'est d'avoir un m?canisme moins fastidieux que de d?finir son
+PLERROR ? la main, et d'?viter que les programmeurs mettent des PLASSERT
+l? o? la v?rification doit tout le temps ?tre faite, comme souvent dans
+les build_().
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Sat May 26 01:09:38 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 25 May 2007 19:09:38 -0400
+Subject: [Plearn-core] Test PL_ModuleLearner_Greedy
+Message-ID: <20070525230936.GA9161@opale.iro.umontreal.ca>
+
+Le test PL_ModuleLearner_Greedy ?choue sur le build bot et je ne sais
+pas pourquoi (je l'ai temporairement d?sactiv?, du coup).
+FAILURE.LOG et autres infos seraient les bienvenus...
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Sat May 26 01:48:39 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 25 May 2007 19:48:39 -0400
+Subject: [Plearn-core] Test PL_ModuleLearner_Greedy
+In-Reply-To: <F0A1482E-47F2-4660-B49B-F18583E538A9@apstat.com>
+References: <20070525230936.GA9161@opale.iro.umontreal.ca>
+	<F0A1482E-47F2-4660-B49B-F18583E538A9@apstat.com>
+Message-ID: <20070525234839.GA9675@opale.iro.umontreal.ca>
+
+Merci, je devrais pouvoir me d?brouiller. M?me si ?a s'annonce plus
+ardu que je l'esp?rais...
+
+--
+Olivier
+
+On 25 May 2007, Nicolas Chapados wrote:
+> Tu trouveras ci-joint quelque chose qui devrait te satisfaire.
+> 
+
+
+From lamblinp at iro.umontreal.ca  Sun May 27 16:07:57 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Sun, 27 May 2007 16:07:57 +0200
+Subject: [Plearn-core]
+	=?iso-8859-1?q?build_peut_etre_appel=E9_plusieurs_f?=
+	=?iso-8859-1?q?ois?=
+In-Reply-To: <4658A892.2040104@iro.umontreal.ca>
+References: <4658A892.2040104@iro.umontreal.ca>
+Message-ID: <20070527140757.GA21164@pig.zood.org>
+
+On Sat, May 26, 2007, Yoshua Bengio wrote:
+> Malheureusement il arrive que des objets soient construits
+> partiellement et que build() soient appel?s sur eux (c'est ce qui
+> arrivait quand j'essayais d'utiliser cette classe depuis python). Il
+> faut donc que build_() puisse faire un simple "return" quand il n'est
+> pas pr?t ? ?tre fait correctement.
+
+J'ai l'impression que ?a serait un changement majeur de la conception du
+build_(), puisque ?a voudrait dire qu'un objet sur lequel on a fait
+build() n'est pas n?cessairement en ?tat d'?tre utilis?. Dans ce cas-l?,
+il n'y a aucun moyen de savoir quand l'objet est dans un ?tat
+coh?rent...
+
+Il me semble qu'il y a plein d'objets qui lancent une erreur au build()
+lorsqu'il ne sont pas capables de se builder parce que les
+sp?cifications sont incoh?rentes ou incompl?tes, et ?a me para?t un
+comportement normal.
+
+Ou alors, il nous faudrait un m?canisme pour savoir si un objet est dans
+un ?tat coh?rent, et un autre pour s'assurer qu'on n'utilise pas un
+objet dont l'?tat n'est pas coh?rent.
+
+-- 
+Pascal
+
+
+From bengioy at iro.umontreal.ca  Sun May 27 16:34:36 2007
+From: bengioy at iro.umontreal.ca (Yoshua Bengio)
+Date: Sun, 27 May 2007 10:34:36 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?build_peut_etre_appel=E9_plusieurs_f?=
+	=?iso-8859-1?q?ois?=
+In-Reply-To: <20070527140757.GA21164@pig.zood.org>
+References: <4658A892.2040104@iro.umontreal.ca>
+	<20070527140757.GA21164@pig.zood.org>
+Message-ID: <465996FC.8010700@iro.umontreal.ca>
+
+Gang,
+
+Notez qu'actuellement les objets construits depuis python semblent avoir
+leur build() appel?s avant que toutes les options soient en place. C'est 
+pour
+cela que je me suis forc? ? permettre ? build() de retourner si toutes ses
+options ne sont pas pr?tes ? former un objet coh?rent.
+
+Par ailleurs, plusieurs classes importantes sont d?j? ?crites avec (en
+apparence) cette philosophie: leur build() ne fait rien si certaines options
+ne sont pas sett?es ? des valeurs raisonnables, e.g.
+
+void NNet::build_()
+{
+    
+/*                                                                                                         
+
+     * Create Topology Var 
+Graph                                                                               
+
+     */
+      
+    // Don't do anything if we don't have a 
+train_set                                                         
+    // It's the only one who knows the inputsize and targetsize 
+anyway...                                     
+
+    if(inputsize_>=0 && targetsize_>=0 && weightsize_>=0)
+    {
+     ...
+    }
+}
+
+Que disent les uber-PLearn-masters?
+
+Pascal Lamblin a ?crit :
+> On Sat, May 26, 2007, Yoshua Bengio wrote:
+>   
+>> Malheureusement il arrive que des objets soient construits
+>> partiellement et que build() soient appel?s sur eux (c'est ce qui
+>> arrivait quand j'essayais d'utiliser cette classe depuis python). Il
+>> faut donc que build_() puisse faire un simple "return" quand il n'est
+>> pas pr?t ? ?tre fait correctement.
+>>     
+>
+> J'ai l'impression que ?a serait un changement majeur de la conception du
+> build_(), puisque ?a voudrait dire qu'un objet sur lequel on a fait
+> build() n'est pas n?cessairement en ?tat d'?tre utilis?. Dans ce cas-l?,
+> il n'y a aucun moyen de savoir quand l'objet est dans un ?tat
+> coh?rent...
+>
+> Il me semble qu'il y a plein d'objets qui lancent une erreur au build()
+> lorsqu'il ne sont pas capables de se builder parce que les
+> sp?cifications sont incoh?rentes ou incompl?tes, et ?a me para?t un
+> comportement normal.
+>
+> Ou alors, il nous faudrait un m?canisme pour savoir si un objet est dans
+> un ?tat coh?rent, et un autre pour s'assurer qu'on n'utilise pas un
+> objet dont l'?tat n'est pas coh?rent.
+>
+>   
+
+
+
+
+From delallea at iro.umontreal.ca  Sun May 27 19:52:36 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Sun, 27 May 2007 13:52:36 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?build_peut_etre_appel=E9_plusieurs_f?=
+	=?iso-8859-1?q?ois?=
+In-Reply-To: <465996FC.8010700@iro.umontreal.ca>
+References: <4658A892.2040104@iro.umontreal.ca>
+	<20070527140757.GA21164@pig.zood.org>
+	<465996FC.8010700@iro.umontreal.ca>
+Message-ID: <20070527175235.GC6148@imagine.iro.umontreal.ca>
+
+Je suis pour pouvoir appeler build() plusieurs fois.
+Mais il se peut que dans certains cas il soit plus sens? (ou au moins
+plus simple) de crasher s'il manque des choses.
+Mais je pense qu'on en revient encore au probl?me du build et du rebuild
+?voqu? il y a un certain temps et qu'il faudra sans doute r?gler un
+jour, mais pas cette semaine...
+
+--
+Olivier
+
+
+
+From saintmlx at apstat.com  Wed May 30 23:48:42 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Wed, 30 May 2007 17:48:42 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?build_peut_etre_appel=E9_plusieurs_f?=
+ =?iso-8859-1?q?ois?=
+In-Reply-To: <465996FC.8010700@iro.umontreal.ca>
+References: <4658A892.2040104@iro.umontreal.ca>	<20070527140757.GA21164@pig.zood.org>
+	<465996FC.8010700@iro.umontreal.ca>
+Message-ID: <465DF13A.2030307@apstat.com>
+
+Apr?s discussion avec Nicolas, j'ai chang? l'extension python pour que 
+build ne soit appel? qu'une seule fois sur les nouveaux objets (apr?s 
+tous les setOption).  On peut m?me mettre une "option" 
+__call_build=False pour que le constructeur python n'appelle pas build.  
+Tout devrait donc ?tre possible en attendant que la s?mantique exacte de 
+build soit d?termin?e.
+
+Xavier
+
+Yoshua Bengio wrote:
+> Gang,
+>
+> Notez qu'actuellement les objets construits depuis python semblent avoir
+> leur build() appel?s avant que toutes les options soient en place. C'est 
+> pour
+> cela que je me suis forc? ? permettre ? build() de retourner si toutes ses
+> options ne sont pas pr?tes ? former un objet coh?rent.
+>
+> Par ailleurs, plusieurs classes importantes sont d?j? ?crites avec (en
+> apparence) cette philosophie: leur build() ne fait rien si certaines options
+> ne sont pas sett?es ? des valeurs raisonnables, e.g.
+>
+> void NNet::build_()
+> {
+>     
+> /*                                                                                                         
+>
+>      * Create Topology Var 
+> Graph                                                                               
+>
+>      */
+>       
+>     // Don't do anything if we don't have a 
+> train_set                                                         
+>     // It's the only one who knows the inputsize and targetsize 
+> anyway...                                     
+>
+>     if(inputsize_>=0 && targetsize_>=0 && weightsize_>=0)
+>     {
+>      ...
+>     }
+> }
+>
+> Que disent les uber-PLearn-masters?
+>
+> Pascal Lamblin a ?crit :
+>   
+>> On Sat, May 26, 2007, Yoshua Bengio wrote:
+>>   
+>>     
+>>> Malheureusement il arrive que des objets soient construits
+>>> partiellement et que build() soient appel?s sur eux (c'est ce qui
+>>> arrivait quand j'essayais d'utiliser cette classe depuis python). Il
+>>> faut donc que build_() puisse faire un simple "return" quand il n'est
+>>> pas pr?t ? ?tre fait correctement.
+>>>     
+>>>       
+>> J'ai l'impression que ?a serait un changement majeur de la conception du
+>> build_(), puisque ?a voudrait dire qu'un objet sur lequel on a fait
+>> build() n'est pas n?cessairement en ?tat d'?tre utilis?. Dans ce cas-l?,
+>> il n'y a aucun moyen de savoir quand l'objet est dans un ?tat
+>> coh?rent...
+>>
+>> Il me semble qu'il y a plein d'objets qui lancent une erreur au build()
+>> lorsqu'il ne sont pas capables de se builder parce que les
+>> sp?cifications sont incoh?rentes ou incompl?tes, et ?a me para?t un
+>> comportement normal.
+>>
+>> Ou alors, il nous faudrait un m?canisme pour savoir si un objet est dans
+>> un ?tat coh?rent, et un autre pour s'assurer qu'on n'utilise pas un
+>> objet dont l'?tat n'est pas coh?rent.
+>>
+>>   
+>>     
+>
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+
+From vincentp at iro.umontreal.ca  Thu May 31 15:54:33 2007
+From: vincentp at iro.umontreal.ca (Pascal Vincent)
+Date: Thu, 31 May 2007 09:54:33 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?build_peut_etre_appel=E9_plusieurs_f?=
+ =?iso-8859-1?q?ois?=
+In-Reply-To: <465DF13A.2030307@apstat.com>
+References: <4658A892.2040104@iro.umontreal.ca>	<20070527140757.GA21164@pig.zood.org>
+	<465996FC.8010700@iro.umontreal.ca> <465DF13A.2030307@apstat.com>
+Message-ID: <D4DA68CD-B49A-47EA-ADAC-569355D0C8B6@iro.umontreal.ca>
+
+
+> Apr?s discussion avec Nicolas, j'ai chang? l'extension python pour que
+> build ne soit appel? qu'une seule fois sur les nouveaux objets (apr?s
+> tous les setOption).  On peut m?me mettre une "option"
+> __call_build=False pour que le constructeur python n'appelle pas  
+> build.
+> Tout devrait donc ?tre possible en attendant que la s?mantique  
+> exacte de
+> build soit d?termin?e.
+
+Ceci est bien le comportement souhait?. Le m?canisme des options et  
+de build est l? (entre-autre) pour rem?dier au fait qu'il manque au C+ 
++ un m?canisme de constructeur avec des param?tres nomm?s (comme on  
+en a en python): les options jouent le r?le de ces param?tres  
+nomm?es, et le build est le v?ritable constructeur. Le m?canisme  
+*g?n?rique* pour construire un objet PLearn en C++ est donc  
+pr?cis?ment celui-ci:
+
+1) Cr?er l'objet avec le constructeur par d?faut (constructeur vide)  
+qui *ne devrait PAS* appeler build, mais se contenter de donner des  
+valeurs par d?faut aux options.
+2) Modifier les options pour lesquelles on veut d'autres valeurs que  
+celles par d?faut.
+3) appeler build.
+
+La construction d'un objet PLearn depuis Python devrait donc suivre  
+le m?me ordre, et il n'y a aucune raison que le build soit appel? 2  
+fois.
+
+Note 1: Pour ce qui est des constructeurs C++ non-vide (il s'agit de  
+"convenience constructors") ils sont vus comme des raccourcis de la  
+proc?dure ci-dessus, pour certaines combinaisons particuli?res de  
+param?tres,  et ils devraient donc appeler build.
+
+Note 2: Ce que je d?cris ci-dessus vaut pour la *cr?ation initiale*  
+d'un objet (qu'il soit sp?cifi? par l'utilisateur, ou qu'il provienne  
+d'un reload d'un objet sauv?).
+La question du r?le que devrait avoir ou ne devrait pas avoir build  
+pour la *mise ? jour* d'un objet d?j? cr?? dont on s'amuse ? changer  
+des options (les questions de  "changeOptions"/"rebuild") est un  
+probl?me enti?rement diff?rent.
+
+-- Pascal
+
+>
+> Xavier
+>
+> Yoshua Bengio wrote:
+>> Gang,
+>>
+>> Notez qu'actuellement les objets construits depuis python semblent  
+>> avoir
+>> leur build() appel?s avant que toutes les options soient en place.  
+>> C'est
+>> pour
+>> cela que je me suis forc? ? permettre ? build() de retourner si  
+>> toutes ses
+>> options ne sont pas pr?tes ? former un objet coh?rent.
+>>
+>> Par ailleurs, plusieurs classes importantes sont d?j? ?crites avec  
+>> (en
+>> apparence) cette philosophie: leur build() ne fait rien si  
+>> certaines options
+>> ne sont pas sett?es ? des valeurs raisonnables, e.g.
+>>
+>> void NNet::build_()
+>> {
+>>
+>> /*
+>>
+>>      * Create Topology Var
+>> Graph
+>>
+>>      */
+>>
+>>     // Don't do anything if we don't have a
+>> train_set
+>>     // It's the only one who knows the inputsize and targetsize
+>> anyway...
+>>
+>>     if(inputsize_>=0 && targetsize_>=0 && weightsize_>=0)
+>>     {
+>>      ...
+>>     }
+>> }
+>>
+>> Que disent les uber-PLearn-masters?
+>>
+>> Pascal Lamblin a ?crit :
+>>
+>>> On Sat, May 26, 2007, Yoshua Bengio wrote:
+>>>
+>>>
+>>>> Malheureusement il arrive que des objets soient construits
+>>>> partiellement et que build() soient appel?s sur eux (c'est ce qui
+>>>> arrivait quand j'essayais d'utiliser cette classe depuis  
+>>>> python). Il
+>>>> faut donc que build_() puisse faire un simple "return" quand il  
+>>>> n'est
+>>>> pas pr?t ? ?tre fait correctement.
+>>>>
+>>>>
+>>> J'ai l'impression que ?a serait un changement majeur de la  
+>>> conception du
+>>> build_(), puisque ?a voudrait dire qu'un objet sur lequel on a fait
+>>> build() n'est pas n?cessairement en ?tat d'?tre utilis?. Dans ce  
+>>> cas-l?,
+>>> il n'y a aucun moyen de savoir quand l'objet est dans un ?tat
+>>> coh?rent...
+>>>
+>>> Il me semble qu'il y a plein d'objets qui lancent une erreur au  
+>>> build()
+>>> lorsqu'il ne sont pas capables de se builder parce que les
+>>> sp?cifications sont incoh?rentes ou incompl?tes, et ?a me para?t un
+>>> comportement normal.
+>>>
+>>> Ou alors, il nous faudrait un m?canisme pour savoir si un objet  
+>>> est dans
+>>> un ?tat coh?rent, et un autre pour s'assurer qu'on n'utilise pas un
+>>> objet dont l'?tat n'est pas coh?rent.
+>>>
+>>>
+>>>
+>>
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> https://lists.berlios.de/mailman/listinfo/plearn-core
+>>
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+

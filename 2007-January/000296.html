@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20undefined%20reference%20to%0A%09PLearn%3A%3Apl_assert_fail%28char%20const%2A%2C%20char%20const%2A%2C%20unsigned%20int%2C%0A%09char%20const%2A%2C%20char%20const%2A%29&In-Reply-To=%3C20070115155253.GC10991%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000294.html">
+   <LINK REL="Next"  HREF="000297.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20undefined%20reference%20to%0A%09PLearn%3A%3Apl_assert_fail%28char%20const%2A%2C%20char%20const%2A%2C%20unsigned%20int%2C%0A%09char%20const%2A%2C%20char%20const%2A%29&In-Reply-To=%3C20070115155253.GC10991%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Jan 15 16:52:54 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000294.html">[Plearn-core] undefined reference to PLearn::pl_assert_fail(char	const*, char const*, unsigned int, char const*, char const*)
+</A></li>
+        <LI>Next message: <A HREF="000297.html">[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#296">[ date ]</a>
+              <a href="thread.html#296">[ thread ]</a>
+              <a href="subject.html#296">[ subject ]</a>
+              <a href="author.html#296">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>C'est bizarre, est-ce que c'est une erreur generalisee ou ca apparait
+seulement dans certains fichiers .o ?
+
+Et tu compiles avec quoi ?
+
+--
+Olivier
+
+On 15 Jan 2007, Jaonary Rabarisoa wrote:
+&gt;<i> Salut tout le monde,
+</I>&gt;<i> 
+</I>&gt;<i> Apres avoir mis a jour mes source en utilisant la derniere version du
+</I>&gt;<i> repository, j'obtiens cette erreur lors du link.
+</I>&gt;<i> Je n'arrive pas a trouver dans quel fichier cette fonction est definie. Le
+</I>&gt;<i> candidat possible c'est dans plerror.h
+</I>&gt;<i> mais il prend des string au lieu d'un const char* :
+</I>&gt;<i> 
+</I>&gt;<i> void pl_assert_fail(const char* expr, const char* file, unsigned line,
+</I>&gt;<i>                      const char* function, const std::string&amp; message);
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Si vous pouvez m'eclaissir un peu ?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000294.html">[Plearn-core] undefined reference to PLearn::pl_assert_fail(char	const*, char const*, unsigned int, char const*, char const*)
+</A></li>
+	<LI>Next message: <A HREF="000297.html">[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#296">[ date ]</a>
+              <a href="thread.html#296">[ thread ]</a>
+              <a href="subject.html#296">[ subject ]</a>
+              <a href="author.html#296">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

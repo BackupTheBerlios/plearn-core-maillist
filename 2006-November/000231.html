@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] PLearn et Mac os x
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3Cc81af8c30611010341p1aa44298yd8919936443fa966%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000230.html">
+   <LINK REL="Next"  HREF="000232.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] PLearn et Mac os x</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20PLearn%20et%20Mac%20os%20x&In-Reply-To=%3Cc81af8c30611010341p1aa44298yd8919936443fa966%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] PLearn et Mac os x">jaonary at gmail.com
+       </A><BR>
+    <I>Wed Nov  1 12:41:25 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000230.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+        <LI>Next message: <A HREF="000232.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#231">[ date ]</a>
+              <a href="thread.html#231">[ thread ]</a>
+              <a href="subject.html#231">[ subject ]</a>
+              <a href="author.html#231">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Voici le r&#233;sultat de pytest run --all. Pas mal de choses ne passe pas
+mais je ne comprends pas trop ce que &#231;a veut dire.
+
+/67  Test Name                                             Status     P-D-F-S
+--------------------------------------------------------------------------------
+1     PL_assert                                          ** FAILED **  0-0-1-0
+2     PL_base_object_graph_iterator                      *C FAILED C*  0-0-2-0
+3     PL_smart_pointer                                   *C FAILED C*  0-0-3-0
+4     test_pl_log                                        *C FAILED C*  0-0-4-0
+5     test_pstreambuf                                    *C FAILED C*  0-0-5-0
+--------------------------------------------------------------------------------
+6     test_ppath                                         *C FAILED C*  0-0-6-0
+7     PL_test_tuple                                      *C FAILED C*  0-0-7-0
+8     PL_pentadiagonal_solve_inplace                     *C FAILED C*  0-0-8-0
+9     pl_math                                            *C FAILED C*  0-0-9-0
+10    TMat_maths                                         *C FAILED C*  0-0-10-0
+--------------------------------------------------------------------------------
+11    PL_statscol_remove_observation                     *C FAILED C*  0-0-11-0
+12    PL_constant_regressor_script                       *C FAILED C*  0-0-12-0
+13    PL_update_heap                                     *C FAILED C*  0-0-13-0
+14    PL_ConjGradientOptimizer                           *C FAILED C*  0-0-14-0
+15    PL_ConjGradientRosenbrock2                         *C FAILED C*  0-0-15-0
+--------------------------------------------------------------------------------
+16    PL_ConjGradientRosenbrock100                       *C FAILED C*  0-0-16-0
+17    EmbeddedPython_BasicIdentityCalls                  *C FAILED C*  0-0-17-0
+18    EmbeddedPython_InterfunctionXchg                   *C FAILED C*  0-0-18-0
+19    EmbeddedPython_MemoryStressTest                    *C FAILED C*  0-0-19-0
+20    EmbeddedPython_TrampolineTest                        DISABLED    0-1-19-0
+--------------------------------------------------------------------------------
+21    EmbeddedPython_InjectionTest                       *C FAILED C*  0-1-20-0
+22    EmbeddedPython_PythonProcessedVMatrix              *C FAILED C*  0-1-21-0
+23    PL_Var_util                                        *C FAILED C*  0-1-22-0
+24    PL_ProcessingVMatrixSizes                          *C FAILED C*  0-1-23-0
+25    PL_processing_and_plearneroutput_vmatrix           *C FAILED C*  0-1-24-0
+--------------------------------------------------------------------------------
+26    test_RowBufferedVMatrix                            *C FAILED C*  0-1-25-0
+27    PL_AutoVMatrix                                     *C FAILED C*  0-1-26-0
+28    test_FileVMatrix                                   *C FAILED C*  0-1-27-0
+29    PL_IndexedVMatrix                                  *C FAILED C*  0-1-28-0
+30    PL_diff_VMat                                       *C FAILED C*  0-1-29-0
+--------------------------------------------------------------------------------
+31    PL_knn_classifier_tester_gaussian_sigma1             DISABLED    0-2-29-0
+32    PL_knn_classifier_tester_gaussian_sigma3             DISABLED    0-3-29-0
+33    PL_knn_classifier_grapher_rectangular                DISABLED    0-4-29-0
+34    PL_GaussianDistribution                            *C FAILED C*  0-4-30-0
+35    PL_GaussMix                                          DISABLED    0-5-30-0
+--------------------------------------------------------------------------------
+36    PL_GaussMix_Spherical                              *C FAILED C*  0-5-31-0
+37    PL_GaussMix_Spherical_Missing                      *C FAILED C*  0-5-32-0
+38    PL_GaussMix_Diagonal                               *C FAILED C*  0-5-33-0
+39    PL_GaussMix_Diagonal_Missing                       *C FAILED C*  0-5-34-0
+40    PL_GaussMix_General                                *C FAILED C*  0-5-35-0
+--------------------------------------------------------------------------------
+41    PL_GaussMix_General_Missing                          DISABLED    0-6-35-0
+42    PL_GaussMix_Generate                               *C FAILED C*  0-6-36-0
+43    PL_ManifoldParzen2                                   DISABLED    0-7-36-0
+44    PL_ParzenWindow                                    *C FAILED C*  0-7-37-0
+45    PL_RandomGaussMix                                  *C FAILED C*  0-7-38-0
+--------------------------------------------------------------------------------
+46    PL_UniformDistribution                             *C FAILED C*  0-7-39-0
+47    PL_BestAveragingPLearner_NNet                        DISABLED    0-8-39-0
+48    PL_simplenet                                       ** FAILED **  0-8-40-0
+49    PL_kernel_ridge_regressor                          *C FAILED C*  0-8-41-0
+50    PL_kernel_ridge_hyper_regressor                    *C FAILED C*  0-8-42-0
+--------------------------------------------------------------------------------
+51    PL_linear_regressor_script                         *C FAILED C*  0-8-43-0
+52    PL_PLS_Regression                                  *C FAILED C*  0-8-44-0
+53    PL_stacked_pca_regression_script                   *C FAILED C*  0-8-45-0
+54    PL_badly_conditioned_linreg_script                 *C FAILED C*  0-8-46-0
+55    PL_incremental_pca_cc                                 PASSED     1-8-46-0
+--------------------------------------------------------------------------------
+56    PL_python_math_StatsCollector                      ** FAILED **  1-8-47-0
+57    PL_plargs                                             PASSED     2-8-47-0
+58    PL_plargs_parsing                                     PASSED     3-8-47-0
+59    PL_mandatory_plargs_provided                          PASSED     4-8-47-0
+60    PL_mandatory_plargs_omitted                           PASSED     5-8-47-0
+--------------------------------------------------------------------------------
+61    PL_misspelled_plargs                                  PASSED     6-8-47-0
+62    PyPLearnObject_module                                 PASSED     7-8-47-0
+63    plearn_repr_module                                    PASSED     8-8-47-0
+64    PyPLearn-Tutorial                                    DISABLED    8-9-47-0
+65    PL_PyTestCore                                         PASSED     9-9-47-0
+--------------------------------------------------------------------------------
+66    PL_Bindings                                           PASSED    10-9-47-0
+67    toolkit_module                                        PASSED    11-9-47-0
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000230.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+	<LI>Next message: <A HREF="000232.html">[Plearn-core] PLearn et Mac os x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#231">[ date ]</a>
+              <a href="thread.html#231">[ thread ]</a>
+              <a href="subject.html#231">[ subject ]</a>
+              <a href="author.html#231">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

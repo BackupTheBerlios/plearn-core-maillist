@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Acc&#232;s &#224; la matrice
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FAcc%3DE8s_%3DE0_la_matrice%3F%3D&In-Reply-To=%3C5203.207.61.255.171.1168442211.squirrel%40intranet.apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000290.html">
+   <LINK REL="Next"  HREF="000291.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Acc&#232;s &#224; la matrice</H1>
+    <B>chapados at apstat.com</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FAcc%3DE8s_%3DE0_la_matrice%3F%3D&In-Reply-To=%3C5203.207.61.255.171.1168442211.squirrel%40intranet.apstat.com%3E"
+       TITLE="[Plearn-core] Acc&#232;s &#224; la matrice">chapados at apstat.com
+       </A><BR>
+    <I>Wed Jan 10 16:16:51 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000290.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+        <LI>Next message: <A HREF="000291.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Il me semble que le 'input&quot; dans ma fonction d'origine, c'est parce
+</I>&gt;<i> que ce qui est retourn&#233; est l'input concat&#233;n&#233; &#224; l'output. C'est parce
+</I>&gt;<i> que c'est une fonction utilitaire (non virtuelle) destin&#233;e &#224; &#234;tre
+</I>&gt;<i> appel&#233; via RMI depuis python par pyplot pour lui simplifier la vie.
+</I>&gt;<i> Je ne pense pas qu'une fonction virtuelle g&#233;n&#233;rale devrait retourner
+</I>&gt;<i> la conact&#233;nation avec les inputs, et donc le input ne devrait pas
+</I>&gt;<i> &#234;tre dans le nom.
+</I>&gt;<i> Qu'en penses-tu Nicolas?
+</I>
+Effectivement, c'&#233;tait mon erreur dans l'interpr&#233;tation de la
+nomenclature.  Je vais baptiser la fonction computeOutputCovMat (m&#234;me nom
+remote-callable) seulement.
+
+
+&gt;&gt;<i> La forme demandee pourrait toujours etre un parametre de la methode
+</I>&gt;&gt;<i> (qui retournerait par ex. un TVec&lt;Mat&gt;, si on souhaite par ex. pouvoir
+</I>&gt;&gt;<i> demander une SVD, en plus de Cholesky ou matrice pleine).
+</I>&gt;&gt;<i> La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+</I>&gt;&gt;<i> avoir une fonction generique qui transforme une forme en une autre.
+</I>&gt;&gt;<i> Cela dit, je ne sais pas si ca vaut le coup de se casser la tete
+</I>&gt;&gt;<i> dessus,
+</I>&gt;&gt;<i> Cholesky me parait etre une bonne idee.
+</I>&gt;<i>
+</I>&gt;<i> Il y a sans doute des cas pour lesquelles on voudra calculer et
+</I>&gt;<i> retourner seulement la diagonale et pour lesquels ce sera plus
+</I>&gt;<i> efficace que de calculer/retorner cholesky ou la matrice originale
+</I>&gt;<i> (ne serait-ce que pour des consid&#233;rations de taille m&#233;moire quand on
+</I>&gt;<i> a un grand ensemble). Donc je pense que le plus propre, c'est de
+</I>&gt;<i> rajouter une m&#233;thode diff&#233;rente pour les trois cas: matrce de cov
+</I>&gt;<i> originale, diagonale, ou cholesky. Avec une impl&#233;mentation par d&#233;faut
+</I>&gt;<i> de 2 de ces m&#233;thodes (par ex. originale et diagonale) &#224; partir de la
+</I>&gt;<i> troisi&#232;me.
+</I>
+Pour les cas o&#249; on a seulement besoin de la diagonale, on l'a d&#233;j&#224; via la
+fonction batchComputeOutputAndConfidence (mais via une interface
+l&#233;g&#232;rement diff&#233;rente).  On n'a qu'&#224; appeler cette fonction avec la bonne
+probabilit&#233; pour retomber sur 1 &#233;cart-type.
+
+Apr&#232;s m'&#234;tre rafra&#238;chi la m&#233;moire sur les formules de calcul de la matrice
+de covariance pour les GP, je penche finalement pour retourner une matrice
+de covariance &quot;normale&quot;, sans aucune transformation, et laisser le client
+la traiter comme il le souhaitera.
+
+    + Nicolas
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000290.html">[Plearn-core] Acc&#232;s &#224; la matrice
+</A></li>
+	<LI>Next message: <A HREF="000291.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

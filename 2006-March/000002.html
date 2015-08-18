@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Re: [Plearn-core] Re: Updates des VMat :: &#201;tat de la situation
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3FISO-8859-1%3FQ%3FRe%3D3A_%3D5BPlearn-core%3D5D_Re%3D3A_Updates_des%3F%3D%0A%20%3D%3FISO-8859-1%3FQ%3F_VMat_%3D3A%3D3A_%3DC9tat_de_la_situation%3F%3D&In-Reply-To=%3C44188C6F.5020702%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000003.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Re: [Plearn-core] Re: Updates des VMat :: &#201;tat de la situation</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3FISO-8859-1%3FQ%3FRe%3D3A_%3D5BPlearn-core%3D5D_Re%3D3A_Updates_des%3F%3D%0A%20%3D%3FISO-8859-1%3FQ%3F_VMat_%3D3A%3D3A_%3DC9tat_de_la_situation%3F%3D&In-Reply-To=%3C44188C6F.5020702%40apstat.com%3E"
+       TITLE="[Plearn-core] Re: [Plearn-core] Re: Updates des VMat :: &#201;tat de la situation">chapados at apstat.com
+       </A><BR>
+    <I>Wed Mar 15 22:51:43 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">[Plearn-core] Re: Updates des VMat :: &#201;tat de la situation
+</A></li>
+        <LI>Next message: <A HREF="000003.html">[Plearn-core] Re: Les tailles d'une VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Non, pr&#233;sentement les machines &quot;64-bits&quot; sont install&#233;es comme des 
+machines 32-bits (sysadmin sujet aussi &#224; limite 1 jour=24 heures).
+
+Pascal Lamblin wrote:
+&gt;<i> On Wed, Mar 15, 2006, Pascal Lamblin wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;&gt;<i> Cependant, il y a 2 tests PLearn qui &#233;chouent chez ApsTAT.
+</I>&gt;&gt;&gt;<i> PL_PLS_Regression, pour une raison incompr&#233;hensible, produit
+</I>&gt;&gt;&gt;<i> un &quot;.&quot; de moins dans son run_results/RUN.log que dans
+</I>&gt;&gt;&gt;<i> expected_results/RUN.log. Jamais vu cela avant, et ci-attach&#233; si
+</I>&gt;&gt;&gt;<i> cela peut t'inspirer.
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> J'obtiens les m&#234;mes r&#233;sultats que toi en roulant le test sur une
+</I>&gt;&gt;<i> machine 32 bits, et &#231;a me para&#238;t assez suspect, je vais regarder &#231;a.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> C'&#233;tait un probl&#232;me d'arrondi (cast de real en int), qui arrivait si le
+</I>&gt;<i> nombre d'&#233;tapes &#233;tait 33, 66... mais pas sur 64 bits.
+</I>&gt;<i>
+</I>&gt;<i> Sur le conseil d'Olivier, j'ai rajout&#233; des &#171; round() &#187; et &#231;a marche,
+</I>&gt;<i> mais &#231;a pourrait p&#233;ter (mod&#233;r&#233;ment) d'autres tests qui n'auraient jamais
+</I>&gt;<i> &#233;t&#233; roul&#233;s sur 64 bits.
+</I>&gt;<i>
+</I>&gt;<i> Au fait, les gens d'Apstat, vous en &#234;tes o&#249; avec l'installation de vos
+</I>&gt;<i> machines 64 bits ? Un espoir de pouvoir rouler des PythonCodeSnippet
+</I>&gt;<i> compil&#233;s en 32 bits sur une machine 64 bits ?
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">[Plearn-core] Re: Updates des VMat :: &#201;tat de la situation
+</A></li>
+	<LI>Next message: <A HREF="000003.html">[Plearn-core] Re: Les tailles d'une VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

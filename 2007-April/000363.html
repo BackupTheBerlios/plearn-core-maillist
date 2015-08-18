@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Question BaggingLearner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Question%20BaggingLearner&In-Reply-To=%3C48661.24.37.169.107.1175543617.squirrel%40intranet.apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000362.html">
+   <LINK REL="Next"  HREF="000364.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Question BaggingLearner</H1>
+    <B>saintmlx at apstat.com</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Question%20BaggingLearner&In-Reply-To=%3C48661.24.37.169.107.1175543617.squirrel%40intranet.apstat.com%3E"
+       TITLE="[Plearn-core] Question BaggingLearner">saintmlx at apstat.com
+       </A><BR>
+    <I>Mon Apr  2 21:53:37 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000362.html">[Plearn-core] Question BaggingLearner
+</A></li>
+        <LI>Next message: <A HREF="000364.html">[Plearn-core] Changements a PTester
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#363">[ date ]</a>
+              <a href="thread.html#363">[ thread ]</a>
+              <a href="subject.html#363">[ subject ]</a>
+              <a href="author.html#363">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>J'avoue que c'est un bon point.  Ces objets viennent effectivement de
+l'&quot;ext&#233;rieur&quot;.  Je comprends mieux l'id&#233;e pr&#233;sent&#233;e de cette mani&#232;re, et
+&#231;a a du sens.  &#199;a permet &#224; un programmeur de mal builder un objet, mais
+disons que c'est son probl&#232;me...
+
+Xavier
+
+&gt;<i> Je ne comprends pas trop ce que tu veux dire par l&#224;. Quelle structure
+</I>&gt;<i> interne faut-il conna&#238;tre ? Les seuls builds que tu devrais avoir &#224;
+</I>&gt;<i> faire sont ceux des objets que tu fournis &#224; la classe, donc qui sont
+</I>&gt;<i> externes &#224; la classe.
+</I>&gt;<i> Les builds des objets internes devraient effectivement &#234;tre effectu&#233;s
+</I>&gt;<i> par la classe elle-m&#234;me, car c'est elle qui va les cr&#233;er.
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Olivier
+</I>&gt;<i>
+</I>&gt;<i> On 02 Apr 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">saintmlx at apstat.com</A> wrote:
+</I>&gt;&gt;<i> C'est justement ce que j'essaie d'&#233;viter, les exceptions...  Je vais
+</I>&gt;&gt;<i> parler &#224; Pascal car de la mani&#232;re dont les choses sont faites en ce
+</I>&gt;&gt;<i> moment, il faut conna&#238;tre la structure interne d'une classe pour
+</I>&gt;&gt;<i> s'assurer
+</I>&gt;&gt;<i> de faire les builds correctement, ce qui me semble &#234;tre un probl&#232;me.  Et
+</I>&gt;&gt;<i> si la classe change? tout ce qui l'utilise doit changer aussi?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Xavier
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> &gt; Je mets plearn-core en cc puisque c'est un probl&#232;me assez g&#233;n&#233;rique,
+</I>&gt;&gt;<i> et
+</I>&gt;&gt;<i> &gt; que l'avis d'autres personnes pourrait &#234;tre utile.
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Le probl&#232;me avec cette approche c'est que pour moi &#231;a contredit un
+</I>&gt;&gt;<i> &gt; principe de base de PLearn, qui est qu'avant d'utiliser un objet pour
+</I>&gt;&gt;<i> &gt; quoi que ce soit, on doit d'abord appeler son build(). Si on commence
+</I>&gt;&gt;<i> &#224;
+</I>&gt;&gt;<i> &gt; faire des exceptions dans certaines parties du code, &#231;a devient
+</I>&gt;&gt;<i> &gt; compliqu&#233; &#224; suivre.
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Il me semble que la question s'&#233;tait d&#233;j&#224; pos&#233;e ailleurs... (je
+</I>&gt;&gt;<i> fouille
+</I>&gt;&gt;<i> &gt; un peu...). Ah, j'ai trouv&#233; : cf. StackedLearner::build_, le
+</I>&gt;&gt;<i> commentaire
+</I>&gt;&gt;<i> &gt; par Nicolas :
+</I>&gt;&gt;<i> &gt;   *  NOTE BY NICOLAS: according to Pascal, it's not kosher to call
+</I>&gt;&gt;<i> build
+</I>&gt;&gt;<i> &gt;   *  inside build for no reason, since the inner objects HAVE ALREADY
+</I>&gt;&gt;<i> &gt;   *  been built.  You should uncomment the following code only FOR
+</I>&gt;&gt;<i> GOOD
+</I>&gt;&gt;<i> &gt;   *  REASON.
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Disons qu'en g&#233;n&#233;ral, &#231;a ne devrait pas &#234;tre un gros probl&#232;me que de
+</I>&gt;&gt;<i> &gt; faire un peu trop de builds (il pourrait arriver que &#231;a ralentisse
+</I>&gt;&gt;<i> &gt; significativement du code, mais &#231;a devrait &#234;tre rare). Mais
+</I>&gt;&gt;<i> &gt; personnellement je pense qu'il vaut mieux &#233;viter des cas particuliers
+</I>&gt;&gt;<i> o&#249;
+</I>&gt;&gt;<i> &gt; parfois appeler un seul build suffit, alors que dans d'autres
+</I>&gt;&gt;<i> situations
+</I>&gt;&gt;<i> &gt; similaires il faut appeler soi-m&#234;me le build de tous les objets.
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Si on voulait modifier le m&#233;canisme de build() pour appeler un seul
+</I>&gt;&gt;<i> &gt; build() et laisser la hi&#233;rarchie tout faire, j'imagine que &#231;a
+</I>&gt;&gt;<i> marcherait
+</I>&gt;&gt;<i> &gt; aussi, mais il faudrait r&#233;&#233;crire toutes les classes actuelles de
+</I>&gt;&gt;<i> PLearn.
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; --
+</I>&gt;&gt;<i> &gt; Olivier
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; On 02 Apr 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">saintmlx at apstat.com</A> wrote:
+</I>&gt;&gt;<i> &gt;&gt; Salut Olivier,
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Mon id&#233;e d'un build est que &#231;a devrait garantir que l'objet est
+</I>&gt;&gt;<i> &gt;&gt; compl&#232;tement construit.  C'est certain que si cet objet vient d'un
+</I>&gt;&gt;<i> &gt;&gt; Object::newread, le travail va &#234;tre fait en double pour le splitter
+</I>&gt;&gt;<i> et
+</I>&gt;&gt;<i> &gt;&gt; le
+</I>&gt;&gt;<i> &gt;&gt; template_learner.  Par contre, si tout est instanci&#233; au niveau C++
+</I>&gt;&gt;<i> (ce
+</I>&gt;&gt;<i> &gt;&gt; qui
+</I>&gt;&gt;<i> &gt;&gt; n'est pas fr&#233;quent, j'en conviens), je voudrais qu'un simple build de
+</I>&gt;&gt;<i> &gt;&gt; l'objet &quot;parent&quot; qui contient tous les autres suffise.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Une solution &quot;propre&quot; serait de ne pas faire build dans newread quand
+</I>&gt;&gt;<i> on
+</I>&gt;&gt;<i> &gt;&gt; sait qu'on est en train de lire une option d'un objet qui sera
+</I>&gt;&gt;<i> &quot;build&#233;&quot;
+</I>&gt;&gt;<i> &gt;&gt; plus tard; comme &#231;a, &#231;a fait un seul build &#224; la fin de tout pour
+</I>&gt;&gt;<i> toute
+</I>&gt;&gt;<i> &gt;&gt; la
+</I>&gt;&gt;<i> &gt;&gt; hi&#233;rarchie.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Qu'en penses-tu?  Sinon, est-ce un gros probl&#232;me que de faire un peu
+</I>&gt;&gt;<i> &gt;&gt; trop
+</I>&gt;&gt;<i> &gt;&gt; de builds?
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Xavier
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; &gt; Salut,
+</I>&gt;&gt;<i> &gt;&gt; &gt;
+</I>&gt;&gt;<i> &gt;&gt; &gt; Je compte utiliser ton BaggingLearner dans le cours de Pascal V.
+</I>&gt;&gt;<i> &gt;&gt; &gt; Question : pourquoi appeler le build() du splitter et du
+</I>&gt;&gt;<i> &gt;&gt; &gt; template_learner dans le build_() de BaggingLearner ? Normalement
+</I>&gt;&gt;<i> ces
+</I>&gt;&gt;<i> &gt;&gt; &gt; objets seraient cens&#233;s &#234;tre correctement construits, et le build ne
+</I>&gt;&gt;<i> &gt;&gt; &gt; devrait pas &#234;tre n&#233;cessaire il me semble.
+</I>&gt;&gt;<i> &gt;&gt; &gt;
+</I>&gt;&gt;<i> &gt;&gt; &gt; --
+</I>&gt;&gt;<i> &gt;&gt; &gt; Olivier
+</I>&gt;&gt;<i> &gt;&gt; &gt;
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt; _______________________________________________
+</I>&gt;&gt;<i> &gt; Plearn-core mailing list
+</I>&gt;&gt;<i> &gt; <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;&gt;<i> &gt; <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Plearn-core mailing list
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>&gt;<i>
+</I>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000362.html">[Plearn-core] Question BaggingLearner
+</A></li>
+	<LI>Next message: <A HREF="000364.html">[Plearn-core] Changements a PTester
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#363">[ date ]</a>
+              <a href="thread.html#363">[ thread ]</a>
+              <a href="subject.html#363">[ subject ]</a>
+              <a href="author.html#363">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

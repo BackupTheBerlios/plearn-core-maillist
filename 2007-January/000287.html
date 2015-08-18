@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core]  Acc&#232;s &#224; la matrice de covariance jointe des pr&#233;visio  ns
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F_Acc%3DE8s_%3DE0_la_matrice_de_covarianc%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fe_jointe_des_pr%3DE9visio__ns%3F%3D&In-Reply-To=%3C57034.207.61.255.171.1168438889.squirrel%40intranet.apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000288.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core]  Acc&#232;s &#224; la matrice de covariance jointe des pr&#233;visio  ns</H1>
+    <B>chapados at apstat.com</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F_Acc%3DE8s_%3DE0_la_matrice_de_covarianc%3F%3D%0A%20%3D%3Fiso-8859-1%3Fq%3Fe_jointe_des_pr%3DE9visio__ns%3F%3D&In-Reply-To=%3C57034.207.61.255.171.1168438889.squirrel%40intranet.apstat.com%3E"
+       TITLE="[Plearn-core]  Acc&#232;s &#224; la matrice de covariance jointe des pr&#233;visio  ns">chapados at apstat.com
+       </A><BR>
+    <I>Wed Jan 10 15:21:29 CET 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000288.html">Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#287">[ date ]</a>
+              <a href="thread.html#287">[ thread ]</a>
+              <a href="subject.html#287">[ subject ]</a>
+              <a href="author.html#287">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour Messieurs,
+
+En continuant mon travail sur les processus gaussiens, il appert que ces
+derniers peuvent fournir assez facilement une information qui n'est pas
+support&#233;e par l'interface de PLearner: au-del&#224; des simples intervalles de
+confiance, un GP peut nous donner la pleine matrice de covariance entre un
+ensemble de pr&#233;visions effectu&#233;es par le mod&#232;le.  J'aurais besoin de cette
+information.
+
+Pascal a ajout&#233; r&#233;cemment une fonction (non-virtuelle)
+computeInputOutputMat.  Je proposerais d'ajouter une fonction (virtuelle,
+cette fois) computeInputOutputCovMat, laquelle retournerait la matrice de
+covariance entre tous les points de test, en plus de l'esp&#233;rance des
+sorties.
+
+J'aimerais avoir votre avis sur la meilleure fa&#231;on de retourner cette
+matrice de covariance. Consid&#233;rons les utilisations:
+
+1) calcul d'intervalles de confiance &quot;classiques&quot;, lesquels ne demandent
+que la diagonale de la matrice de covariance
+
+2) calcul du (log) likelihood conjoint des observations de test par
+rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi que son
+d&#233;terminant.
+
+Je penche pour retourner la matrice sous la forme de sa d&#233;composition de
+Cholesky.  Avec la cholesky, nous pouvons:
+
+1) Calculer rapidement la matrice de covariance originale comme le produit
+matriciel L*L'.
+
+2) Calculer la diagonale de la matrice de covariance originale (l'&#233;l&#233;ment
+\sigma^2_{i,i} de la diagonale est la somme des carr&#233;s de la rang&#233;e i de
+la Cholesky).
+
+3) R&#233;soudre facilement un syst&#232;me lin&#233;aire (deux back-substitutions) ainsi
+que calculer le (log) d&#233;terminant (somme de la log-diagonale de la
+Cholesky).
+
+Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+
+    Merci!
+    + Nicolas
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000288.html">Acc&#232;s &#224; la matrice
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#287">[ date ]</a>
+              <a href="thread.html#287">[ thread ]</a>
+              <a href="subject.html#287">[ subject ]</a>
+              <a href="author.html#287">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

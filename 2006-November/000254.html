@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot; is	not registered in type map.
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20ERROR%3A%20TypeFactory%3A%20requested%20type%20%22BinaryStump%22%20is%0A%09not%20registered%20in%20type%20map.&In-Reply-To=%3Cc81af8c30611150356m5d21fbf8scbf65f87689db37c%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000253.html">
+   <LINK REL="Next"  HREF="000255.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot; is	not registered in type map.</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20ERROR%3A%20TypeFactory%3A%20requested%20type%20%22BinaryStump%22%20is%0A%09not%20registered%20in%20type%20map.&In-Reply-To=%3Cc81af8c30611150356m5d21fbf8scbf65f87689db37c%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot; is	not registered in type map.">jaonary at gmail.com
+       </A><BR>
+    <I>Wed Nov 15 12:56:03 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000253.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+        <LI>Next message: <A HREF="000255.html">[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot;	is not registered in type map.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#254">[ date ]</a>
+              <a href="thread.html#254">[ thread ]</a>
+              <a href="subject.html#254">[ subject ]</a>
+              <a href="author.html#254">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut tout le monde,
+J'obtients cette erreur en faisant
+
+AdaBoost* learner = new AdaBoost;
+load(&quot;learner.psave&quot;,learner);
+pout &lt;&lt; *learner &lt;&lt; endl;
+
+dans learner.psave j'ai :
+
+AdaBoost(
+weak_learners = 10 [ *1 -&gt;BinaryStump(
+feature = 789 ;
+threshold = 0.00401132288457126986 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 211 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*2 -&gt;BinaryStump(
+feature = 199 ;
+threshold = 0.0017162368057300828 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 233 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*3 -&gt;BinaryStump(
+feature = 359 ;
+threshold = 0.000907475747666112434 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 215 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*4 -&gt;BinaryStump(
+feature = 679 ;
+threshold = 0.0106611457396855562 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 212 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*5 -&gt;BinaryStump(
+feature = 59 ;
+threshold = 0.00135633071846136396 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 231 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*6 -&gt;BinaryStump(
+feature = 198 ;
+threshold = 0.000126454223571067278 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 210 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*7 -&gt;BinaryStump(
+feature = 869 ;
+threshold = 0.000515652572074498357 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 199 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*8 -&gt;BinaryStump(
+feature = 389 ;
+threshold = 0.0619387075283144573 ;
+tag = 1 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 221 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*9 -&gt;BinaryStump(
+feature = 639 ;
+threshold = 0.0207634960866365861 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 241 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+*10 -&gt;BinaryStump(
+feature = 959 ;
+threshold = 0.00762950707439525363 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = 234 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+] ;
+voting_weights = 10 [ 0.996215082345102809 0.947274395746035669
+0.910265965951113198 0.838258320218858599 0.861092531624579882
+0.946466021245645939 0.809529764488484238 0.801483217457905628
+0.95767680781976372 0.870285401723582042 ] ;
+sum_voting_weights = 8.93854750862107217 ;
+initial_sum_weights = 1 ;
+weak_learner_template = *11 -&gt;BinaryStump(
+feature = 0 ;
+threshold = 0 ;
+tag = 0 ;
+expdir = &quot;&quot; ;
+seed = -1 ;
+stage = 0 ;
+n_examples = -1 ;
+inputsize = -1 ;
+targetsize = -1 ;
+weightsize = -1 ;
+forget_when_training_set_changes = 0 ;
+nstages = 1 ;
+report_progress = 1 ;
+verbosity = 1 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+;
+target_error = 0.5 ;
+pseudo_loss_adaboost = 1 ;
+conf_rated_adaboost = 0 ;
+weight_by_resampling = 1 ;
+output_threshold = 0.5 ;
+provide_learner_expdir = 1 ;
+early_stopping = 1 ;
+save_often = 1 ;
+compute_training_error = 1 ;
+expdir = &quot;HOME:experiences/iccv2005tut/learning/Split0/LearnerExpdir/&quot; ;
+seed = -1 ;
+stage = 10 ;
+n_examples = 200 ;
+inputsize = 1000 ;
+targetsize = 1 ;
+weightsize = 0 ;
+forget_when_training_set_changes = 0 ;
+nstages = 10 ;
+report_progress = 1 ;
+verbosity = 3 ;
+nservers = 0 ;
+save_trainingset_prefix = &quot;&quot;  )
+
+Je crois comprendre un peu le probleme mais je ne sais pas trop o&#249;
+faire mes modification;
+
+Merci d'avance,
+
+Jaonary
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000253.html">[Plearn-core] Moi pas comprendres :-)
+</A></li>
+	<LI>Next message: <A HREF="000255.html">[Plearn-core] ERROR: TypeFactory: requested type &quot;BinaryStump&quot;	is not registered in type map.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#254">[ date ]</a>
+              <a href="thread.html#254">[ thread ]</a>
+              <a href="subject.html#254">[ subject ]</a>
+              <a href="author.html#254">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

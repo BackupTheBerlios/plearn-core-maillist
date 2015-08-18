@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] &#224; propos de TMat_maths_impl
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-December/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3C20061218085130.GA19144%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000281.html">
+   <LINK REL="Next"  HREF="000283.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] &#224; propos de TMat_maths_impl</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3F%3DE0_propos_de_TMat%3D5Fmaths%3D5Fimpl%3F%3D&In-Reply-To=%3C20061218085130.GA19144%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] &#224; propos de TMat_maths_impl">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Mon Dec 18 09:51:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000281.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+        <LI>Next message: <A HREF="000283.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#282">[ date ]</a>
+              <a href="thread.html#282">[ thread ]</a>
+              <a href="subject.html#282">[ subject ]</a>
+              <a href="author.html#282">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>J'avoue que je n'ai pas trop le temps de regarder &#231;a en d&#233;tail, et j'en
+profite pour hijacker ton thread avec une remarque en passant :
+removeElement (pour un TVec) est d&#233;clar&#233;e dans TVec_impl.h et
+impl&#233;ment&#233;e dans TMat_impl.h.
+
+--
+Olivier
+
+On 17 Dec 2006, Pascal Lamblin wrote:
+&gt;<i> Yo,
+</I>&gt;<i> 
+</I>&gt;<i> Tout en d&#233;buguant du code qui n'a rien &#224; voir, j'ai commenc&#233; &#224; jeter un
+</I>&gt;<i> coup d'oeil &#224; ce gros me^H^Hbourbier qu'est TMat_maths_impl.h, avec
+</I>&gt;<i> notamment environ 350 fonctions pour 6500 lignes de code.
+</I>&gt;<i> 
+</I>&gt;<i> Il y a des choses que l'on peut s&#233;parer simplement (tout ce qui tourne
+</I>&gt;<i> autour de Cholesky, par exemple), d'autres qui sont beaucoup moins
+</I>&gt;<i> &#233;videntes (est-ce qu'on met les op&#233;rations simples, genre addition ou
+</I>&gt;<i> multiplication par un scalaire, avec les autres op&#233;rations d'alg&#232;bre
+</I>&gt;<i> lin&#233;aire ? avec les op&#233;rations &#171; &#233;l&#233;ment par &#233;l&#233;ment &#187; ? avec les
+</I>&gt;<i> op&#233;rateurs + et *, qui font &#231;a ? par exemple).
+</I>&gt;<i> 
+</I>&gt;<i> En ce qui concerne la nomenclature, j'ai jet&#233; un coup d'oeil &#224;
+</I>&gt;<i> boost::MPL qui m'a l'air &#224; c&#244;t&#233; de la plaque, &#224; boost::uBLAS et &#224;
+</I>&gt;<i> lapack++ qui ont l'air plus int&#233;ressants. Leurs conventions d'appel :
+</I>&gt;<i> 
+</I>&gt;<i>   - uBLAS retourne toujours le r&#233;sultat de l'op&#233;ration, avec des
+</I>&gt;<i> mots-cl&#233;s et du vaudou pour ne pas r&#233;assigner de m&#233;moire si
+</I>&gt;<i> l'&#233;l&#233;ment &#224; gauche du signe = est pr&#234;t &#224; recevoir le r&#233;sultat. On ne
+</I>&gt;<i> peut pas indiquer de scaling dans les op&#233;rations de multiplication
+</I>&gt;<i> mat*mat ou mat*vec, donc une des choses les plus compliqu&#233;es qu'on peut
+</I>&gt;<i> faire est :
+</I>&gt;<i> 
+</I>&gt;<i>     // ordinary matrix product
+</I>&gt;<i>     template&lt;class M, class E1, class E2&gt;
+</I>&gt;<i>     M prod (const matrix_expression&lt;E1&gt; &amp;e1,
+</I>&gt;<i>             const matrix_expression&lt;E2&gt; &amp;e2);
+</I>&gt;<i> 
+</I>&gt;<i> (voir &lt;<A HREF="http://boost.org/libs/numeric/ublas/doc/matrix_expression.htm">http://boost.org/libs/numeric/ublas/doc/matrix_expression.htm</A>&gt;)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>   - lapack++ ne passe pas toujours les arguments dans le m&#234;me
+</I>&gt;<i> ordre, on peut avoir des choses comme : vecteurs/matrices d'entr&#233;e,
+</I>&gt;<i> vecteur/matrice de r&#233;sultat, param&#232;tres scalaires (avec des valeurs par
+</I>&gt;<i> d&#233;faut), genre :
+</I>&gt;<i> 
+</I>&gt;<i>     // Perform the matrix-matrix operation C := alpha*A*B + beta*C where
+</I>&gt;<i>     // A and B are used in either non-transposed or transposed form,
+</I>&gt;<i>     // depending on the function arguments.
+</I>&gt;<i>     //
+</I>&gt;<i>     // Internally this uses dgemm .
+</I>&gt;<i>     //
+</I>&gt;<i>     // Parameters:
+</I>&gt;<i>     //    transpose_A   If true, use transposed A, i.e. A' instead of A. If
+</I>&gt;<i>     //                  false, use A directly in non-transposed form.
+</I>&gt;<i>     //    transpose_B   If true, use transposed B, i.e. B' instead of B. If
+</I>&gt;<i>     //                  false, use B directly in non-transposed form.
+</I>&gt;<i> 
+</I>&gt;<i>     void Blas_Mat_Mat_Mult ( const LaGenMatDouble &amp; A,
+</I>&gt;<i>                              const LaGenMatDouble &amp; B,
+</I>&gt;<i>                              LaGenMatDouble &amp; C,
+</I>&gt;<i>                              bool transpose_A = false,
+</I>&gt;<i>                              bool transpose_B = false,
+</I>&gt;<i>                              double alpha = 1.0,
+</I>&gt;<i>                              double beta = 0.0 );
+</I>&gt;<i> 
+</I>&gt;<i> Mais aussi :
+</I>&gt;<i> 
+</I>&gt;<i>     // Perform one of the matrix-matrix operations
+</I>&gt;<i>     //
+</I>&gt;<i>     //    * C := alpha*A*A' + beta*C if right_transposed is true
+</I>&gt;<i>     //    * C := alpha*A'*A + beta*C if right_transposed is false
+</I>&gt;<i>     //
+</I>&gt;<i>     // with A' as transposition of A.
+</I>&gt;<i> 
+</I>&gt;<i>     void Blas_R1_Update ( LaSymmMatDouble &amp; C,
+</I>&gt;<i>                           LaGenMatDouble &amp; A,
+</I>&gt;<i>                           double alpha = 1.0,
+</I>&gt;<i>                           double beta = 1.0,
+</I>&gt;<i>                           bool right_transposed = true );
+</I>&gt;<i> 
+</I>&gt;<i> o&#249; c'est le premier param&#232;tre qui est mis &#224; jour. On pourrait dire que
+</I>&gt;<i> c'est toujours celui qui s'appelle C, m&#234;me s'il n'est jamais &#224; la m&#234;me
+</I>&gt;<i> place, mais il y a des cas pi&#233;geux :
+</I>&gt;<i> 
+</I>&gt;<i>     // Combined vector scaling and addition (saxpy).
+</I>&gt;<i>     //
+</I>&gt;<i>     // Combined vector scaling and addition: dy = dy + da * dx 
+</I>&gt;<i> 
+</I>&gt;<i>     void Blas_Add_Mult ( LaVectorDouble &amp; dy,
+</I>&gt;<i>                          double da,
+</I>&gt;<i>                          const LaVectorDouble &amp; dx );
+</I>&gt;<i> 
+</I>&gt;<i> Du coup, &#231;a soul&#232;ve &#224; nouveau les questions suivantes :
+</I>&gt;<i>   - o&#249; c'est qu'on met ce param&#232;tre qui est updat&#233; ?
+</I>&gt;<i>   - est-ce qu'on essaye de suivre une nomenclature ext&#233;rieure, ou on se
+</I>&gt;<i>     contente d'&#234;tre coh&#233;rent entre nous ?
+</I>&gt;<i> 
+</I>&gt;<i> Merci d'avance pour vos conseils,
+</I>&gt;<i> 
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000281.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+	<LI>Next message: <A HREF="000283.html">[Plearn-core] &#224; propos de TMat_maths_impl
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#282">[ date ]</a>
+              <a href="thread.html#282">[ thread ]</a>
+              <a href="subject.html#282">[ subject ]</a>
+              <a href="author.html#282">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Meilleurs moyens de r?cuperer et de
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20r%3Fcuperer%20et%20de&In-Reply-To=%3C20061107152415.GA24225%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000245.html">
+   <LINK REL="Next"  HREF="000247.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Meilleurs moyens de r?cuperer et de</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Meilleurs%20moyens%20de%20r%3Fcuperer%20et%20de&In-Reply-To=%3C20061107152415.GA24225%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Meilleurs moyens de r?cuperer et de">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Nov  7 16:24:16 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000245.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+        <LI>Next message: <A HREF="000247.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#246">[ date ]</a>
+              <a href="thread.html#246">[ thread ]</a>
+              <a href="subject.html#246">[ subject ]</a>
+              <a href="author.html#246">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 07 Nov 2006, Jaonary Rabarisoa wrote:
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On 11/7/06, Olivier Delalleau &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">delallea at iro.umontreal.ca</A>&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i>     Selon les cas, tu peux mettre un champ public ou juste rajouter une
+</I>&gt;<i>     m&#233;thode 'accesseur'. G&#233;n&#233;ralement, je pr&#233;f&#232;re une m&#233;thode accesseur si
+</I>&gt;<i>     le champ ne devrait pas &#234;tre modifi&#233; en dehors de la classe (mais ce
+</I>&gt;<i>     n'est pas vraiment une convention PLearn).
+</I>&gt;<i> 
+</I>&gt;<i>     Ensuite, dans du code C++, la m&#233;thode la plus efficace actuellement est
+</I>&gt;<i>     de faire un cast de ton objet, comme :
+</I>&gt;<i>         PP&lt;BinaryStump&gt; my_object_cast = (BinaryStump*) get_pointer(my_object)
+</I>&gt;<i>     ou bien tu peux p-&#234; utiliser un dynamic_cast&lt;BinaryStump*&gt;, mais j'avoue
+</I>&gt;<i>     que je ne sais pas vraiment quelle est la diff&#233;rence.
+</I>&gt;<i>     L'id&#233;e d'avoir des getOptions qui retournent des trucs plus int&#233;ressants
+</I>&gt;<i>     que des string a d&#233;j&#224; &#233;t&#233; discut&#233;e, mais pas encore impl&#233;ment&#233;e.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  Je ne comprends pas tr&#232;s bien ce que
+</I>&gt;<i> 
+</I>&gt;<i> PP&lt;BinaryStump&gt; my_object_cast = (BinaryStump*) get_pointer(my_object)
+</I>&gt;<i> 
+</I>&gt;<i> pourrait m'apporter de plus sachant que ce qui m'interesse ici c'est un membre
+</I>&gt;<i> protected de BinaryStump : my_object_cast-&gt;feature.  A moins que j'ai mal
+</I>&gt;<i> compris ce que tu entendais
+</I>
+C'est pour &#231;a que j'ai d'abord dit de rendre le champ public ou de
+rajouter une m&#233;thode 'accesseur'.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000245.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+	<LI>Next message: <A HREF="000247.html">[Plearn-core] Meilleurs moyens de r?cuperer et de
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#246">[ date ]</a>
+              <a href="thread.html#246">[ thread ]</a>
+              <a href="subject.html#246">[ subject ]</a>
+              <a href="author.html#246">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

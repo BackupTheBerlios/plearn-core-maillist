@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] AddCostToLearner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20AddCostToLearner&In-Reply-To=%3C20061011131850.GA1564%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000181.html">
+   <LINK REL="Next"  HREF="000183.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] AddCostToLearner</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20AddCostToLearner&In-Reply-To=%3C20061011131850.GA1564%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] AddCostToLearner">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Wed Oct 11 15:18:52 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000181.html">[Plearn-core] AddCostToLearner
+</A></li>
+        <LI>Next message: <A HREF="000183.html">[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 11 Oct 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Bonjour &#224; tous,
+</I>&gt;<i> En voulant utiliser la class AddCostToLearner, je me suis pos&#233; la question
+</I>&gt;<i> suivante :
+</I>&gt;<i> Je voudrai utiliser le cout binary_class_error pour evaluer une
+</I>&gt;<i> SVMClassifictionTorch. D'ap&#232;s la doc de
+</I>&gt;<i> AddCostToLearner on calcule ce cout en seuillant &#224; 0.5, cependant pour ma svm
+</I>&gt;<i> logiquement le seuil est &#224; 0.
+</I>&gt;<i> Donc, je me demande si c'est pas mieux de mettre ce seuil en &quot;build option&quot;
+</I>&gt;<i> pour la class AddCostToLearner afin de
+</I>&gt;<i> g&#233;n&#233;raliser un peu.
+</I>
+Salut,
+
+En effet ca serait une option logique a ajouter.
+Une autre possibilite, sans changer le code actuel, est de mettre
+les options 'target_01' et 'output_the_class' de SVMClassifictionTorch
+(et d'utiliser soit class_error soit binary_class_error dans
+AddCostToLearner).
+Au fait, je ne sais pas si tu l'as deja essaye, mais il se peut que
+SVMClassifictionTorch ne marche pas bien, il me semble qu'on avait des
+problemes chez nous recemment avec l'interface Torch, je ne sais plus
+trop pourquoi. Ca fait partie des choses qu'il faut que je regarde...
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000181.html">[Plearn-core] AddCostToLearner
+</A></li>
+	<LI>Next message: <A HREF="000183.html">[Plearn-core] Comment initialiser option_values de la classe	CartesianProductOracle
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#182">[ date ]</a>
+              <a href="thread.html#182">[ thread ]</a>
+              <a href="subject.html#182">[ subject ]</a>
+              <a href="author.html#182">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

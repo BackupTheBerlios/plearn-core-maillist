@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C38462911-230E-438D-B72C-5669106D38A6%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000173.html">
+   <LINK REL="Next"  HREF="000175.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve</H1>
+    <B>Pascal Vincent</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C38462911-230E-438D-B72C-5669106D38A6%40apstat.com%3E"
+       TITLE="[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve">pascal at apstat.com
+       </A><BR>
+    <I>Thu Oct  5 15:45:00 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000173.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+        <LI>Next message: <A HREF="000175.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i>
+</I>&gt;<i> Tout d'abord, as-tu une bonne raison pour coder en C++ plut&#244;t que
+</I>&gt;<i> d'utiliser un script ? (le script a l'avantage de ne pas n&#233;cessiter de
+</I>&gt;<i> compilation, et est plus simple &#224; &#233;crire).
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> C'est une bonne question,  et effectivement je me  rend-compte de  
+</I>&gt;<i> la difficult&#233; que j'ai
+</I>&gt;<i> en codant en c++ avec PLearn. Le fait est que dans notre labo  tout  
+</I>&gt;<i> le monde travail
+</I>&gt;<i> en c++ et  dans mes codes j'utilise aussi des librairies de  
+</I>&gt;<i> traitement d'image  cod&#233;s en C++.
+</I>&gt;<i> Donc, par souci de partager mon code avec les autres et de pouvoir  
+</I>&gt;<i> utiliser PLearn avec  le  libs
+</I>&gt;<i> que nous avons je pensais que tout faire en C++ etait la meilleure  
+</I>&gt;<i> des solutions. J'en ai donc fait un .so avec PLearn et je link mes  
+</I>&gt;<i> exe avec. En plus je commence &#224; m'habituer aux classes TVec et  
+</I>&gt;<i> TMat, que je trouve agr&#233;able &#224; utiliser et tres efficaces.
+</I>&gt;<i> La deuxieme solution &#224; la quelle j'ai pens&#233; c'est de faire  
+</I>&gt;<i> seulement mes algo de traitement d'image en C++ et enregistrer les  
+</I>&gt;<i> donn&#233;es qui m'int&#233;resse pour l'apprentissage dans un fichier et  
+</I>&gt;<i> apres utiliser PLearn. L'inconv&#233;niant c'est le fait d'&#233;crire un  
+</I>&gt;<i> matrice dans un fichier et a nouveau le recharger en memoir avec  
+</I>&gt;<i> PLearn. Il faudra aussi installer PLearn sur la machine des autres  
+</I>&gt;<i> personnes qui sont suceptible d'utiliser mes codes et les  
+</I>&gt;<i> apprendres &#224; &#233;crire des script, ce qui n'est pas gagn&#233;.
+</I>&gt;<i> Je vais peut-&#234;tre m'orient&#233; vers python mais il faut encore que  
+</I>&gt;<i> fasse des warpper pour mes algo de traitement d'image.
+</I>
+C'est correct de tout vouloir faire en C++, c'est juste que &#231;a fait  
+un peu plus de code &#224; &#233;crire/compiler/etc... et donc que c'est plus  
+long d'y faire des modifs.
+
+&gt;<i>
+</I>&gt;<i> En attendant, j'insiste encore un peu ave C++ :-) et emmene de  
+</I>&gt;<i> nouvelles questions.
+</I>&gt;<i> J'ai commenc&#233; &#224; 'traduire' le script qu'Olivier a &#233;crit mais je me  
+</I>&gt;<i> heurte &#224; quelques petites difficult&#233; :
+</I>&gt;<i>
+</I>
+Plusieurs suggestions si tu &#233;cris du C++.
+
+1) Pour tout ce qui d&#233;rive de Object (c.a.d. presque toutes les  
+classes PLearn suf les Mat et Vec), je te recommande de faire des  
+allocations dynamiques qui seront affect&#233;es &#224; des smart pointeurs.  
+Note que VMat est essentiellement un smart pointeur vers la classe de  
+base de VMatrix dont d&#233;rivent toutes les autres VMatrix. Aussi la  
+quasi-totalit&#233; des *options* de type objet sont d&#233;clar&#233;es comme des  
+smart-pointeurs ( PP&lt;...&gt; ou VMat). Comme un smart pointeur s'occuppe  
+de d&#233;sallouer la m&#233;moire quand il a fini, ce n'est pas une bonne id&#233;e  
+de lui passer un &amp;splitter d'un splitter qui a &#233;t&#233; allou&#233; sur la pile  
+(un delete d'un objet allou&#233; sur la pile fait en g&#233;n&#233;ral boum!). En  
+fait il est tr&#232;s rare d'avoir besoin d'utiliser &amp; dans du code PLearn  
+de haut niveau.
+
+Par ailleurs la plupart des options sont accessibles directement  
+comme des champs ou des m&#233;thodes de l'objet en C++, donc pas besoin  
+de toujours utiliser getOption.
+
+Bref, voici ce que je veux dire:
+
+&gt;<i>      27         AutoVMatrix data(data_file);
+</I>VMat data = new AutoVMatrix(data_file);
+&gt;<i>      28         cout &lt;&lt; data.getOption(&quot;inputsize&quot;) &lt;&lt; endl;
+</I>Autres possibilit&#233;s:
+cout &lt;&lt; data-&gt;inputsize() &lt;&lt; endl;
+pout &lt;&lt; data-&gt;inputsize() &lt;&lt; endl;
+Note pout est un PStream, et permet de s&#233;rialiser &#224; peu pr&#232;s  
+n'importe quel type utilis&#233; dans PLearn.
+&gt;<i>      29         cout &lt;&lt; data.getOption(&quot;targetsize&quot;) &lt;&lt; endl;
+</I>&gt;<i>      30
+</I>&gt;<i>      31         // the spliter
+</I>&gt;<i>      32         ExplicitSplitter splitter;
+</I>ExplicitSplitter* splitter = new ExplicitSplitter();
+&gt;<i>      33         splitter.splitsets = TMat&lt;VMat&gt;(1,2,(VMat&amp;)data);
+</I>TMat&lt;VMat&gt; splitsets(1,2);
+splitsets(0,0) = data;
+splitsets(0,1) = data;   // ou bien test_data le jour ou tu auras un  
+ensemble de test diff&#233;rent du train
+splitter-&gt;splitsets = splitsets;
+&gt;<i>      34         splitter.build();
+</I>splitter-&gt;build();
+&gt;<i>      35
+</I>&gt;<i>      36         KNNClassifier knn;
+</I>KNNClassifier* knn = new KNNClassifier();
+knn-&gt;nclasses = 3;
+knn-&gt;build();
+&gt;<i>      37         knn.nclasses = 3;
+</I>&gt;<i>      38         knn.build();
+</I>&gt;<i>
+</I>&gt;<i>      43         PTester tester;
+</I>PP&lt;PTester&gt; tester = new PTester();
+&gt;<i>      44         tester.splitter  = &splitter;
+</I>tester-&gt;splitter = splitter;
+&gt;<i>      45         tester.learner   = &knn;
+</I>tester-&gt;learner = knn;
+&gt;<i>      46         tester.dataset = (VMat&amp;)data; // je suis oblige de  
+</I>&gt;<i> faire le cast ici car l'operateur= attend un VMat non  pas un   
+</I>&gt;<i> AutoVMatrix, c'est bizzard
+</I>tester-&gt;dataset = data;
+&gt;<i>      47
+</I>&gt;<i>      48         //string learner = tester.getOption(&quot;learner&quot;);
+</I>&gt;<i>      49         //cout &lt;&lt; &quot;Learner : &quot; &lt;&lt; learner &lt;&lt; endl;
+</I>Alternative:
+pout &lt;&lt; tester-&gt;learner &lt;&lt; endl;
+
+&gt;<i>
+</I>&gt;<i> // statnames est declare private donc je ne peux pas y acceder  
+</I>&gt;<i> directement
+</I>C'est une erreur, il n'y a pas de bonne raison pour que ce soit private.
+
+&gt;<i> // j'ai pense alors qu'avec la methode getOption tout se fait tout  
+</I>&gt;<i> simplement
+</I>&gt;<i> // mais il attend 2 string en argument et ce que j'ecris la n'a pas  
+</I>&gt;<i> l'air de tres
+</I>&gt;<i> // bien marcher
+</I>&gt;<i>      52         tester.setOption (&quot;statnames&quot;,&quot;[E[test1.E 
+</I>&gt;<i> [class_error]]]&quot;);
+</I>&#199;a devrait marcher en effet.
+
+Evidemment, utiliser des &quot;-&gt;&quot; plutot que des &quot;.&quot; pour acc&#233;der aux  
+m&#233;thodes de tester.
+
+&gt;<i>      53         string statnames = tester.getOption(&quot;statnames&quot;);
+</I>&gt;<i>      54         cout &lt;&lt; &quot;Statnames &quot; &lt;&lt; statnames &lt;&lt; endl;
+</I>&gt;<i>
+</I>&gt;<i>      58         tester.build();
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> l'appel au methode run() entraine un seg fault mais je pense que  
+</I>&gt;<i> c'est parce que je pas encore fini de bien creer mon tester.
+</I>Tu devrais aussi appeler la m&#233;thode tester-&gt;setExperimentDirectory 
+(&quot;ton_directory_dexperience&quot;)  (ou bien definier l'option expdir, ce  
+qui revient au m&#234;me).
+
+Si &#231;a te donne toujours un segfault, je te conseillerais de v&#233;rifier  
+d'abord si au moins &#231;a marche en mode script sur un cas simple avec  
+l'ex&#233;cutable plearn...
+
+Bonne chance!
+
+
+-- Pascal
+
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000173.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+	<LI>Next message: <A HREF="000175.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

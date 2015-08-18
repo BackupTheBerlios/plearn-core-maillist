@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20061005190652.GA2338%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000177.html">
+   <LINK REL="Next"  HREF="000179.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Des%20classe%20qui%20calcule%20la%20ROC%20ou%20le%0A%09Precision-Recall%20curve&In-Reply-To=%3C20061005190652.GA2338%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Oct  5 21:06:55 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000177.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+        <LI>Next message: <A HREF="000179.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#178">[ date ]</a>
+              <a href="thread.html#178">[ thread ]</a>
+              <a href="subject.html#178">[ subject ]</a>
+              <a href="author.html#178">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 05 Oct 2006, Pascal Vincent wrote:
+&gt;<i> 
+</I>&gt;<i> Le 06-10-05 &#224; 11:43, Olivier Delalleau a &#233;crit :
+</I>&gt;<i> 
+</I>&gt;<i> &gt; On 05 Oct 2006, Pascal Vincent wrote:
+</I>&gt;<i> &gt;&gt; ExplicitSplitter* splitter = new ExplicitSplitter();
+</I>&gt;<i> &gt;&gt; KNNClassifier* knn = new KNNClassifier();
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Personnellement j'eviterais de mettre des pointeurs normaux,
+</I>&gt;<i> &gt; j'utiliserais plutot des PP&lt;..&gt;. Ca peut mener a devoir utiliser des
+</I>&gt;<i> &gt; casts pour les utiliser comme options, mais sinon, je ne suis pas sur
+</I>&gt;<i> &gt; que ca soit tres safe...
+</I>&gt;<i> 
+</I>&gt;<i> C'est safe dans les cas o&#249; je l'ai &#233;crit: j'ai toujours allou&#233; des  
+</I>&gt;<i> pointeurs normaux, avant de les affecter &#224; des PP&lt;...&gt; (les options),  
+</I>&gt;<i> et &#231;a &#233;vite de faire des casts laids et compliqu&#233;s. Le pattern  
+</I>&gt;<i> utilis&#233; est:
+</I>&gt;<i> XXX*  xxx = new XXX();
+</I>&gt;<i> obj-&gt;option_xxx = xxx;
+</I>&gt;<i> o&#249; option_xxx est de type PP&lt;class de base de XXX&gt;
+</I>&gt;<i> 
+</I>&gt;<i> Le seul &quot;risque&quot; est celui d'un memory leak si une exception non  
+</I>&gt;<i> attrap&#233;e est lanc&#233;e ENTRE le moment o&#249; on fait le new XXX() ET le  
+</I>&gt;<i> moment o&#249; on l'affecte &#224; obj-&gt;option_xxx qui est un smart pointeur.   
+</I>
+Corrige-moi si je me trompe, mais il me semble qu'il y a d'autres
+risques :
+- on pourrait oublier d'affecter xxx comme option a obj =&gt; memory leak.
+- on pourrait detruire obj (et par consequent xxx) et vouloir reutiliser
+  xxx sans savoir qu'il n'est plus valide.
+
+Je suis d'accord que dans ton exemple il n'y a pas vraiment de probleme,
+mais pour un debutant PLearn qui ne maitrise pas comme toi toutes les
+subtilites des PP&lt;..&gt;, je suggererais plutot d'eviter les pointeurs *.
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000177.html">[Plearn-core] Des classe qui calcule la ROC ou le	Precision-Recall curve
+</A></li>
+	<LI>Next message: <A HREF="000179.html">[Plearn-core] Un debut de code en C++ qui marche :-)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#178">[ date ]</a>
+              <a href="thread.html#178">[ thread ]</a>
+              <a href="subject.html#178">[ subject ]</a>
+              <a href="author.html#178">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

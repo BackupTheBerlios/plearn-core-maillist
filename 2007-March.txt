@@ -1,0 +1,1099 @@
+From jaonary at gmail.com  Fri Mar  2 16:06:56 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 2 Mar 2007 16:06:56 +0100
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <3E1C3708-FBBD-418D-8C29-6C4075BEF22F@apstat.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+	<c81af8c30702270726p4a8b46a2q1fba16e92f31f93@mail.gmail.com>
+	<3E1C3708-FBBD-418D-8C29-6C4075BEF22F@apstat.com>
+Message-ID: <c81af8c30703020706l65da7d08sf52038c7bef98fc1@mail.gmail.com>
+
+> Merci Jaonary, de te proposer si spontan?ment! ;-)
+>
+> Mais il nous faut d'abord ?claircir une petite question d'ordre
+> l?gal: tes contributions pourront-elles ?tre sous la license BSD de
+> PLearn (je ne sais pas d'o? tu travailles, mais ton employeur
+> pourrait avoir son mot ? dire sur la question.)
+
+C'est une bonne question, il faudrait que j'en vois un peu plus avec mon
+employeur
+sur ce sujet. Mais je pense que cela devrait etre possible surtout si ce
+sont des codes qui ameliore le core de PLearn.
+
+En attendant, une premi?re chose que tu pourras faire, serait
+> d'examiner les splitters que tu comptes utiliser (quels sont-ils?) et
+> de voir si les VMatrix qu'ils retournent se comportent bien vis ? vis
+> du getExample (et sinon corriger / adapter ou troquer pour d'autres
+> les classes impliqu?es)
+
+
+J'ai donc commence par ecrire une nouvelle VMatrix dont le getExample renvoi
+un input de taille variable. Voci comment je l'ai fait, un peu a l'arache,
+
+ class MyBagVMatrix : public VMatrix
+ 66 {
+ 67     typedef VMatrix inherited;
+ 68
+ 69 public:
+ 70     //#####  Public Build Options
+############################################
+ 71
+ 72     //! ### declare public option fields (such as build options) here
+ 73     //! Start your comments with Doxygen-compatible comments such as //!
+ 74     TVec<Mat> inputs_bag;
+ 75     TVec<Vec> targets;
+ 76     TVec<real> weights;
+ 77
+ 78 public:
+ 79     //#####  Public Member Functions
+#########################################
+ 80
+ 81     //! Default constructor
+ 82     MyBagVMatrix();
+ 83
+ 84     //! Another constructor
+ 85     MyBagVMatrix(TVec<Mat>& inputs_,TVec<Vec>& targets_,Vec& weights_);
+
+
+et le getExample correspondant
+
+
+126 void MyBagVMatrix::getExample(int i, Vec& input, Vec& target, real&
+weight)
+127 {
+128    input        = inputs_bag[i].toVec();
+129    target[0]    = targets[i][0];
+130    weight       = weights[i];
+131 }
+
+
+Au niveau des splitters, j'utilise essentiellement le KFoldSplitter et le
+ExpliciteSplitter. C'est le KFoldSplitter qui posse le plus de probleme. Je
+ne suis pas encore rentre dans les details. Par contre, j'ai commence par
+tester ma nouvelle VMatrix avec AdaBoost, un weak classifier que j'ai code
+et qui sait comment manipuler ma VMatrix. Le probleme dans ce cas c'est la
+creation d'une nouvelle donnee pour le weak classifier a chaque etape du
+boosting. Et je pense que le plus simple c'est d'avoir des methodes du type
+getInput,putInput,getTarget,putTarget,getWeight,...
+en plus des get,put pour tous les VMatrix. En effet, je ne vois pas encore
+comment je peux modifer, selectionner une partie de ma MyBagVMatrix dans la
+classe AdaBoost sans la caster (car elle est vue comme une VMat). Qu'en
+pensez vous ?
+
+Jaonary
+
+
+
+
+-- Pascal
+>
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070302/bf24790c/attachment.html>
+
+From delallea at iro.umontreal.ca  Mon Mar  5 15:37:26 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 5 Mar 2007 09:37:26 -0500
+Subject: [Plearn-core] VMatrix avec des input des taille variable
+In-Reply-To: <c81af8c30703020706l65da7d08sf52038c7bef98fc1@mail.gmail.com>
+References: <c81af8c30702261300vf46052as7c66ad88118560a1@mail.gmail.com>
+	<59070CA8-9A2F-4026-8B0B-1E9F2C00CB15@apstat.com>
+	<20070227145405.GB13779@opale.iro.umontreal.ca>
+	<F3D53233-2382-4A19-8879-233512EB68E9@apstat.com>
+	<c81af8c30702270726p4a8b46a2q1fba16e92f31f93@mail.gmail.com>
+	<3E1C3708-FBBD-418D-8C29-6C4075BEF22F@apstat.com>
+	<c81af8c30703020706l65da7d08sf52038c7bef98fc1@mail.gmail.com>
+Message-ID: <20070305143726.GA27961@opale.iro.umontreal.ca>
+
+> en plus des get,put pour tous les VMatrix. En effet, je ne vois pas encore
+> comment je peux modifer, selectionner une partie de ma MyBagVMatrix dans la
+> classe AdaBoost sans la caster (car elle est vue comme une VMat). Qu'en pensez
+> vous ?
+
+Idealement, une VMat, meme qui renvoie des inputs de taille variable,
+devrait pouvoir etre utilisee dans une SubVMatrx par ex. Je pense que
+le plan de Pascal doit sans doute regler ce probleme, mais je ne le
+connais pas...
+
+--
+Olivier
+
+
+
+From jaonary at gmail.com  Wed Mar  7 14:56:55 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 7 Mar 2007 14:56:55 +0100
+Subject: [Plearn-core] Sous sous classe de Object
+Message-ID: <c81af8c30703070556v669a7811yc29c7930a031d0@mail.gmail.com>
+
+Bonjour a tous,
+Je commence a prendre gout a utiliser la commande pyskelton pour generer mes
+nouvelles classes. J'ai neamoins le probleme suivant. J'aimerai regrouper un
+concepte en terme de classe et de sous classe. Le concepte lui meme derive
+de Object de PLearn pour avoir toutes les possibilites que Object offre (io,
+serialisation, smart pointer, ...). C'est une classe virtuelle pure. Je dois
+donc la souc-classer pour implementer les diverses version de cette classe.
+Pyskelton ne connait pas ma nouvelle classe, ainsi je voudrai savoir quelle
+sont les choses que je dois absolutment pas oublier dans ma sous-classe (qui
+est donc une sous sous classe de Object) pour qu'elle puisse etre utilisee
+avec PLearn (io,serialisation, ...) ?
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070307/3e48f132/attachment.html>
+
+From delallea at iro.umontreal.ca  Wed Mar  7 15:53:14 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 09:53:14 -0500
+Subject: [Plearn-core] Sous sous classe de Object
+In-Reply-To: <c81af8c30703070556v669a7811yc29c7930a031d0@mail.gmail.com>
+References: <c81af8c30703070556v669a7811yc29c7930a031d0@mail.gmail.com>
+Message-ID: <20070307145312.GA5421@opale.iro.umontreal.ca>
+
+Salut,
+
+Je ne suis pas sur que ca reponde a toutes tes interrogations, mais
+normalement si tu rajoutes toi-meme un "skeleton" dans
+PLearn/scripts/Skeletons, tu devrais pouvoir utiliser pyskeleton avec ta
+nouvelle classe.
+Tu peux aussi rajouter les squelettes dans n'importe quel repertoire de
+ta variable SKELETONS_PATH si tu ne veux pas melanger ton code avec
+PLearn.
+
+--
+Olivier
+
+On 07 Mar 2007, Jaonary Rabarisoa wrote:
+> Bonjour a tous,
+> Je commence a prendre gout a utiliser la commande pyskelton pour generer mes
+> nouvelles classes. J'ai neamoins le probleme suivant. J'aimerai regrouper un
+> concepte en terme de classe et de sous classe. Le concepte lui meme derive de
+> Object de PLearn pour avoir toutes les possibilites que Object offre (io,
+> serialisation, smart pointer, ...). C'est une classe virtuelle pure. Je dois
+> donc la souc-classer pour implementer les diverses version de cette classe.
+> Pyskelton ne connait pas ma nouvelle classe, ainsi je voudrai savoir quelle
+> sont les choses que je dois absolutment pas oublier dans ma sous-classe (qui
+> est donc une sous sous classe de Object) pour qu'elle puisse etre utilisee avec
+> PLearn (io,serialisation, ...) ?
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From delallea at iro.umontreal.ca  Wed Mar  7 19:20:51 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 13:20:51 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure in
+	PLearn_ApSTAT_Linux_i386
+Message-ID: <20070307182048.GA14521@opale.iro.umontreal.ca>
+
+Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+echouent ?
+La modif que j'ai faite est la :
+http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&rev=6720&sc=1
+Les tests qui echouent a Apstat passent bien au Lisa (sauf
+test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+
+Je pourrais facilement modifier mon changement ci-haut pour revenir a
+une version plus proche de ce qu'on avait, mais idealement, ca serait
+bien d'avoir un code propre, donc de comprendre exactement ce qui se
+passe.
+
+--
+Olivier
+
+----- Forwarded message from buildbot at apstat.com -----
+
+From: buildbot at apstat.com
+To: tihocan at users.berlios.de
+Date: Wed, 07 Mar 2007 13:09:54 -0500
+Subject: buildbot failure in PLearn_ApSTAT_Linux_i386
+
+The Buildbot has detected a failed build of PLearn_ApSTAT_Linux_i386.
+Full details are available at:
+ http://janus.apstat.com:8010/PLearn_ApSTAT_Linux_i386/builds/1073
+
+Buildbot URL: http://janus.apstat.com:8010/
+
+Build Reason: 
+Build Source Stamp: [branch trunk] HEAD
+Blamelist: tihocan
+
+BUILD FAILED: failed test
+
+sincerely,
+ -The Buildbot
+
+----- End forwarded message -----
+
+
+From delallea at iro.umontreal.ca  Wed Mar  7 19:22:12 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 13:22:12 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure in
+	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <20070307182048.GA14521@opale.iro.umontreal.ca>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+Message-ID: <20070307182210.GA15314@opale.iro.umontreal.ca>
+
+Au fait, ne serait-ce que pouvoir acceder aux FAILURE.LOG et RUN.LOG des
+tests qui echouent serait deja une grande aide.
+
+On 07 Mar 2007, Olivier Delalleau wrote:
+> Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+> echouent ?
+> La modif que j'ai faite est la :
+> http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&rev=6720&sc=1
+> Les tests qui echouent a Apstat passent bien au Lisa (sauf
+> test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+> 
+> Je pourrais facilement modifier mon changement ci-haut pour revenir a
+> une version plus proche de ce qu'on avait, mais idealement, ca serait
+> bien d'avoir un code propre, donc de comprendre exactement ce qui se
+> passe.
+> 
+
+
+From saintmlx at apstat.com  Wed Mar  7 21:58:44 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Wed, 07 Mar 2007 15:58:44 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure
+	in	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <20070307182210.GA15314@opale.iro.umontreal.ca>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+	<20070307182210.GA15314@opale.iro.umontreal.ca>
+Message-ID: <45EF2784.4050502@apstat.com>
+
+Salut Olivier,
+
+Je viens de rouler test_FileVMatrix de mon c?t? et ?a termine avec ceci:
+FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+the directory.
+
+C'est la seule diff?rence entre expected_results et run_results: une 
+ligne de plus dans RUN.log pour cette erreur.  En passant, j'ai cette 
+erreur pour certaines de mes exp?riences depuis ce matin, si j'essaie 
+d'?craser une FileVMatrix d?j? existante; le 'lsdir' se fait sur le 
+r?pertoire metadata, qui contient 'sizes', mais j'ai quand-m?me cette 
+erreur.  Je n'ai pas eu le temps de regarder plus loin que ?a.
+
+Xavier
+
+Olivier Delalleau wrote:
+> Au fait, ne serait-ce que pouvoir acceder aux FAILURE.LOG et RUN.LOG des
+> tests qui echouent serait deja une grande aide.
+>
+> On 07 Mar 2007, Olivier Delalleau wrote:
+>   
+>> Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+>> echouent ?
+>> La modif que j'ai faite est la :
+>> http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&rev=6720&sc=1
+>> Les tests qui echouent a Apstat passent bien au Lisa (sauf
+>> test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+>>
+>> Je pourrais facilement modifier mon changement ci-haut pour revenir a
+>> une version plus proche de ce qu'on avait, mais idealement, ca serait
+>> bien d'avoir un code propre, donc de comprendre exactement ce qui se
+>> passe.
+>>
+>>     
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+
+
+From delallea at iro.umontreal.ca  Wed Mar  7 22:06:33 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 16:06:33 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure
+	in	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <45EF2784.4050502@apstat.com>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+	<20070307182210.GA15314@opale.iro.umontreal.ca>
+	<45EF2784.4050502@apstat.com>
+Message-ID: <20070307210631.GA18334@opale.iro.umontreal.ca>
+
+En effet, c'est "normal" (c'est exactement l'erreur a laquelle je
+m'attendais etant donne la nature de la modif qui l'a causee, cf. l'url
+ci-dessous).
+Ce que ca veut dire, c'est qu'une des fonctions NSPR appelees dans lsdir
+a effectivement une erreur (i.e. modifie le code d'erreur NSPR). Je
+pense que c'est normal, mais il faudrait comprendre afin d'autoriser
+uniquement les cas "normaux" d'utilisation : d'apres le code qu'il y
+avait auparavant, j'avais l'impression que tout un tas de tests de codes
+d'erreurs 'acceptes' etaient dus au fait que le code d'une erreur
+precedente pouvait etre obtenu. Donc je les ai tous enleves, et vu que
+ca marchait bien au Lisa, j'ai committe. Si tu as besoin d'un truc qui
+marche, tu peux tous les remettre, mais si on veut un code propre, il ne
+faudrait garder que ceux dont on a effectivement besoin.
+
+--
+Olivier
+
+
+On 07 Mar 2007, Xavier Saint-Mleux wrote:
+> Salut Olivier,
+> 
+> Je viens de rouler test_FileVMatrix de mon c?t? et ?a termine avec ceci:
+> FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+> the directory.
+> 
+> C'est la seule diff?rence entre expected_results et run_results: une 
+> ligne de plus dans RUN.log pour cette erreur.  En passant, j'ai cette 
+> erreur pour certaines de mes exp?riences depuis ce matin, si j'essaie 
+> d'?craser une FileVMatrix d?j? existante; le 'lsdir' se fait sur le 
+> r?pertoire metadata, qui contient 'sizes', mais j'ai quand-m?me cette 
+> erreur.  Je n'ai pas eu le temps de regarder plus loin que ?a.
+> 
+> Xavier
+> 
+> Olivier Delalleau wrote:
+> > Au fait, ne serait-ce que pouvoir acceder aux FAILURE.LOG et RUN.LOG des
+> > tests qui echouent serait deja une grande aide.
+> >
+> > On 07 Mar 2007, Olivier Delalleau wrote:
+> >   
+> >> Est-ce que qqun chez Apstat se sent de regarder pourquoi les tests
+> >> echouent ?
+> >> La modif que j'ai faite est la :
+> >> http://svn.berlios.de/wsvn/plearn/trunk/plearn/io/fileutils.cc?op=diff&rev=6720&sc=1
+> >> Les tests qui echouent a Apstat passent bien au Lisa (sauf
+> >> test_FileVMatrix, mais celui-ci plante depuis tres longtemps au Lisa).
+> >>
+> >> Je pourrais facilement modifier mon changement ci-haut pour revenir a
+> >> une version plus proche de ce qu'on avait, mais idealement, ca serait
+> >> bien d'avoir un code propre, donc de comprendre exactement ce qui se
+> >> passe.
+> >>
+> >>     
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+> >   
+> 
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From delallea at iro.umontreal.ca  Wed Mar  7 22:09:49 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 16:09:49 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure
+	in	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <45EF2784.4050502@apstat.com>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+	<20070307182210.GA15314@opale.iro.umontreal.ca>
+	<45EF2784.4050502@apstat.com>
+Message-ID: <20070307210949.GB18334@opale.iro.umontreal.ca>
+
+Au fait, merci de m'avoir indique le message d'erreur. Je comprends
+maintenant ce qui doit se passer (je pense), et je vais corriger ca tout
+de suite.
+D'ailleurs je trouve ca bizarre que rien ne plante au Lisa...
+
+--
+Olivier
+
+On 07 Mar 2007, Xavier Saint-Mleux wrote:
+> Salut Olivier,
+> 
+> Je viens de rouler test_FileVMatrix de mon c?t? et ?a termine avec ceci:
+> FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+> the directory.
+> 
+
+
+From saintmlx at apstat.com  Wed Mar  7 22:21:21 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Wed, 07 Mar 2007 16:21:21 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure
+	in	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <20070307210949.GB18334@opale.iro.umontreal.ca>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+	<20070307182210.GA15314@opale.iro.umontreal.ca>
+	<45EF2784.4050502@apstat.com>
+	<20070307210949.GB18334@opale.iro.umontreal.ca>
+Message-ID: <45EF2CD1.9010103@apstat.com>
+
+J'ai vu d'autres trucs de NSPR qui ont un comportement diff?rent entre 
+ApSTAT et le Lisa.  Par exemple, si j'essaie de lire sur un socket ferm? 
+de l'autre c?t?, j'ai une erreur chez ApSTAT (connection reset by peer) 
+et un EOF au DIRO...  je crois qu'il va falloir s'arranger pour que 
+PLearn fonctionne avec n'importe quelle version de NSPR.
+
+Xavier
+
+Olivier Delalleau wrote:
+> Au fait, merci de m'avoir indique le message d'erreur. Je comprends
+> maintenant ce qui doit se passer (je pense), et je vais corriger ca tout
+> de suite.
+> D'ailleurs je trouve ca bizarre que rien ne plante au Lisa...
+>
+> --
+> Olivier
+>
+> On 07 Mar 2007, Xavier Saint-Mleux wrote:
+>   
+>> Salut Olivier,
+>>
+>> Je viens de rouler test_FileVMatrix de mon c?t? et ?a termine avec ceci:
+>> FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+>> the directory.
+>>
+>>     
+
+
+
+From delallea at iro.umontreal.ca  Wed Mar  7 22:27:28 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 7 Mar 2007 16:27:28 -0500
+Subject: [Plearn-core] [buildbot@apstat.com] buildbot failure
+	in	PLearn_ApSTAT_Linux_i386
+In-Reply-To: <45EF2CD1.9010103@apstat.com>
+References: <20070307182048.GA14521@opale.iro.umontreal.ca>
+	<20070307182210.GA15314@opale.iro.umontreal.ca>
+	<45EF2784.4050502@apstat.com>
+	<20070307210949.GB18334@opale.iro.umontreal.ca>
+	<45EF2CD1.9010103@apstat.com>
+Message-ID: <20070307212725.GA18754@opale.iro.umontreal.ca>
+
+A y regarder de plus pres, le comportement officiel de PR_ReadDir est
+bien de renvoyer PR_NO_MORE_FILES_ERROR a la fin de la lecture d'un
+repertoire. Je (et Pascal) soupconnons donc que c'est la vieille version
+du Lisa qui est en cause.
+J'ai committe le bug fix, qui devrait maintenant tourner a la fois sur
+la vieille et la nouvelle version. Si d'autres crashs surviennent, merci
+de me prevenir ! (et de ne pas taper trop fort)
+
+Merci pour ton aide,
+
+--
+Olivier
+
+On 07 Mar 2007, Xavier Saint-Mleux wrote:
+> J'ai vu d'autres trucs de NSPR qui ont un comportement diff?rent entre 
+> ApSTAT et le Lisa.  Par exemple, si j'essaie de lire sur un socket ferm? 
+> de l'autre c?t?, j'ai une erreur chez ApSTAT (connection reset by peer) 
+> et un EOF au DIRO...  je crois qu'il va falloir s'arranger pour que 
+> PLearn fonctionne avec n'importe quelle version de NSPR.
+> 
+> Xavier
+> 
+> Olivier Delalleau wrote:
+> > Au fait, merci de m'avoir indique le message d'erreur. Je comprends
+> > maintenant ce qui doit se passer (je pense), et je vais corriger ca tout
+> > de suite.
+> > D'ailleurs je trouve ca bizarre que rien ne plante au Lisa...
+> >
+> > --
+> > Olivier
+> >
+> > On 07 Mar 2007, Xavier Saint-Mleux wrote:
+> >   
+> >> Salut Olivier,
+> >>
+> >> Je viens de rouler test_FileVMatrix de mon c?t? et ?a termine avec ceci:
+> >> FATAL ERROR: In lsdir: error while listing directory: No more entries in 
+> >> the directory.
+> >>
+> >>     
+
+
+From saintmlx at apstat.com  Fri Mar  9 02:19:29 2007
+From: saintmlx at apstat.com (Xavier Saint-Mleux)
+Date: Thu, 08 Mar 2007 20:19:29 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?PLearner=3A=3Atest_maintenant_en_par?=
+	=?iso-8859-1?q?all=E8le?=
+Message-ID: <45F0B621.1040507@apstat.com>
+
+Salut ? tous,
+
+Avez-vous des exp?riences avec des gros test sets longs ? traiter?  Les 
+tests peuvent maintenant se faire en parall?le sur plusieurs 
+PLearnServers, de la m?me mani?re que pour PTester::perform (voir 
+"PTester en parall?le avec cluster ou ssh [28/02/07 02:45 PM]").  Par 
+exemple, au lieu de faire:
+
+~> plearn_full learner test learner_complexe.psave gros_testset.vmat 
+cost.stats outputs.pmat costs.pmat
+
+il suffit de faire:
+
+~> xdispatch -s4 -- plearn_full learner test learner_complexe.psave 
+gros_testset.vmat cost.stats outputs.pmat costs.pmat
+
+pour rouler la m?me chose avec quatre serveurs esclaves.  Si vous 
+utilisez un PTester, le parall?lisme va se faire par d?faut au niveau 
+des splits (PTester::perform) au lieu des tests (PLearner::test), sauf 
+s'il n'y a qu'un seul split ou si vous mettez l'option parallelize_here 
+de PTester ? false.
+
+Xavier
+
+
+
+
+From saintmlx at apstat.com  Sat Mar 10 22:23:31 2007
+From: saintmlx at apstat.com (saintmlx)
+Date: Sat, 10 Mar 2007 16:23:31 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?=C9limination_de_OptionBase=3A=3Adef?=
+ =?iso-8859-1?q?aultval=5F_et_pytransform_de_declareOption?=
+Message-ID: <45F321D3.4080002@apstat.com>
+
+Salut aux PLearners,
+
+Je suis en train de faire quelques modifications au syst?me d'options et 
+je voudrais me d?barasser de ceci dans OptionBase:
+
+    string defaultval_;  //!< string representation of the default value 
+(will be printed by optionHelp())
+
+De un, ?a ne semble pas ?tre utilis?: j'ai mis ceci dans le constructeur 
+d'OptionBase et rien ne p?te:
+
+    if(defaultval_ != "")
+        PLERROR("DEFAULT VAL: '%s'", defaultval_.c_str());
+
+(j'ai aussi mis entry.getoptionlist_method() dans 
+TypeFactory::registerType pour que toutes les options soient "d?clar?es" 
+automatiquement au "boot" de plearn...)
+
+De deux, ?a me semble ?tre la mauvaise mani?re de faire les choses;  
+TypeFactory s'occupe d?j? d'instancier un objet du bon type si possible 
+et donne "?" comme valeur par d?faut sinon.  C'est ce qui devrait 
+toujours ?tre fait selon moi.
+
+Du m?me coup, tant qu'? changer declareOption (pour enlever le param. 
+defaultval), Pascal Lamblin a propos? de mettre le param?tre "level" 
+(voir plus bas) juste apr?s "flags" et de faire un pytransform, de 
+mani?re ? inciter le monde ? s'en servir.  J'ai d?j? un petit script qui 
+fait ceci:
+avant:
+    declareOption(
+        ol, "report_progress", &PLearner::report_progress, 
+OptionBase::buildoption,
+        "should progress in learning and testing be reported in a 
+ProgressBar.\n");
+
+apr?s:
+    declareOption(
+        ol, "report_progress", &PLearner::report_progress, 
+OptionBase::buildoption,
+/*<!>*/ OptionBase::normal_level /**** TODO: check wether this is the 
+right level and adapt as needed (see OptionBase.h)*/,
+        "should progress in learning and testing be reported in a 
+ProgressBar.\n");
+
+Si personne n'a d'objection, je vais transformer tout ce que je vois et 
+faire un commit (apr?s un d?lai raisonnable pour recevoir vos 
+commentaires, suggestions, insultes ou contributions financi?res ;)
+
+Xavier
+
+N.B.: les "levels" ne sont pas encore tr?s bien document?s, mais ?a 
+marche ? peu pr?s comme ceci pour l'instant:
+chaque option a un level parmi les suivants, qui repr?sente un "niveau 
+de difficult?"  (copi?/coll? d'OptionBase.h) :
+    static const OptionLevel basic_level; //!< mandatory options
+    static const OptionLevel normal_level; //!< simple, useful options
+    static const OptionLevel advanced_level; //!< useful but seldom used
+    static const OptionLevel experimental_level; //!< only a few people 
+understand those
+    static const OptionLevel deprecated_level; //!< should not be used 
+anymore
+
+Ensuite, quand on fait 'plearn help <classname>', on peut d?cider du 
+niveau d'aide voulu avec l'option '--option-level <level>'.  Toutes les 
+options ? ce niveau ou ? un niveau inf?rieur sont affich?es; 
+'--option-level deprecated' montre toutes les options, m?me celles qui 
+ne doivent jamais ?tre utilis?es...
+Par exemple:
+~> plearn --option-level advanced help NNet
+
+Vos commentaires sont bienvenus, il est encore temps!
+
+
+
+From jaonary at gmail.com  Mon Mar 26 18:08:23 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Mar 2007 17:08:23 +0100
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+Message-ID: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+
+Bonjour a tous,
+
+J'ai une petite question concertant l'initialisation du statnames d'un
+PTester.
+statnames est un membre prive de PTester donc je ne peux pas avoir acces a
+cette
+variable directerment et faire un truc du genre :
+
+PTester ptester;
+TVec<string> statnames(1,"E[test1.E[binary_class_error]]");
+ptester.statnames = statnames;
+
+Jusqu'a present j'ai utilise un hack en mettant statnames en public. Mais a
+chaque fois que
+je mets a jours mes sources de PLearn le probleme se repose. Donc, il a y
+surment une raison
+pour que cette variable soit private (mais je ne vois pas laquelle).
+Du coup, comment je peux m'y prendre pour initialiser ce statnames
+correctement (en code C++)
+sans avoir recourt a des hack au niveau du code de PTester directement. Il y
+a surement un truc plus
+simple que je n'ai pas saisi car PTester marche bien en mode script
+(.psave).
+
+Cordialement,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070326/8811bfa3/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Mon Mar 26 18:23:45 2007
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 26 Mar 2007 18:23:45 +0200
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+In-Reply-To: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+References: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+Message-ID: <20070326162345.GA21528@pig.zood.org>
+
+On Mon, Mar 26, 2007, Jaonary Rabarisoa wrote:
+
+> J'ai une petite question concertant l'initialisation du statnames d'un
+> PTester. statnames est un membre prive de PTester donc je ne peux pas
+> avoir acces a cette variable directerment et faire un truc du genre :
+>
+> PTester ptester;
+> TVec<string> statnames(1,"E[test1.E[binary_class_error]]");
+> ptester.statnames = statnames;
+
+Sachant qu'il s'agit principalement de cha?nes de caract?res, et que
+j'imagine qu'elles ne sont pas g?n?r?es par ton programme, tu peux
+toujours faire quelque chose comme :
+
+string statnames = "1 [ \"E[test1.E[binary_class_error]]\" ]";
+ptester.setOption("statnames", statnames);
+
+> Jusqu'a present j'ai utilise un hack en mettant statnames en public.
+> Mais a chaque fois que je mets a jours mes sources de PLearn le
+> probleme se repose. Donc, il a y surment une raison pour que cette
+> variable soit private (mais je ne vois pas laquelle).
+
+Moi non plus.
+
+> Du coup, comment je peux m'y prendre pour initialiser ce statnames
+> correctement (en code C++) sans avoir recourt a des hack au niveau du
+> code de PTester directement. Il y a surement un truc plus simple que
+> je n'ai pas saisi car PTester marche bien en mode script (.psave).
+
+La lecture d'un script passe par le m?canisme d'options.
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Mon Mar 26 19:25:16 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 26 Mar 2007 13:25:16 -0400
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+In-Reply-To: <20070326162345.GA21528@pig.zood.org>
+References: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+	<20070326162345.GA21528@pig.zood.org>
+Message-ID: <20070326172515.GA9617@opale.iro.umontreal.ca>
+
+On 26 Mar 2007, Pascal Lamblin wrote:
+> On Mon, Mar 26, 2007, Jaonary Rabarisoa wrote:
+> 
+> > J'ai une petite question concertant l'initialisation du statnames d'un
+> > PTester. statnames est un membre prive de PTester donc je ne peux pas
+> > avoir acces a cette variable directerment et faire un truc du genre :
+> >
+> > PTester ptester;
+> > TVec<string> statnames(1,"E[test1.E[binary_class_error]]");
+> > ptester.statnames = statnames;
+> 
+> Sachant qu'il s'agit principalement de cha?nes de caract?res, et que
+> j'imagine qu'elles ne sont pas g?n?r?es par ton programme, tu peux
+> toujours faire quelque chose comme :
+> 
+> string statnames = "1 [ \"E[test1.E[binary_class_error]]\" ]";
+> ptester.setOption("statnames", statnames);
+
+Il se peut aussi que la ligne suivante fonctionne :
+ptester.setOption("statnames", "[ E[test1.E[binary_class_error]] ]");
+mais je ne suis pas sur (si ca plante, il faut sans doute au moins
+mettre les \" comme dans la ligne de Pascal).
+
+> > Jusqu'a present j'ai utilise un hack en mettant statnames en public.
+> > Mais a chaque fois que je mets a jours mes sources de PLearn le
+> > probleme se repose. Donc, il a y surment une raison pour que cette
+> > variable soit private (mais je ne vois pas laquelle).
+> 
+> Moi non plus.
+
+Sans doute les preferences personnelles du codeur a l'epoque. Il n'y
+aurait pas de pb a passer ca public.
+
+--
+Olivier
+
+
+From jaonary at gmail.com  Mon Mar 26 20:58:03 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Mar 2007 20:58:03 +0200
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+In-Reply-To: <20070326172515.GA9617@opale.iro.umontreal.ca>
+References: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+	<20070326162345.GA21528@pig.zood.org>
+	<20070326172515.GA9617@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30703261158k8c37eb2w9dbe80c3e0baa524@mail.gmail.com>
+
+> Il se peut aussi que la ligne suivante fonctionne :
+> ptester.setOption("statnames", "[ E[test1.E[binary_class_error]] ]");
+
+Je confirme, cette ligne marche. Sinon, j'ai aussi not? qu'on peut
+construire les statnames avec l'option statmask du PTester. Par contre
+j'ai pas bien compri comment ce dernier s'utilise. Quelqu'un peut il
+m'?claissier un peu les id?es la dessus ?
+
+Merci,
+
+Jaonary
+
+From jaonary at gmail.com  Mon Mar 26 21:02:10 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Mar 2007 21:02:10 +0200
+Subject: [Plearn-core] =?utf-8?q?Comportement_=C3=A9trange_de_PLERROR?=
+Message-ID: <c81af8c30703261202t24468d32g856a2f4792ba5087@mail.gmail.com>
+
+Voici d?j? un autre thread sur mes aventures dans le monde de PLearn.
+Cette fois, mon probl?me est sur le macro PLERROR. Si j'ai bien
+compris quand un code arrive sur un PLERROR il s'arret en ecrivant un
+message sur la sortie standard. Dans mon cas j'ai toujours le message
+suivant :
+
+terminate called after throwing an instance of 'PLearn::PLearnError'
+Abort
+
+O? est l'erreur ?
+
+Jaonary
+
+From delallea at iro.umontreal.ca  Mon Mar 26 21:16:00 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 26 Mar 2007 15:16:00 -0400
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+In-Reply-To: <c81af8c30703261158k8c37eb2w9dbe80c3e0baa524@mail.gmail.com>
+References: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+	<20070326162345.GA21528@pig.zood.org>
+	<20070326172515.GA9617@opale.iro.umontreal.ca>
+	<c81af8c30703261158k8c37eb2w9dbe80c3e0baa524@mail.gmail.com>
+Message-ID: <20070326191556.GA11897@opale.iro.umontreal.ca>
+
+On 26 Mar 2007, Jaonary Rabarisoa wrote:
+> > Il se peut aussi que la ligne suivante fonctionne :
+> > ptester.setOption("statnames", "[ E[test1.E[binary_class_error]] ]");
+> 
+> Je confirme, cette ligne marche. Sinon, j'ai aussi not? qu'on peut
+> construire les statnames avec l'option statmask du PTester. Par contre
+> j'ai pas bien compri comment ce dernier s'utilise. Quelqu'un peut il
+> m'?claissier un peu les id?es la dessus ?
+> 
+
+Ca te permet de composer des operations (le * recupere le resultat de
+l'operation precedente).
+Par ex. dans l'exemple donne par "plearn help PTester" :
+   statnames = [ "NLL" "mse" ]
+   statmask  = [ [ "E[*]" ] [ "test#1-2#.*" ] [ "E[*]" "STDERROR[*]" ] ]
+il va partir de
+    [ NLL mse ]
+puis appliquer E[*] pour donner
+    [ E[NLL] E[mse] ]
+puis appliquer test#1-2#.* pour donner
+    [ test1.E[NLL] test2.E[NLL] test1.E[mse] test2.E[mse] ]
+puis appliquer E[*] STDERROR[*] pour donner le resultat final :
+    [  E[test1.E[NLL]]  STDERROR[test1.E[NLL]]  E[test2.E[NLL]] 
+       STDERROR[test2.E[NLL]]
+       E[test1.E[mse]]  STDERROR[test1.E[mse]]  E[test2.E[mse]] 
+       STDERROR[test2.E[mse]] ]
+
+
+--
+Olivier
+
+
+From delallea at iro.umontreal.ca  Mon Mar 26 21:17:46 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 26 Mar 2007 15:17:46 -0400
+Subject: [Plearn-core] =?iso-8859-1?q?Comportement_=E9trange_de_PLERROR?=
+In-Reply-To: <c81af8c30703261202t24468d32g856a2f4792ba5087@mail.gmail.com>
+References: <c81af8c30703261202t24468d32g856a2f4792ba5087@mail.gmail.com>
+Message-ID: <20070326191745.GB11897@opale.iro.umontreal.ca>
+
+Ton code est bien englobe dans un bloc "try ... catch" comme dans
+plearn_main.cc ?
+Sinon, ca dit quoi dans gdb ?
+
+--
+Olivier
+
+On 26 Mar 2007, Jaonary Rabarisoa wrote:
+> Voici d?j? un autre thread sur mes aventures dans le monde de PLearn.
+> Cette fois, mon probl?me est sur le macro PLERROR. Si j'ai bien
+> compris quand un code arrive sur un PLERROR il s'arret en ecrivant un
+> message sur la sortie standard. Dans mon cas j'ai toujours le message
+> suivant :
+> 
+> terminate called after throwing an instance of 'PLearn::PLearnError'
+> Abort
+> 
+> O? est l'erreur ?
+> 
+> Jaonary
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From jaonary at gmail.com  Mon Mar 26 21:40:11 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Mar 2007 21:40:11 +0200
+Subject: [Plearn-core] =?utf-8?q?Comportement_=C3=A9trange_de_PLERROR?=
+In-Reply-To: <20070326191745.GB11897@opale.iro.umontreal.ca>
+References: <c81af8c30703261202t24468d32g856a2f4792ba5087@mail.gmail.com>
+	<20070326191745.GB11897@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30703261240w7b6e5199ka39ba408a138948c@mail.gmail.com>
+
+On 3/26/07, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> Ton code est bien englobe dans un bloc "try ... catch" comme dans
+> plearn_main.cc ?
+> Sinon, ca dit quoi dans gdb ?
+>
+
+Non, je n'ai pas de block try catch dans mon code. Par contre, j'ai un
+peu regard? dans le fichier plerror.cc et j'ai peut ?tre la r?ponse ?
+ma question. Dans la fonction errormsg() il y a les lignes suivantes :
+
+ 76 #ifndef USE_EXCEPTIONS
+ 77 #if USING_MPI
+ 78     *error_stream <<" ERROR from rank=" << PLMPI::rank << ": "
+<<message<<endl;
+ 79 #else //USING_MPI
+ 80     *error_stream <<" ERROR: "<<message<<endl;
+ 81 #endif //USING_MPI
+ 82     exit(1);
+ 83 #else
+ 84 // Commented out as one error message seems to be enough.
+ 85 //    IMP_LOG << "Throwing PLearnError exception: " << message << endl;
+ 86     throw PLearnError(message);
+ 87 #endif
+
+Donc, si USE_EXCEPTIONS est d?fini, j'ai une exception et le message
+est transmis dans l'objet PLearnError, je dois alors avoir un block
+try catch. Sinon j'ai un exit(1) et mon message. Dans mon cas j'avais
+d?fini USE_EXCEPTIONS.
+
+From jaonary at gmail.com  Mon Mar 26 21:42:17 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 26 Mar 2007 21:42:17 +0200
+Subject: [Plearn-core] Initialisation des statnames dans PTester
+In-Reply-To: <20070326191556.GA11897@opale.iro.umontreal.ca>
+References: <c81af8c30703260908p651fa2e2q3a6e22c9d6776156@mail.gmail.com>
+	<20070326162345.GA21528@pig.zood.org>
+	<20070326172515.GA9617@opale.iro.umontreal.ca>
+	<c81af8c30703261158k8c37eb2w9dbe80c3e0baa524@mail.gmail.com>
+	<20070326191556.GA11897@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30703261242x520c704buf3cd122e55816a4b@mail.gmail.com>
+
+> Ca te permet de composer des operations (le * recupere le resultat de
+> l'operation precedente).
+> Par ex. dans l'exemple donne par "plearn help PTester" :
+>    statnames = [ "NLL" "mse" ]
+>    statmask  = [ [ "E[*]" ] [ "test#1-2#.*" ] [ "E[*]" "STDERROR[*]" ] ]
+> il va partir de
+>     [ NLL mse ]
+> puis appliquer E[*] pour donner
+>     [ E[NLL] E[mse] ]
+> puis appliquer test#1-2#.* pour donner
+>     [ test1.E[NLL] test2.E[NLL] test1.E[mse] test2.E[mse] ]
+> puis appliquer E[*] STDERROR[*] pour donner le resultat final :
+>     [  E[test1.E[NLL]]  STDERROR[test1.E[NLL]]  E[test2.E[NLL]]
+>        STDERROR[test2.E[NLL]]
+>        E[test1.E[mse]]  STDERROR[test1.E[mse]]  E[test2.E[mse]]
+>        STDERROR[test2.E[mse]] ]
+>
+Merci pour cette explication bien pr?cise. Maintenant je vois mieux la
+logique de ces statmask.
+
+Jaonary
+
+From jaonary at gmail.com  Wed Mar 28 23:14:24 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Wed, 28 Mar 2007 23:14:24 +0200
+Subject: [Plearn-core] ERROR: In GaussMix::computeMeansAndCovariances - A
+	standard deviation is 'nan'
+Message-ID: <c81af8c30703281414r6f9470a9h1ff25cce1f80624a@mail.gmail.com>
+
+Salut ? tous,
+Je souhaiterai fitter une mixture de gaussian sur mes donn?es. J'ai
+environ 60000 points appartenant ? R^128. Quand je lance
+l'apprentissage avec un nombre de centre inferieur ? 200 tout va bien.
+Par contre quand je demande un plus de centre ( de 400 ? 1000 )
+j'obtients cette erreur. Qu'en pensez vous ?
+D'autre part, j'aimerai savoir la difference entre la classe GaussMix
+et la classe GaussianDistribution ?
+Finalement, tout ce que je voudrai faire c'est de quantifier mon
+espace. Au d?but, j'utilisais la classe KmeansClustering, mais
+celle-ci me donne juste les centres de chaque classe. Etant donn?e que
+je voulais en plus un esp?ce de probabilit? d'appartenance (une
+variance) ? cette classe je pensai que GaussMix ferait l'affaire car
+elle me donne les sigmas. Donc, la derni?re question c'est est-ce que
+GaussMix en adapt? ? ce que je fait ?
+
+Merci ? vous,
+
+Jaonary
+
+From delallea at iro.umontreal.ca  Thu Mar 29 15:46:30 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 29 Mar 2007 09:46:30 -0400
+Subject: [Plearn-core] ERROR: In GaussMix::computeMeansAndCovariances -
+	A standard deviation is 'nan'
+In-Reply-To: <c81af8c30703281414r6f9470a9h1ff25cce1f80624a@mail.gmail.com>
+References: <c81af8c30703281414r6f9470a9h1ff25cce1f80624a@mail.gmail.com>
+Message-ID: <20070329134628.GA21725@opale.iro.umontreal.ca>
+
+Salut,
+
+> Salut ? tous,
+> Je souhaiterai fitter une mixture de gaussian sur mes donn?es. J'ai
+> environ 60000 points appartenant ? R^128. Quand je lance
+> l'apprentissage avec un nombre de centre inferieur ? 200 tout va bien.
+> Par contre quand je demande un plus de centre ( de 400 ? 1000 )
+> j'obtients cette erreur. Qu'en pensez vous ?
+
+Je soup?onne que ?a doit arriver lorsqu'une Gaussienne est associ?e ? 1
+(ou 0) exemple, donc ne peut pas calculer de d?viation standard. Il
+faudrait jouer un peu dans gdb pour s'en assurer. Malheureusement le
+code n'est sans doute pas suffisamment robuste actuellement pour g?rer
+ce cas d?g?n?r?.
+
+
+> D'autre part, j'aimerai savoir la difference entre la classe GaussMix
+> et la classe GaussianDistribution ?
+
+GaussianDistribution est une seule Gaussienne, GaussMix est une mixture.
+
+
+> Finalement, tout ce que je voudrai faire c'est de quantifier mon
+> espace. Au d?but, j'utilisais la classe KmeansClustering, mais
+> celle-ci me donne juste les centres de chaque classe. Etant donn?e que
+> je voulais en plus un esp?ce de probabilit? d'appartenance (une
+> variance) ? cette classe je pensai que GaussMix ferait l'affaire car
+> elle me donne les sigmas. Donc, la derni?re question c'est est-ce que
+> GaussMix en adapt? ? ce que je fait ?
+
+Oui, avec une mixture de Gaussiennes tu peux obtenir P(Classe = j | X =
+x). Mais je ne sais pas si GaussMix te permet de l'obtenir facilement
+(je ne pense pas).
+
+--
+Olivier
+
+
+
+From delallea at iro.umontreal.ca  Thu Mar 29 20:11:51 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 29 Mar 2007 14:11:51 -0400
+Subject: [Plearn-core]
+	=?iso-8859-1?q?=C9limination_de_OptionBase=3A=3Adef?=
+	=?iso-8859-1?q?aultval=5F_et_pytransform_de_declareOption?=
+In-Reply-To: <45F321D3.4080002@apstat.com>
+References: <45F321D3.4080002@apstat.com>
+Message-ID: <20070329181151.GA4800@opale.iro.umontreal.ca>
+
+Tout cela est fort bien, mais est-il n?cessaire d'avoir les option
+levels par d?faut quand on fait un plearn help ?
+
+Ca a tendance ? "polluer" un peu les scripts quand on fait un
+    plearn help MyClass > myclass.plearn
+
+On pourrait :
+- ne pas afficher les niveaux sauf si une certaine option est donn?e
+  (--showlevel par exemple)
+- ou juste ne pas afficher les niveaux "normaux" (et ne distinguer que
+  les niveaux sp?ciaux)
+
+Qu'en penses-tu ?
+
+--
+Olivier
+
+
+From saintmlx at apstat.com  Fri Mar 30 16:15:23 2007
+From: saintmlx at apstat.com (saintmlx)
+Date: Fri, 30 Mar 2007 10:15:23 -0400
+Subject: [Plearn-core]
+ =?iso-8859-1?q?=C9limination_de_OptionBase=3A=3Adef?=
+ =?iso-8859-1?q?aultval=5F_et_pytransform_de_declareOption?=
+In-Reply-To: <20070329181151.GA4800@opale.iro.umontreal.ca>
+References: <45F321D3.4080002@apstat.com>
+	<20070329181151.GA4800@opale.iro.umontreal.ca>
+Message-ID: <460D1B7B.1010404@apstat.com>
+
+Salut Olivier,
+
+?a m'a l'air d'avoir du sens, mais je ne me sens pas press? de faire ce 
+changement: pour l'instant, il n'y a pas consensus par rapport ? la 
+mani?re dont ces levels devraient marcher.  Tout le monde semble 
+d'accord qu'on a besoin d'un m?canisme de ce genre, mais chacun le voit 
+? sa mani?re.  Je crois qu'il est temps de faire un petit meeting entre 
+plearners pour discuter de tout ?a.
+
+Xavier
+
+Olivier Delalleau wrote:
+
+>Tout cela est fort bien, mais est-il n?cessaire d'avoir les option
+>levels par d?faut quand on fait un plearn help ?
+>
+>Ca a tendance ? "polluer" un peu les scripts quand on fait un
+>    plearn help MyClass > myclass.plearn
+>
+>On pourrait :
+>- ne pas afficher les niveaux sauf si une certaine option est donn?e
+>  (--showlevel par exemple)
+>- ou juste ne pas afficher les niveaux "normaux" (et ne distinguer que
+>  les niveaux sp?ciaux)
+>
+>Qu'en penses-tu ?
+>
+>--
+>Olivier
+>  
+>
+
+
+

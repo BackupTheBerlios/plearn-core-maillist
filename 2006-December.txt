@@ -1,0 +1,1277 @@
+From jaonary at gmail.com  Fri Dec  1 16:47:21 2006
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Fri, 1 Dec 2006 16:47:21 +0100
+Subject: [Plearn-core] Creer un kernel accessible dans torch
+Message-ID: <c81af8c30612010747h5b77f2bbw51bdcafbe85e059e@mail.gmail.com>
+
+Bonjour ? tous,
+
+J'ai besoin de cr?er un noyau qui sera utilise dans une svm. Ici j'utilise
+l'interface entre Torch et PLearn.
+Pour cela, je suppose qu'il me faut d?j? cr?er une sous classe de Kernel qui
+fera ce que je veux. Avec la commande pyskelton j'ai d?j? le corps de la
+sous classe et il ne me reste plus qu'? impl?menter les m?thodes. Par
+contre, je ne sais pas trop ce qu'il faut faire au niveau de l'interface
+avec Torch. Qu'est ce que je dois cr?er en plus ? Est ce que je dois aussi
+cr?er une classe qui correspond ? TGaussianKernel ? Une petite explication
+sera la bien venue.
+
+Bien ? vous;
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061201/7453b03f/attachment.html>
+
+From delallea at iro.umontreal.ca  Fri Dec  1 21:26:15 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Fri, 1 Dec 2006 15:26:15 -0500
+Subject: [Plearn-core] Creer un kernel accessible dans torch
+In-Reply-To: <c81af8c30612010747h5b77f2bbw51bdcafbe85e059e@mail.gmail.com>
+References: <c81af8c30612010747h5b77f2bbw51bdcafbe85e059e@mail.gmail.com>
+Message-ID: <20061201202614.GA10011@imagine.iro.umontreal.ca>
+
+Salut,
+
+Tu n'as rien de sp?cial ? faire autant que je me souvienne. Le PLearner
+SVMClassificationTorch prend un PP<Kernel> en option, donc n'importe
+quel kernel PLearn est valide.
+
+--
+Olivier
+
+On 01 Dec 2006, Jaonary Rabarisoa wrote:
+> Bonjour ? tous,
+> 
+> J'ai besoin de cr?er un noyau qui sera utilise dans une svm. Ici j'utilise
+> l'interface entre Torch et PLearn.
+> Pour cela, je suppose qu'il me faut d?j? cr?er une sous classe de Kernel qui
+> fera ce que je veux. Avec la commande pyskelton j'ai d?j? le corps de la sous
+> classe et il ne me reste plus qu'? impl?menter les m?thodes. Par contre, je ne
+> sais pas trop ce qu'il faut faire au niveau de l'interface avec Torch. Qu'est
+> ce que je dois cr?er en plus ? Est ce que je dois aussi cr?er une classe qui
+> correspond ? TGaussianKernel ? Une petite explication sera la bien venue.
+> 
+> Bien ? vous;
+> 
+> Jaonary
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From VINCENTP at IRO.UMONTREAL.CA  Mon Dec 11 22:39:26 2006
+From: VINCENTP at IRO.UMONTREAL.CA (Pascal Vincent)
+Date: Mon, 11 Dec 2006 16:39:26 -0500
+Subject: [Plearn-core] pymake dependency creep
+Message-ID: <845993D2-DA63-4279-91D4-2C1115A25C2D@IRO.UMONTREAL.CA>
+
+Guys, it would be nice if people were able to use pymake (which was  
+once an big-ugly but nevertheless tightly self-contained script) to  
+compile basic plearn executables without requiring everything-but-the- 
+kitchen-sink to be installed on their system.
+
+Alas tentacular dependency seems to be creeping in...
+
+So could the person(s) knowledgable about this please quickly find a  
+way to cut the tentacle responsible for the following situation:
+(In short: compiling plearn shouldn't require numarray and certainly  
+not numarray.linear_algebra.inverse !!! )
+
+Thank you!
+
+pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software  
+distributed under a BSD type license. Report problems to  
+vincentp at iro.umontreal.ca ]
+*** Current platform is: linux-i386
+
+*** No hosts file found: no parallel compilation, using localhost
+     (create a linux-i386.hosts file in your .pymake directory to  
+list hosts for parallel compilation.)
+Traceback (most recent call last):
+   File "/home/pascal/PLearn/scripts/pymake", line 43, in ?
+     pymake.main(args)
+   File "/home/pascal/PLearn/python_modules/plearn/pymake/pymake.py",  
+line 2610, in main
+     execfile( configpath, globals() )
+   File "/home/pascal/PLearn/.pymake/config", line 154, in ?
+     from plearn.pytest.core import pytest_defines
+   File "/home/pascal/PLearn/python_modules/plearn/pytest/ 
+__init__.py", line 9, in ?
+     import core, modes
+   File "/home/pascal/PLearn/python_modules/plearn/pytest/modes.py",  
+line 4, in ?
+     import core, tests
+   File "/home/pascal/PLearn/python_modules/plearn/pytest/tests.py",  
+line 37, in ?
+     from plearn.utilities import pldiff
+   File "/home/pascal/PLearn/python_modules/plearn/utilities/ 
+pldiff.py", line 38, in ?
+     from plearn.math import floats_are_equal
+   File "/home/pascal/PLearn/python_modules/plearn/math/__init__.py",  
+line 33, in ?
+     from arrays import *
+   File "/home/pascal/PLearn/python_modules/plearn/math/arrays.py",  
+line 35, in ?
+     from numarray.linear_algebra import inverse as __numarray_inverse
+ImportError: No module named linear_algebra
+
+
+
+
+Pascal Vincent,
+Professeur adjoint / Assistant Professor,
+D?partement d'Informatique et Recherche Op?rationnelle,
+Universit? de Montr?al.
+Tel: 514-343-7478
+
+
+
+
+
+From dorionc at apstat.com  Tue Dec 12 02:01:06 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Mon, 11 Dec 2006 20:01:06 -0500
+Subject: [Plearn-core] pymake dependency creep
+In-Reply-To: <845993D2-DA63-4279-91D4-2C1115A25C2D@IRO.UMONTREAL.CA>
+References: <845993D2-DA63-4279-91D4-2C1115A25C2D@IRO.UMONTREAL.CA>
+Message-ID: <457DFF52.8010303@apstat.com>
+
+Sorry, my mistake.
+
+It should be fixed under PL6500. I'm sorry I caused such a despair...
+Chris
+
+Pascal Vincent escribi?:
+> Guys, it would be nice if people were able to use pymake (which was 
+> once an big-ugly but nevertheless tightly self-contained script) to 
+> compile basic plearn executables without requiring 
+> everything-but-the-kitchen-sink to be installed on their system.
+>
+> Alas tentacular dependency seems to be creeping in...
+>
+> So could the person(s) knowledgable about this please quickly find a 
+> way to cut the tentacle responsible for the following situation:
+> (In short: compiling plearn shouldn't require numarray and certainly 
+> not numarray.linear_algebra.inverse !!! )
+>
+> Thank you!
+>
+> pymake 2.0 [ (C) 2001, Pascal Vincent. This is free software 
+> distributed under a BSD type license. Report problems to 
+> vincentp at iro.umontreal.ca ]
+> *** Current platform is: linux-i386
+>
+> *** No hosts file found: no parallel compilation, using localhost
+>     (create a linux-i386.hosts file in your .pymake directory to list 
+> hosts for parallel compilation.)
+> Traceback (most recent call last):
+>   File "/home/pascal/PLearn/scripts/pymake", line 43, in ?
+>     pymake.main(args)
+>   File "/home/pascal/PLearn/python_modules/plearn/pymake/pymake.py", 
+> line 2610, in main
+>     execfile( configpath, globals() )
+>   File "/home/pascal/PLearn/.pymake/config", line 154, in ?
+>     from plearn.pytest.core import pytest_defines
+>   File "/home/pascal/PLearn/python_modules/plearn/pytest/__init__.py", 
+> line 9, in ?
+>     import core, modes
+>   File "/home/pascal/PLearn/python_modules/plearn/pytest/modes.py", 
+> line 4, in ?
+>     import core, tests
+>   File "/home/pascal/PLearn/python_modules/plearn/pytest/tests.py", 
+> line 37, in ?
+>     from plearn.utilities import pldiff
+>   File 
+> "/home/pascal/PLearn/python_modules/plearn/utilities/pldiff.py", line 
+> 38, in ?
+>     from plearn.math import floats_are_equal
+>   File "/home/pascal/PLearn/python_modules/plearn/math/__init__.py", 
+> line 33, in ?
+>     from arrays import *
+>   File "/home/pascal/PLearn/python_modules/plearn/math/arrays.py", 
+> line 35, in ?
+>     from numarray.linear_algebra import inverse as __numarray_inverse
+> ImportError: No module named linear_algebra
+>
+>
+>
+>
+> Pascal Vincent,
+> Professeur adjoint / Assistant Professor,
+> D?partement d'Informatique et Recherche Op?rationnelle,
+> Universit? de Montr?al.
+> Tel: 514-343-7478
+>
+>
+>
+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (Desautels Faculty of Management -- McGill)
+M.Sc. Informatique et Recherche Op?rationnelle//
+ApStat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Seamos realistas, pidamos lo imposible!",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061211/782ef396/attachment.html>
+
+From VINCENTP at IRO.UMONTREAL.CA  Tue Dec 12 21:46:36 2006
+From: VINCENTP at IRO.UMONTREAL.CA (Pascal Vincent)
+Date: Tue, 12 Dec 2006 15:46:36 -0500
+Subject: [Plearn-core] pymake dependency creep
+In-Reply-To: <457DFF52.8010303@apstat.com>
+References: <845993D2-DA63-4279-91D4-2C1115A25C2D@IRO.UMONTREAL.CA>
+	<457DFF52.8010303@apstat.com>
+Message-ID: <2BDF6F70-8F36-4038-BDE8-E0E85448E7D4@IRO.UMONTREAL.CA>
+
+
+> Sorry, my mistake.
+>
+> It should be fixed under PL6500. I'm sorry I caused such a despair...
+
+Merci Christian!
+Et ne prends pas mes effets de manche trop au s?rieux... Ce n'est que  
+du th??tre :-)
+
+A+ et bon courage pour ta fin de session.
+
+-- Pascal
+
+
+
+
+From lamblinp at iro.umontreal.ca  Tue Dec 12 22:28:10 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 12 Dec 2006 22:28:10 +0100
+Subject: [Plearn-core] ProgressBar
+Message-ID: <20061212212810.GA30179@pig.zood.org>
+
+Salut,
+
+Y a-t-il une raison pour laquelle ProgressBar ne d?rive pas de
+PPointable ? Je trouve ?a un peu dommage de ne pas pouvoir utiliser ce
+syst?me, ou d'avoir ? utiliser les smart-pointers de boost.
+
+Je ne pense pas que la modification soit difficile ? faire, si vous n'y
+voyez pas d'inconv?nients je peux y proc?der.
+
+? tout de suite,
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue Dec 12 22:32:44 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 12 Dec 2006 22:32:44 +0100
+Subject: [Plearn-core] =?iso-8859-1?q?S=E9rialisation_de_TVec_vide?=
+Message-ID: <20061212213244.GB30179@pig.zood.org>
+
+Salut encore,
+
+Y a-t-il une raison particuli?re pour laquelle la s?rialisation par
+d?faut d'un TVec vide est ??TVec(0 0 *0)?? alors que par d?faut un
+TVec non-vide est s?rialis? par ??n [ elt0 elt1 ... eltn-1 ]?? ?
+
+Il me semble que ??[]?? (ou ? la rigueur ??0 []??) serait plus appropri?
+et moins m?langeant pour les utilisateurs qui voient ?a passer dans
+??plearn help?? et qui se demandent comment modifier ?a pour y mettre
+quelque chose de sens?.
+
+Vous en pensez quoi ?
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed Dec 13 15:01:52 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 13 Dec 2006 09:01:52 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?S=E9rialisation_de_TVec_vide?=
+In-Reply-To: <20061212213244.GB30179@pig.zood.org>
+References: <20061212213244.GB30179@pig.zood.org>
+Message-ID: <20061213140152.GA31619@opale.iro.umontreal.ca>
+
+Je suis d'accord avec toi.
+
+--
+Olivier
+
+On 12 Dec 2006, Pascal Lamblin wrote:
+> Salut encore,
+> 
+> Y a-t-il une raison particuli?re pour laquelle la s?rialisation par
+> d?faut d'un TVec vide est ??TVec(0 0 *0)?? alors que par d?faut un
+> TVec non-vide est s?rialis? par ??n [ elt0 elt1 ... eltn-1 ]?? ?
+> 
+> Il me semble que ??[]?? (ou ? la rigueur ??0 []??) serait plus appropri?
+> et moins m?langeant pour les utilisateurs qui voient ?a passer dans
+> ??plearn help?? et qui se demandent comment modifier ?a pour y mettre
+> quelque chose de sens?.
+> 
+> Vous en pensez quoi ?
+> 
+> ? plus,
+
+
+From lamblinp at iro.umontreal.ca  Wed Dec 13 22:32:11 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 13 Dec 2006 22:32:11 +0100
+Subject: [Plearn-core] ProgressBar
+In-Reply-To: <20061212212810.GA30179@pig.zood.org>
+References: <20061212212810.GA30179@pig.zood.org>
+Message-ID: <20061213213211.GA8292@pig.zood.org>
+
+On Tue, Dec 12, 2006, Pascal Lamblin wrote:
+> Y a-t-il une raison pour laquelle ProgressBar ne d?rive pas de
+> PPointable ? Je trouve ?a un peu dommage de ne pas pouvoir utiliser ce
+> syst?me, ou d'avoir ? utiliser les smart-pointers de boost.
+
+Je viens de voir que ProgressBar contient un PP<ProgressBarPlugin> (qui
+peut ?tre de diff?rents types). Est-ce que c'est g?nant d'avoir
+ProgressBar ?galement PPointable ?
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Wed Dec 13 22:34:41 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 13 Dec 2006 22:34:41 +0100
+Subject: [Plearn-core] =?iso-8859-1?q?S=E9rialisation_de_TVec_vide?=
+In-Reply-To: <20061213140152.GA31619@opale.iro.umontreal.ca>
+References: <20061212213244.GB30179@pig.zood.org>
+	<20061213140152.GA31619@opale.iro.umontreal.ca>
+Message-ID: <20061213213441.GB8292@pig.zood.org>
+
+On Wed, Dec 13, 2006, Olivier Delalleau wrote:
+> Je suis d'accord avec toi.
+
+Merci :)
+
+Avec la b?n?diction de Pascal, on a proc?d? ? cette modification hier
+soir : la s?rialisation d'un TVec nul est d?sormais par d?faut ??[]??.
+
+J'ai modifi? les r?sultats des tests qui foiraient en cons?quence,
+peut-?tre qu'il faudra faire ?a ? ApStat aussi.
+
+? plus,
+-- 
+Pascal
+
+
+From pascal at apstat.com  Wed Dec 13 23:00:01 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 13 Dec 2006 17:00:01 -0500
+Subject: [Plearn-core] ProgressBar
+In-Reply-To: <20061213213211.GA8292@pig.zood.org>
+References: <20061212212810.GA30179@pig.zood.org>
+	<20061213213211.GA8292@pig.zood.org>
+Message-ID: <61CA4092-9D7A-4E4A-AF2F-491F4B6158A5@apstat.com>
+
+> On Tue, Dec 12, 2006, Pascal Lamblin wrote:
+>> Y a-t-il une raison pour laquelle ProgressBar ne d?rive pas de
+>> PPointable ? Je trouve ?a un peu dommage de ne pas pouvoir  
+>> utiliser ce
+>> syst?me, ou d'avoir ? utiliser les smart-pointers de boost.
+>
+> Je viens de voir que ProgressBar contient un PP<ProgressBarPlugin>  
+> (qui
+> peut ?tre de diff?rents types). Est-ce que c'est g?nant d'avoir
+> ProgressBar ?galement PPointable ?
+
+Non, ?a ne devrait pas g?ner.
+
+-- Pascal V.
+
+
+
+
+
+
+From chapados at apstat.com  Wed Dec 13 23:11:08 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Wed, 13 Dec 2006 17:11:08 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?S=E9rialisation_de_TVec_vide?=
+In-Reply-To: <20061213213441.GB8292@pig.zood.org>
+References: <20061212213244.GB30179@pig.zood.org>	<20061213140152.GA31619@opale.iro.umontreal.ca>
+	<20061213213441.GB8292@pig.zood.org>
+Message-ID: <45807A7C.6010101@apstat.com>
+
+J'ai modifi? les tests chez ApSTAT.  Il n'y en avait pas trop qui 
+?chouaient ? cause de cela.
+
+Pascal Lamblin wrote:
+> On Wed, Dec 13, 2006, Olivier Delalleau wrote:
+>   
+>> Je suis d'accord avec toi.
+>>     
+>
+> Merci :)
+>
+> Avec la b?n?diction de Pascal, on a proc?d? ? cette modification hier
+> soir : la s?rialisation d'un TVec nul est d?sormais par d?faut ? [] ?.
+>
+> J'ai modifi? les r?sultats des tests qui foiraient en cons?quence,
+> peut-?tre qu'il faudra faire ?a ? ApStat aussi.
+>
+> ? plus,
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Fri Dec 15 03:36:58 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 15 Dec 2006 03:36:58 +0100
+Subject: [Plearn-core] ProgressBar
+In-Reply-To: <20061212212810.GA30179@pig.zood.org>
+References: <20061212212810.GA30179@pig.zood.org>
+Message-ID: <20061215023657.GA15677@pig.zood.org>
+
+On Tue, Dec 12, 2006, Pascal Lamblin wrote:
+> Y a-t-il une raison pour laquelle ProgressBar ne d?rive pas de
+> PPointable ? Je trouve ?a un peu dommage de ne pas pouvoir utiliser ce
+> syst?me, ou d'avoir ? utiliser les smart-pointers de boost.
+> 
+> Je ne pense pas que la modification soit difficile ? faire, si vous n'y
+> voyez pas d'inconv?nients je peux y proc?der.
+
+Fait, test? et committ?.
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Fri Dec 15 15:39:22 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 15 Dec 2006 09:39:22 -0500
+Subject: [Plearn-core] ProgressBar
+In-Reply-To: <20061215023657.GA15677@pig.zood.org>
+References: <20061212212810.GA30179@pig.zood.org>
+	<20061215023657.GA15677@pig.zood.org>
+Message-ID: <4582B39A.7000807@apstat.com>
+
+J'utilise beaucoup de progress bars ? l'int?rieur de boost::scoped_ptr.  
+Est-ce que ?a marche quand m?me si ?a d?rive de PPointable?
+
+Pascal Lamblin wrote:
+> On Tue, Dec 12, 2006, Pascal Lamblin wrote:
+>   
+>> Y a-t-il une raison pour laquelle ProgressBar ne d?rive pas de
+>> PPointable ? Je trouve ?a un peu dommage de ne pas pouvoir utiliser ce
+>> syst?me, ou d'avoir ? utiliser les smart-pointers de boost.
+>>
+>> Je ne pense pas que la modification soit difficile ? faire, si vous n'y
+>> voyez pas d'inconv?nients je peux y proc?der.
+>>     
+>
+> Fait, test? et committ?.
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061215/7a4055da/attachment.html>
+
+From chapados at apstat.com  Fri Dec 15 15:44:52 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Fri, 15 Dec 2006 09:44:52 -0500
+Subject: [Plearn-core] Remarque C++
+Message-ID: <4582B4E4.6020909@apstat.com>
+
+Bonjour ? tous,
+
+Petite remarque pour le b?n?fice commun. Dans le code que Pascal Lamblin 
+a arrang? p/r ? ProgressBar, il y en avait beaucoup de la forme:
+
+    if (pb)
+        delete pb;
+
+En C++, il *n'est jamais n?cessaire de v?rifier si un pointeur est nul 
+avant de faire "delete"*. Un simple "delete pb" aurait ?t? suffisant.  
+Il y a peut-?tre confusion, car en C il est essentiel de v?rifier la 
+validit? d'un pointeur avant de faire "free(p)".
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20061215/2ea20ea9/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Fri Dec 15 17:15:45 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 15 Dec 2006 17:15:45 +0100
+Subject: [Plearn-core] ProgressBar
+In-Reply-To: <4582B39A.7000807@apstat.com>
+References: <20061212212810.GA30179@pig.zood.org>
+	<20061215023657.GA15677@pig.zood.org> <4582B39A.7000807@apstat.com>
+Message-ID: <20061215161545.GA20013@pig.zood.org>
+
+On Fri, Dec 15, 2006, Nicolas Chapados wrote:
+> J'utilise beaucoup de progress bars ? l'int?rieur de boost::scoped_ptr.  
+> Est-ce que ?a marche quand m?me si ?a d?rive de PPointable?
+
+Je ne sais pas, je n'ai jamais utilis? de boost::scoped_ptr, mais je
+doute que le simple fait de rajouter une classe parent emp?che
+scoped_ptr de fonctionner.
+
+Il est possible que tu aies des probl?mes si tu as des PP et des
+scoped_ptr qui pointent vers la m?me ProgressBar, l'un des deux
+m?canismes pourrait deleter le pointeur alors que l'autre compte encore
+dessus.
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Sun Dec 17 13:08:39 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Sun, 17 Dec 2006 13:08:39 +0100
+Subject: [Plearn-core] =?iso-8859-1?q?=E0_propos_de_TMat=5Fmaths=5Fimpl?=
+Message-ID: <20061217120839.GA31569@pig.zood.org>
+
+Yo,
+
+Tout en d?buguant du code qui n'a rien ? voir, j'ai commenc? ? jeter un
+coup d'oeil ? ce gros me^H^Hbourbier qu'est TMat_maths_impl.h, avec
+notamment environ 350 fonctions pour 6500 lignes de code.
+
+Il y a des choses que l'on peut s?parer simplement (tout ce qui tourne
+autour de Cholesky, par exemple), d'autres qui sont beaucoup moins
+?videntes (est-ce qu'on met les op?rations simples, genre addition ou
+multiplication par un scalaire, avec les autres op?rations d'alg?bre
+lin?aire ? avec les op?rations ? ?l?ment par ?l?ment ? ? avec les
+op?rateurs + et *, qui font ?a ? par exemple).
+
+En ce qui concerne la nomenclature, j'ai jet? un coup d'oeil ?
+boost::MPL qui m'a l'air ? c?t? de la plaque, ? boost::uBLAS et ?
+lapack++ qui ont l'air plus int?ressants. Leurs conventions d'appel :
+
+  - uBLAS retourne toujours le r?sultat de l'op?ration, avec des
+mots-cl?s et du vaudou pour ne pas r?assigner de m?moire si
+l'?l?ment ? gauche du signe = est pr?t ? recevoir le r?sultat. On ne
+peut pas indiquer de scaling dans les op?rations de multiplication
+mat*mat ou mat*vec, donc une des choses les plus compliqu?es qu'on peut
+faire est :
+
+    // ordinary matrix product
+    template<class M, class E1, class E2>
+    M prod (const matrix_expression<E1> &e1,
+            const matrix_expression<E2> &e2);
+
+(voir <http://boost.org/libs/numeric/ublas/doc/matrix_expression.htm>)
+
+
+  - lapack++ ne passe pas toujours les arguments dans le m?me
+ordre, on peut avoir des choses comme : vecteurs/matrices d'entr?e,
+vecteur/matrice de r?sultat, param?tres scalaires (avec des valeurs par
+d?faut), genre :
+
+    // Perform the matrix-matrix operation C := alpha*A*B + beta*C where
+    // A and B are used in either non-transposed or transposed form,
+    // depending on the function arguments.
+    //
+    // Internally this uses dgemm .
+    //
+    // Parameters:
+    //    transpose_A   If true, use transposed A, i.e. A' instead of A. If
+    //                  false, use A directly in non-transposed form.
+    //    transpose_B   If true, use transposed B, i.e. B' instead of B. If
+    //                  false, use B directly in non-transposed form.
+
+    void Blas_Mat_Mat_Mult ( const LaGenMatDouble & A,
+                             const LaGenMatDouble & B,
+                             LaGenMatDouble & C,
+                             bool transpose_A = false,
+                             bool transpose_B = false,
+                             double alpha = 1.0,
+                             double beta = 0.0 );
+
+Mais aussi :
+
+    // Perform one of the matrix-matrix operations
+    //
+    //    * C := alpha*A*A' + beta*C if right_transposed is true
+    //    * C := alpha*A'*A + beta*C if right_transposed is false
+    //
+    // with A' as transposition of A.
+
+    void Blas_R1_Update ( LaSymmMatDouble & C,
+                          LaGenMatDouble & A,
+                          double alpha = 1.0,
+                          double beta = 1.0,
+                          bool right_transposed = true );
+
+o? c'est le premier param?tre qui est mis ? jour. On pourrait dire que
+c'est toujours celui qui s'appelle C, m?me s'il n'est jamais ? la m?me
+place, mais il y a des cas pi?geux :
+
+    // Combined vector scaling and addition (saxpy).
+    //
+    // Combined vector scaling and addition: dy = dy + da * dx 
+
+    void Blas_Add_Mult ( LaVectorDouble & dy,
+                         double da,
+                         const LaVectorDouble & dx );
+
+Du coup, ?a soul?ve ? nouveau les questions suivantes :
+  - o? c'est qu'on met ce param?tre qui est updat? ?
+  - est-ce qu'on essaye de suivre une nomenclature ext?rieure, ou on se
+    contente d'?tre coh?rent entre nous ?
+
+Merci d'avance pour vos conseils,
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Mon Dec 18 09:51:32 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 18 Dec 2006 03:51:32 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?=E0_propos_de_TMat=5Fmaths=5Fimpl?=
+In-Reply-To: <20061217120839.GA31569@pig.zood.org>
+References: <20061217120839.GA31569@pig.zood.org>
+Message-ID: <20061218085130.GA19144@opale.iro.umontreal.ca>
+
+J'avoue que je n'ai pas trop le temps de regarder ?a en d?tail, et j'en
+profite pour hijacker ton thread avec une remarque en passant :
+removeElement (pour un TVec) est d?clar?e dans TVec_impl.h et
+impl?ment?e dans TMat_impl.h.
+
+--
+Olivier
+
+On 17 Dec 2006, Pascal Lamblin wrote:
+> Yo,
+> 
+> Tout en d?buguant du code qui n'a rien ? voir, j'ai commenc? ? jeter un
+> coup d'oeil ? ce gros me^H^Hbourbier qu'est TMat_maths_impl.h, avec
+> notamment environ 350 fonctions pour 6500 lignes de code.
+> 
+> Il y a des choses que l'on peut s?parer simplement (tout ce qui tourne
+> autour de Cholesky, par exemple), d'autres qui sont beaucoup moins
+> ?videntes (est-ce qu'on met les op?rations simples, genre addition ou
+> multiplication par un scalaire, avec les autres op?rations d'alg?bre
+> lin?aire ? avec les op?rations ? ?l?ment par ?l?ment ? ? avec les
+> op?rateurs + et *, qui font ?a ? par exemple).
+> 
+> En ce qui concerne la nomenclature, j'ai jet? un coup d'oeil ?
+> boost::MPL qui m'a l'air ? c?t? de la plaque, ? boost::uBLAS et ?
+> lapack++ qui ont l'air plus int?ressants. Leurs conventions d'appel :
+> 
+>   - uBLAS retourne toujours le r?sultat de l'op?ration, avec des
+> mots-cl?s et du vaudou pour ne pas r?assigner de m?moire si
+> l'?l?ment ? gauche du signe = est pr?t ? recevoir le r?sultat. On ne
+> peut pas indiquer de scaling dans les op?rations de multiplication
+> mat*mat ou mat*vec, donc une des choses les plus compliqu?es qu'on peut
+> faire est :
+> 
+>     // ordinary matrix product
+>     template<class M, class E1, class E2>
+>     M prod (const matrix_expression<E1> &e1,
+>             const matrix_expression<E2> &e2);
+> 
+> (voir <http://boost.org/libs/numeric/ublas/doc/matrix_expression.htm>)
+> 
+> 
+>   - lapack++ ne passe pas toujours les arguments dans le m?me
+> ordre, on peut avoir des choses comme : vecteurs/matrices d'entr?e,
+> vecteur/matrice de r?sultat, param?tres scalaires (avec des valeurs par
+> d?faut), genre :
+> 
+>     // Perform the matrix-matrix operation C := alpha*A*B + beta*C where
+>     // A and B are used in either non-transposed or transposed form,
+>     // depending on the function arguments.
+>     //
+>     // Internally this uses dgemm .
+>     //
+>     // Parameters:
+>     //    transpose_A   If true, use transposed A, i.e. A' instead of A. If
+>     //                  false, use A directly in non-transposed form.
+>     //    transpose_B   If true, use transposed B, i.e. B' instead of B. If
+>     //                  false, use B directly in non-transposed form.
+> 
+>     void Blas_Mat_Mat_Mult ( const LaGenMatDouble & A,
+>                              const LaGenMatDouble & B,
+>                              LaGenMatDouble & C,
+>                              bool transpose_A = false,
+>                              bool transpose_B = false,
+>                              double alpha = 1.0,
+>                              double beta = 0.0 );
+> 
+> Mais aussi :
+> 
+>     // Perform one of the matrix-matrix operations
+>     //
+>     //    * C := alpha*A*A' + beta*C if right_transposed is true
+>     //    * C := alpha*A'*A + beta*C if right_transposed is false
+>     //
+>     // with A' as transposition of A.
+> 
+>     void Blas_R1_Update ( LaSymmMatDouble & C,
+>                           LaGenMatDouble & A,
+>                           double alpha = 1.0,
+>                           double beta = 1.0,
+>                           bool right_transposed = true );
+> 
+> o? c'est le premier param?tre qui est mis ? jour. On pourrait dire que
+> c'est toujours celui qui s'appelle C, m?me s'il n'est jamais ? la m?me
+> place, mais il y a des cas pi?geux :
+> 
+>     // Combined vector scaling and addition (saxpy).
+>     //
+>     // Combined vector scaling and addition: dy = dy + da * dx 
+> 
+>     void Blas_Add_Mult ( LaVectorDouble & dy,
+>                          double da,
+>                          const LaVectorDouble & dx );
+> 
+> Du coup, ?a soul?ve ? nouveau les questions suivantes :
+>   - o? c'est qu'on met ce param?tre qui est updat? ?
+>   - est-ce qu'on essaye de suivre une nomenclature ext?rieure, ou on se
+>     contente d'?tre coh?rent entre nous ?
+> 
+> Merci d'avance pour vos conseils,
+> 
+
+
+From pascal at apstat.com  Mon Dec 18 16:35:38 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 18 Dec 2006 10:35:38 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?=E0_propos_de_TMat=5Fmaths=5Fimpl?=
+In-Reply-To: <20061217120839.GA31569@pig.zood.org>
+References: <20061217120839.GA31569@pig.zood.org>
+Message-ID: <A0D7C114-0037-4655-BFDF-186FD6BEFD48@apstat.com>
+
+> Yo,
+>
+> Tout en d?buguant du code qui n'a rien ? voir, j'ai commenc? ?  
+> jeter un
+> coup d'oeil ? ce gros me^H^Hbourbier qu'est TMat_maths_impl.h, avec
+> notamment environ 350 fonctions pour 6500 lignes de code.
+>
+> Il y a des choses que l'on peut s?parer simplement (tout ce qui tourne
+> autour de Cholesky, par exemple), d'autres qui sont beaucoup moins
+> ?videntes (est-ce qu'on met les op?rations simples, genre addition ou
+> multiplication par un scalaire, avec les autres op?rations d'alg?bre
+> lin?aire ? avec les op?rations ? ?l?ment par ?l?ment ? ? avec les
+> op?rateurs + et *, qui font ?a ? par exemple).
+
+Je penche pour mettre les op?rations simples genre addition ou  
+multiplication par un scalaire avec les op?rations ?l?ment par  
+?l?ment, ou bien alors dans leur propre fichier s?par?. Dans tous les  
+cas, les op?rateurs devraient aller ensemble avec les fonctions qui  
+font des choses similaires.
+Note aussi que comme il y a les + scalaire il y a aussi les +vecteur- 
+ligne ou +vecteur-colonne, qui sont conceptuellement similaires aux  
+op?rations +scalaire dans leur relation aux op?rations ?l?ment par  
+?l?ment.
+
+>
+> En ce qui concerne la nomenclature, j'ai jet? un coup d'oeil ?
+> boost::MPL qui m'a l'air ? c?t? de la plaque,
+
+Pourquoi boost::MPL?? Tu ne voulais pas dire plut?t multi_array?
+
+
+> ? boost::uBLAS et ?
+> lapack++ qui ont l'air plus int?ressants. Leurs conventions d'appel :
+>
+>   - uBLAS retourne toujours le r?sultat de l'op?ration, avec des
+> mots-cl?s et du vaudou pour ne pas r?assigner de m?moire si
+> l'?l?ment ? gauche du signe = est pr?t ? recevoir le r?sultat.
+
+Oui, c'est du Vaudou C++ utilisant des expression templates, +-  
+inspir? des techniques de Blitz++ (une autre librairie de matrices/ 
+vecteurs)
+C'est hot, mais ?a pose parfois des probl?mes au compilateur, et  
+aussi aux ?tres humains qui doivent comprendre/debugger ce genre de  
+code...
+
+Je cite: """"
+Compilation times. It is also a well known fact, that expression  
+templates challenge currently available compilers.  """
+
+>   - lapack++ ne passe pas toujours les arguments dans le m?me
+> ordre, on peut avoir des choses comme : vecteurs/matrices d'entr?e,
+> vecteur/matrice de r?sultat, param?tres scalaires (avec des valeurs  
+> par
+> d?faut)
+
+Par ailleurs je note que sur la page de lapack++ il est ?crit:
+"superseded by the Template Numerical Toolkit (TNT)"
+
+lapack++ semble d?j? deprecated...
+
+
+> Du coup, ?a soul?ve ? nouveau les questions suivantes :
+>   - o? c'est qu'on met ce param?tre qui est updat? ?
+
+Je r?affirme mon opinion: en premier. C'est clair, c'est simple,  
+c'est invariant. ?a permet des valeurs par d?faut pour les arguments  
+? la fin. C'est l'ordre dans lequel on ?crirait les ?l?ments si on  
+?crivait l'expression avec un signe = (ou +=).
+
+>   - est-ce qu'on essaye de suivre une nomenclature ext?rieure, ou  
+> on se
+>     contente d'?tre coh?rent entre nous ?
+
+Pour l'instant il me semble qu'on n'a pas encore trouv? d'exemple de  
+nomenclature ext?rieure qui soit franchement limpide et ait un  
+potentiel convaincant de "standard" effectuant un appel de blas/lapack.
+
+Note que comme source d'inspiration il y aurait aussi:
+
+Blitz++ (expression template encore davantage vaudou que boost::uBLAS)
+boost::multi_array
+POOMA
+MTL
+TNT
+
+Je pencherais plut?t pour viser une coh?rence interne pour notre  
+nomenclature, en gardant ? l'esprit que les appels puissent  
+correspondre ? des sp?cialisations blas (appels fortran) possibles.
+
+Note: pour distinguer les fonctions qui prennent l'argument ?  
+modifier comme premier argument de celles qui retournent un r?sultat  
+Vec ou Mat, je sugg?re de pr?fixer toutes celles qui retournent leur  
+r?sultat par un pr?fixe explicite (ex: ret_ )
+
+
+-- Pascal
+
+
+
+
+From vincentp at iro.umontreal.ca  Mon Dec 18 18:13:13 2006
+From: vincentp at iro.umontreal.ca (Pascal Vincent)
+Date: Mon, 18 Dec 2006 12:13:13 -0500
+Subject: [Plearn-core] (no subject)
+Message-ID: <F5CE74E9-FCA9-43BA-9725-16C5367BB12A@iro.umontreal.ca>
+
+Suite ? notre r?union de vendredi, j'ai cr?? la page TWiki suivante,  
+dont je reproduis le contenu (actuel) ci-dessous. N'h?sitez pas ? y  
+apporter des changements.
+
+http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/ 
+PLearnImprovementActions
+
+
+-- Pascal Vincent
+
+---------------------
+  Actions d?cid?es pour am?liorer PLearn
+
+Suite ? notre r?union du 15 d?cembre 2006, voici ce qui a ?t?  
+discutt?, et ma suggestion initiale de qui pourrait faire quoi, bas?  
+sur ce qui m'a sembl? ?tre les int?r?ts/responsabilit?s/expertises de  
+chacun (c'est une assignation provisoire, sentez-vous libre de  
+r?assigner/ajouter/modifier/changer les priorit?s). Je me suis aussi  
+inspir? de certaines des choses que vous aviez not?es sur la page  
+PLearnImprovementWishList. J'ai s?rement oubli? des choses, alors  
+n'h?sitez pas ? mettre ? jour cette liste.
+
+Note: quand je parle d'?criture de doc dans ce qui suit, je veux dire  
+?criture sous forme de guide/how-to ? rajouter dans un des  
+*_guide.tex dans PLearn/doc (ou cr?er un nouveau *_guide.tex si vous  
+jugez que c'est apropri?, ? condition qu'on n'en cr?e pas 150...)
+
++++ Pascal Vincent
+
+Diminution du "cognitive load" li? au grand nombre de fichiers/classes:
+
+     * Cr?er des sous-r?pertoires DEPRECATED, EXTRA, EXPERIMENTAL  
+dans chaque r?pertoire de PLearn de mani?re ? ne laisser qu'un petit  
+nombre de classes "classiques"/"simples" dans le r?pertoire d'origine.
+     * D?cider avec les autres qu'est-ce qu'on d?place o?.
+     * D?placer les splitters dans leur propre r?pertoire.
+
+Diminution du "cognitive load" li? au grand nombre d'options  
+exotiques dans les classes:
+
+     * Am?lioration du syst?me d'aide en ligne avec l'introduction  
+d'un "help level" pour n'afficher que les choses essentielles/simples/ 
+?videntes au premier niveau.
+     * Possibilit? de changer le help-level d'options des classes  
+parents dans les sous-classes.
+
+Divers:
+
+     * R?instaurer la possibilit? de faire 'plearn vmat view' plut?t  
+que 'plearn vmat_view' (qui semble avoir cr?? une comotion au travers  
+de toute la communaut? PLearn! Mea culpa)
+     * ajouter possibilit? d'afficher graphe de Var depuis gdb.
+     * Extension du protocole de plearn server pour transmettre les  
+update de progress-bar, et les ?critures vers pout/perr et le syst?me  
+de logs.
+     * parall?lisation (avec Xavier Saint Mleux)
+
+Documentation:
+
+     * Compl?ter et clarifier la doc sur syst?me de Var / Func /  
+Optimiseurs
+     * Ecrire un minimum de doc sur mes scripts de PLearn/scripts  
+(ex: pyplot)
+
++++ Nicolas Chapados
+
+     * Changer le seed par d?faut de PLearner pour avoir par d?faut  
+des exp?riences reproductibles.
+     * Faire en sorte que l'utilisation de python2.3 ne soit pas  
+hardcod? dans PythonIncludes?.h
+     * Migrer les python code snippets vers numpy.
+     * Faire en sorte qu'on soit capable de linker avec les python  
+code snippets sous Mac OS X.
+     * Comprendre ce qui se passe avec doxygen, et faire en sorte  
+qu'il ne prenne pas 3 jours ? g?n?re la doc.
+     * Ecrire un CSVVMatrix (similaire ? AsciiVMatrix?).
+
++++ Hugo Larochelle
+
+     * Ecrire la doc sur l'installation/configuration/utilisation des  
+outils pour le langage incluant un plearn_lang et les affaires de  
+WordNet?, setup des bases de donn?es, les formats de fichiers  
+sp?cifiques utilis?s etc... Le but est que qqn de l'ext?rieur puisse  
+facilement reproduire nos exp?riences de langage en partant de z?ro  
+(rien d'install? sur son syst?me).
+     * Maintenir ? jour la doc d'install g?n?rale sur linux.
+     * Se concerter avec Pascal V. et Nicolas C. pour voir comment on  
+pourrait ? la fois effectuer une cure d'ammaigrissement ? VMatrix, et  
+la rendre plus flexible/pratique pour les applications telles que le  
+langage.
+
++++ Pascal Lamblin
+
+Possiblement, investiguer le syst?me de bug-tracking/feature-request  
+de BerliOS? pour s'en servir pour cette liste de TODO.
+
+Nettoyage de TMat_maths_impl.h et cie:
+
+     * Etablir une nomenclature et une division plus claire et  
+congruente pour les fonctions. Produire une liste de transformations  
+? effectuer de la forme: prototype_de_fonction_actuel ->  
+nouveau_prototype (incluant les changement de nom de fonction,  
+d'ordre de param?tres, voire de noms de param?tres).
+     * Evaluer les outils de transformation de code qui pourraient  
+?tre utilis?s pour effectuer la transition (voir avec Pascal V. pour  
+pytransform, voir si il y a qqch de plus complet dans Eclipse, ou  
+autre).
+
+Nettoyage de pymake.config.model:
+
+     * Eliminer les paths hard-cod?s. Les remplacer dans la mesure du  
+possible par l'utilisation des variables d'environnement pr?vues ?  
+cet effet par l'OS (comme LD_LIBRARY_PATH, LIBRARY_PATH, CPATH.  
+Adapter la doc d'install pour indiquer aux gens quoi y ajouter ? ces  
+variables), et/ou par la d?couverte automatique des libraireis  
+install?es sur le syst?me et la production de message d'erreurs clairs.
+
+Doc:
+
+     * Ecrire un minimum de doc sur les nouvelles op?rations de Mat/Vec
+     * Ecrire la doc sur les OnlineLearningModule?, deep belief nets,  
+etc...
+
++++ Olivier Delalleau
+
+     * Updater le guide d'installation sous Windows avec cygwin/mingw  
+et rajouter une section concernant l'install avec MS Visual.
+     * Se concerter avec Pascal V. sur de possibles r?oganisations/ 
+clarifications de PDistribution
+     * Ecrire la doc sur les PDistribution.
+     * Ajouter de l'info dans le guide d'install sur les ?tapes ?  
+effectuer pour pouvoir utiliser Torch avec PLearn.
+     * Doc d'utilisation de torch depuis plearn.
+
++++ Pierre-Antoine
+
+     * Continuer ? utiliser PLearn et ? nous faire part de ce qu'on  
+peut am?liorer!
+
+
+
+From vincentp at iro.umontreal.ca  Mon Dec 18 22:55:49 2006
+From: vincentp at iro.umontreal.ca (Pascal Vincent)
+Date: Mon, 18 Dec 2006 16:55:49 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?Liste_de_TODO=2C_faisant_suite_=E0_l?=
+ =?iso-8859-1?q?a_r=E9union_PLearn_de_vendredi?=
+Message-ID: <D7EC1D0D-DC8B-4EB9-B752-0F5557B9D44B@iro.umontreal.ca>
+
+Merci d'avoir particip? ? la r?union de vendredi pour orienter  les  
+d?velopements futurs de PLearn!
+
+Suite ? cette r?union, j'ai cr?? la page TWiki suivante, dont je  
+reproduis le contenu (actuel) ci-dessous. Ce n'est pas tant un r?sum?  
+de la r?union qu'une liste de ToDo faisant suite aux points (parfois  
+de d?tail) et priorit?s qui m'ont sembl? ?merger de la r?union.  
+N'h?sitez pas ? y apporter des changements.
+
+http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/PLearn/ 
+PLearnImprovementActions
+
+-- Pascal Vincent
+
+---------------------
+  Actions d?cid?es pour am?liorer PLearn
+
+Suite ? notre r?union du 15 d?cembre 2006, voici ce qui a ?t?  
+discutt?, et ma suggestion initiale de qui pourrait faire quoi, bas?  
+sur ce qui m'a sembl? ?tre les int?r?ts/responsabilit?s/expertises de  
+chacun (c'est une assignation provisoire, sentez-vous libre de  
+r?assigner/ajouter/modifier/changer les priorit?s). Je me suis aussi  
+inspir? de certaines des choses que vous aviez not?es sur la page  
+PLearnImprovementWishList. J'ai s?rement oubli? des choses, alors  
+n'h?sitez pas ? mettre ? jour cette liste.
+
+Note: quand je parle d'?criture de doc dans ce qui suit, je veux dire  
+?criture sous forme de guide/how-to ? rajouter dans un des  
+*_guide.tex dans PLearn/doc (ou cr?er un nouveau *_guide.tex si vous  
+jugez que c'est apropri?, ? condition qu'on n'en cr?e pas 150...)
+
++++ Pascal Vincent
+
+Diminution du "cognitive load" li? au grand nombre de fichiers/classes:
+
+     * Cr?er des sous-r?pertoires DEPRECATED, EXTRA, EXPERIMENTAL  
+dans chaque r?pertoire de PLearn de mani?re ? ne laisser qu'un petit  
+nombre de classes "classiques"/"simples" dans le r?pertoire d'origine.
+     * D?cider avec les autres qu'est-ce qu'on d?place o?.
+     * D?placer les splitters dans leur propre r?pertoire.
+
+Diminution du "cognitive load" li? au grand nombre d'options  
+exotiques dans les classes:
+
+     * Am?lioration du syst?me d'aide en ligne avec l'introduction  
+d'un "help level" pour n'afficher que les choses essentielles/simples/ 
+?videntes au premier niveau.
+     * Possibilit? de changer le help-level d'options des classes  
+parents dans les sous-classes.
+
+Divers:
+
+     * R?instaurer la possibilit? de faire 'plearn vmat view' plut?t  
+que 'plearn vmat_view' (qui semble avoir cr?? une comotion au travers  
+de toute la communaut? PLearn! Mea culpa)
+     * ajouter possibilit? d'afficher graphe de Var depuis gdb.
+     * Extension du protocole de plearn server pour transmettre les  
+update de progress-bar, et les ?critures vers pout/perr et le syst?me  
+de logs.
+     * parall?lisation (avec Xavier Saint Mleux)
+
+Documentation:
+
+     * Compl?ter et clarifier la doc sur syst?me de Var / Func /  
+Optimiseurs
+     * Ecrire un minimum de doc sur mes scripts de PLearn/scripts  
+(ex: pyplot)
+
++++ Nicolas Chapados
+
+     * Changer le seed par d?faut de PLearner pour avoir par d?faut  
+des exp?riences reproductibles.
+     * Faire en sorte que l'utilisation de python2.3 ne soit pas  
+hardcod? dans PythonIncludes?.h
+     * Migrer les python code snippets vers numpy.
+     * Faire en sorte qu'on soit capable de linker avec les python  
+code snippets sous Mac OS X.
+     * Comprendre ce qui se passe avec doxygen, et faire en sorte  
+qu'il ne prenne pas 3 jours ? g?n?re la doc.
+     * Ecrire un CSVVMatrix (similaire ? AsciiVMatrix?).
+
++++ Hugo Larochelle
+
+     * Ecrire la doc sur l'installation/configuration/utilisation des  
+outils pour le langage incluant un plearn_lang et les affaires de  
+WordNet?, setup des bases de donn?es, les formats de fichiers  
+sp?cifiques utilis?s etc... Le but est que qqn de l'ext?rieur puisse  
+facilement reproduire nos exp?riences de langage en partant de z?ro  
+(rien d'install? sur son syst?me).
+     * Maintenir ? jour la doc d'install g?n?rale sur linux.
+     * Se concerter avec Pascal V. et Nicolas C. pour voir comment on  
+pourrait ? la fois effectuer une cure d'ammaigrissement ? VMatrix, et  
+la rendre plus flexible/pratique pour les applications telles que le  
+langage.
+
++++ Pascal Lamblin
+
+Possiblement, investiguer le syst?me de bug-tracking/feature-request  
+de BerliOS? pour s'en servir pour cette liste de TODO.
+
+Nettoyage de TMat_maths_impl.h et cie:
+
+     * Etablir une nomenclature et une division plus claire et  
+congruente pour les fonctions. Produire une liste de transformations  
+? effectuer de la forme: prototype_de_fonction_actuel ->  
+nouveau_prototype (incluant les changement de nom de fonction,  
+d'ordre de param?tres, voire de noms de param?tres).
+     * Evaluer les outils de transformation de code qui pourraient  
+?tre utilis?s pour effectuer la transition (voir avec Pascal V. pour  
+pytransform, voir si il y a qqch de plus complet dans Eclipse, ou  
+autre).
+
+Nettoyage de pymake.config.model:
+
+     * Eliminer les paths hard-cod?s. Les remplacer dans la mesure du  
+possible par l'utilisation des variables d'environnement pr?vues ?  
+cet effet par l'OS (comme LD_LIBRARY_PATH, LIBRARY_PATH, CPATH.  
+Adapter la doc d'install pour indiquer aux gens quoi y ajouter ? ces  
+variables), et/ou par la d?couverte automatique des libraireis  
+install?es sur le syst?me et la production de message d'erreurs clairs.
+
+Doc:
+
+     * Ecrire un minimum de doc sur les nouvelles op?rations de Mat/Vec
+     * Ecrire la doc sur les OnlineLearningModule?, deep belief nets,  
+etc...
+
++++ Olivier Delalleau
+
+     * Updater le guide d'installation sous Windows avec cygwin/mingw  
+et rajouter une section concernant l'install avec MS Visual.
+     * Se concerter avec Pascal V. sur de possibles r?oganisations/ 
+clarifications de PDistribution
+     * Ecrire la doc sur les PDistribution.
+     * Ajouter de l'info dans le guide d'install sur les ?tapes ?  
+effectuer pour pouvoir utiliser Torch avec PLearn.
+     * Doc d'utilisation de torch depuis plearn.
+
++++ Pierre-Antoine
+
+     * Continuer ? utiliser PLearn et ? nous faire part de ce qu'on  
+peut am?liorer!
+
+
+
+
+From lamblinp at iro.umontreal.ca  Mon Dec 18 23:59:10 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 18 Dec 2006 23:59:10 +0100
+Subject: [Plearn-core] =?iso-8859-1?q?=E0_propos_de_TMat=5Fmaths=5Fimpl?=
+In-Reply-To: <A0D7C114-0037-4655-BFDF-186FD6BEFD48@apstat.com>
+References: <20061217120839.GA31569@pig.zood.org>
+	<A0D7C114-0037-4655-BFDF-186FD6BEFD48@apstat.com>
+Message-ID: <20061218225910.GA8392@pig.zood.org>
+
+On Mon, Dec 18, 2006, Pascal Vincent wrote:
+> Je penche pour mettre les op?rations simples genre addition ou  
+> multiplication par un scalaire avec les op?rations ?l?ment par  
+> ?l?ment, ou bien alors dans leur propre fichier s?par?. Dans tous les  
+> cas, les op?rateurs devraient aller ensemble avec les fonctions qui  
+> font des choses similaires.
+
+Je vais essayer de faire ?a comme ?a (sauf que je ne sais pas encore
+quand...)
+
+> > En ce qui concerne la nomenclature, j'ai jet? un coup d'oeil ?
+> > boost::MPL qui m'a l'air ? c?t? de la plaque,
+> 
+> Pourquoi boost::MPL?? Tu ne voulais pas dire plut?t multi_array?
+
+Parce que c'est ce qui a ?t? prononc? lors de la r?union, m?me si ce
+n'est pas ?a que vous vouliez dire :)
+
+> >   - lapack++ ne passe pas toujours les arguments dans le m?me
+> > ordre, on peut avoir des choses comme : vecteurs/matrices d'entr?e,
+> > vecteur/matrice de r?sultat, param?tres scalaires (avec des valeurs
+> > par d?faut)
+> 
+> Par ailleurs je note que sur la page de lapack++ il est ?crit:
+> "superseded by the Template Numerical Toolkit (TNT)"
+> 
+> lapack++ semble d?j? deprecated...
+
+Le lapack++ original oui, mais il a ?t? fork? :
+<http://lapackpp.sourceforge.net/>, et c'est ? la nouvelle version que
+je me suis r?f?r?. Mea culpa, j'aurais d? fournir un lien.
+
+> > Du coup, ?a soul?ve ? nouveau les questions suivantes :
+> >   - o? c'est qu'on met ce param?tre qui est updat? ?
+> 
+> Je r?affirme mon opinion: en premier. C'est clair, c'est simple,  
+> c'est invariant. ?a permet des valeurs par d?faut pour les arguments  
+> ? la fin. C'est l'ordre dans lequel on ?crirait les ?l?ments si on  
+> ?crivait l'expression avec un signe = (ou +=).
+
+Je suis d'accord.
+
+> >   - est-ce qu'on essaye de suivre une nomenclature ext?rieure, ou on
+> > se contente d'?tre coh?rent entre nous ?
+>
+> Pour l'instant il me semble qu'on n'a pas encore trouv? d'exemple
+> de nomenclature ext?rieure qui soit franchement limpide et ait
+> un potentiel convaincant de "standard" effectuant un appel de
+> blas/lapack.
+>
+> Note que comme source d'inspiration il y aurait aussi:
+>
+> Blitz++ (expression template encore davantage vaudou que boost::uBLAS)
+> boost::multi_array POOMA MTL TNT
+
+Je vais donc continuer ? chercher...
+
+> Note: pour distinguer les fonctions qui prennent l'argument ? modifier
+> comme premier argument de celles qui retournent un r?sultat Vec ou
+> Mat, je sugg?re de pr?fixer toutes celles qui retournent leur r?sultat
+> par un pr?fixe explicite (ex: ret_ )
+
+Je vois au moins quatre cas de base :
+  - on veut retourner le r?sultat ;
+  - on veut stocker le r?sultat dans un contenant (Vec ou Mat) ;
+  - on veut ajouter le r?sultat dans ce contenant ;
+  - on veut scaler ce qu'il y a dans le contenant puis ajouter le
+    r?sultat.
+
+Le deuxi?me et le troisi?me cas sont des cas particuliers du quatri?me.
+Il nous faudrait donc 4 pr?fixes (3 si on consid?re un cas, par exemple
+le deuxi?me, comme ? standard ?).
+
+On pourrait par exemple avoir, pour le produit Mat * Vec :
+
+// r[i] = \sum_j m[i][j] * v[j]
+void product(Vec r, Mat m, Vec v);
+
+// same as above, but return r
+Vec retProduct(Mat m, Vec v);
+
+// r[i] += \sum_j m[i][j] * v[j]
+Vec accProduct(Vec r, Mat m, Vec v);
+
+// r[i] = alpha * r[i] + \sum_j m[i][j] * v[j]
+// where do we put alpha in the call?
+Vec scaleAccProduct(Vec r, real alpha, Mat m, Vec v);
+
+// what if we want to consider
+// r[i] = alpha * r[i] + beta * \sum_j m[i][j] * v[j] ?
+// Do we add another set of "scaleProduct" functions?
+
+? plus,
+-- 
+Pascal
+
+

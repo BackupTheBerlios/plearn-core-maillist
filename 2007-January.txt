@@ -1,0 +1,975 @@
+From chapados at apstat.com  Wed Jan 10 15:21:29 2007
+From: chapados at apstat.com (chapados at apstat.com)
+Date: Wed, 10 Jan 2007 09:21:29 -0500 (EST)
+Subject: [Plearn-core] =?iso-8859-1?q?_Acc=E8s_=E0_la_matrice_de_covarianc?=
+ =?iso-8859-1?q?e_jointe_des_pr=E9visio__ns?=
+Message-ID: <57034.207.61.255.171.1168438889.squirrel@intranet.apstat.com>
+
+Bonjour Messieurs,
+
+En continuant mon travail sur les processus gaussiens, il appert que ces
+derniers peuvent fournir assez facilement une information qui n'est pas
+support?e par l'interface de PLearner: au-del? des simples intervalles de
+confiance, un GP peut nous donner la pleine matrice de covariance entre un
+ensemble de pr?visions effectu?es par le mod?le.  J'aurais besoin de cette
+information.
+
+Pascal a ajout? r?cemment une fonction (non-virtuelle)
+computeInputOutputMat.  Je proposerais d'ajouter une fonction (virtuelle,
+cette fois) computeInputOutputCovMat, laquelle retournerait la matrice de
+covariance entre tous les points de test, en plus de l'esp?rance des
+sorties.
+
+J'aimerais avoir votre avis sur la meilleure fa?on de retourner cette
+matrice de covariance. Consid?rons les utilisations:
+
+1) calcul d'intervalles de confiance "classiques", lesquels ne demandent
+que la diagonale de la matrice de covariance
+
+2) calcul du (log) likelihood conjoint des observations de test par
+rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi que son
+d?terminant.
+
+Je penche pour retourner la matrice sous la forme de sa d?composition de
+Cholesky.  Avec la cholesky, nous pouvons:
+
+1) Calculer rapidement la matrice de covariance originale comme le produit
+matriciel L*L'.
+
+2) Calculer la diagonale de la matrice de covariance originale (l'?l?ment
+\sigma^2_{i,i} de la diagonale est la somme des carr?s de la rang?e i de
+la Cholesky).
+
+3) R?soudre facilement un syst?me lin?aire (deux back-substitutions) ainsi
+que calculer le (log) d?terminant (somme de la log-diagonale de la
+Cholesky).
+
+Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+
+    Merci!
+    + Nicolas
+
+
+
+
+From delallea at iro.umontreal.ca  Wed Jan 10 15:30:17 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 10 Jan 2007 09:30:17 -0500
+Subject: Accès à la matrice
+In-Reply-To: <57034.207.61.255.171.1168438889.squirrel@intranet.apstat.com>
+References: <57034.207.61.255.171.1168438889.squirrel@intranet.apstat.com>
+Message-ID: <20070110143016.GA19952@opale.iro.umontreal.ca>
+
+On 10 Jan 2007, chapados at apstat.com wrote:
+> Bonjour Messieurs,
+> 
+> En continuant mon travail sur les processus gaussiens, il appert que ces
+> derniers peuvent fournir assez facilement une information qui n'est pas
+> support?e par l'interface de PLearner: au-del? des simples intervalles de
+> confiance, un GP peut nous donner la pleine matrice de covariance entre un
+> ensemble de pr?visions effectu?es par le mod?le.  J'aurais besoin de cette
+> information.
+> 
+> Pascal a ajout? r?cemment une fonction (non-virtuelle)
+> computeInputOutputMat.  Je proposerais d'ajouter une fonction (virtuelle,
+> cette fois) computeInputOutputCovMat, laquelle retournerait la matrice de
+> covariance entre tous les points de test, en plus de l'esp?rance des
+> sorties.
+
+Pourquoi le Input dans le nom de la fonction ?
+
+> J'aimerais avoir votre avis sur la meilleure fa?on de retourner cette
+> matrice de covariance. Consid?rons les utilisations:
+> 
+> 1) calcul d'intervalles de confiance "classiques", lesquels ne demandent
+> que la diagonale de la matrice de covariance
+> 
+> 2) calcul du (log) likelihood conjoint des observations de test par
+> rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi que son
+> d?terminant.
+> 
+> Je penche pour retourner la matrice sous la forme de sa d?composition de
+> Cholesky.  Avec la cholesky, nous pouvons:
+> 
+> 1) Calculer rapidement la matrice de covariance originale comme le produit
+> matriciel L*L'.
+> 
+> 2) Calculer la diagonale de la matrice de covariance originale (l'?l?ment
+> \sigma^2_{i,i} de la diagonale est la somme des carr?s de la rang?e i de
+> la Cholesky).
+> 
+> 3) R?soudre facilement un syst?me lin?aire (deux back-substitutions) ainsi
+> que calculer le (log) d?terminant (somme de la log-diagonale de la
+> Cholesky).
+> 
+> Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+
+La forme demandee pourrait toujours etre un parametre de la methode
+(qui retournerait par ex. un TVec<Mat>, si on souhaite par ex. pouvoir
+demander une SVD, en plus de Cholesky ou matrice pleine).
+La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+avoir une fonction generique qui transforme une forme en une autre.
+Cela dit, je ne sais pas si ca vaut le coup de se casser la tete dessus,
+Cholesky me parait etre une bonne idee.
+
+--
+Olivier
+
+
+From chapados at apstat.com  Wed Jan 10 16:16:51 2007
+From: chapados at apstat.com (chapados at apstat.com)
+Date: Wed, 10 Jan 2007 10:16:51 -0500 (EST)
+Subject: [Plearn-core] =?iso-8859-1?q?Acc=E8s_=E0_la_matrice?=
+In-Reply-To: <C87CAD0B-3193-4766-B3F4-C2D3205CEA6C@apstat.com>
+References: <57034.207.61.255.171.1168438889.squirrel@intranet.apstat.com>
+	<20070110143016.GA19952@opale.iro.umontreal.ca>
+	<C87CAD0B-3193-4766-B3F4-C2D3205CEA6C@apstat.com>
+Message-ID: <5203.207.61.255.171.1168442211.squirrel@intranet.apstat.com>
+
+> Il me semble que le 'input" dans ma fonction d'origine, c'est parce
+> que ce qui est retourn? est l'input concat?n? ? l'output. C'est parce
+> que c'est une fonction utilitaire (non virtuelle) destin?e ? ?tre
+> appel? via RMI depuis python par pyplot pour lui simplifier la vie.
+> Je ne pense pas qu'une fonction virtuelle g?n?rale devrait retourner
+> la conact?nation avec les inputs, et donc le input ne devrait pas
+> ?tre dans le nom.
+> Qu'en penses-tu Nicolas?
+
+Effectivement, c'?tait mon erreur dans l'interpr?tation de la
+nomenclature.  Je vais baptiser la fonction computeOutputCovMat (m?me nom
+remote-callable) seulement.
+
+
+>> La forme demandee pourrait toujours etre un parametre de la methode
+>> (qui retournerait par ex. un TVec<Mat>, si on souhaite par ex. pouvoir
+>> demander une SVD, en plus de Cholesky ou matrice pleine).
+>> La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+>> avoir une fonction generique qui transforme une forme en une autre.
+>> Cela dit, je ne sais pas si ca vaut le coup de se casser la tete
+>> dessus,
+>> Cholesky me parait etre une bonne idee.
+>
+> Il y a sans doute des cas pour lesquelles on voudra calculer et
+> retourner seulement la diagonale et pour lesquels ce sera plus
+> efficace que de calculer/retorner cholesky ou la matrice originale
+> (ne serait-ce que pour des consid?rations de taille m?moire quand on
+> a un grand ensemble). Donc je pense que le plus propre, c'est de
+> rajouter une m?thode diff?rente pour les trois cas: matrce de cov
+> originale, diagonale, ou cholesky. Avec une impl?mentation par d?faut
+> de 2 de ces m?thodes (par ex. originale et diagonale) ? partir de la
+> troisi?me.
+
+Pour les cas o? on a seulement besoin de la diagonale, on l'a d?j? via la
+fonction batchComputeOutputAndConfidence (mais via une interface
+l?g?rement diff?rente).  On n'a qu'? appeler cette fonction avec la bonne
+probabilit? pour retomber sur 1 ?cart-type.
+
+Apr?s m'?tre rafra?chi la m?moire sur les formules de calcul de la matrice
+de covariance pour les GP, je penche finalement pour retourner une matrice
+de covariance "normale", sans aucune transformation, et laisser le client
+la traiter comme il le souhaitera.
+
+    + Nicolas
+
+
+
+
+From pascal at apstat.com  Wed Jan 10 15:59:44 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 10 Jan 2007 09:59:44 -0500
+Subject: [Plearn-core] =?iso-8859-1?q?Acc=E8s_=E0_la_matrice?=
+In-Reply-To: <20070110143016.GA19952@opale.iro.umontreal.ca>
+References: <57034.207.61.255.171.1168438889.squirrel@intranet.apstat.com>
+	<20070110143016.GA19952@opale.iro.umontreal.ca>
+Message-ID: <C87CAD0B-3193-4766-B3F4-C2D3205CEA6C@apstat.com>
+
+
+> On 10 Jan 2007, chapados at apstat.com wrote:
+>> Bonjour Messieurs,
+>>
+>> En continuant mon travail sur les processus gaussiens, il appert  
+>> que ces
+>> derniers peuvent fournir assez facilement une information qui  
+>> n'est pas
+>> support?e par l'interface de PLearner: au-del? des simples  
+>> intervalles de
+>> confiance, un GP peut nous donner la pleine matrice de covariance  
+>> entre un
+>> ensemble de pr?visions effectu?es par le mod?le.  J'aurais besoin  
+>> de cette
+>> information.
+>>
+>> Pascal a ajout? r?cemment une fonction (non-virtuelle)
+>> computeInputOutputMat.  Je proposerais d'ajouter une fonction  
+>> (virtuelle,
+>> cette fois) computeInputOutputCovMat, laquelle retournerait la  
+>> matrice de
+>> covariance entre tous les points de test, en plus de l'esp?rance des
+>> sorties.
+>
+> Pourquoi le Input dans le nom de la fonction ?
+
+Il me semble que le 'input" dans ma fonction d'origine, c'est parce  
+que ce qui est retourn? est l'input concat?n? ? l'output. C'est parce  
+que c'est une fonction utilitaire (non virtuelle) destin?e ? ?tre  
+appel? via RMI depuis python par pyplot pour lui simplifier la vie.
+Je ne pense pas qu'une fonction virtuelle g?n?rale devrait retourner  
+la conact?nation avec les inputs, et donc le input ne devrait pas  
+?tre dans le nom.
+Qu'en penses-tu Nicolas?
+>
+>> J'aimerais avoir votre avis sur la meilleure fa?on de retourner cette
+>> matrice de covariance. Consid?rons les utilisations:
+>>
+>> 1) calcul d'intervalles de confiance "classiques", lesquels ne  
+>> demandent
+>> que la diagonale de la matrice de covariance
+>>
+>> 2) calcul du (log) likelihood conjoint des observations de test par
+>> rapport aux cibles.  Ceci demande l'inverse de la matrice ainsi  
+>> que son
+>> d?terminant.
+>>
+>> Je penche pour retourner la matrice sous la forme de sa  
+>> d?composition de
+>> Cholesky.  Avec la cholesky, nous pouvons:
+>>
+>> 1) Calculer rapidement la matrice de covariance originale comme le  
+>> produit
+>> matriciel L*L'.
+>>
+>> 2) Calculer la diagonale de la matrice de covariance originale  
+>> (l'?l?ment
+>> \sigma^2_{i,i} de la diagonale est la somme des carr?s de la  
+>> rang?e i de
+>> la Cholesky).
+>>
+>> 3) R?soudre facilement un syst?me lin?aire (deux back- 
+>> substitutions) ainsi
+>> que calculer le (log) d?terminant (somme de la log-diagonale de la
+>> Cholesky).
+>>
+>> Qu'en pensez-vous?  Avez-vous d'autres suggestions?
+>
+> La forme demandee pourrait toujours etre un parametre de la methode
+> (qui retournerait par ex. un TVec<Mat>, si on souhaite par ex. pouvoir
+> demander une SVD, en plus de Cholesky ou matrice pleine).
+> La methode elle-meme ne calculerait qu'une forme, mais il pourrait y
+> avoir une fonction generique qui transforme une forme en une autre.
+> Cela dit, je ne sais pas si ca vaut le coup de se casser la tete  
+> dessus,
+> Cholesky me parait etre une bonne idee.
+
+Il y a sans doute des cas pour lesquelles on voudra calculer et  
+retourner seulement la diagonale et pour lesquels ce sera plus  
+efficace que de calculer/retorner cholesky ou la matrice originale  
+(ne serait-ce que pour des consid?rations de taille m?moire quand on  
+a un grand ensemble). Donc je pense que le plus propre, c'est de  
+rajouter une m?thode diff?rente pour les trois cas: matrce de cov  
+originale, diagonale, ou cholesky. Avec une impl?mentation par d?faut  
+de 2 de ces m?thodes (par ex. originale et diagonale) ? partir de la  
+troisi?me.
+
+-- Pascal
+
+
+
+From chapados at apstat.com  Thu Jan 11 14:43:58 2007
+From: chapados at apstat.com (chapados at apstat.com)
+Date: Thu, 11 Jan 2007 08:43:58 -0500 (EST)
+Subject: [Plearn-core] Interfaces non-vmat dans Kernel?
+Message-ID: <57174.207.61.255.171.1168523038.squirrel@intranet.apstat.com>
+
+Salut messieurs,
+
+Je fais une constatation sans doute quelque peu biscornue, mais peut-?tre
+n?anmoins valable ? propos de PLearn::Kernel.  Pourquoi laisse-t-on la
+"Data" VMat aussi longtemps sous la forme de VMat, surtout lorsque la
+matrice de Gram est 'cach?e' sous la forme d'une Mat?  Il me semble
+souffrant d'encourir autant d'appels virtuels, surtout lorsqu'il y en a
+d?j? un par 'evaluate' du kernel.
+
+N'y aurait-il pas lieu de supporter explicitement deux use-cases, l'un
+pour "tout tient facilement en m?moire", et l'autre pour "on laisse tout
+en VMat"?  La plupart des fonctions sont d?finies pour ou bien marcher
+avec des VMat mais pas des Mat (e.g. apply) ou vice-versa (evaluate*, qui
+acceptent des Vec mais c'est inutile car la matrice de donn?es est laiss?e
+sous la forme d'une VMat donc on encoure toujours ? l'interne une frappe
+de virtualit?).
+
+Je sais qu'on peut red?finir tout (mais pas apply!) dans les classes
+d?riv?es, mais je crois que l'interface actuelle rend la t?che on?reuse
+pour les auteurs prospectifs de nouveaux kernels...
+
+   + Nicolas
+
+
+P.S. Si on en vient ? red?finir l'interface de kernels, on pourrait penser
+aux use-cases algorithmiques en plus des use-cases de donn?es,
+c'est-?-dire les svm classiques, les kmp de Pascal, et les processus
+gaussiens.  Il y a ?galement les use-cases au niveau des kernels
+eux-m?mes, i.e. certains kernels se pr?tent bien ? des pr?calculs, ce
+qu'essaie de permettre PLearn::Kernel.  Donc, pour r?sumer, les dimensions
+? consid?rer pour revoir l'interface seraient:
+
+1) petit probl?me versus gros probl?me
+2) client algorithmique
+3) forme fonctionnelle du noyau (pour pr?calculs)
+
+Y en a-t-il d'autres?
+
+
+
+
+From delallea at iro.umontreal.ca  Thu Jan 11 16:30:21 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 11 Jan 2007 10:30:21 -0500
+Subject: [Plearn-core] Interfaces non-vmat dans Kernel?
+In-Reply-To: <57174.207.61.255.171.1168523038.squirrel@intranet.apstat.com>
+References: <57174.207.61.255.171.1168523038.squirrel@intranet.apstat.com>
+Message-ID: <20070111153021.GA9212@opale.iro.umontreal.ca>
+
+Je ne suis pas s?r de bien te comprendre, mais...
+Il me semble que dans 99% du temps, le "data" du kernel est notre jeu de
+donn?es, donc une VMat. En plus certains kernels s'appliquent
+g?n?ralement seulement sur la partie inputsize, donc on a besoin de la
+notion d'input et de target.
+C'est quoi le probl?me exactement, c'est d'avoir ? faire des
+data->getExample(...) ? Est-ce que c'est vraiment si lent si la VMat est
+une MemoryVMatrix ?
+
+--
+Olivier
+
+On 11 Jan 2007, chapados at apstat.com wrote:
+> Salut messieurs,
+> 
+> Je fais une constatation sans doute quelque peu biscornue, mais peut-?tre
+> n?anmoins valable ? propos de PLearn::Kernel.  Pourquoi laisse-t-on la
+> "Data" VMat aussi longtemps sous la forme de VMat, surtout lorsque la
+> matrice de Gram est 'cach?e' sous la forme d'une Mat?  Il me semble
+> souffrant d'encourir autant d'appels virtuels, surtout lorsqu'il y en a
+> d?j? un par 'evaluate' du kernel.
+> 
+> N'y aurait-il pas lieu de supporter explicitement deux use-cases, l'un
+> pour "tout tient facilement en m?moire", et l'autre pour "on laisse tout
+> en VMat"?  La plupart des fonctions sont d?finies pour ou bien marcher
+> avec des VMat mais pas des Mat (e.g. apply) ou vice-versa (evaluate*, qui
+> acceptent des Vec mais c'est inutile car la matrice de donn?es est laiss?e
+> sous la forme d'une VMat donc on encoure toujours ? l'interne une frappe
+> de virtualit?).
+> 
+> Je sais qu'on peut red?finir tout (mais pas apply!) dans les classes
+> d?riv?es, mais je crois que l'interface actuelle rend la t?che on?reuse
+> pour les auteurs prospectifs de nouveaux kernels...
+> 
+>    + Nicolas
+> 
+> 
+> P.S. Si on en vient ? red?finir l'interface de kernels, on pourrait penser
+> aux use-cases algorithmiques en plus des use-cases de donn?es,
+> c'est-?-dire les svm classiques, les kmp de Pascal, et les processus
+> gaussiens.  Il y a ?galement les use-cases au niveau des kernels
+> eux-m?mes, i.e. certains kernels se pr?tent bien ? des pr?calculs, ce
+> qu'essaie de permettre PLearn::Kernel.  Donc, pour r?sumer, les dimensions
+> ? consid?rer pour revoir l'interface seraient:
+> 
+> 1) petit probl?me versus gros probl?me
+> 2) client algorithmique
+> 3) forme fonctionnelle du noyau (pour pr?calculs)
+> 
+> Y en a-t-il d'autres?
+> 
+> 
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From chapados at apstat.com  Mon Jan 15 15:22:40 2007
+From: chapados at apstat.com (chapados at apstat.com)
+Date: Mon, 15 Jan 2007 09:22:40 -0500 (EST)
+Subject: [Plearn-core] Apprentissage transductif dans PLearn
+Message-ID: <1711.207.61.255.171.1168870960.squirrel@intranet.apstat.com>
+
+Salut ? tous,
+
+J'aimerais recueillir votre avis sur les mani?res de faire de
+l'apprentissage transductif dans PLearn.  Cette forme d'apprentissage est
+lorsque nous avons acc?s AUX INPUTS DE TEST au moment de l'entra?nement. 
+En d'autres termes, on a le droit d'entra?ner en connaissant d'avance les
+points o? la fonction sera interrog?e.
+
+Maintenant la question est: comment faire cela dans le cadre d'un PLearner?
+
+J'imagine deux possibilit?s:
+
+1) Introduire une classe interm?diaire "TransductivePLearner" (d?riv?e de
+PLearner) qui ajouterait une fonction "setTestInputs" en plus de
+"setTrainingSet".  La fonction setTestInputs serait appel?e avant de faire
+train.  L'ennui avec cette approche est de s'assurer qu'on appelle la
+fonction au bon moment.  De plus, il est souvent sous-optimal (ou
+impossible) de tester sur d'autres points que ceux qu'on a d?clar?s
+d'avance, donc il faut que computeOutput surveille ses entr?es...
+
+2) Laisser PLearner sous sa forme actuelle et "hijacker" la nouvelle
+fonction computeOutputCovMat qui accepte d?j? une liste de points o? l'on
+souhaite tester.  L'id?e serait, pour les learners transductifs, de
+retarder l'entra?nement jusqu'au moment o? computeOutputCovMat est appel?
+(en supposant qu'il l'est), et on refait un entra?nement complet ? ce
+moment, ayant connaissance des points de test.
+
+Je penche pour la seconde approche, qui me semble plus simple et entre
+d?j? relativement bien dans le cadre actuel.  Mais je ne connais pas assez
+toutes les vari?t?s d'apprentissage transductif pour dire si la premi?re
+pourrait ?tre plus appropri?e dans certains contextes.
+
+Commentaires et suggestions bienvenus!
+
+    + Nicolas
+
+
+
+
+From jaonary at gmail.com  Mon Jan 15 16:15:47 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 15 Jan 2007 16:15:47 +0100
+Subject: [Plearn-core] undefined reference to PLearn::pl_assert_fail(char
+	const*, char const*, unsigned int, char const*, char const*)
+Message-ID: <c81af8c30701150715s38dfac0dkb5cffbe7e85e420a@mail.gmail.com>
+
+Salut tout le monde,
+
+Apres avoir mis a jour mes source en utilisant la derniere version du
+repository, j'obtiens cette erreur lors du link.
+Je n'arrive pas a trouver dans quel fichier cette fonction est definie. Le
+candidat possible c'est dans plerror.h
+mais il prend des string au lieu d'un const char* :
+
+void pl_assert_fail(const char* expr, const char* file, unsigned line,
+                     const char* function, const std::string& message);
+
+
+Si vous pouvez m'eclaissir un peu ?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070115/a413a56c/attachment.html>
+
+From delallea at iro.umontreal.ca  Mon Jan 15 16:48:19 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 15 Jan 2007 10:48:19 -0500
+Subject: [Plearn-core] Apprentissage transductif dans PLearn
+In-Reply-To: <1711.207.61.255.171.1168870960.squirrel@intranet.apstat.com>
+References: <1711.207.61.255.171.1168870960.squirrel@intranet.apstat.com>
+Message-ID: <20070115154818.GB10991@opale.iro.umontreal.ca>
+
+En ce qui me concerne, je vois l'apprentissage transductif comme
+simplement un probleme d'apprentissage ou certaines targets sont
+manquantes (MISSING_VALUE dans PLearn). Ca ne necessite aucun changement
+dans l'interface des PLearner il me semble...
+
+--
+Olivier
+
+On 15 Jan 2007, chapados at apstat.com wrote:
+> Salut ? tous,
+> 
+> J'aimerais recueillir votre avis sur les mani?res de faire de
+> l'apprentissage transductif dans PLearn.  Cette forme d'apprentissage est
+> lorsque nous avons acc?s AUX INPUTS DE TEST au moment de l'entra?nement. 
+> En d'autres termes, on a le droit d'entra?ner en connaissant d'avance les
+> points o? la fonction sera interrog?e.
+> 
+> Maintenant la question est: comment faire cela dans le cadre d'un PLearner?
+> 
+> J'imagine deux possibilit?s:
+> 
+> 1) Introduire une classe interm?diaire "TransductivePLearner" (d?riv?e de
+> PLearner) qui ajouterait une fonction "setTestInputs" en plus de
+> "setTrainingSet".  La fonction setTestInputs serait appel?e avant de faire
+> train.  L'ennui avec cette approche est de s'assurer qu'on appelle la
+> fonction au bon moment.  De plus, il est souvent sous-optimal (ou
+> impossible) de tester sur d'autres points que ceux qu'on a d?clar?s
+> d'avance, donc il faut que computeOutput surveille ses entr?es...
+> 
+> 2) Laisser PLearner sous sa forme actuelle et "hijacker" la nouvelle
+> fonction computeOutputCovMat qui accepte d?j? une liste de points o? l'on
+> souhaite tester.  L'id?e serait, pour les learners transductifs, de
+> retarder l'entra?nement jusqu'au moment o? computeOutputCovMat est appel?
+> (en supposant qu'il l'est), et on refait un entra?nement complet ? ce
+> moment, ayant connaissance des points de test.
+> 
+> Je penche pour la seconde approche, qui me semble plus simple et entre
+> d?j? relativement bien dans le cadre actuel.  Mais je ne connais pas assez
+> toutes les vari?t?s d'apprentissage transductif pour dire si la premi?re
+> pourrait ?tre plus appropri?e dans certains contextes.
+> 
+> Commentaires et suggestions bienvenus!
+> 
+>     + Nicolas
+> 
+
+
+From delallea at iro.umontreal.ca  Mon Jan 15 16:52:54 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 15 Jan 2007 10:52:54 -0500
+Subject: [Plearn-core] undefined reference to
+	PLearn::pl_assert_fail(char const*, char const*, unsigned int,
+	char const*, char const*)
+In-Reply-To: <c81af8c30701150715s38dfac0dkb5cffbe7e85e420a@mail.gmail.com>
+References: <c81af8c30701150715s38dfac0dkb5cffbe7e85e420a@mail.gmail.com>
+Message-ID: <20070115155253.GC10991@opale.iro.umontreal.ca>
+
+C'est bizarre, est-ce que c'est une erreur generalisee ou ca apparait
+seulement dans certains fichiers .o ?
+
+Et tu compiles avec quoi ?
+
+--
+Olivier
+
+On 15 Jan 2007, Jaonary Rabarisoa wrote:
+> Salut tout le monde,
+> 
+> Apres avoir mis a jour mes source en utilisant la derniere version du
+> repository, j'obtiens cette erreur lors du link.
+> Je n'arrive pas a trouver dans quel fichier cette fonction est definie. Le
+> candidat possible c'est dans plerror.h
+> mais il prend des string au lieu d'un const char* :
+> 
+> void pl_assert_fail(const char* expr, const char* file, unsigned line,
+>                      const char* function, const std::string& message);
+> 
+> 
+> Si vous pouvez m'eclaissir un peu ?
+> 
+> 
+
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From jaonary at gmail.com  Mon Jan 15 19:17:16 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 15 Jan 2007 19:17:16 +0100
+Subject: [Plearn-core] undefined reference to
+	PLearn::pl_assert_fail(char const*, char const*, unsigned int,
+	char const*, char const*)
+In-Reply-To: <20070115155253.GC10991@opale.iro.umontreal.ca>
+References: <c81af8c30701150715s38dfac0dkb5cffbe7e85e420a@mail.gmail.com>
+	<20070115155253.GC10991@opale.iro.umontreal.ca>
+Message-ID: <c81af8c30701151017y57b14275h599e520bd42b20cc@mail.gmail.com>
+
+Je compile mon code mais l'erreur apprarait donc dans le fichier
+plearn/io/StringPStreamBuf.* . Il y a une classe qui a une methode
+getString() dedans et c'est la que ?a bug.
+
+On 1/15/07, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> C'est bizarre, est-ce que c'est une erreur generalisee ou ca apparait
+> seulement dans certains fichiers .o ?
+>
+> Et tu compiles avec quoi ?
+>
+> --
+> Olivier
+>
+> On 15 Jan 2007, Jaonary Rabarisoa wrote:
+> > Salut tout le monde,
+> >
+> > Apres avoir mis a jour mes source en utilisant la derniere version du
+> > repository, j'obtiens cette erreur lors du link.
+> > Je n'arrive pas a trouver dans quel fichier cette fonction est definie. Le
+> > candidat possible c'est dans plerror.h
+> > mais il prend des string au lieu d'un const char* :
+> >
+> > void pl_assert_fail(const char* expr, const char* file, unsigned line,
+> >                      const char* function, const std::string& message);
+> >
+> >
+> > Si vous pouvez m'eclaissir un peu ?
+> >
+> >
+>
+> > _______________________________________________
+> > Plearn-core mailing list
+> > Plearn-core at lists.berlios.de
+> > https://lists.berlios.de/mailman/listinfo/plearn-core
+>
+>
+
+From delallea at iro.umontreal.ca  Mon Jan 15 19:24:40 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 15 Jan 2007 13:24:40 -0500
+Subject: [Plearn-core] undefined reference to
+	PLearn::pl_assert_fail(char const*, char const*, unsigned int,
+	char const*, char const*)
+In-Reply-To: <c81af8c30701151017y57b14275h599e520bd42b20cc@mail.gmail.com>
+References: <c81af8c30701150715s38dfac0dkb5cffbe7e85e420a@mail.gmail.com>
+	<20070115155253.GC10991@opale.iro.umontreal.ca>
+	<c81af8c30701151017y57b14275h599e520bd42b20cc@mail.gmail.com>
+Message-ID: <20070115182438.GA14230@opale.iro.umontreal.ca>
+
+En fait, je demandais avec quel compilateur...
+
+J'essaierais les choses suivantes :
+1. Forcer la recompilation de plearn/io/StringPStreamBuf.o
+2. Editer le fichier plearn/base/plerror.h et remplacer le "" dans la
+definition de la macro PLASSERT en string("")
+
+Sinon j'avoue que je ne vois pas trop pourquoi il te dirait ca...
+
+--
+Olivier
+
+On 15 Jan 2007, Jaonary Rabarisoa wrote:
+> Je compile mon code mais l'erreur apprarait donc dans le fichier
+> plearn/io/StringPStreamBuf.* . Il y a une classe qui a une methode
+> getString() dedans et c'est la que ?a bug.
+> 
+> On 1/15/07, Olivier Delalleau <delallea at iro.umontreal.ca> wrote:
+> > C'est bizarre, est-ce que c'est une erreur generalisee ou ca apparait
+> > seulement dans certains fichiers .o ?
+> >
+> > Et tu compiles avec quoi ?
+> >
+> > --
+> > Olivier
+> >
+> > On 15 Jan 2007, Jaonary Rabarisoa wrote:
+> > > Salut tout le monde,
+> > >
+> > > Apres avoir mis a jour mes source en utilisant la derniere version du
+> > > repository, j'obtiens cette erreur lors du link.
+> > > Je n'arrive pas a trouver dans quel fichier cette fonction est definie. Le
+> > > candidat possible c'est dans plerror.h
+> > > mais il prend des string au lieu d'un const char* :
+> > >
+> > > void pl_assert_fail(const char* expr, const char* file, unsigned line,
+> > >                      const char* function, const std::string& message);
+> > >
+> > >
+> > > Si vous pouvez m'eclaissir un peu ?
+> > >
+> > >
+> >
+> > > _______________________________________________
+> > > Plearn-core mailing list
+> > > Plearn-core at lists.berlios.de
+> > > https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+From pascal at apstat.com  Mon Jan 15 20:14:41 2007
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 15 Jan 2007 14:14:41 -0500
+Subject: [Plearn-core] Apprentissage transductif dans PLearn
+In-Reply-To: <20070115154818.GB10991@opale.iro.umontreal.ca>
+References: <1711.207.61.255.171.1168870960.squirrel@intranet.apstat.com>
+	<20070115154818.GB10991@opale.iro.umontreal.ca>
+Message-ID: <EE43AACF-40DE-4530-AA53-C7DEF5438CF6@apstat.com>
+
+Le 07-01-15 ? 10:48, Olivier Delalleau a ?crit :
+
+> En ce qui me concerne, je vois l'apprentissage transductif comme
+> simplement un probleme d'apprentissage ou certaines targets sont
+> manquantes (MISSING_VALUE dans PLearn). Ca ne necessite aucun  
+> changement
+> dans l'interface des PLearner il me semble...
+
+Je suis d'accord avec l'interface d'Olivier pour l'apprentissage  
+transductif / semi-supervis?.
+
+Le probl?me li? ? hijacker la fonction computeOutputCovMat, qui est  
+fort r?cente, c'est que ce ne serait pas la seule ? r??crire, mais il  
+faudrait aussi en red?finir un paquet d'autres (ex: use). Et pour  
+certaines m?thodes, le comportement souhait? ne serait pas clair. Ex:  
+est-ce que computeOutput devrait oui ou non avoir un comportement  
+"transductif" et r?-entrainer le mod?le...? Si on s'en tient ? train  
+avec des targets missing, on a le contr?le complet de quand on veut  
+r?entra?ner ou pas.
+
+-- Pascal
+
+>
+> --
+> Olivier
+>
+> On 15 Jan 2007, chapados at apstat.com wrote:
+>> Salut ? tous,
+>>
+>> J'aimerais recueillir votre avis sur les mani?res de faire de
+>> l'apprentissage transductif dans PLearn.  Cette forme  
+>> d'apprentissage est
+>> lorsque nous avons acc?s AUX INPUTS DE TEST au moment de  
+>> l'entra?nement.
+>> En d'autres termes, on a le droit d'entra?ner en connaissant  
+>> d'avance les
+>> points o? la fonction sera interrog?e.
+>>
+>> Maintenant la question est: comment faire cela dans le cadre d'un  
+>> PLearner?
+>>
+>> J'imagine deux possibilit?s:
+>>
+>> 1) Introduire une classe interm?diaire  
+>> "TransductivePLearner" (d?riv?e de
+>> PLearner) qui ajouterait une fonction "setTestInputs" en plus de
+>> "setTrainingSet".  La fonction setTestInputs serait appel?e avant  
+>> de faire
+>> train.  L'ennui avec cette approche est de s'assurer qu'on appelle la
+>> fonction au bon moment.  De plus, il est souvent sous-optimal (ou
+>> impossible) de tester sur d'autres points que ceux qu'on a d?clar?s
+>> d'avance, donc il faut que computeOutput surveille ses entr?es...
+>>
+>> 2) Laisser PLearner sous sa forme actuelle et "hijacker" la nouvelle
+>> fonction computeOutputCovMat qui accepte d?j? une liste de points  
+>> o? l'on
+>> souhaite tester.  L'id?e serait, pour les learners transductifs, de
+>> retarder l'entra?nement jusqu'au moment o? computeOutputCovMat est  
+>> appel?
+>> (en supposant qu'il l'est), et on refait un entra?nement complet ? ce
+>> moment, ayant connaissance des points de test.
+>>
+>> Je penche pour la seconde approche, qui me semble plus simple et  
+>> entre
+>> d?j? relativement bien dans le cadre actuel.  Mais je ne connais  
+>> pas assez
+>> toutes les vari?t?s d'apprentissage transductif pour dire si la  
+>> premi?re
+>> pourrait ?tre plus appropri?e dans certains contextes.
+>>
+>> Commentaires et suggestions bienvenus!
+>>
+>>     + Nicolas
+>>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> https://lists.berlios.de/mailman/listinfo/plearn-core
+
+
+
+From jaonary at gmail.com  Mon Jan 22 10:48:27 2007
+From: jaonary at gmail.com (Jaonary Rabarisoa)
+Date: Mon, 22 Jan 2007 10:48:27 +0100
+Subject: [Plearn-core] Normalize les lignes d'un VMatrix
+Message-ID: <c81af8c30701220148p7875ce5bsd16b294a40d862d2@mail.gmail.com>
+
+Bonjours a tous,
+
+Je cherche a faire une normalisation des lignes d'une VMatrix. Plus
+precisement, je voudrais avoir un vecteur
+de norme "euclidienne" (ou autre )1 pour chaque ligne de ma VMatrix. Le
+methode naive que j'utilise en ce moment
+c'est de calculer cette norme en utilisant la fonction dot(row,row).
+recuperer les valeurs avec get et les changer avec put.
+C'est un peu lourd et si je changer de norme il faut que recupere toute la
+ligne. Je me demande alors, s'il n'y a pas ce genre
+preprocessing sur les VMatrix deja code dans PLearn ?
+
+Bien a vous,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20070122/5b32d1a5/attachment.html>
+
+From delallea at iro.umontreal.ca  Mon Jan 22 16:44:05 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Mon, 22 Jan 2007 10:44:05 -0500
+Subject: [Plearn-core] Normalize les lignes d'un VMatrix
+In-Reply-To: <c81af8c30701220148p7875ce5bsd16b294a40d862d2@mail.gmail.com>
+References: <c81af8c30701220148p7875ce5bsd16b294a40d862d2@mail.gmail.com>
+Message-ID: <20070122154403.GA11598@opale.iro.umontreal.ca>
+
+Salut,
+
+Je ne crois pas qu'il y ait de classe qui le fasse deja, donc le mieux
+serait sans doute que tu ecrives ta propre classe qui herite de
+SourceVMatrix et qui normalise la source.
+
+Essentiellement, le build_() appellerait setMetaInfoFromSource(), et la
+methode getNewRow(int i, const Vec& v) serait
+{
+    source->getRow(i, v);
+    PLearn::normalize(v); // Necessite #include TMat_maths.h
+}
+
+Fais un pyskeleton SourceVMatrix NormalizeRowVMatrix pour avoir le
+squelette de ta classe.
+Tu pourras ensuite la rajouter dans PLearn, ca peut etre utile.
+
+--
+Olivier
+
+On 22 Jan 2007, Jaonary Rabarisoa wrote:
+> Bonjours a tous,
+> 
+> Je cherche a faire une normalisation des lignes d'une VMatrix. Plus
+> precisement, je voudrais avoir un vecteur
+> de norme "euclidienne" (ou autre )1 pour chaque ligne de ma VMatrix. Le methode
+> naive que j'utilise en ce moment
+> c'est de calculer cette norme en utilisant la fonction dot(row,row).  recuperer
+> les valeurs avec get et les changer avec put.
+> C'est un peu lourd et si je changer de norme il faut que recupere toute la
+> ligne. Je me demande alors, s'il n'y a pas ce genre
+> preprocessing sur les VMatrix deja code dans PLearn ?
+> 
+> Bien a vous,
+> 
+> Jaonary
+
+
+
+
+From delallea at iro.umontreal.ca  Tue Jan 23 15:42:53 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 23 Jan 2007 09:42:53 -0500
+Subject: [Plearn-core] Questions sur commit r6594
+Message-ID: <20070123144250.GA531@opale.iro.umontreal.ca>
+
+Cf:
+https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html
+
+Deux questions :
+
+1. D'apres le texte du commit, la nouvelle version devrait utiliser le
+user's umask, mais j'ai l'impression que le commit force en fait un
+chmod 777 au lieu de 775
+
+2. Je crois que la raison du chmod 775 est qu'on veut que les gens du
+meme groupe puissent ecrire dans les .metadata des VMats (pour eviter
+les problemes lorsqu'on partage des datasets). Ca serait bien de le
+garder (le 777 est encore plus genereux, mais je ne sais pas si c'est
+voulu...)
+
+--
+Olivier
+
+
+
+From chrish at apstat.com  Tue Jan 23 16:52:51 2007
+From: chrish at apstat.com (Christian Hudon)
+Date: Tue, 23 Jan 2007 10:52:51 -0500
+Subject: [Plearn-core] Questions sur commit r6594
+In-Reply-To: <20070123144250.GA531@opale.iro.umontreal.ca>
+References: <20070123144250.GA531@opale.iro.umontreal.ca>
+Message-ID: <45B62F53.6020908@apstat.com>
+
+Olivier Delalleau escribi?:
+> Cf:
+> https://lists.berlios.de/pipermail/plearn-commits/2007-January/001556.html
+>
+> Deux questions :
+>
+> 1. D'apres le texte du commit, la nouvelle version devrait utiliser le
+> user's umask, mais j'ai l'impression que le commit force en fait un
+> chmod 777 au lieu de 775
+>   
+Humm. Si je peux me permettre un ?nonc? assez cat?gorique, c'est une
+mauvaise compr?hension de l'API POSIX. Premi?rement, il n'y a pas de
+chmod de fait: la cr?ation d'un fichier ou d'un r?pertoire (avec les
+permissions donn?es) est une op?ration atomique. Sinon, les permissions
+qui sont pass?es dans les appels ? mkdir et ? open / creat sont des
+permissions *maximales*. Le umask du processus en cours est toujours
+appliqu? ? ces permissions pour obtenir celles avec lesquelles le
+fichier ou r?pertoire est cr??. (Contrairement ? un appel ? chmod, o?
+bien s?r les permissions sont appliqu?es directement.) C'est m?me bien
+expliqu? (ce qui n'est pas toujours donn?) dans les manpages ou la docum
+de NSPR. Un extrait de la manpage de mkdir:
+
+>        int mkdir(const char *pathname, mode_t mode);
+>
+> DESCRIPTION
+>        mkdir() attempts to create a directory named pathname.
+>
+>        The  parameter mode specifies the permissions to use. It is
+> modified by the process's umask in the usual way: the permissions of
+> the created directory are (mode & ~umask & 0777). 
+
+Dont, comme je l'avais expliqu? dans le message de commit, ? moins de
+t'appeler par exemple ssh (ou gnupg, etc.), o? tu veux cr?er ton
+r?pertoire .ssh avec des permissions restreintes pour stocker des mots
+de passe, etc., tous les appels ? mkdir, open et creat devraient ?tre
+faits avec un mode de 0777 (ou 0666 pour les fichiers non ex?cutables),
+parce que ?a laisse le umask de l'usager d?cider des permissions finales.
+
+En esp?rant que ?a ?claircit les choses,
+
+  Christian
+
+
+
+From delallea at iro.umontreal.ca  Tue Jan 23 17:06:48 2007
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Tue, 23 Jan 2007 11:06:48 -0500
+Subject: [Plearn-core] Questions sur commit r6594
+In-Reply-To: <45B62F53.6020908@apstat.com>
+References: <20070123144250.GA531@opale.iro.umontreal.ca>
+	<45B62F53.6020908@apstat.com>
+Message-ID: <20070123160644.GA2649@opale.iro.umontreal.ca>
+
+> En esp?rant que ?a ?claircit les choses,
+
+Merci pour les explications. Il y a quand meme un truc que je ne
+comprends pas :
+- si je fais "mkdir test" dans mon shell, j'ai les permissions
+drwxr-xr-x  2 delallea neurones 4096 Jan 23 11:00 test
+- si je fais un PLearn::force_mkdir("test"), j'ai les permissions
+drwxrwxr-x   2 delallea neurones       4096 Jan 23 11:02 test
+
+Question : qu'est-ce qui fait que le 'w' pour le groupe a ete rajoute ?
+
+(mon umask est 22 <=> u=rwx,g=rx,o=rx)
+
+--
+Olivier
+
+
+
+From chrish at apstat.com  Tue Jan 23 17:59:53 2007
+From: chrish at apstat.com (Christian Hudon)
+Date: Tue, 23 Jan 2007 11:59:53 -0500
+Subject: [Plearn-core] Questions sur commit r6594
+In-Reply-To: <20070123160644.GA2649@opale.iro.umontreal.ca>
+References: <20070123144250.GA531@opale.iro.umontreal.ca>	<45B62F53.6020908@apstat.com>
+	<20070123160644.GA2649@opale.iro.umontreal.ca>
+Message-ID: <45B63F09.9040909@apstat.com>
+
+Olivier Delalleau escribi?:
+>
+> Merci pour les explications. Il y a quand meme un truc que je ne
+> comprends pas :
+> - si je fais "mkdir test" dans mon shell, j'ai les permissions
+> drwxr-xr-x  2 delallea neurones 4096 Jan 23 11:00 test
+> - si je fais un PLearn::force_mkdir("test"), j'ai les permissions
+> drwxrwxr-x   2 delallea neurones       4096 Jan 23 11:02 test
+>
+> Question : qu'est-ce qui fait que le 'w' pour le groupe a ete rajoute ?
+>
+> (mon umask est 22 <=> u=rwx,g=rx,o=rx)
+>   
+
+Bonne question. Il ne devrait pas ?tre rajout?. Mon hypoth?ses serait
+qu'un des trucs ci-haut est incorrect. Il faudrait v?rifier. Tu peux
+faire un "strace -e trace=mkdir" sur les deux commandes pour voir
+comment le system call est appel?. Il doit aussi avoir un moyen de voir
+le umask de chaque processus, mais je n'ai pas trouv? comment. Pour
+PLearn, si tu veux tu peux rajouter le code suivant temporairement pour
+voir le umask:
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+mode_t current = umask(0777);
+cout << "Umask: " << oct << current << endl;
+umask(current);
+
+
+  Christian
+
+
+

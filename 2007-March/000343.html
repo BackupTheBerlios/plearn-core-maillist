@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Initialisation des statnames dans PTester
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Initialisation%20des%20statnames%20dans%20PTester&In-Reply-To=%3Cc81af8c30703260908p651fa2e2q3a6e22c9d6776156%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000355.html">
+   <LINK REL="Next"  HREF="000344.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Initialisation des statnames dans PTester</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Initialisation%20des%20statnames%20dans%20PTester&In-Reply-To=%3Cc81af8c30703260908p651fa2e2q3a6e22c9d6776156%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Initialisation des statnames dans PTester">jaonary at gmail.com
+       </A><BR>
+    <I>Mon Mar 26 18:08:23 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000355.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+        <LI>Next message: <A HREF="000344.html">[Plearn-core] Initialisation des statnames dans PTester
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#343">[ date ]</a>
+              <a href="thread.html#343">[ thread ]</a>
+              <a href="subject.html#343">[ subject ]</a>
+              <a href="author.html#343">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour a tous,
+
+J'ai une petite question concertant l'initialisation du statnames d'un
+PTester.
+statnames est un membre prive de PTester donc je ne peux pas avoir acces a
+cette
+variable directerment et faire un truc du genre :
+
+PTester ptester;
+TVec&lt;string&gt; statnames(1,&quot;E[test1.E[binary_class_error]]&quot;);
+ptester.statnames = statnames;
+
+Jusqu'a present j'ai utilise un hack en mettant statnames en public. Mais a
+chaque fois que
+je mets a jours mes sources de PLearn le probleme se repose. Donc, il a y
+surment une raison
+pour que cette variable soit private (mais je ne vois pas laquelle).
+Du coup, comment je peux m'y prendre pour initialiser ce statnames
+correctement (en code C++)
+sans avoir recourt a des hack au niveau du code de PTester directement. Il y
+a surement un truc plus
+simple que je n'ai pas saisi car PTester marche bien en mode script
+(.psave).
+
+Cordialement,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20070326/8811bfa3/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20070326/8811bfa3/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000355.html">[Plearn-core] &#201;limination de OptionBase::defaultval_ et pytransform de declareOption
+</A></li>
+	<LI>Next message: <A HREF="000344.html">[Plearn-core] Initialisation des statnames dans PTester
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#343">[ date ]</a>
+              <a href="thread.html#343">[ thread ]</a>
+              <a href="subject.html#343">[ subject ]</a>
+              <a href="author.html#343">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

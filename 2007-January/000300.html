@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Normalize les lignes d'un VMatrix
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Normalize%20les%20lignes%20d%27un%20VMatrix&In-Reply-To=%3Cc81af8c30701220148p7875ce5bsd16b294a40d862d2%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000298.html">
+   <LINK REL="Next"  HREF="000301.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Normalize les lignes d'un VMatrix</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Normalize%20les%20lignes%20d%27un%20VMatrix&In-Reply-To=%3Cc81af8c30701220148p7875ce5bsd16b294a40d862d2%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Normalize les lignes d'un VMatrix">jaonary at gmail.com
+       </A><BR>
+    <I>Mon Jan 22 10:48:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000298.html">[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)
+</A></li>
+        <LI>Next message: <A HREF="000301.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#300">[ date ]</a>
+              <a href="thread.html#300">[ thread ]</a>
+              <a href="subject.html#300">[ subject ]</a>
+              <a href="author.html#300">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjours a tous,
+
+Je cherche a faire une normalisation des lignes d'une VMatrix. Plus
+precisement, je voudrais avoir un vecteur
+de norme &quot;euclidienne&quot; (ou autre )1 pour chaque ligne de ma VMatrix. Le
+methode naive que j'utilise en ce moment
+c'est de calculer cette norme en utilisant la fonction dot(row,row).
+recuperer les valeurs avec get et les changer avec put.
+C'est un peu lourd et si je changer de norme il faut que recupere toute la
+ligne. Je me demande alors, s'il n'y a pas ce genre
+preprocessing sur les VMatrix deja code dans PLearn ?
+
+Bien a vous,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20070122/5b32d1a5/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20070122/5b32d1a5/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000298.html">[Plearn-core] undefined reference to	PLearn::pl_assert_fail(char const*, char const*, unsigned int,	char const*, char const*)
+</A></li>
+	<LI>Next message: <A HREF="000301.html">[Plearn-core] Normalize les lignes d'un VMatrix
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#300">[ date ]</a>
+              <a href="thread.html#300">[ thread ]</a>
+              <a href="subject.html#300">[ subject ]</a>
+              <a href="author.html#300">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

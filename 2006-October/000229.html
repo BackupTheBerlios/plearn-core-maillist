@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Impl&#233;menter un Learner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FImpl%3DE9menter_un_Learner%3F%3D&In-Reply-To=%3C20061026140325.GA21002%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000228.html">
+   <LINK REL="Next"  HREF="000224.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Impl&#233;menter un Learner</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Fiso-8859-1%3Fq%3FImpl%3DE9menter_un_Learner%3F%3D&In-Reply-To=%3C20061026140325.GA21002%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Impl&#233;menter un Learner">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Oct 26 16:03:28 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000228.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+        <LI>Next message: <A HREF="000224.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#229">[ date ]</a>
+              <a href="thread.html#229">[ thread ]</a>
+              <a href="subject.html#229">[ subject ]</a>
+              <a href="author.html#229">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 26 Oct 2006, Jaonary Rabarisoa wrote:
+&gt;<i> 
+</I>&gt;<i>     &gt; Aussi, mes Z_i devraient plutot &#234;tre des nom de fichier dans ce cas car
+</I>&gt;<i>     je
+</I>&gt;<i>     &gt; pense que je dois laisser mes matrices X_i sur le disque &#224; cause de la
+</I>&gt;<i>     m&#233;moire.
+</I>&gt;<i>     &gt; En moyenne la taille des matrices est 1000*128 et j'en ai 5000. En plus
+</I>&gt;<i>     tout ca
+</I>&gt;<i>     &gt; devrait se faire de maniere transparente quand je fait un getDataSet(...)
+</I>&gt;<i>     ou un
+</I>&gt;<i>     &gt; setTrainigExample(...)
+</I>&gt;<i> 
+</I>&gt;<i>     En effet dans ce cas un nom de fichier est une bonne id&#233;e. Il va alors
+</I>&gt;<i>     falloir que tu utilises les string-mappings des VMats (NB: si tu cr&#233;es
+</I>&gt;<i>     un fichier .amat avec juste sur chaque ligne le nom de fichier suivi de
+</I>&gt;<i>     la target, tu devrais &#234;tre capable de le lire directemnent, fais un vmat
+</I>&gt;<i>     view dessus pour v&#233;rifier, joue avec la touche s/S pour 'switcher'
+</I>&gt;<i>     l'affichage des string mappings).
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Donc, dans ce cas tout devrait etre plus simple que je ne le pensais  car au
+</I>&gt;<i> lieu d'avoir un  VMat  avec des valeurs numerique j'aurais en fait un VMat avec
+</I>&gt;<i> comme input des string et des target comme d'hab. Je ne savais pas que c'etait
+</I>&gt;<i> possible avec les VMats. Je vais tester ca de suite. Par contre ce que tu
+</I>&gt;<i> entendais par string-mapping c'est quoi exactement ?
+</I>
+Justement les inputs sont toujours des nombres flottants, mais la VMat
+garde en memoire un mapping flottant &lt;-&gt; string, que tu peux utiliser
+pour convertir les flottants en strings.
+Fouille un peu dans VMatrix.h pour voir comment ca se gere...
+
+--
+Olivier
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000228.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+	<LI>Next message: <A HREF="000224.html">[Plearn-core] inclusion de plapack.h
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#229">[ date ]</a>
+              <a href="thread.html#229">[ thread ]</a>
+              <a href="subject.html#229">[ subject ]</a>
+              <a href="author.html#229">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1169 @@
+From pascal at apstat.com  Mon May  1 17:58:18 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Mon, 01 May 2006 11:58:18 -0400
+Subject: [Plearn-core] Aide de PLearn sur BerliOS, over-quota...
+Message-ID: <4456301A.4080108@apstat.com>
+
+J'ai reg?n?r? l'aide PLearn dans PLearn/doc pour publier une version 
+plus ? jour sur BerliOS
+
+Mais quand j'ai tent? un make publish (qui se contente de faire un scp 
+sur berlios) j'ai obtenu un tas de messages "over-quota".
+
+Apr?s investigation, la partie coupable est la doc doxygen g?n?r?e dans 
+LibraryReference/ (par la commande doxygen): elle prend
+172M !
+
+J'ai donc pour l'instant effac? cette partie de BerliOS, afin de pouvoir 
+au moins publier le reste de la doc mise ? jour.
+
+Au fait, Pascal L. as-tu pu r?gler tes autres probl?mes de g?n?ration de 
+doc?
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Tue May  2 23:11:53 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 2 May 2006 23:11:53 +0200
+Subject: [Plearn-core] Re: [Plearn-commits] r5474 - trunk/plearn/db
+In-Reply-To: <200605021822.k42IMnaw026167@sheep.berlios.de>
+References: <200605021822.k42IMnaw026167@sheep.berlios.de>
+Message-ID: <20060502211153.GA411@pig.zood.org>
+
+On Tue, May 02, 2006, plearner at BerliOS wrote:
+> New Revision: 5474
+> 
+> Modified:
+>    trunk/plearn/db/getDataSet.cc
+> Log:
+> Fixed compilation problem (due to partial commit)
+
+Vous voulez cr?er une branche dans le SVN pour ?viter ce genre de
+choses??
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue May  2 23:17:40 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 2 May 2006 23:17:40 +0200
+Subject: [Plearn-core] Aide de PLearn sur BerliOS, over-quota...
+In-Reply-To: <4456301A.4080108@apstat.com>
+References: <4456301A.4080108@apstat.com>
+Message-ID: <20060502211740.GB411@pig.zood.org>
+
+On Mon, May 01, 2006, Pascal Vincent wrote:
+> J'ai reg?n?r? l'aide PLearn dans PLearn/doc pour publier une version 
+> plus ? jour sur BerliOS
+> 
+> Mais quand j'ai tent? un make publish (qui se contente de faire un scp 
+> sur berlios) j'ai obtenu un tas de messages "over-quota".
+> 
+> Apr?s investigation, la partie coupable est la doc doxygen g?n?r?e dans 
+> LibraryReference/ (par la commande doxygen): elle prend
+> 172M !
+
+En m?me temps, ?a ne m'?tonne pas, vu la taille des sources. Tu as vu
+s'il y avait une partie de cette doc qui ?tait inutile (genre classes
+obsol?tes), ou pas ?
+
+> Au fait, Pascal L. as-tu pu r?gler tes autres probl?mes de g?n?ration de 
+> doc?
+
+Non, je n'ai m?me pas essay? puisque la plupart des probl?mes viennent
+des modules python, et que j'y connais pas grand-chose, dont j'ai pas
+envie de tout p?ter, ni de passer des heures ? essayer de comprendre.
+
+Si un sp?cialiste de chez vous (au hasard Christian D.) voulait bien y
+jeter un oeil, ou qu'on voie ?a ensemble, ?a m'arrangerait. Peut-?tre
+que le probl?me est sp?cifique au Lisa, puisque je n'ai pas moyen de
+savoir si ?a marche ? Apstat ou pas.
+
+? plus,
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed May  3 16:43:29 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 3 May 2006 10:43:29 -0400
+Subject: [Plearn-core] Re: [Plearn-commits] r5474 - trunk/plearn/db
+In-Reply-To: <20060502211153.GA411@pig.zood.org>
+References: <200605021822.k42IMnaw026167@sheep.berlios.de> <20060502211153.GA411@pig.zood.org>
+Message-ID: <20060503144329.GB26902@opale.iro.umontreal.ca>
+
+On 02 May 2006, Pascal Lamblin wrote:
+> On Tue, May 02, 2006, plearner at BerliOS wrote:
+> > New Revision: 5474
+> > 
+> > Modified:
+> >    trunk/plearn/db/getDataSet.cc
+> > Log:
+> > Fixed compilation problem (due to partial commit)
+> 
+> Vous voulez cr?er une branche dans le SVN pour ?viter ce genre de
+> choses??
+
+Qu'est-ce que tu veux dire par la ?
+
+--
+Olivier
+
+
+From lamblinp at iro.umontreal.ca  Wed May  3 17:43:04 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 3 May 2006 17:43:04 +0200
+Subject: [Plearn-core] Re: [Plearn-commits] r5474 - trunk/plearn/db
+In-Reply-To: <20060503144329.GB26902@opale.iro.umontreal.ca>
+References: <200605021822.k42IMnaw026167@sheep.berlios.de> <20060502211153.GA411@pig.zood.org> <20060503144329.GB26902@opale.iro.umontreal.ca>
+Message-ID: <20060503154304.GA5152@pig.zood.org>
+
+On Wed, May 03, 2006, Olivier Delalleau wrote:
+> > > Fixed compilation problem (due to partial commit)
+> > 
+> > Vous voulez cr?er une branche dans le SVN pour ?viter ce genre de
+> > choses??
+> 
+> Qu'est-ce que tu veux dire par la ?
+
+Je veux dire que si on veut travailler sur une modification relativement
+profonde (comme rajouter "extrasize" dans les VMat) sans p?ter le code
+de tout le monde, et sans risquer de se m?langer entre les modifications
+committables et celles qu'on ne committera que quand tout marchera, les
+"branches" de SVN sont assez pratiques.
+
+C'est cens? permettre de faire un "fork" du projet, mais en facilitant
+l'int?gration des patches de la branche principale (trunk) vers les
+autres branches, et la r?int?gration de la branche ? la fin.
+
+-- 
+Pascal
+
+
+From delallea at iro.umontreal.ca  Wed May  3 17:51:58 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Wed, 3 May 2006 11:51:58 -0400
+Subject: [Plearn-core] Re: [Plearn-commits] r5474 - trunk/plearn/db
+In-Reply-To: <20060503154304.GA5152@pig.zood.org>
+References: <200605021822.k42IMnaw026167@sheep.berlios.de> <20060502211153.GA411@pig.zood.org> <20060503144329.GB26902@opale.iro.umontreal.ca> <20060503154304.GA5152@pig.zood.org>
+Message-ID: <20060503155156.GA29414@opale.iro.umontreal.ca>
+
+On 03 May 2006, Pascal Lamblin wrote:
+> On Wed, May 03, 2006, Olivier Delalleau wrote:
+> > > > Fixed compilation problem (due to partial commit)
+> > > 
+> > > Vous voulez cr?er une branche dans le SVN pour ?viter ce genre de
+> > > choses??
+> > 
+> > Qu'est-ce que tu veux dire par la ?
+> 
+> Je veux dire que si on veut travailler sur une modification relativement
+> profonde (comme rajouter "extrasize" dans les VMat) sans p?ter le code
+> de tout le monde, et sans risquer de se m?langer entre les modifications
+> committables et celles qu'on ne committera que quand tout marchera, les
+> "branches" de SVN sont assez pratiques.
+> 
+> C'est cens? permettre de faire un "fork" du projet, mais en facilitant
+> l'int?gration des patches de la branche principale (trunk) vers les
+> autres branches, et la r?int?gration de la branche ? la fin.
+
+Aaaah... Parce que faire une branche juste pour eviter les "compilation
+problem due to partial commit", ca me paraissait un peu exagere...
+
+--
+Olivier
+
+
+From pascal at apstat.com  Wed May  3 21:36:26 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 03 May 2006 15:36:26 -0400
+Subject: [Plearn-core] Added extrasize field to VMatrix
+Message-ID: <4459063A.2050104@apstat.com>
+
+Hello fellow PLearners,
+
+I've just comitted a long due change: adding an extrasize_ to VMatrix.
+The semantic is now that the row of a VMatrix as understood from a 
+PLearner is made of
+inputsize_ input fields
+followed by targetsize_ target fields
+followed by weightsize_ (1 or 0) sample weight fields
+followed by extrasize_ extra fields
+
+The extra fields serve to put additional information that should neither 
+be considered a learner's input, target or a sample weight, but may be 
+used for other things (such as performance assessment).
+
+I also added a new method getExtra to access the extra info (which 
+complements the already existing getExample method)
+
+    //! Default version calls getSubRow based on inputsize_ targetsize_ 
+weightsize_
+    //! But exotic subclasses may construct, input, target and weight 
+however they please.
+    //! If not a weighted matrix, weight should be set to default value 1.
+    virtual void getExample(int i, Vec& input, Vec& target, real& weight);
+
+    //! Complements the getExample method, fetching the the extrasize_ 
+"extra" fields
+    //! expected to appear after the input, target and weight fields
+    //! Default version calls getSubRow based on inputsize_ targetsize_ 
+weightsize_ and extrasize_
+    virtual void getExtra(int i, Vec& extra);
+
+(Note to self: these methods should some day be made const, and in all 
+subclasses as well)
+
+Note that all the testsuite passes.
+
+Also extrasize_ defaults to zero. Thus all current code using *current 
+datasets* should still work exactly as before.
+
+Also nothing currently *enforces* 
+inputsize_+targetsize_+weightsize_+extrasize_ to be equal to width_ 
+(although it is recommended that it be the case), so that old code that 
+used extra fields beyond the weight and inferred their size from width_ 
+should still work (but could be corrected for clarity).
+
+Now of course things may go sour if you make up a *new* dataset with a 
+non-zero extrasize and pass it through VMatrix processing or learners 
+that enforce or suppose that
+inputsize_+targetsize_+weightsize_ == width_  (incriminating ex: 
+fetching the weight with v[width_-1] is wrong!).
+So you may need to make a few minor modifications to the code to 
+properly handle VMatrixes with non-zero extrasize_
+
+Should this little incremental change of mine cause the Earth to stop 
+revolving around the Sun, you/we may go back to previous version that 
+was tagged under SVN: tags/before_adding_VMatrix_extrasize
+
+Have fun!
+
+-- Pascal
+
+-- 
+
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Tue May  9 15:34:08 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 9 May 2006 15:34:08 +0200
+Subject: [Plearn-core] apdispatch
+Message-ID: <20060509133408.GA19742@pig.zood.org>
+
+Salut les gens,
+
+Est-ce que vous savez s'il y a une raison particuli?re (et le cas
+?ch?ant, laquelle) pour que dans le fichier .TMP_APDISPATCH... la ligne
+de commande principale soit entre parenth?ses et suivie d'un ? & ? ?
+
+Je comprends bien qu'il s'agit de lancer la commande en arri?re-plan
+dans un sous-shell, mais est-ce que vous vous rappelez dans quel but ?a
+a ?t? fait, et si c'est important ?
+
+En fait, ?a pose un probl?me au Lisa, ? cause du syst?me de montage NFS
+par Kerberos. Sans entrer dans les d?tails, le syst?me mis en place pour
+prolonger automatiquement les tickets (pour pouvoir lancer des
+exp?riences durant plus de dix heures) semble d?tecter que le programme
+lanc? sur le cluster (le script, donc) est inactif (ou n'existe plus, ou
+a termin?), m?me si la commande ? plearn ... ? n'a pas fini. Du coup il
+ne prolonge plus les tickets, et l'exp?rience plante au bout d'un peu
+moins de dix heures.
+
+Est-ce qu'il serait emb?tant que le .TMP_... se pr?sente comme ?a :
+#!/bin/sh
+echo Executing command pioupiou  [HOST=`printenv HOST`  PID=$$]> LOGS/pioupiou__20060509_09:30:34 ; pioupiou  >> LOGS/pioupiou__20060509_09:30:34 2>> LOGS/pioupiou__20060509_09:30:34 ; echo Job finished at `date` >> LOGS/pioupiou__20060509_09:30:34
+?
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Wed May 10 22:00:37 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Wed, 10 May 2006 22:00:37 +0200
+Subject: [Plearn-core] apdispatch
+In-Reply-To: <20060509133408.GA19742@pig.zood.org>
+References: <20060509133408.GA19742@pig.zood.org>
+Message-ID: <20060510200037.GA28624@pig.zood.org>
+
+On Tue, May 09, 2006, Pascal Lamblin wrote:
+> Est-ce que vous savez s'il y a une raison particuli?re (et le cas
+> ?ch?ant, laquelle) pour que dans le fichier .TMP_APDISPATCH... la ligne
+> de commande principale soit entre parenth?ses et suivie d'un ? & ? ?
+
+Vu que ?a n'a l'air de poser probl?me ? personne, j'ai committ? le
+changement. Si ?a casse quelque chose, merci de me le faire savoir.
+
+-- 
+Pascal
+
+
+From pierre-antoine.manzagol at polymtl.ca  Thu May 18 20:49:11 2006
+From: pierre-antoine.manzagol at polymtl.ca (Pierre-Antoine Manzagol)
+Date: Thu, 18 May 2006 14:49:11 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+Message-ID: <1147978151.446cc1a799ee4@www.imp.polymtl.ca>
+
+Dans pl_math.cc (5501), il semble y avoir une erreur dans safeexp. Dans le cas
+USEDOUBLE, on a safeexp(299) > safeexp(301).
+
+Suggestion: remplacer
+if (a > 300) return 1e38;
+par
+if (a > 300) return 2e130;
+
+PA
+
+
+
+
+From chapados at apstat.com  Thu May 18 21:06:11 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 18 May 2006 15:06:11 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+In-Reply-To: <1147978151.446cc1a799ee4@www.imp.polymtl.ca>
+References: <1147978151.446cc1a799ee4@www.imp.polymtl.ca>
+Message-ID: <446CC5A3.30904@apstat.com>
+
+Pourquoi pas:
+
+#include <limits>
+// ...
+if (a > 300)
+    return std::numeric_limits<real>::max();
+
+
+Pierre-Antoine Manzagol wrote:
+> Dans pl_math.cc (5501), il semble y avoir une erreur dans safeexp. Dans le cas
+> USEDOUBLE, on a safeexp(299) > safeexp(301).
+>
+> Suggestion: remplacer
+> if (a > 300) return 1e38;
+> par
+> if (a > 300) return 2e130;
+>
+> PA
+>
+>
+> _______________________________________________
+> Plearn-core mailing list
+> Plearn-core at lists.berlios.de
+> http://lists.berlios.de/mailman/listinfo/plearn-core
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From pierre-antoine.manzagol at polymtl.ca  Thu May 18 21:17:55 2006
+From: pierre-antoine.manzagol at polymtl.ca (Pierre-Antoine Manzagol)
+Date: Thu, 18 May 2006 15:17:55 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+In-Reply-To: <446CC5A3.30904@apstat.com>
+References: <1147978151.446cc1a799ee4@www.imp.polymtl.ca> <446CC5A3.30904@apstat.com>
+Message-ID: <1147979875.446cc8639690f@www.imp.polymtl.ca>
+
+> #include <limits>
+> // ...
+> if (a > 300)
+>     return std::numeric_limits<real>::max();
+
+Dans ce cas, ma question est pourquoi a-t-on le seuil de '300'?
+PA
+
+
+
+cf:
+> > Dans pl_math.cc (5501), il semble y avoir une erreur dans safeexp. Dans le
+> cas
+> > USEDOUBLE, on a safeexp(299) > safeexp(301).
+> >
+> > Suggestion: remplacer
+> > if (a > 300) return 1e38;
+> > par
+> > if (a > 300) return 2e130;
+
+
+
+From chapados at apstat.com  Thu May 18 21:29:29 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 18 May 2006 15:29:29 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+In-Reply-To: <1147979875.446cc8639690f@www.imp.polymtl.ca>
+References: <1147978151.446cc1a799ee4@www.imp.polymtl.ca> <446CC5A3.30904@apstat.com> <1147979875.446cc8639690f@www.imp.polymtl.ca>
+Message-ID: <446CCB19.1020102@apstat.com>
+
+
+Pierre-Antoine Manzagol wrote:
+>> #include <limits>
+>> // ...
+>> if (a > 300)
+>>     return std::numeric_limits<real>::max();
+>>     
+>
+> Dans ce cas, ma question est pourquoi a-t-on le seuil de '300'?
+> PA
+>   
+Peut-?tre pour ?viter les inf?  Pascal/Yoshua, vous avez probablement 
+une id?e?
+
+    + N.
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From delallea at iro.umontreal.ca  Thu May 18 21:34:33 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 18 May 2006 15:34:33 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+In-Reply-To: <446CCB19.1020102@apstat.com>
+References: <1147978151.446cc1a799ee4@www.imp.polymtl.ca> <446CC5A3.30904@apstat.com> <1147979875.446cc8639690f@www.imp.polymtl.ca> <446CCB19.1020102@apstat.com>
+Message-ID: <20060518193431.GA13239@opale.iro.umontreal.ca>
+
+On 18 May 2006, Nicolas Chapados wrote:
+> 
+> 
+> Pierre-Antoine Manzagol wrote:
+> >>#include <limits>
+> >>// ...
+> >>if (a > 300)
+> >>    return std::numeric_limits<real>::max();
+> >>    
+> >
+> >Dans ce cas, ma question est pourquoi a-t-on le seuil de '300'?
+> >PA
+> >  
+> Peut-?tre pour ?viter les inf?  Pascal/Yoshua, vous avez probablement 
+> une id?e?
+
+Ca doit etre un peu plus subtil, car il y a aussi if (a < -300) return 0.
+Alors que exp(-310), si ca ne retourne pas 0, ca ne devrait pas etre
+bien grand non plus.
+
+--
+Olivier
+
+
+From chapados at apstat.com  Fri May 19 02:13:51 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 18 May 2006 20:13:51 -0400
+Subject: [Plearn-core] Metadatadir
+Message-ID: <446D0DBF.4080706@apstat.com>
+
+Salut les copains,
+
+Quelqu'un sait pourquoi le destructeur de FileVMatrix essaie 
+intempestivement de sauvegarder les fieldinfos, et ce m?me si la matrice 
+est d?clar?e comme "non-writable"?
+
+Dans certains cas, l'utilisateur n'a pas la permission d'?crire sur le 
+disque, et il ne faudrait pas le forcer ? cr?er des erreurs inutiles.
+
+Donc si personne ne s'objecte, je vais modifier les lignes suivantes de 
+FileVMatrix:
+
+FileVMatrix::~FileVMatrix()
+{
+    if (hasMetaDataDir())
+        saveFieldInfos();
+    FileVMatrix::closeCurrentFile();
+}
+
+pour
+
+FileVMatrix::~FileVMatrix()
+{
+    if (hasMetaDataDir() && writable)
+        saveFieldInfos();
+    FileVMatrix::closeCurrentFile();
+}
+
+    + Nicolas 
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From pascal at apstat.com  Wed May 24 21:37:13 2006
+From: pascal at apstat.com (Pascal Vincent)
+Date: Wed, 24 May 2006 15:37:13 -0400
+Subject: [Plearn-core] pl_math.cc (5501) - safeexp
+In-Reply-To: <446CC5A3.30904@apstat.com>
+References: <1147978151.446cc1a799ee4@www.imp.polymtl.ca> <446CC5A3.30904@apstat.com>
+Message-ID: <4474B5E9.2070300@apstat.com>
+
+Nicolas Chapados wrote:
+> Pourquoi pas:
+>
+> #include <limits>
+> // ...
+> if (a > 300)
+>    return std::numeric_limits<real>::max();
+>
+Non, je pense qu'il est preferable d'avoir une fonction continue, donc 
+la valeur qu'on devrait retourner pour a>THRESHOLD devrait ?tre la m?me 
+que pour a==THRESHOLD, et le THRESHOLD devrait ?tre choisi de mani?re ? 
+ce que safeexp(THRESHOLD) soit dans la range valide pour le type en 
+question (donc un THRESHOLD potentiellement different pour float et 
+double, genre 80 pour float, et 300 pour double).
+
+>
+> Pierre-Antoine Manzagol wrote:
+>> Dans pl_math.cc (5501), il semble y avoir une erreur dans safeexp. 
+>> Dans le cas
+>> USEDOUBLE, on a safeexp(299) > safeexp(301).
+>>
+>> Suggestion: remplacer
+>> if (a > 300) return 1e38;
+>> par
+>> if (a > 300) return 2e130;
+>>
+>> PA
+>>
+>>
+>> _______________________________________________
+>> Plearn-core mailing list
+>> Plearn-core at lists.berlios.de
+>> http://lists.berlios.de/mailman/listinfo/plearn-core
+>>   
+>
+
+
+-- 
+Pascal Vincent
+Directeur Technique, ApSTAT Technologies Inc.
+Tel: (514) 343-9119  #219
+http://www.apstat.com
+
+
+
+From chapados at apstat.com  Thu May 25 16:07:17 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 25 May 2006 10:07:17 -0400
+Subject: [Plearn-core] [Fwd: Algo Gradient =?ISO-8859-1?Q?Conjugu=E9=5D?=
+Message-ID: <4475BA15.2030009@apstat.com>
+
+Message de Hugo. :-)
+
+J'ai la m?me question en passant.  Olivier???
+
+-------- Original Message --------
+Subject: 	Algo Gradient Conjugu?
+Date: 	Thu, 25 May 2006 10:05:52 -0400
+From: 	Hugo Larochelle <larocheh at IRO.UMontreal.CA>
+To: 	Nicolas Chapados <chapados at apstat.com>
+
+
+
+Salut les mecs,
+
+  est-ce qu'il y a une version de l'algorithme de gradient conjugu? qui
+tra?ne ? quelque part et qui fonctionne correctement. ?a a l'air que
+ConjGradientOptimizer dans plearn/opt/ aurait un comportement bizarre.
+Je pense que Pascal Lamblin l'a compar? ? un algo de gradient conjugu?
+de Matlab et aurait obtenu des r?sultats diff?rents.
+
+Merci!
+
+Hugo
+
+
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060525/6173cc6a/attachment.html>
+
+From delallea at iro.umontreal.ca  Thu May 25 16:09:54 2006
+From: delallea at iro.umontreal.ca (Olivier Delalleau)
+Date: Thu, 25 May 2006 10:09:54 -0400
+Subject: [Plearn-core] [Fwd: =?iso-8859-1?Q?Alg?=
+	=?iso-8859-1?Q?o_Gradient_Conjugu=E9=5D?=
+In-Reply-To: <4475BA15.2030009@apstat.com>
+References: <4475BA15.2030009@apstat.com>
+Message-ID: <20060525140952.GA9223@opale.iro.umontreal.ca>
+
+Oui c'est moi qui ai dit ca a Hugo. Mes tests montraient que ca
+marchait, mais Pascal a eu des trucs bizarres je crois, il faudra lui
+demander plus de details.
+
+On 25 May 2006, Nicolas Chapados wrote:
+> Message de Hugo. :-)
+> 
+> J'ai la m?me question en passant.  Olivier???
+> 
+> -------- Original Message --------
+> Subject: Algo Gradient Conjugu?
+>    Date: Thu, 25 May 2006 10:05:52 -0400
+>    From: Hugo Larochelle <larocheh at IRO.UMontreal.CA>
+>      To: Nicolas Chapados <chapados at apstat.com>
+> 
+> 
+> 
+> Salut les mecs,
+> 
+>   est-ce qu'il y a une version de l'algorithme de gradient conjugu? qui
+> tra?ne ? quelque part et qui fonctionne correctement. ?a a l'air que
+> ConjGradientOptimizer dans plearn/opt/ aurait un comportement bizarre.
+> Je pense que Pascal Lamblin l'a compar? ? un algo de gradient conjugu?
+> de Matlab et aurait obtenu des r?sultats diff?rents.
+> 
+> Merci!
+> 
+> Hugo
+> 
+> 
+> 
+
+
+From lamblinp at iro.umontreal.ca  Thu May 25 17:21:36 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 25 May 2006 17:21:36 +0200
+Subject: [Plearn-core] [Fwd: =?iso-8859-1?Q?Alg?=
+	=?iso-8859-1?Q?o_Gradient_Conjugu=E9=5D?=
+In-Reply-To: <20060525140952.GA9223@opale.iro.umontreal.ca>
+References: <4475BA15.2030009@apstat.com> <20060525140952.GA9223@opale.iro.umontreal.ca>
+Message-ID: <20060525152136.GA4924@pig.zood.org>
+
+On Thu, May 25, 2006, Olivier Delalleau wrote:
+> Oui c'est moi qui ai dit ca a Hugo. Mes tests montraient que ca
+> marchait, mais Pascal a eu des trucs bizarres je crois, il faudra lui
+> demander plus de details.
+
+J'ai pas regard? en d?tail, j'avais fait un script pour entra?ner
+un r?sau de neurones sur je ne sais plus quel dataset, en utilisant
+le ConjGradientOptimizer, pendant que Nicolas Le Roux avait fait la
+m?me chose en matlab, avec le code de Carl Rasmussen pour le gradient
+conjugu?. Pour un nombre d'?poques ?quivalent, les r?sultats de plearn
+?taient bien plus mauvais. J'ai pas investigu? plus pour le moment.
+
+?a serait un test ? refaire, pour voir ce qui se passe exactement, mais
+l'algo est cens? ?tre le m?me.
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Thu May 25 17:40:51 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 25 May 2006 11:40:51 -0400
+Subject: [Plearn-core] [Fwd: Algo Gradient =?ISO-8859-1?Q?Conjugu=E9=5D?=
+In-Reply-To: <20060525152136.GA4924@pig.zood.org>
+References: <4475BA15.2030009@apstat.com> <20060525140952.GA9223@opale.iro.umontreal.ca> <20060525152136.GA4924@pig.zood.org>
+Message-ID: <4475D003.5030708@apstat.com>
+
+Donc est-ce qu'on s'entend pour confirmer que personne ne confirme qu'il 
+y ait un gradient conjugu? fonctionnel dans PLearn en date du 25 mai 2006?
+
+Pascal Lamblin wrote:
+> On Thu, May 25, 2006, Olivier Delalleau wrote:
+>   
+>> Oui c'est moi qui ai dit ca a Hugo. Mes tests montraient que ca
+>> marchait, mais Pascal a eu des trucs bizarres je crois, il faudra lui
+>> demander plus de details.
+>>     
+>
+> J'ai pas regard? en d?tail, j'avais fait un script pour entra?ner
+> un r?sau de neurones sur je ne sais plus quel dataset, en utilisant
+> le ConjGradientOptimizer, pendant que Nicolas Le Roux avait fait la
+> m?me chose en matlab, avec le code de Carl Rasmussen pour le gradient
+> conjugu?. Pour un nombre d'?poques ?quivalent, les r?sultats de plearn
+> ?taient bien plus mauvais. J'ai pas investigu? plus pour le moment.
+>
+> ?a serait un test ? refaire, pour voir ce qui se passe exactement, mais
+> l'algo est cens? ?tre le m?me.
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Thu May 25 18:02:51 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Thu, 25 May 2006 18:02:51 +0200
+Subject: [Plearn-core] [Fwd: =?iso-8859-1?Q?Alg?=
+	=?iso-8859-1?Q?o_Gradient_Conjugu=E9=5D?=
+In-Reply-To: <4475D003.5030708@apstat.com>
+References: <4475BA15.2030009@apstat.com> <20060525140952.GA9223@opale.iro.umontreal.ca> <20060525152136.GA4924@pig.zood.org> <4475D003.5030708@apstat.com>
+Message-ID: <20060525160251.GA5165@pig.zood.org>
+
+On Thu, May 25, 2006, Nicolas Chapados wrote:
+> Donc est-ce qu'on s'entend pour confirmer que personne ne confirme qu'il 
+> y ait un gradient conjugu? fonctionnel dans PLearn en date du 25 mai 2006?
+
+Oui, mais personne ne confirme que le gradient conjugu? en question ne
+marche pas.
+
+Enfin je crois.
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Fri May 26 00:36:54 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 26 May 2006 00:36:54 +0200
+Subject: [Plearn-core] HyperLearner et SetOptions
+Message-ID: <20060525223653.GE6904@pig.zood.org>
+
+Salut les gens,
+
+dans la doc de HyperLearner, je lis :
+# TVec< PP< HyperCommand > >: The strategy to follow to optimize the hyper-parameters.
+# It's a list of hyper-optimization commands to call sequentially,(mostly HyperOptimize and SetOptions commands).
+strategy = TVec(0 0 *0 )
+
+Mais je ne trouve pas cette classe ? SetOptions ?. Pourtant, c'est un
+truc qui m'arrangerait bien, de pouvoir simplement changer une option
+avant de lancer les autres strat?gies, sans avoir ? faire un
+HyperOptimize qui inclut un ExplicitListOracle, tout ?a pour une option.
+
+Est-ce que cette classe a exist? puis disparu, est-ce qu'elle est
+quelque part ? Apstat mais qu'on n'y a pas droit, est-ce qu'elle ?tait
+pr?vue mais n'a jamais vu le jour, ou est-ce que c'est juste une erreur
+dans la documentation ?
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Fri May 26 00:42:14 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 25 May 2006 18:42:14 -0400
+Subject: [Plearn-core] HyperLearner et SetOptions
+In-Reply-To: <20060525223653.GE6904@pig.zood.org>
+References: <20060525223653.GE6904@pig.zood.org>
+Message-ID: <447632C6.5010003@apstat.com>
+
+Regarde HyperSetOption.
+
+
+Pascal Lamblin wrote:
+> Salut les gens,
+>
+> dans la doc de HyperLearner, je lis :
+> # TVec< PP< HyperCommand > >: The strategy to follow to optimize the hyper-parameters.
+> # It's a list of hyper-optimization commands to call sequentially,(mostly HyperOptimize and SetOptions commands).
+> strategy = TVec(0 0 *0 )
+>
+> Mais je ne trouve pas cette classe ? SetOptions ?. Pourtant, c'est un
+> truc qui m'arrangerait bien, de pouvoir simplement changer une option
+> avant de lancer les autres strat?gies, sans avoir ? faire un
+> HyperOptimize qui inclut un ExplicitListOracle, tout ?a pour une option.
+>
+> Est-ce que cette classe a exist? puis disparu, est-ce qu'elle est
+> quelque part ? Apstat mais qu'on n'y a pas droit, est-ce qu'elle ?tait
+> pr?vue mais n'a jamais vu le jour, ou est-ce que c'est juste une erreur
+> dans la documentation ?
+>
+>   
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Fri May 26 00:43:15 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Fri, 26 May 2006 00:43:15 +0200
+Subject: [Plearn-core] HyperLearner et SetOptions
+In-Reply-To: <20060525223653.GE6904@pig.zood.org>
+References: <20060525223653.GE6904@pig.zood.org>
+Message-ID: <20060525224315.GA6980@pig.zood.org>
+
+On Fri, May 26, 2006, Pascal Lamblin wrote:
+> Est-ce que cette classe a exist? puis disparu, est-ce qu'elle est
+> quelque part ? Apstat mais qu'on n'y a pas droit, est-ce qu'elle ?tait
+> pr?vue mais n'a jamais vu le jour, ou est-ce que c'est juste une erreur
+> dans la documentation ?
+
+Bon, j'ai trouv?, en fait c'est ? HyperSetOption ?, mais elle n'est pas
+incluse dans plearn_inc.h. Avez-vous une id?e du pourquoi, ou y a-t-il
+une raison pour que je ne l'inclue pas ?
+
+-- 
+Pascal
+
+
+From chapados at apstat.com  Fri May 26 01:20:21 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Thu, 25 May 2006 19:20:21 -0400
+Subject: [Plearn-core] HyperLearner et SetOptions
+In-Reply-To: <20060525224315.GA6980@pig.zood.org>
+References: <20060525223653.GE6904@pig.zood.org> <20060525224315.GA6980@pig.zood.org>
+Message-ID: <44763BB5.4030906@apstat.com>
+
+Pas de raison particuli?re.  J'ai d?j? utilis? cette classe ? plusieurs 
+reprises (et si je me souviens bien c'est moi qui l'ai ?crite.)
+
+    + N.
+
+
+Pascal Lamblin wrote:
+> On Fri, May 26, 2006, Pascal Lamblin wrote:
+>   
+>> Est-ce que cette classe a exist? puis disparu, est-ce qu'elle est
+>> quelque part ? Apstat mais qu'on n'y a pas droit, est-ce qu'elle ?tait
+>> pr?vue mais n'a jamais vu le jour, ou est-ce que c'est juste une erreur
+>> dans la documentation ?
+>>     
+>
+> Bon, j'ai trouv?, en fait c'est ? HyperSetOption ?, mais elle n'est pas
+> incluse dans plearn_inc.h. Avez-vous une id?e du pourquoi, ou y a-t-il
+> une raison pour que je ne l'inclue pas ?
+>   
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From chapados at apstat.com  Sun May 28 23:04:37 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Sun, 28 May 2006 17:04:37 -0400
+Subject: [Plearn-core] Noms d'options qui se terminent en _
+Message-ID: <447A1065.9010208@apstat.com>
+
+All? les copains,
+
+Beaucoup d'endroits dans PLearn (particuli?rement les Var) contiennent 
+des options dont les noms se terminent en _ (underscore).  Je trouve 
+cela hideux.  Suis-je le seul?
+
+Y aurait-il beaucoup de scripts ? upgrader si on voulait faire une 
+mise-?-jour ? grande ?chelle?
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From lamblinp at iro.umontreal.ca  Sun May 28 23:43:00 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Sun, 28 May 2006 23:43:00 +0200
+Subject: [Plearn-core] Noms d'options qui se terminent en _
+In-Reply-To: <447A1065.9010208@apstat.com>
+References: <447A1065.9010208@apstat.com>
+Message-ID: <20060528214300.GB31414@pig.zood.org>
+
+On Sun, May 28, 2006, Nicolas Chapados wrote:
+> All? les copains,
+
+Salut !
+
+> Beaucoup d'endroits dans PLearn (particuli?rement les Var) contiennent 
+> des options dont les noms se terminent en _ (underscore).  Je trouve 
+> cela hideux.  Suis-je le seul?
+
+Tu parles des noms des options, ou des variables derri?re ?
+
+Si les variables ont un _ ? la fin, genre pour ?viter les conflits entre
+la variable width_ et la m?thode width(), je ne sais pas quel est le
+pire : avoir le nom d'option (dans un script) correspondant qui se
+termine en _, ou avoir une diff?rence entre le nom de l'option et le nom
+de la variable.
+
+> Y aurait-il beaucoup de scripts ? upgrader si on voulait faire une 
+> mise-?-jour ? grande ?chelle?
+
+En ce qui me concerne, je n'ai jamais vu de Var dans un script.
+
+Mais si on fait une mise ? jour ? grande ?chelle comme tu dis, ?a serait
+l'occasion de faire les changements des noms d'options dans les VMat, ce
+qui permettrait de virer les options obsol?tes (je pense en particulier
+? "specification" => "filename" dans AutoVMatrix).
+
+? plus,
+-- 
+Pascal
+
+
+From chapados at apstat.com  Mon May 29 00:53:10 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Sun, 28 May 2006 18:53:10 -0400
+Subject: [Plearn-core] Gradient =?ISO-8859-1?Q?Conjugu=E9?=
+Message-ID: <447A29D6.1020507@apstat.com>
+
+News Flash.
+
+Je confirme que la version actuelle de ConjGradientOptimizer est 
+bris?e.  J'essaie de reproduire l'exemple de l'optimisation de la 
+fonction de Rosenbrock donn? par Rasmussen, et voici ce que me donne PLearn:
+
+rosenbrock([ 0, 0 ] ) = [ 1 ] 
+No more progress made by the line search, stopping
+ConjGradientOptimizer - stage 0: 1
+Early Stopping!
+After optimization:
+inputs = [ 0, 0 ] 
+output = [ 1 ] 
+
+En d'autres termes, il pense qu'il a fini avant d'avoir commenc?!  En 
+contraste, l'exemple de Rasmussen prend un certain temps ? converger:
+
+>> [x fx c] = minimize([0 0]', 'rosenbrock', 25)
+Linesearch     18;  Value 4.930381e-32
+x =
+   1.00000000000000
+   1.00000000000000
+fx =
+   1.00000000000000
+   0.77160942667725
+   0.58224024884105
+   0.40492742502160
+   0.32466327341368
+   0.28960411147824
+   0.07623420070067
+   0.06786211944378
+   0.03378423679313
+   0.00108990808914
+   0.00108795243321
+   0.00008974308332
+   0.00000012183819
+   0.00000000675602
+   0.00000000000000
+   0.00000000000000
+   0.00000000000000
+   0.00000000000000
+   0.00000000000000
+c =
+    20
+
+Je suis en train d'enqu?ter, mais jusqu'? nouvel ordre, il serait sage 
+de ne pas trop perdre votre temps avec ConjGradientOptimizer...  Je 
+sais, NIPS approche.
+
+    + Nicolas
+
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+
+From chapados at apstat.com  Mon May 29 06:57:29 2006
+From: chapados at apstat.com (Nicolas Chapados)
+Date: Mon, 29 May 2006 00:57:29 -0400
+Subject: [Plearn-core] =?ISO-8859-1?Q?Gradient_conjugu=E9_=28la_suite=29?=
+Message-ID: <066F625D-94A8-4E6A-BEE5-03129AC73E9E@apstat.com>
+
+Salut les copains,
+
+Fausse alerte, le code existant de gradient conjugu?  
+(ConjGradientOptimizer) semble bien fonctionner.  Quelques points:
+
+- J'ai ajout? ? PLearn deux test-cases qui optimisent la fonction de  
+Rosenbrock (qui est tr?s difficile ? optimiser par simple descente de  
+gradient), en dimensionalit?s 2 et 100.
+
+- J'ai r?-ordonn? des membres de la classe qui causaient des bugs  
+d'alignement avec certaines versions de gcc (d'o? peut-?tre mon  
+alerte de tout-?-l'heure).  En particulier, c'est mieux de ne pas  
+d?clarer de doubles (real) qui ne soient pas align?s sur une  
+fronti?re de 8 bytes, car le padding introduit par le compilateur  
+cause parfois quelques ennuis (!!!!!!!).
+
+- J'ai mis un peu plus de doc dans la classe, tir?e des commentaires  
+dans le code de Rasmussen (avec attribution).
+
+	+ Nicolas
+
+---
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060529/962fe3f2/attachment.html>
+
+From dorionc at apstat.com  Mon May 29 15:01:22 2006
+From: dorionc at apstat.com (Christian Dorion)
+Date: Mon, 29 May 2006 09:01:22 -0400
+Subject: [Plearn-core] Noms d'options qui se terminent en _
+In-Reply-To: <20060528214300.GB31414@pig.zood.org>
+References: <447A1065.9010208@apstat.com> <20060528214300.GB31414@pig.zood.org>
+Message-ID: <447AF0A2.7050500@apstat.com>
+
+
+Pascal Lamblin wrote:
+> On Sun, May 28, 2006, Nicolas Chapados wrote:
+>   
+>> All? les copains,
+>>     
+>
+> Salut !
+>
+>   
+Euh... salut :)
+>> Beaucoup d'endroits dans PLearn (particuli?rement les Var) contiennent 
+>> des options dont les noms se terminent en _ (underscore).  Je trouve 
+>> cela hideux.  Suis-je le seul?
+>>     
+>
+> Tu parles des noms des options, ou des variables derri?re ?
+>
+> Si les variables ont un _ ? la fin, genre pour ?viter les conflits entre
+> la variable width_ et la m?thode width(), je ne sais pas quel est le
+> pire : avoir le nom d'option (dans un script) correspondant qui se
+> termine en _, ou avoir une diff?rence entre le nom de l'option et le nom
+> de la variable.
+>
+>   
+J'imagine qu'on parle ?videmment des variables derri?res les options... 
+Parce qu'un "_" dans le nom de l'option... Ouach! L? ce serait m?ga 
+laid... Personnellement, je vis tr?s bien avec une diff?rence entre le 
+nom de l'option et le nom de la variable si cette diff?rence est 
+"standard", i.e. si on a une convention... Et justement, il y en a une 
+de convention que l'on a timidement tent? d'installer dans PLearn (mais 
+qui est dans toutes les nouvelles classes de FinLearn) et c'est de 
+pr?fixer toutes les variables membres d'une classes par "m_". ?a peut 
+avoir l'air fastidieux ? prime abord, mais c'est tr?s sympatique avec 
+l'autocompl?tion et ?a clarifie ?norm?ment le code.
+
+Pourquoi c'est mieux que de suffix? par "_"? Eh bien tout simplement 
+parce que ce petit suffixe ne saute par toujours aux yeux ? la lecture 
+du code apr?s coup... Aussi, je trouve que ?a fait pas joli avant 
+l'op?rateur "->". Et je crois qu'il y a une affaire vaudoo en C++ avec 
+les "_"...
+
+Enfin, mon point c'est que, pour les nouvelles classes ? tout le moins, 
+on devrait passer ? la convention de code que Nicolas nous avait pondu 
+il y a pas si longtemps... Et pour les classes au coeur de PLearn, il 
+faudrait peut-?tre faire une passe de m?nage un jour, mais ?a j'ai dit 
+?a souvent... bien plus souvent que je ne l'ai fait ;)
+
+A+
+-- 
+*Christian Dorion*/
+Doctorant en Finance (McGill's Faculty of Management)
+M.Sc. Informatique et Recherche Op?rationnelle//
+Apstat Technologies Inc./
+http://www.apstat.com
+T?l : (514) 343-9119, ext. 237
+
+"Soyons r?alistes, exigeons l'impossible",
+Ernesto "Che" Guevara, 1928-1967
+
+"Love is a Temple, Love the higher Law",
+One, U2
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/plearn-core/attachments/20060529/59c96385/attachment.html>
+
+From lamblinp at iro.umontreal.ca  Mon May 29 23:22:02 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Mon, 29 May 2006 23:22:02 +0200
+Subject: [Plearn-core] =?iso-8859-1?Q?Gradient_?=
+	=?iso-8859-1?Q?conjugu=E9?= (la suite)
+In-Reply-To: <066F625D-94A8-4E6A-BEE5-03129AC73E9E@apstat.com>
+References: <066F625D-94A8-4E6A-BEE5-03129AC73E9E@apstat.com>
+Message-ID: <20060529212202.GA5771@pig.zood.org>
+
+On Mon, May 29, 2006, Nicolas Chapados wrote:
+> - J'ai r?-ordonn? des membres de la classe qui causaient des bugs
+> d'alignement avec certaines versions de gcc (d'o? peut-?tre mon alerte
+> de tout-?-l'heure). En particulier, c'est mieux de ne pas d?clarer de
+> doubles (real) qui ne soient pas align?s sur une fronti?re de 8 bytes,
+> car le padding introduit par le compilateur cause parfois quelques
+> ennuis (!!!!!!!).
+
+Euh, c'est potentiellement assez effrayant, ce genre de choses. Es-tu
+s?r que ?a vient de l? ? Est-ce qu'il y a un moyen de v?rifier si ce
+genre de probl?me arrive dans d'autres classes ?
+
+Parce que j'ai eu des bugs bizarres et peu reproductibles r?cemment, ?a
+pourrait venir de ce genre de chose ?
+
+
+-- 
+Pascal
+
+
+From lamblinp at iro.umontreal.ca  Tue May 30 00:52:19 2006
+From: lamblinp at iro.umontreal.ca (Pascal Lamblin)
+Date: Tue, 30 May 2006 00:52:19 +0200
+Subject: [Plearn-core] comportement bizarre de VecStatsCollector
+Message-ID: <20060529225219.GA6141@pig.zood.org>
+
+Salut les gens !
+
+? la suite d'une exp?rience avec PTester, PLearner et tout le PBataclan,
+je me suis retrouv? avec les sauvegardes de mes VecStatsCollectors sur
+mes trois dataset de test (test1 qui ?tait en fait le m?me que le train,
+test2 et test3).
+
+Par routine, j'ai ouvert test1_stats.psave (puisque tel ?tait son nom)
+dans mon ?diteur pr?f?r?[1]. Et quelle ne fut pas ma surprise de
+constater que la somme de mes co?ts ?tait :
+
+sum_ = -652.144952610865516 ; # (pour le premier, NLL), et
+sum_ = -875 ;                 # (pour le deuxi?me, class_error)
+
+Et ce alors que les minimums ?taient, respectivement :
+min_ = 6.61968592936557629e-05 ;
+min_ = 0 ;
+
+D'o? ma question l?gitime : qu'est-ce que c'est que ces valeurs
+n?gatives, nom d'une pute borgne ?
+
+Plus troublant : j'avais 1000 exemples, et dans ma split_stats.pmat, les
+co?ts correspondants ? test1 sont :
+  test1.E[NLL] test1.E[class_error]
+0.418401292770                0.125
+
+Alors je vois bien que 1+(-875/1000) == 0.125, encore que je suis
+dubitatif sur l'ajout de ce ? 1 ? miraculeux, mais surtout je ne
+comprends pas d'o? il peut bien tirer sa valeur pour la NLL.
+
+Bizarre aussi : test2_stats.psave et test3_stats.psave ne posent pas ce
+probl?me.
+
+C'est quelque chose de connu, ou il faut que je cherche plus
+profond?ment ?
+
+-- 
+Pascal
+[1] Non, ce n'est pas emacs mais vim, c'est mon choix et je l'assume. Au
+moins c'est facile d'avoir la coloration syntaxique et l'indentation sur
+un .psave.
+
+

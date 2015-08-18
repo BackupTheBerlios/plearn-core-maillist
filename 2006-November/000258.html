@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Les fichiers .pmat et espace disque
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-November/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Les%20fichiers%20.pmat%20et%20espace%20disque&In-Reply-To=%3C20061117143444.GA16159%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000257.html">
+   <LINK REL="Next"  HREF="000259.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Les fichiers .pmat et espace disque</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Les%20fichiers%20.pmat%20et%20espace%20disque&In-Reply-To=%3C20061117143444.GA16159%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Les fichiers .pmat et espace disque">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Fri Nov 17 15:34:46 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000257.html">[Plearn-core] Les fichiers .pmat et espace disque
+</A></li>
+        <LI>Next message: <A HREF="000259.html">[Plearn-core] Early stopping et NNet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#258">[ date ]</a>
+              <a href="thread.html#258">[ thread ]</a>
+              <a href="subject.html#258">[ subject ]</a>
+              <a href="author.html#258">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Les m&#233;tadonn&#233;es sont dans des fichiers auxiliaires car certaines sont
+universelles et ind&#233;pendantes du format de fichier, et doivent pouvoir
+&#234;tre lues par du code qui ne comprend pas n&#233;cessairement le format pmat.
+
+Tu pourrais essayer de rajouter une option dans FileVMatrix qui permet
+de ne *pas* avoir de metadatadir, et voir si &#231;a peut fonctionner quand
+m&#234;me sans celui-ci (je pense que oui).
+Une autre approche serait, si possible, de &quot;regrouper&quot; tes matrices dans
+une seule grosse matrice, dont tu acc&#232;derais ensuite &#224; des sous-matrices
+(pour r&#233;cup&#233;rer tes petites matrices originales).
+Note aussi que le format .dmat (DiskVMatrix) compresse un peu les
+donn&#233;es (mais cr&#233;e aussi des fichiers auxiliaires, donc ce n'est pas
+forc&#233;ment ce que tu veux).
+
+--
+Olivier
+
+On 17 Nov 2006, Jaonary Rabarisoa wrote:
+&gt;<i> Salut tout le monde,
+</I>&gt;<i> 
+</I>&gt;<i> J'ai de nouvelles questions &#224; vous soumettre. Ces derniers temps j'ai fais
+</I>&gt;<i> tourner beacoup de calculs qui prend &#233;norm&#233;ment de temps mais aussi de l'espace
+</I>&gt;<i> disque car je sauvegardais beaucoup de choses. Quand on a fail les comptes, ce
+</I>&gt;<i> qui est le plus p&#233;nalisant c'est le fait que le format binaire de PLearn i.e
+</I>&gt;<i> .pmat  g&#233;nere plein de petits fichiers &#224; cot&#233;s de la vraie matrice. Pour vous
+</I>&gt;<i> dire, j'arriviais &#224; occuper pr&#232;s de 70 G pour stocker des petites matrice de
+</I>&gt;<i> taille environ 1000, mais il y en avait quand meme beaucoup de matrice (environ
+</I>&gt;<i> 2500000).
+</I>&gt;<i> 
+</I>&gt;<i> Ma question est alors, pourquoi les metadonn&#233;es des vmatrix sont dans des
+</I>&gt;<i> fichier auxilliaire non pas dans le fichier lui meme ? Est-ce PLearn a d'autre
+</I>&gt;<i> format de fichier binaire &#224; part les .pmat pour rem&#233;dier &#224; ce probl&#232;me.
+</I>&gt;<i> 
+</I>&gt;<i> Bien &#224; vous,
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Jaonary
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000257.html">[Plearn-core] Les fichiers .pmat et espace disque
+</A></li>
+	<LI>Next message: <A HREF="000259.html">[Plearn-core] Early stopping et NNet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#258">[ date ]</a>
+              <a href="thread.html#258">[ thread ]</a>
+              <a href="subject.html#258">[ subject ]</a>
+              <a href="author.html#258">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

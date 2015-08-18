@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Mecanisme de changement d'options
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615184125.GA30010%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000072.html">
+   <LINK REL="Next"  HREF="000074.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Mecanisme de changement d'options</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Mecanisme%20de%20changement%20d%27options&In-Reply-To=%3C20060615184125.GA30010%40pig.zood.org%3E"
+       TITLE="[Plearn-core] Mecanisme de changement d'options">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 20:41:25 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000072.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+        <LI>Next message: <A HREF="000074.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#73">[ date ]</a>
+              <a href="thread.html#73">[ thread ]</a>
+              <a href="subject.html#73">[ subject ]</a>
+              <a href="author.html#73">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, Jun 15, 2006, Pascal Vincent wrote:
+&gt;<i> 
+</I>&gt;<i> &gt;Au fait, comme le disait Pascal L., une seule methode pourrait etre
+</I>&gt;<i> &gt;necessaire. En fait, ne pourrait-on pas avoir juste un build(liste
+</I>&gt;<i> &gt;d'options changees), avec une liste vide (par defaut) signifiant que
+</I>&gt;<i> &gt;tout a ete change (&lt;=&gt; build initial apres avoir cree / charge un
+</I>&gt;<i> &gt;objet) ?
+</I>&gt;<i>
+</I>&gt;<i> Ah, alors on remet tout dans le build? La boucle est presque boucl&#233;e...
+</I>
+... et &#231;a montre que le design initial &#233;tait bien, en fait.
+
+&gt;<i> OK, maintenant on conna&#238;t les noms des options qui ont chang&#233;es en plus.
+</I>
+C'est exactement ce que je voulais ;^)
+
+&gt;<i> Est-ce que &#231;a simplifie vraiment &#224; ce point la t&#226;che? Bien souvent, on 
+</I>&gt;<i> aurait pu faire l'&#233;quivalent de, par ex.
+</I>&gt;<i> if(changed_option_names.find(&quot;nhidden&quot;)!=changed_option_names.end())
+</I>&gt;<i>  { ... }
+</I>&gt;<i> d&#233;j&#224; maintenant avec un
+</I>&gt;<i> if(nhidden!=somevec.length())
+</I>&gt;<i>  { ... }
+</I>
+C'est vrai, sauf que dans le deuxi&#232;me cas on ne sait pas quelle option a
+chang&#233;, et on doit se rabattre sur une priorit&#233; d'options les unes sur
+les autres (genre buildoption sur learntoption) pour savoir quoi faire.
+Je suis d'accord que c'est mineur.
+
+&gt;<i> ou AU PIRE:
+</I>&gt;<i> if(nhidden!=nhidden_copy)
+</I>&gt;<i> {
+</I>&gt;<i>   ...
+</I>&gt;<i>   nhidden_copy = nhidden;
+</I>&gt;<i> }
+</I>
+Surtout, si &#231;a concerne un objet PLearn ou une grosse matrice, la copie
+et la comparaison peuvent &#234;tre beaucoup plus longues que v&#233;rifier la
+pr&#233;sence d'un string dans un set. Ce qui est &#224; mon avis la raison pour
+laquelle build() n'est pas syst&#233;matiquement appel&#233; &#224; chaque changement
+d'option.
+
+Finalement, cette solution resterait r&#233;trocompatible, mais en ajoutant
+un m&#233;canisme pour ne pas faire des dizaines de v&#233;rifications dans les
+valeurs.
+
+&#199;a me pla&#238;t pas mal comme &#231;a, mais si on d&#233;cide de diff&#233;rencier
+build/rebuild, &#231;a pourrait &#234;tre le moment de le faire.
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000072.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+	<LI>Next message: <A HREF="000074.html">[Plearn-core] Mecanisme de changement d'options
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#73">[ date ]</a>
+              <a href="thread.html#73">[ thread ]</a>
+              <a href="subject.html#73">[ subject ]</a>
+              <a href="author.html#73">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] VMatrix avec des input des taille variable
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C20070227151702.GA14237%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000323.html">
+   <LINK REL="Next"  HREF="000326.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] VMatrix avec des input des taille variable</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20VMatrix%20avec%20des%20input%20des%20taille%20variable&In-Reply-To=%3C20070227151702.GA14237%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] VMatrix avec des input des taille variable">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Tue Feb 27 16:17:08 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000323.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+        <LI>Next message: <A HREF="000326.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#325">[ date ]</a>
+              <a href="thread.html#325">[ thread ]</a>
+              <a href="subject.html#325">[ subject ]</a>
+              <a href="author.html#325">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 27 Feb 2007, Jaonary Rabarisoa wrote:
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>     &gt;
+</I>&gt;<i>     &gt; Pas n&#233;cessairement.
+</I>&gt;<i>     &gt;
+</I>&gt;<i>     &gt; La m&#233;thode getExample de VMatrix prend en argument des Vec&amp;, donc
+</I>&gt;<i>     &gt; rien n'emp&#234;che que l'appel change leur taille (appel &#224; resize), ou
+</I>&gt;<i>     &gt; m&#234;me fasse un input=.
+</I>&gt;<i>     &gt; Donc si tu d&#233;finis ta propre classe de VMatrix qui red&#233;finit cette
+</I>&gt;<i>     &gt; m&#233;thode getExample qui resize et remplit le vecteur d'input
+</I>&gt;<i>     &gt; correctement, tu peux avoir des vecteurs d'input de taille variable.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Cette solution me parrait d&#233;j&#224; plus abordable mais souleve encore d'autre
+</I>&gt;<i> probl&#232;mes :
+</I>&gt;<i> - que deviennent les membres inputsize et targetsize ?
+</I>
+S'ils varient, je les mettrais a -1. Avec tout ce que ca implique de
+code qui risque de planter.
+
+&gt;<i> - La fonction toMat() doit elles etre modifier ?
+</I>
+J'imagine qu'elle devrait planter, ce qui est tout ce qu'elle peut faire
+vraiment.
+
+&gt;<i> - Devrai-je aussi reimpl&#233;menter les fonction lecture et ecriture dans un
+</I>&gt;<i> fichier ?
+</I>
+Ca depend ce que tu entends par la. Tu ne pourras pas sauvegarder ta
+VMat dans un .pmat ou .amat, puisque ces formats ne supportent que des
+largeurs fixes. Par contre tu peux toujours sauvegarder / lire ton objet
+dans un script (.vmat).
+
+--
+Olivier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000323.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+	<LI>Next message: <A HREF="000326.html">[Plearn-core] VMatrix avec des input des taille variable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#325">[ date ]</a>
+              <a href="thread.html#325">[ thread ]</a>
+              <a href="subject.html#325">[ subject ]</a>
+              <a href="author.html#325">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

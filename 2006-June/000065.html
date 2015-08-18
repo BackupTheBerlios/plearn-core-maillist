@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] learntoption et buildoption
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-June/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20learntoption%20et%20buildoption&In-Reply-To=%3C20060615171821.GC29517%40pig.zood.org%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000060.html">
+   <LINK REL="Next"  HREF="000086.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] learntoption et buildoption</H1>
+    <B>Pascal Lamblin</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20learntoption%20et%20buildoption&In-Reply-To=%3C20060615171821.GC29517%40pig.zood.org%3E"
+       TITLE="[Plearn-core] learntoption et buildoption">lamblinp at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jun 15 19:18:21 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000060.html">[Plearn-core] learntoption et buildoption
+</A></li>
+        <LI>Next message: <A HREF="000086.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#65">[ date ]</a>
+              <a href="thread.html#65">[ thread ]</a>
+              <a href="subject.html#65">[ subject ]</a>
+              <a href="author.html#65">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, Jun 15, 2006, Christian Hudon wrote:
+&gt;<i> &gt;Pour prendre une exemple stupide, si j'ai une classe Classe, qui d&#233;rive
+</I>&gt;<i> &gt;de PLearn::Object, et qui a un membre Vec v (buildoption) et un autre
+</I>&gt;<i> &gt;int n (learntoption), qui est cens&#233; valoir v.size().
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;Je voudrais bien avoir un m&#233;canisme qui me permet, si je fais des choses
+</I>&gt;<i> &gt;&#224; v, de garder n &#224; jour. Mais j'aimerais aussi pouvoir changer n, et que
+</I>&gt;<i> &gt;&#231;a resize v automatiquement.
+</I>&gt;<i> 
+</I>&gt;<i> Je n'ai pas d'insight particulier sur le reste du probl&#232;me, mais je ne 
+</I>&gt;<i> pense pas que &#231;a soit une bonne id&#233;e en g&#233;n&#233;ral d'avoir une learnoption 
+</I>&gt;<i> qui influcence une buildoption. Si on fait &#231;a, les concepts de 
+</I>&gt;<i> &quot;learntoption&quot; et &quot;buildoption&quot; perdent un peu leur sens... &#199;a peut 
+</I>&gt;<i> aussi donner des d&#233;pendances circulaires, etc. &#192; tout le moins, &#231;a me 
+</I>&gt;<i> semble pas tr&#232;s intuitif...
+</I>
+Tout &#224; fait d'accord, mon exemple &#233;tait volontairement simplifi&#233;. Mais
+il arrive des cas o&#249; les deux sont en fait des buildoption, soit parce
+qu'on veut laisser l'utilisateur choisir comment il veut sp&#233;cifier son
+objet dans le script, soit parce que l'une des options n'a pas le m&#234;me
+statut dans la classe de base et une classe d&#233;riv&#233;e, ce que l'on ne sait
+pas forc&#233;ment dans du code qui a un pointeur vers la classe de base.
+
+Et je suis s&#251;r qu'on peut trouver d'autres exemples. En tous cas, il y a
+du code qui change des buildoptions en fonction d'autres buildoptions,
+y'a qu'&#224; chercher dans les sous-classes de SourceVMatrix.
+
+-- 
+Pascal
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000060.html">[Plearn-core] learntoption et buildoption
+</A></li>
+	<LI>Next message: <A HREF="000086.html">[Plearn-core] pymake et optimisation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#65">[ date ]</a>
+              <a href="thread.html#65">[ thread ]</a>
+              <a href="subject.html#65">[ subject ]</a>
+              <a href="author.html#65">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

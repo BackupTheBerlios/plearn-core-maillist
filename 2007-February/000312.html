@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] boundchecks
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-February/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3C45CA2CF0.1030008%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000309.html">
+   <LINK REL="Next"  HREF="000310.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] boundchecks</H1>
+    <B>Nicolas Chapados</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20boundchecks&In-Reply-To=%3C45CA2CF0.1030008%40apstat.com%3E"
+       TITLE="[Plearn-core] boundchecks">chapados at apstat.com
+       </A><BR>
+    <I>Wed Feb  7 20:48:00 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000309.html">[Plearn-core] boundchecks
+</A></li>
+        <LI>Next message: <A HREF="000310.html">[Plearn-core] Decission Trees pour la classification
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#312">[ date ]</a>
+              <a href="thread.html#312">[ thread ]</a>
+              <a href="subject.html#312">[ subject ]</a>
+              <a href="author.html#312">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Salut,
+
+NDEBUG est d&#233;fini dans le standard C comme &quot;d&#233;sactivant&quot; la v&#233;rification 
+des asserts, mais il n'est pas sett&#233; par le compilateur, loin de l&#224;. Il 
+faut le setter nous-m&#234;me, en compilant avec -DNDEBUG.
+
+Donc on peut r&#233;-utiliser NDEBUG sans probl&#232;me pour faire les 
+boundchecks.  On a tout le contr&#244;le qu'on veut dessus.  Ce n'est qu'un 
+define normal du pr&#233;processeur.
+
+Je pense comme Pascal (Vincent) que c'est plus propre que d'avoir deux 
+symboles distincts.
+
+    + Nicolas
+
+
+Pascal Lamblin wrote:
+&gt;<i> On Tue, Feb 06, 2007, Pascal Vincent wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;&gt;<i> J'aurais voulu mettre en place le m&#234;me m&#233;canisme pour les BOUNDCHECK,
+</I>&gt;&gt;&gt;<i> pour que les v&#233;rifications soient faites ssi #defined BOUNDCHECK
+</I>&gt;&gt;&gt;<i> (PLASSERT regarde NDEBUG).
+</I>&gt;&gt;&gt;<i>       
+</I>&gt;&gt;<i> Avant de rajouter une nouvelle macro, j'aimerais comprendre pourquoi  
+</I>&gt;&gt;<i> on a NDEBUG et BOUNDCHECK et non pas une seule variable indiquant  
+</I>&gt;&gt;<i> qu'on veut que le prg fasse des v&#233;rifications exhaustives ou non.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Il me semble que NDEBUG est une variable qui est sett&#233;e par le
+</I>&gt;<i> compilateur lui-m&#234;me, je ne sais plus si c'est quand on compile en mode
+</I>&gt;<i> optimis&#233; ou quand on compile sans symboles de d&#233;bug, ou encore autre
+</I>&gt;<i> chose. Je ne pense pas qu'on puisse la red&#233;finir facilement.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Si il n'y a pas de bonne raison, on pourrait remplacer les #ifdef  
+</I>&gt;&gt;<i> BOUNDCHECK par des #ifndef NDEBUG ou vice-versa et  ne conserver  
+</I>&gt;&gt;<i> qu'une des 2 variables.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Et &#224; ce moment l&#224;, Pascal, pourquoi ne pas utiliser simplement les  
+</I>&gt;&gt;<i> PLASSERT_MSG dans ta refonte?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Note: le terme &quot;boundcheck&quot; est un peu trop restrictif. Les  
+</I>&gt;&gt;<i> &quot;bouncchecks&quot; au sens large sont certainement les checks les plus  
+</I>&gt;&gt;<i> courants, mais BOUNDCHECK a &#233;t&#233; utilis&#233; pour toutes sortes de checks  
+</I>&gt;&gt;<i> qu'on ne souhaite faire que lorsqu'on compile en mode dbg ou safeopt.
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> Justement, je pense qu'on ne peut pas avoir de mode &quot;safeopt&quot; si on
+</I>&gt;<i> utilise NDEBUG. Et comme le comportement du assert() de base d&#233;pend de
+</I>&gt;<i> NDEBUG, si on veut reproduire ce comportement (ce dont je ne suis pas
+</I>&gt;<i> certains), il nous faut bien deux m&#233;canismes diff&#233;rents.
+</I>&gt;<i>
+</I>&gt;<i> Finalement, veut-on des tests qui sont faits si on compile en -dgb, mais
+</I>&gt;<i> pas en -safeopt (c'est ce que font les assert() traditionnels) ?
+</I>&gt;<i> C'est ce que je vous demande :)
+</I>&gt;<i>   
+</I>
+-- 
+Nicolas Chapados, M.Sc.
+ApSTAT Technologies Inc.
+www.apstat.com
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000309.html">[Plearn-core] boundchecks
+</A></li>
+	<LI>Next message: <A HREF="000310.html">[Plearn-core] Decission Trees pour la classification
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#312">[ date ]</a>
+              <a href="thread.html#312">[ thread ]</a>
+              <a href="subject.html#312">[ subject ]</a>
+              <a href="author.html#312">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

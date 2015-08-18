@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Impl&#233;menter un Learner
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2006-October/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FImpl%3DC3%3DA9menter_un_Learner%3F%3D&In-Reply-To=%3Cc81af8c30610241223h289eb284ta18ce976161e0cb0%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000215.html">
+   <LINK REL="Next"  HREF="000223.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Impl&#233;menter un Learner</H1>
+    <B>Jaonary Rabarisoa</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20%3D%3Futf-8%3Fq%3FImpl%3DC3%3DA9menter_un_Learner%3F%3D&In-Reply-To=%3Cc81af8c30610241223h289eb284ta18ce976161e0cb0%40mail.gmail.com%3E"
+       TITLE="[Plearn-core] Impl&#233;menter un Learner">jaonary at gmail.com
+       </A><BR>
+    <I>Tue Oct 24 21:23:25 CEST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000215.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+        <LI>Next message: <A HREF="000223.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#222">[ date ]</a>
+              <a href="thread.html#222">[ thread ]</a>
+              <a href="subject.html#222">[ subject ]</a>
+              <a href="author.html#222">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bonjour tout le monde,
+Je continue toujours mon aventure dans le monde de PLearn. Ne trouvant pas
+mon bonheur parmis les milliers de PLearner d&#233;j&#224; impl&#233;ment&#233;s dans PLearn, je
+voudrais maintenant impl&#233;menter le mien :) Suis-je un peu fou ?
+Concr&#232;tement, je voudrai r&#233;soudre un probl&#232;me de classification binaire dans
+un espace form&#233; par l'ensemble de liste de taille fini de vecteur dans R^d.
+Ouff. Plus simplement, si X est mon input alors il s'&#233;crira
+
+X = {X_i, i = 1, ..., l(X) et X_i dans R^d}
+
+L'id&#233;e ici c'est d'utiliser des m&#233;thodes d'aggr&#233;gation (boosting). Et pour
+faire simple je commence par adaboost.
+Chouette adaboost est d&#233;j&#224; dans PLearn. Mais ..... Je dois en fait
+impl&#233;menter mon propre weak learner et c'est la que c'est un peu technique.
+Tous les learner de PLearn prends comme entr&#233; un Vec. A moins que j'ai loup&#233;
+quelque chose. Donc 1ere question, il y t-il des exemples de learner qui
+prennent autre chose que les Vec en entr&#233;e ( graphe , liste, ... ) pour que
+je m'en inspire ?
+
+Si c'est pas le cas, est-ce que c'est envisageable et comment pourrais-je
+les impl&#233;ment&#233; pour que ca suive la philosophie de PLearn ? Notamment,
+j'avais l'intension d'utiliser la classe adaboost de PLearn en lui donnant
+tout simplement le weak learner que j'aurai impl&#233;ment&#233;. Au fait, on aurait
+aim&#233; que les inputs sont des smart pointer sur un input g&#233;n&#233;rique. Genre une
+notion de feature space qui me permet de r&#233;soudre un probl&#232;me dans l'espace
+que je veux.
+
+Au point de vue purement impl&#233;mentation, j'aimerai aussi avoir une petite
+pr&#233;cision sur la fonction makeDeepCopyFromShallow(). J'ai bien compris que
+c'est pour copier les smart pointer mais que deviennent les membre qui ne
+sont pas des smart pointer comme real, int, bool, ... Aussi, quel est
+exactement le r&#244;le de MapCopies ?
+
+Bien &#224; vous,
+
+Jaonary
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/plearn-core/attachments/20061024/c6265669/attachment.html">https://lists.berlios.de/pipermail/plearn-core/attachments/20061024/c6265669/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000215.html">[Plearn-core] PlearnPointer et Heritage
+</A></li>
+	<LI>Next message: <A HREF="000223.html">[Plearn-core] Impl&#233;menter un Learner
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#222">[ date ]</a>
+              <a href="thread.html#222">[ thread ]</a>
+              <a href="subject.html#222">[ subject ]</a>
+              <a href="author.html#222">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

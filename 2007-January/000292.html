@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Interfaces non-vmat dans Kernel?
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-January/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Interfaces%20non-vmat%20dans%20Kernel%3F&In-Reply-To=%3C20070111153021.GA9212%40opale.iro.umontreal.ca%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000291.html">
+   <LINK REL="Next"  HREF="000293.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Interfaces non-vmat dans Kernel?</H1>
+    <B>Olivier Delalleau</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Interfaces%20non-vmat%20dans%20Kernel%3F&In-Reply-To=%3C20070111153021.GA9212%40opale.iro.umontreal.ca%3E"
+       TITLE="[Plearn-core] Interfaces non-vmat dans Kernel?">delallea at iro.umontreal.ca
+       </A><BR>
+    <I>Thu Jan 11 16:30:21 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000291.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+        <LI>Next message: <A HREF="000293.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Je ne suis pas s&#251;r de bien te comprendre, mais...
+Il me semble que dans 99% du temps, le &quot;data&quot; du kernel est notre jeu de
+donn&#233;es, donc une VMat. En plus certains kernels s'appliquent
+g&#233;n&#233;ralement seulement sur la partie inputsize, donc on a besoin de la
+notion d'input et de target.
+C'est quoi le probl&#232;me exactement, c'est d'avoir &#224; faire des
+data-&gt;getExample(...) ? Est-ce que c'est vraiment si lent si la VMat est
+une MemoryVMatrix ?
+
+--
+Olivier
+
+On 11 Jan 2007, <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">chapados at apstat.com</A> wrote:
+&gt;<i> Salut messieurs,
+</I>&gt;<i> 
+</I>&gt;<i> Je fais une constatation sans doute quelque peu biscornue, mais peut-&#234;tre
+</I>&gt;<i> n&#233;anmoins valable &#224; propos de PLearn::Kernel.  Pourquoi laisse-t-on la
+</I>&gt;<i> &quot;Data&quot; VMat aussi longtemps sous la forme de VMat, surtout lorsque la
+</I>&gt;<i> matrice de Gram est 'cach&#233;e' sous la forme d'une Mat?  Il me semble
+</I>&gt;<i> souffrant d'encourir autant d'appels virtuels, surtout lorsqu'il y en a
+</I>&gt;<i> d&#233;j&#224; un par 'evaluate' du kernel.
+</I>&gt;<i> 
+</I>&gt;<i> N'y aurait-il pas lieu de supporter explicitement deux use-cases, l'un
+</I>&gt;<i> pour &quot;tout tient facilement en m&#233;moire&quot;, et l'autre pour &quot;on laisse tout
+</I>&gt;<i> en VMat&quot;?  La plupart des fonctions sont d&#233;finies pour ou bien marcher
+</I>&gt;<i> avec des VMat mais pas des Mat (e.g. apply) ou vice-versa (evaluate*, qui
+</I>&gt;<i> acceptent des Vec mais c'est inutile car la matrice de donn&#233;es est laiss&#233;e
+</I>&gt;<i> sous la forme d'une VMat donc on encoure toujours &#224; l'interne une frappe
+</I>&gt;<i> de virtualit&#233;).
+</I>&gt;<i> 
+</I>&gt;<i> Je sais qu'on peut red&#233;finir tout (mais pas apply!) dans les classes
+</I>&gt;<i> d&#233;riv&#233;es, mais je crois que l'interface actuelle rend la t&#226;che on&#233;reuse
+</I>&gt;<i> pour les auteurs prospectifs de nouveaux kernels...
+</I>&gt;<i> 
+</I>&gt;<i>    + Nicolas
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> P.S. Si on en vient &#224; red&#233;finir l'interface de kernels, on pourrait penser
+</I>&gt;<i> aux use-cases algorithmiques en plus des use-cases de donn&#233;es,
+</I>&gt;<i> c'est-&#224;-dire les svm classiques, les kmp de Pascal, et les processus
+</I>&gt;<i> gaussiens.  Il y a &#233;galement les use-cases au niveau des kernels
+</I>&gt;<i> eux-m&#234;mes, i.e. certains kernels se pr&#234;tent bien &#224; des pr&#233;calculs, ce
+</I>&gt;<i> qu'essaie de permettre PLearn::Kernel.  Donc, pour r&#233;sumer, les dimensions
+</I>&gt;<i> &#224; consid&#233;rer pour revoir l'interface seraient:
+</I>&gt;<i> 
+</I>&gt;<i> 1) petit probl&#232;me versus gros probl&#232;me
+</I>&gt;<i> 2) client algorithmique
+</I>&gt;<i> 3) forme fonctionnelle du noyau (pour pr&#233;calculs)
+</I>&gt;<i> 
+</I>&gt;<i> Y en a-t-il d'autres?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Plearn-core mailing list
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">Plearn-core at lists.berlios.de</A>
+</I>&gt;<i> <A HREF="https://lists.berlios.de/mailman/listinfo/plearn-core">https://lists.berlios.de/mailman/listinfo/plearn-core</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000291.html">[Plearn-core] Interfaces non-vmat dans Kernel?
+</A></li>
+	<LI>Next message: <A HREF="000293.html">[Plearn-core] Apprentissage transductif dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>

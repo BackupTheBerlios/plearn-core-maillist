@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/plearn-core/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C4692FD60.4090004%40apstat.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000390.html">
+   <LINK REL="Next"  HREF="000392.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn</H1>
+    <B>saintmlx</B> 
+    <A HREF="mailto:plearn-core%40lists.berlios.de?Subject=Re%3A%20%5BPlearn-core%5D%20Utilisation%20des%20%22long%20int%22%20dans%20PLearn&In-Reply-To=%3C4692FD60.4090004%40apstat.com%3E"
+       TITLE="[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn">saintmlx at apstat.com
+       </A><BR>
+    <I>Tue Jul 10 05:30:40 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000390.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+        <LI>Next message: <A HREF="000392.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#391">[ date ]</a>
+              <a href="thread.html#391">[ thread ]</a>
+              <a href="subject.html#391">[ subject ]</a>
+              <a href="author.html#391">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i>Pour les tests qui impliquent python, peut-&#234;tre qu'il vaudrait mieux des
+</I>&gt;<i>int64_t. Ceux qui s'y connaissent, vous pensez quoi ?
+</I>&gt;<i>
+</I>&gt;<i>  
+</I>&gt;<i>
+</I>Python utilise les types entiers C suivants pour la conversion vers des 
+'long' python: long, unsigned long, long long, unsigned long long et 
+void*; pour les 'int' python, on n'a que long et Py_ssize_t.
+
+Si PLearn doit _vraiment_ utiliser des int32_t, uint64_t, etc., alors il 
+faut remplacer ConvertFromPyObject&lt;long&gt;, ConvertFromPyObject&lt;unsigned 
+long&gt;, ConvertToPyObject&lt;long&gt; et ConvertToPyObject&lt;unsigned long&gt; 
+chacune par une version 32 bits et une version 64 bits (et p-&#234; 16 ou 8 
+aussi, si on les utilise o&#249; que ce soit dans PLearn).  Ensuite, il faut 
+s'arranger pour que la conversion marche dans tous les cas, c'est-&#224;-dire 
+que chacune des nouvelles fonctions de conversion doit savoir le lien 
+qu'il y a entre les types standard C/C++ et les nouveaux entiers 
+PLearn...  une grosse poutine de #ifdef en perspective.
+
+Est-ce vraiment n&#233;cessaire pour PLearn de ne pas utiliser de long?  Il 
+me semble qu'il peut &#234;tre souhaitable dans certains cas de ne justement 
+pas sp&#233;cifier la taille exacte des types entiers qu'on utilise.  
+*Suggestion* (un peu tardive, je sais): pourquoi ne pas limiter l'usage 
+de ces nouveaux types &#224; la s&#233;rialisation seulement?  e.g. short et int 
+s&#233;rialis&#233;s en tant que int32, long &lt;-&gt; int64, long long &lt;-&gt; int128; on 
+peut ensuite faire un PLERROR si une valeur lue est trop grande pour la 
+taille du type entier effectivement utilis&#233;, par exemple si on lit un 
+long &gt; 2^32 sur une architecture 32 bits.
+
+Personnellement, il y a d'autres choses que j'aimerais mieux faire que 
+de modifier la conversion PLearn &lt;-&gt; Python (et qu'ApSTAT aimerait mieux 
+que je fasse aussi...) 
+
+Que penses-tu de ma suggestion pour la s&#233;rialisation?  sinon, peux-tu 
+modifier PythonObjectWrapper? (je peux t'aider au besoin, si c'est 
+l'option choisie)
+
+Xavier
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000390.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+	<LI>Next message: <A HREF="000392.html">[Plearn-core] Utilisation des &quot;long int&quot; dans PLearn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#391">[ date ]</a>
+              <a href="thread.html#391">[ thread ]</a>
+              <a href="subject.html#391">[ subject ]</a>
+              <a href="author.html#391">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/plearn-core">More information about the Plearn-core
+mailing list</a><br>
+</body></html>
